@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy First (deep-dive) — InstaSafe Content Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/review.css">
+</head>
+<body class="t-blue">
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="../index.html"><img src="../assets/brand/instasafe-lockup-white.svg" alt="InstaSafe" height="24"></a>
+    <span class="vol-label">Vol 4 · Company &amp; Resources</span>
+    <span class="cr-count" data-cr-count hidden>💬 0</span>
+    <a class="index-link" href="../index.html">← Index</a>
+  </div>
+</header>
+<main class="wrap page">
+  <div class="page-head" data-cb="b1">
+    <div class="route">/why-instasafe/privacy-first</div>
+    <h1 class="page-title">Privacy First (deep-dive)</h1>
+    <div class="chips"><span class="chip todo-chip">5 review markers</span></div>
+    <div class="seo-meta"><span class="seo-k">SEO</span> Title: Privacy-First Architecture | Split-Plane Zero Trust | InstaSafe | Meta: Does your ZTNA vendor see your traffic? Ours can't. Control plane and data plane, separated by design — with an honest table of what we can and cannot see.</div>
+  </div>
+  <article class="prose">
+<h3 data-cb="b2" class="seclabel">Hero</h3>
+<header data-cb="b3" class="hero">
+<div class="hero-ey">PRIVACY FIRST</div>
+<h2 data-cb="b4" class="hero-h1">Your traffic is none of our business. Architecturally.</h2>
+<p class="hero-sub">Not a policy promise. A design constraint: application data flows directly between your users and your apps — never through InstaSafe.</p>
+<div class="hero-cta"><span class="pill pri">Book a Demo</span><span class="pill ghost">Read the Architecture ↓</span></div>
+</header>
+<h3 data-cb="b5" class="seclabel">The problem with the standard model</h3>
+<p data-cb="b6">The dominant cloud-security architecture routes your traffic through the vendor's cloud for inspection. It works — and it concentrates risk: the vendor becomes the single most privileged party in your infrastructure, their breach becomes your breach (supply-chain incidents have made this concrete <mark class="todo">[SOURCE NEEDED — cite a documented case via Sikha]</mark>), their outage becomes your outage, and your regulator's data-path questions acquire a foreign middle-box answer.</p>
+<h3 data-cb="b7" class="seclabel">The split-plane design (diagram section — reuse homepage split-plane visual)</h3>
+<div data-cb="b8" class="spec"><pre>CONTROL PLANE (InstaSafe)          DATA PLANE (Yours)
+Authentication decisions           Application traffic
+Policy evaluation                  User ↔ gateway ↔ app, direct
+Device posture verdicts            Encrypted end-to-end on your path
+Logging &amp; audit events             Never enters InstaSafe infrastructure</pre></div>
+<p data-cb="b9">The controller decides; the gateway (deployed at your edge, in your VPC, in your DC) enforces; traffic flows the short way. If InstaSafe's cloud vanished mid-session, your data path wouldn't notice.</p>
+<h3 data-cb="b10" class="seclabel">The signature table — what we can and cannot see</h3>
+<div data-cb="b11" class="spec"><pre>WE SEE                             WE NEVER SEE
+Authentication attempts &amp; results  Your application data
+Policy decisions &amp; reasons         Your files and their contents
+Device posture verdicts            Your database queries &amp; results
+Session metadata (who/when/what    Your screen contents
+  app/from where)                  Your keystrokes
+Logs you choose to export          Your traffic payloads</pre></div>
+<p data-cb="b12">No competitor publishes this table. That's the point of publishing it.</p>
+<h3 data-cb="b13" class="seclabel">What this buys you (three outcomes)</h3>
+<p data-cb="b14">supply-chain blast radius excludes your data · sovereignty and DPDP data-path questions get a clean answer · vendor trust becomes verifiable architecture instead of contractual hope.</p>
+<h3 data-cb="b15" class="seclabel">FAQs</h3>
+<p data-cb="b16">how do you inspect for threats without seeing traffic (we're an access-control layer, not a traffic-inspection proxy — pair with your existing inspection where you need DPI; honest scope) · can this be audited (architecture documentation and the Trust Center support assessment <mark class="todo">[CONFIRM what's shareable — Product/legal]</mark>) · what about the logs you do hold (event metadata, exportable to your SIEM, retention per policy <mark class="todo">[CONFIRM retention specifics]</mark>).</p>
+<hr class="rule">
+<hr class="rule">
+  </article>
+  <nav class="pagenav">
+    <a class="pn prev" href="./why-instasafe.html"><span class="pn-k">← Prev</span><span class="pn-t">Why InstaSafe</span></a>
+    <a class="pn next" href="./compare.html"><span class="pn-k">Next →</span><span class="pn-t">Comparison Hub</span></a>
+  </nav>
+</main>
+<footer class="pagefoot">
+  <div class="wrap">
+    <span>InstaSafe Content Master — Review Build</span>
+    <span class="dot">·</span>
+    <span>Vol 4 · Company & Resources</span>
+    <span class="dot">·</span>
+    <span>2026-07-07</span>
+    <span class="dot">·</span>
+    <a class="cr-export" href="#" data-cr-export>Export my comments</a>
+  </div>
+</footer>
+<script src="../assets/review-comments.js" defer></script>
+</body>
+</html>

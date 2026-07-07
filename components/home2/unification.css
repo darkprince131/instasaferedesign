@@ -1,0 +1,127 @@
+/* ============================================================
+   Unification Slider (C29) — before/after reveal.
+   BOTH layers hold the SAME grid of capability boxes in the same
+   positions. Bottom layer: each box is coloured by the separate
+   product that manages it (different vendors → different colours).
+   Top layer (InstaSafe): the very same boxes, all in the orange
+   highlight = "available in InstaSafe". Scoped `.uni`, inside `.iz`.
+   ============================================================ */
+
+.uni {
+  position: relative;
+  /* vendor colours — used ONLY here, to depict tool sprawl. Avoids the
+     semantic green/red; the single-accent rule resumes everywhere else. */
+  --uni-vpn: #6aa8ff;
+  --uni-id: #b58cff;
+  --uni-dev: #57c9c2;
+  --uni-pam: #ff8fb0;
+  --uni-log: #f5b340;
+}
+
+/* ---- legend (colour coding, above the stage) ---- */
+.uni-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 14px; }
+.uni-leg { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.03em; color: var(--tx-dim); }
+.uni-leg .sw { width: 12px; height: 12px; border-radius: 4px; border: 1px solid; }
+.uni-leg.is .sw { background: color-mix(in srgb, var(--orange) 22%, transparent); border-color: var(--orange); }
+.uni-leg.is { color: var(--orange); font-weight: 500; }
+
+.uni-caption { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.uni-caption .before { color: var(--tx-mute); }
+.uni-caption .after { color: var(--orange); }
+
+/* ---- the reveal stage ---- */
+.uni-slider {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  min-height: 430px;
+  background: var(--bg-2);
+  box-shadow: var(--inset), var(--panel-sh);
+  touch-action: none;
+  user-select: none;
+  cursor: ew-resize;
+}
+.uni-layer { position: absolute; inset: 0; padding: 22px; }
+.uni-after {
+  clip-path: inset(0 0 0 var(--pos, 46%)); /* InstaSafe revealed on the right */
+  background: var(--surface);
+}
+
+/* divider + handle */
+.uni-divider { position: absolute; top: 0; bottom: 0; left: var(--pos, 46%); width: 2px; background: var(--orange); transform: translateX(-1px); pointer-events: none; }
+.uni-handle {
+  position: absolute;
+  top: 50%;
+  left: var(--pos, 46%);
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: var(--btn-ink);
+  display: grid;
+  place-items: center;
+  cursor: ew-resize;
+  box-shadow: var(--cta-glow);
+  z-index: 4;
+}
+.uni-handle:focus-visible { outline: 2px solid var(--tx); outline-offset: 3px; }
+
+/* ---- shared box grid (identical in both layers so they overlay) ---- */
+.uni-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.uni-box {
+  --c: var(--tx-mute);
+  border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+  background: color-mix(in srgb, var(--c) 15%, transparent);
+  border-radius: 10px;
+  padding: 11px 12px;
+  min-height: 74px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.uni-box[data-g="vpn"] { --c: var(--uni-vpn); }
+.uni-box[data-g="id"] { --c: var(--uni-id); }
+.uni-box[data-g="dev"] { --c: var(--uni-dev); }
+.uni-box[data-g="pam"] { --c: var(--uni-pam); }
+.uni-box[data-g="log"] { --c: var(--uni-log); }
+.uni-box .nm { font-family: var(--disp); font-size: 13.5px; font-weight: 400; color: var(--tx); letter-spacing: -0.01em; }
+.uni-box .tag { display: flex; align-items: center; gap: 5px; margin-top: auto; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.03em; color: var(--c); }
+.uni-box .tag .ck { width: 11px; height: 11px; }
+
+/* top layer override: every box becomes "available in InstaSafe" (orange) */
+.uni-after .uni-box { --c: var(--orange); }
+.uni-after .uni-box .nm { color: var(--tx); }
+
+/* hint chip */
+.uni-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  background: var(--headerbg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ---- stat + table below ---- */
+.uni-stat { display: flex; align-items: baseline; gap: 14px; justify-content: center; margin: 30px 0 6px; flex-wrap: wrap; }
+.uni-stat .big { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(40px, 6vw, 60px); letter-spacing: var(--ls-hero); color: var(--orange); }
+.uni-stat .lbl { font-size: 15px; color: var(--tx-dim); max-width: 24ch; }
+
+@media (max-width: 720px) {
+  .uni-grid { grid-template-columns: repeat(2, 1fr); }
+  .uni-slider { min-height: 560px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uni-handle { box-shadow: var(--inset); }
+}

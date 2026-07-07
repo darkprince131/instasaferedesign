@@ -1,0 +1,138 @@
+/* ============================================================
+   Resource "Book" card — built like Cofounder's books.
+   What makes it read as a BOOK (not a card):
+     · asymmetric radius 4px/12px  → sharp spine, round pages
+     · a 16px spine strip with a gutter-shadow gradient
+     · layered paper shadow + inset white highlight
+     · embossed (printed) text-shadow on title + divider
+   A subtle frosted POCKET lip hugs the book's foot; hover
+   lifts the book up out of it. Scoped `.bc`; theme via `.iz`.
+   ============================================================ */
+
+.bc-row { display: flex; flex-wrap: wrap; gap: 28px 80px; justify-content: center; }
+
+.bc-figure { display: flex; flex-direction: column; align-items: center; }
+
+.bc-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: grab;
+  user-select: none;
+  outline: none;
+}
+.bc-link:active { cursor: grabbing; }
+
+/* stage reserves space above (lift) + below (pocket overhang) */
+.bc-stage { position: relative; padding-top: 30px; padding-bottom: 30px; }
+
+/* lift wrapper — only the book moves */
+.bc-lift { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); transform: translateY(0); will-change: transform; }
+.bc-link:hover .bc-lift,
+.bc-link:focus-visible .bc-lift { transform: translateY(-26px); }
+
+/* ---- the book ---- */
+.bc-book {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: stretch;
+  width: 290px;
+  min-height: 350px;
+  border-radius: 4px 12px 12px 4px; /* spine left / pages right */
+  overflow: hidden;
+  transition: box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* the spine strip (binding gutter shading) */
+.bc-spine { width: 16px; flex: none; }
+
+.bc-content { flex: 1; display: flex; flex-direction: column; }
+
+/* ---- inner bits ---- */
+.bc-head { padding: 30px 20px 24px; }
+.bc-title { margin: 0; font-family: var(--disp); font-weight: 400; font-size: 20px; line-height: 1.1; letter-spacing: -0.4px; }
+.bc-title span { display: block; }
+.bc-title em { font-style: normal; color: var(--orange); }
+
+.bc-divider { height: 1px; margin: 0 20px; }
+.bc-sub { padding: 0 20px; margin-top: 10px; font-family: var(--mono); font-size: 8.5px; font-weight: 500; letter-spacing: var(--ls-mono); text-transform: uppercase; }
+
+.bc-cover { padding: 12px 20px 0; }
+.bc-cover img { width: 100%; height: auto; display: block; border-radius: 6px; }
+
+.bc-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 18px; margin-top: auto;
+  font-family: var(--mono); font-size: 8px; font-weight: 500; letter-spacing: 0.08em;
+}
+
+/* ---- the frosted pocket lip ---- */
+.bc-pocket {
+  position: absolute;
+  left: -14px; right: -14px; bottom: -14px;
+  height: 33%;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 4px 4px 16px 16px;
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  transition: backdrop-filter 0.5s ease, background-color 0.5s ease, border-color 0.5s ease;
+}
+.bc-link:hover .bc-pocket,
+.bc-link:focus-visible .bc-pocket { -webkit-backdrop-filter: blur(3.5px); backdrop-filter: blur(3.5px); }
+
+/* ---- caption / CTA ---- */
+.bc-caption {
+  margin-top: 30px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em;
+  color: var(--tx-mute); transition: color 0.3s ease;
+}
+.bc-caption .arrow { display: inline-flex; transform: translateX(-5px); opacity: 0; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease; }
+.bc-link:hover .bc-caption,
+.bc-link:focus-visible .bc-caption { color: var(--tx); }
+.bc-link:hover .bc-caption .arrow,
+.bc-link:focus-visible .bc-caption .arrow { transform: translateX(0); opacity: 1; }
+
+/* ============================================================
+   THEME — paper (printed book) vs dark
+   ============================================================ */
+.iz[data-theme="paper"] .bc-book {
+  background: #faf9f5;
+  box-shadow: 0 2px 1px 0 rgba(255, 255, 255, 0.85) inset, 0 0 0 1px rgba(20, 18, 12, 0.07),
+    0 4px 8px rgba(40, 30, 10, 0.04), 0 10px 12px -2px rgba(40, 30, 10, 0.04);
+}
+.iz[data-theme="paper"] .bc-link:hover .bc-book,
+.iz[data-theme="paper"] .bc-link:focus-visible .bc-book {
+  box-shadow: 0 2px 1px 0 rgba(255, 255, 255, 0.85) inset, 0 0 0 1px rgba(20, 18, 12, 0.08),
+    0 22px 34px -18px rgba(40, 30, 10, 0.32);
+}
+.iz[data-theme="paper"] .bc-spine { background: linear-gradient(270deg, rgba(20, 18, 12, 0.11) 0%, rgba(20, 18, 12, 0.045) 60%, rgba(20, 18, 12, 0) 100%); box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.6); }
+.iz[data-theme="paper"] .bc-title { color: rgba(38, 35, 35, 0.88); text-shadow: 0 0.5px 0.5px #fff, 0 0.3px 0.3px rgba(0, 0, 0, 0.12); }
+.iz[data-theme="paper"] .bc-divider { background: rgba(20, 18, 12, 0.1); box-shadow: 0 0.5px 0 0 rgba(255, 255, 255, 0.8); }
+.iz[data-theme="paper"] .bc-sub,
+.iz[data-theme="paper"] .bc-foot { color: rgba(38, 35, 35, 0.5); }
+.iz[data-theme="paper"] .bc-pocket { background: rgba(20, 18, 12, 0.05); border: 1px solid rgba(20, 18, 12, 0.07); border-top: 0; }
+
+.iz[data-theme="dark"] .bc-book {
+  background: #15171b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.iz[data-theme="dark"] .bc-link:hover .bc-book,
+.iz[data-theme="dark"] .bc-link:focus-visible .bc-book {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(255, 106, 44, 0.3),
+    0 20px 34px -18px rgba(255, 106, 44, 0.26);
+}
+.iz[data-theme="dark"] .bc-spine { background: linear-gradient(270deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.12) 60%, rgba(0, 0, 0, 0) 100%); box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.05); }
+.iz[data-theme="dark"] .bc-title { color: var(--tx); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45); }
+.iz[data-theme="dark"] .bc-divider { background: rgba(255, 255, 255, 0.1); box-shadow: 0 0.5px 0 0 rgba(0, 0, 0, 0.4); }
+.iz[data-theme="dark"] .bc-sub,
+.iz[data-theme="dark"] .bc-foot { color: var(--tx-mute); }
+.iz[data-theme="dark"] .bc-pocket { background: rgba(255, 255, 255, 0.045); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 0; }
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .bc-lift, .bc-book, .bc-pocket, .bc-caption, .bc-caption .arrow { transition: none; }
+  .bc-link:hover .bc-lift, .bc-link:focus-visible .bc-lift { transform: none; }
+  .bc-caption .arrow { opacity: 1; transform: none; }
+}

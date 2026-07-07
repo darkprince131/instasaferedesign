@@ -1,0 +1,137 @@
+/* ============================================================
+   Detailed access rules — "FilterStream" card.
+   Marquee rows of access-rule conditions; alternate rows drift
+   the opposite direction. Pauses on hover, freezes for
+   reduced-motion. Scoped `.fs-`; tokens from `.iz`.
+   ============================================================ */
+
+.fs-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  overflow: hidden;
+  max-width: 560px;
+}
+
+/* ---- the moving stage ---- */
+.fs-stage {
+  position: relative;
+  padding: 26px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  /* fade the edges so chips drift in/out of view */
+  -webkit-mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.fs-row { display: flex; overflow: hidden; }
+.fs-track {
+  display: flex;
+  gap: 10px;
+  flex: none;
+  width: max-content;
+  animation: fs-marq var(--dur, 40s) linear infinite;
+  will-change: transform;
+  padding-right: 10px; /* matches inter-chip gap so the duplicated track loops cleanly */
+}
+.fs-row.rev .fs-track { animation-direction: reverse; }
+@keyframes fs-marq {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+/* pause every row when the card is hovered/focused within */
+.fs-card:hover .fs-track,
+.fs-card:focus-within .fs-track { animation-play-state: paused; }
+
+/* ---- one condition chip ---- */
+.fs-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--inset);
+  white-space: nowrap;
+  user-select: none;
+}
+.fs-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--tx);
+}
+.fs-field svg { width: 15px; height: 15px; color: var(--tx-mute); }
+.fs-is { font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+.fs-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tx-dim);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.fs-val svg { width: 13px; height: 13px; color: var(--orange); }
+.fs-x {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  color: var(--tx-mute);
+}
+.fs-x svg { width: 11px; height: 11px; }
+
+/* ---- embed mode: marquee only, dropped into another card's media slot ---- */
+.fs-embed { width: 100%; min-width: 0; max-width: 100%; height: 100%; display: flex; align-items: center; overflow: hidden; }
+.fs-stage.embed { background: transparent; border-bottom: 0; width: 100%; min-width: 0; padding: 16px 0; }
+.fs-embed:hover .fs-track, .fs-embed:focus-within .fs-track { animation-play-state: paused; }
+
+/* ---- card footer ---- */
+.fs-foot { padding: 22px 24px 24px; }
+.fs-foot .iz-ey { margin-bottom: 12px; }
+.fs-title {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: 23px;
+  letter-spacing: var(--ls-h2);
+  line-height: var(--lh-h2);
+  margin: 0;
+  color: var(--tx);
+}
+.fs-title em { font-style: normal; font-weight: 400; color: var(--orange); }
+.fs-desc { color: var(--tx-dim); font-size: 14.5px; line-height: 1.55; margin: 10px 0 0; max-width: 44ch; }
+.fs-learn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--orange);
+}
+.fs-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.fs-learn:hover svg { transform: translateX(3px); }
+
+@media (max-width: 560px) {
+  .fs-stage { gap: 10px; }
+  .fs-chip { height: 33px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-track { animation: none; }
+  .fs-learn svg { transition: none; }
+}

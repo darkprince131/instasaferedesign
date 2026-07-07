@@ -1,0 +1,296 @@
+/* ============================================================
+   C-new · Threat Radar — 10×6 uniform dot grid.
+   All dots identical at rest. Hover reveals 5 pulsing alerts.
+   Mobile: alerts always visible (no hover needed).
+   Scoped .tr-; tokens from .iz (dark + paper).
+   ============================================================ */
+
+.tr-head { max-width: 56ch; }
+.tr-head .iz-h2 { margin-top: 12px; }
+.tr-sub { color: var(--tx-dim); font-size: 15.5px; line-height: 1.6; margin: 14px 0 0; max-width: 60ch; }
+.tr-hl { color: var(--orange); font-weight: 600; }
+
+/* ---- activity field ---- */
+.tr-field {
+  position: relative; margin-top: 28px; height: 520px; border-radius: 18px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--inset), var(--panel-sh);
+  --mx: -500px; --my: -500px; cursor: crosshair;
+}
+
+/* ---- dot grid ---- */
+.tr-grid {
+  position: absolute; inset: 0; z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  pointer-events: none;
+  padding: 10px;
+}
+
+/* base cell — decorative only */
+.tr-dot {
+  display: grid; place-items: center;
+  min-width: 0; min-height: 0;
+}
+
+.tr-dot-core {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--tx-mute); opacity: 0.22;
+  display: grid; place-items: center;
+  transition: background 0.3s ease, opacity 0.3s ease,
+              width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ---- alert dot button ---- */
+button.tr-dot.alert {
+  pointer-events: auto;
+  position: relative;
+  cursor: pointer; background: none; border: 0; padding: 0;
+}
+button.tr-dot.alert:focus-visible {
+  outline: 2px solid var(--orange); outline-offset: 6px; border-radius: 50%;
+}
+
+/* ring — hidden until scan state */
+.tr-dot-ring {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 13px; height: 13px; border-radius: 50%;
+  border: 2px solid var(--tc, var(--orange));
+  opacity: 0; pointer-events: none;
+}
+
+@keyframes tr-ping {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  70%, 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* ---- SCAN state: reveal only dots under the lens (JS adds .near) ---- */
+.tr-field.scan .tr-dot.alert.near:not(.resolved) .tr-dot-core {
+  background: var(--tc); opacity: 1;
+  width: 15px; height: 15px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tc) 18%, transparent),
+              0 0 18px -2px var(--tc);
+}
+.tr-field.scan .tr-dot.alert.near:not(.resolved) .tr-dot-ring {
+  opacity: 1;
+  animation: tr-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.tr-field.scan .tr-dot.alert.near:not(.resolved):hover .tr-dot-core {
+  transform: scale(1.25);
+}
+
+/* ---- RESOLVED dot — always visible, green ---- */
+.tr-dot.alert.resolved .tr-dot-core {
+  background: var(--allow); opacity: 1;
+  width: 20px; height: 20px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--allow) 16%, transparent),
+              0 0 16px -4px var(--allow);
+}
+.tr-dot.alert.resolved .tr-dot-core svg {
+  width: 12px; height: 12px; color: #fff;
+}
+.tr-dot.alert.resolved .tr-dot-ring { display: none; }
+
+/* ---- lens glow following cursor ---- */
+.tr-lens {
+  position: absolute; width: 260px; height: 260px;
+  left: var(--mx); top: var(--my);
+  transform: translate(-50%, -50%);
+  border-radius: 50%; pointer-events: none; opacity: 0; z-index: 2;
+  border: 1px solid color-mix(in srgb, var(--orange) 35%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--orange) 6%, transparent), transparent 68%);
+  transition: opacity 0.25s ease;
+}
+.tr-field.scan .tr-lens { opacity: 1; }
+
+/* ---- hint text ---- */
+.tr-hint {
+  position: absolute; left: 16px; bottom: 13px;
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--tx-mute); letter-spacing: 0.04em; z-index: 4;
+}
+
+/* ---- investigation card ---- */
+.tr-backdrop {
+  position: absolute; inset: 0; z-index: 8;
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  animation: tr-fade 0.25s ease;
+}
+@keyframes tr-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.tr-card {
+  position: absolute; z-index: 9; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, calc(100% - 36px)); max-height: calc(100% - 36px);
+  overflow-y: auto;
+  background: var(--bg-2); border: 1px solid var(--line-strong);
+  border-radius: 16px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.6);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  animation: tr-cardin 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes tr-cardin {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(0.97); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.tr-card::-webkit-scrollbar { width: 5px; }
+.tr-card::-webkit-scrollbar-thumb { background: var(--ghost); border-radius: 3px; }
+
+.tr-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--surface); border: 1px solid var(--line);
+  color: var(--tx-mute); cursor: pointer; display: grid; place-items: center; z-index: 2;
+}
+.tr-close svg { width: 14px; height: 14px; }
+.tr-close:hover { color: var(--tx); }
+
+/* alert headline */
+.tr-alertline {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 12px 13px; padding-right: 30px;
+  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--tc) 32%, var(--line));
+  background: color-mix(in srgb, var(--tc) 9%, var(--surface));
+}
+.tr-alertline-ic {
+  flex: none; width: 30px; height: 30px; border-radius: 8px;
+  display: grid; place-items: center;
+  background: var(--tc); color: var(--btn-ink);
+}
+.tr-alertline-ic svg { width: 17px; height: 17px; }
+.tr-alertline-t { display: block; font-family: var(--disp); font-weight: 500; font-size: 14.5px; color: var(--tx); line-height: 1.3; }
+.tr-alertline-tag { display: block; font-family: var(--mono); font-size: 10.5px; color: var(--tc); margin-top: 3px; letter-spacing: 0.02em; }
+
+/* chat detail bubbles */
+.tr-chat { display: flex; flex-direction: column; gap: 6px; }
+.tr-bubble {
+  align-self: flex-start; max-width: 92%;
+  font-size: 12.5px; color: var(--tx-dim);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px 10px 10px 3px; padding: 7px 11px;
+  animation: tr-bub 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.tr-bubble i { font-style: normal; font-family: var(--mono); font-size: 10px; color: var(--tx-mute); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 7px; }
+@keyframes tr-bub { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+/* graph */
+.tr-graph { border: 1px solid var(--line); border-radius: 11px; background: var(--surface); padding: 12px 13px; animation: tr-bub 0.34s ease both; }
+.tr-graph-cap { display: block; font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); margin-bottom: 10px; letter-spacing: 0.03em; }
+.tr-bars { display: flex; align-items: flex-end; gap: 8px; height: 72px; }
+.tr-bar { flex: 1; border-radius: 3px 3px 0 0; transform-origin: bottom; animation: tr-grow 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes tr-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.tr-donut { display: flex; align-items: center; gap: 16px; }
+.tr-donut svg { width: 72px; height: 72px; flex: none; }
+.tr-donut-bg { fill: none; stroke: var(--line-strong); stroke-width: 7; }
+.tr-donut-fg { fill: none; stroke: var(--allow); stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.tr-donut-n { font-family: var(--disp); font-weight: 600; font-size: 26px; color: var(--tx); }
+.tr-donut-n i { font-style: normal; font-size: 14px; color: var(--tx-mute); }
+.tr-geo { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+.tr-geo-pt { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11.5px; color: var(--tx-dim); }
+.tr-geo-pt i { width: 9px; height: 9px; border-radius: 50%; background: var(--deny); box-shadow: 0 0 8px -1px var(--deny); }
+.tr-geo-line { flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--deny) 0 6px, transparent 6px 12px); opacity: 0.6; }
+
+/* CTA buttons */
+.tr-ctarow { display: flex; gap: 9px; animation: tr-bub 0.34s ease both; }
+.tr-cta { flex: 1; font-size: 13px; font-weight: 600; border-radius: 9px; padding: 10px 12px; cursor: pointer; border: 1px solid transparent; transition: transform 0.14s ease, opacity 0.16s ease; }
+.tr-cta:active { transform: scale(0.97); }
+.tr-cta.k-approve { background-color: var(--allow); color: #fff; }
+.tr-cta.k-deny, .tr-cta.k-block { background-color: var(--deny); color: #fff; }
+.tr-cta.k-challenge, .tr-cta.k-reauth, .tr-cta.k-dismiss { background: none; border-color: var(--line-strong); color: var(--tx-dim); }
+.tr-cta.k-challenge:hover, .tr-cta.k-reauth:hover, .tr-cta.k-dismiss:hover { border-color: var(--orange); color: var(--tx); }
+.tr-cta:hover { opacity: 0.92; }
+
+/* in-card resolution */
+.tr-resolve { display: flex; align-items: flex-start; gap: 10px; padding: 12px 13px; border-radius: 11px; animation: tr-bub 0.34s ease both; }
+.tr-resolve svg { width: 17px; height: 17px; flex: none; margin-top: 1px; }
+.tr-resolve span { font-size: 12.5px; line-height: 1.5; color: var(--tx-dim); }
+.tr-resolve b { display: block; color: var(--tx); font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+.tr-resolve.t-ok { background: var(--allow-bg); border: 1px solid color-mix(in srgb, var(--allow) 30%, var(--line)); }
+.tr-resolve.t-ok svg { color: var(--allow); }
+.tr-resolve.t-warn { background: rgba(229, 160, 42, 0.12); border: 1px solid rgba(229, 160, 42, 0.3); }
+.tr-resolve.t-warn svg { color: #d98a1f; }
+
+/* ---- resolved-dot hover tooltip ---- */
+.tr-dot-tip {
+  position: absolute; z-index: 7; pointer-events: none;
+  width: min(230px, calc(100% - 32px));
+  background: var(--bg-2); border: 1px solid var(--line-strong);
+  border-radius: 11px; padding: 11px 14px;
+  box-shadow: 0 14px 40px -14px rgba(0, 0, 0, 0.55);
+  animation: tr-bub 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.tr-dot-tip b { display: block; font-family: var(--disp); font-weight: 600; font-size: 12.5px; color: var(--tx); margin-bottom: 4px; }
+.tr-dot-tip span { display: block; font-size: 11.5px; line-height: 1.55; color: var(--tx-dim); }
+
+/* tone tint on left border */
+.tr-dot-tip-ok  { border-left: 3px solid var(--allow); }
+.tr-dot-tip-warn { border-left: 3px solid #d98a1f; }
+
+/* arrow pointing toward the dot */
+.tr-dot-tip::after {
+  content: ''; position: absolute; left: 50%; bottom: -5px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 9px; height: 9px;
+  background: var(--bg-2);
+  border-right: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+.tr-dot-tip.below::after {
+  bottom: auto; top: -5px;
+  border-right: none; border-bottom: none;
+  border-left: 1px solid var(--line-strong);
+  border-top: 1px solid var(--line-strong);
+}
+
+/* ---- resolution toast ---- */
+.tr-toast {
+  position: absolute; z-index: 10; left: 50%; bottom: 18px;
+  transform: translateX(-50%);
+  width: min(440px, calc(100% - 32px));
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 13px 15px; border-radius: 12px;
+  box-shadow: 0 18px 44px -16px rgba(0, 0, 0, 0.5);
+  animation: tr-toastin 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes tr-toastin {
+  from { opacity: 0; transform: translate(-50%, 14px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.tr-toast-ic { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
+.tr-toast-ic svg { width: 17px; height: 17px; }
+.tr-toast span:last-child { font-size: 12.5px; line-height: 1.5; color: var(--tx-dim); }
+.tr-toast b { display: block; color: var(--tx); font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+.tr-toast.t-ok { background: color-mix(in srgb, var(--allow) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--allow) 36%, var(--line)); }
+.tr-toast.t-ok .tr-toast-ic { background: var(--allow); color: #fff; }
+.tr-toast.t-warn { background: color-mix(in srgb, #d98a1f 16%, var(--surface)); border: 1px solid rgba(229, 160, 42, 0.4); }
+.tr-toast.t-warn .tr-toast-ic { background: #d98a1f; color: #fff; }
+
+/* ---- responsive ---- */
+@media (max-width: 640px) {
+  .tr-field { height: 420px; }
+  .tr-grid { grid-template-columns: repeat(5, 1fr); }
+  .tr-hint-scan { display: none; }
+  .tr-card { width: calc(100% - 24px); }
+
+  /* mobile: always reveal alert dots (no hover available) */
+  .tr-dot.alert:not(.resolved) .tr-dot-core {
+    background: var(--tc); opacity: 1;
+    width: 15px; height: 15px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tc) 18%, transparent);
+  }
+  .tr-dot.alert:not(.resolved) .tr-dot-ring {
+    animation: tr-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .tr-dot-ring { animation: none !important; opacity: 0 !important; }
+  .tr-lens { transition: none; }
+  .tr-bubble, .tr-graph, .tr-bar, .tr-ctarow, .tr-resolve, .tr-card, .tr-toast { animation: none; }
+  .tr-donut-fg { transition: none; }
+  /* show resolved-style indicator without motion */
+  .tr-dot.alert:not(.resolved) .tr-dot-core { background: var(--tc); opacity: 0.7; }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Trust Engine (deep-dive) — InstaSafe Content Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/review.css">
+</head>
+<body class="t-paper">
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="../index.html"><img src="../assets/brand/instasafe-lockup-color.svg" alt="InstaSafe" height="24"></a>
+    <span class="vol-label">Vol 1 · Platform</span>
+    <span class="cr-count" data-cr-count hidden>💬 0</span>
+    <a class="index-link" href="../index.html">← Index</a>
+  </div>
+</header>
+<main class="wrap page">
+  <div class="page-head" data-cb="b1">
+    <div class="route">/platform/trust-engine</div>
+    <h1 class="page-title">The Trust Engine (deep-dive)</h1>
+    <div class="chips"><span class="chip todo-chip">2 review markers</span></div>
+    <div class="seo-meta"><span class="seo-k">SEO</span> Title: The InstaSafe Trust Engine | Meta: 21 policy combinations, 12 risk triggers, 4 automatic responses. The decision layer behind every InstaSafe session, explained.</div>
+  </div>
+  <article class="prose">
+<p data-cb="b2">*(Name pending Romali/DJ — page holds regardless; rename is find-replace.)*</p>
+<h3 data-cb="b3" class="seclabel">Hero</h3>
+<p data-cb="b4">the canonical A2 block, full-bleed, with the live console component as the hero visual.</p>
+<h3 data-cb="b5" class="seclabel">Long-form content (this is the page where depth is the point):</h3>
+<p data-cb="b6"><strong>The inputs.</strong> Five families of signal enter every decision: identity (directory identity, group, auth strength presented), device (binding certificate, 25 posture check results), location (IP, geolocation vs policy and vs history), time (window compliance, historical pattern), and behaviour (deviation score from baseline). None is trusted alone; the decision is the intersection.</p>
+<p data-cb="b7"><strong>The policy grammar — 21 combinations.</strong> Administrators compose conditions rather than choose from presets: *finance group + managed device + India + business hours → allow with standard MFA; same group, unmanaged device → clientless portal, watermarked, no download; anyone, anywhere, posture-failed → deny and alert.* Twenty-one distinct condition combinations cover the practical policy space without becoming an unmaintainable rules swamp — enough grammar to say what you mean, few enough dimensions to audit.</p>
+<p data-cb="b8"><strong>The triggers — 12 types.</strong> Runtime conditions that move risk mid-session: repeated auth failures, impossible travel, posture drift, unusual-hours access, new-device patterns, and further anomaly classes. <mark class="todo">[CONFIRM publishable full list — Product.]</mark></p>
+<p data-cb="b9"><strong>The responses — 4 auto-actions.</strong> Step-up authentication · session restriction · alerting · session termination. Ordered force: challenge before constraining, constrain before killing, and always record. <mark class="todo">[Guardrail: auto-suspend of user accounts is excluded — flagged non-working.]</mark></p>
+<p data-cb="b10"><strong>The record — 202 event types.</strong> Every input read, decision made, and action taken becomes structured, exportable evidence: 202 event types, 11 report types, 7 SIEM formats. When the auditor asks *why was this allowed*, the answer is a log line, not a meeting.</p>
+<p data-cb="b11"><strong>Closing frame:</strong> Competitors describe adaptive trust; this page is InstaSafe showing the actual gears. Specific numbers are the credibility strategy — keep them exact.</p>
+<p data-cb="b12"><strong>Related:</strong> every platform page links here; this is the hub.</p>
+<hr class="rule">
+<hr class="rule">
+  </article>
+  <nav class="pagenav">
+    <a class="pn prev" href="./platform-behavioural-authentication.html"><span class="pn-k">← Prev</span><span class="pn-t">Behavioural Authentication</span></a>
+    <a class="pn next" href="./platform-integrations.html"><span class="pn-k">Next →</span><span class="pn-t">Integrations &amp; Ecosystem</span></a>
+  </nav>
+</main>
+<footer class="pagefoot">
+  <div class="wrap">
+    <span>InstaSafe Content Master — Review Build</span>
+    <span class="dot">·</span>
+    <span>Vol 1 · Platform</span>
+    <span class="dot">·</span>
+    <span>2026-07-07</span>
+    <span class="dot">·</span>
+    <a class="cr-export" href="#" data-cr-export>Export my comments</a>
+  </div>
+</footer>
+<script src="../assets/review-comments.js" defer></script>
+</body>
+</html>

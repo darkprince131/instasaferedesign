@@ -1,0 +1,43 @@
+{
+  "name": "instasafe-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@phosphor-icons/react": "^2.1.10",
+    "@radix-ui/react-dialog": "^1.1.16",
+    "@radix-ui/react-tabs": "^1.1.14",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "clsx": "^2.1.1",
+    "d3": "^7.9.0",
+    "framer-motion": "^12.40.0",
+    "gsap": "^3.15.0",
+    "lottie-react": "^2.4.1",
+    "lucide-react": "^1.18.0",
+    "next": "^16.2.9",
+    "react": "^19.2.7",
+    "react-countup": "^6.5.3",
+    "react-dom": "^19.2.7",
+    "react-intersection-observer": "^10.0.3",
+    "react-spring": "^10.0.4",
+    "react-type-animation": "^3.2.0",
+    "simple-icons": "^16.23.0",
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
+    "@types/node": "^25.9.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.1",
+    "typescript": "^6.0.3"
+  }
+}

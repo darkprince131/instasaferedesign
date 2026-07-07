@@ -1,0 +1,75 @@
+/* ============================================================
+   C26 · Industry word-search. Scoped `.iw-`; tokens `.iz`.
+   ============================================================ */
+
+.iw {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  padding: 30px 28px 26px;
+  max-width: 920px;
+}
+.iw-head { text-align: center; max-width: 60ch; margin: 0 auto; }
+.iw-head .iz-ey { justify-content: center; }
+.iw-head .iz-ey::before { display: none; }
+.iw-lead { color: var(--tx-dim); font-size: 15px; line-height: 1.55; margin: 12px auto 0; max-width: 52ch; }
+
+/* ---- letter grid ---- */
+.iw-grid { margin: 30px auto 0; width: fit-content; max-width: 100%; overflow-x: auto; }
+.iw-row { display: flex; }
+.iw-cell {
+  position: relative;
+  width: clamp(22px, 4.4vw, 42px);
+  height: clamp(26px, 4.6vw, 44px);
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: clamp(13px, 2.2vw, 19px);
+  color: var(--tx-mute);
+  transition: color 0.25s ease, background 0.25s ease;
+  user-select: none;
+}
+/* lit run → orange pill across the contiguous word (horizontal or vertical) */
+.iw-cell.lit {
+  --pill: color-mix(in srgb, var(--orange) 60%, transparent);
+  color: var(--tx);
+  background: color-mix(in srgb, var(--orange) 13%, transparent);
+}
+/* horizontal: rails top & bottom, caps left & right */
+.iw-cell.lit.h { border-top: 1.5px solid var(--pill); border-bottom: 1.5px solid var(--pill); }
+.iw-cell.lit.h.s { border-left: 1.5px solid var(--pill); border-top-left-radius: 999px; border-bottom-left-radius: 999px; }
+.iw-cell.lit.h.e { border-right: 1.5px solid var(--pill); border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
+/* vertical: rails left & right, caps top & bottom */
+.iw-cell.lit.v { border-left: 1.5px solid var(--pill); border-right: 1.5px solid var(--pill); }
+.iw-cell.lit.v.s { border-top: 1.5px solid var(--pill); border-top-left-radius: 999px; border-top-right-radius: 999px; }
+.iw-cell.lit.v.e { border-bottom: 1.5px solid var(--pill); border-bottom-left-radius: 999px; border-bottom-right-radius: 999px; }
+
+/* ---- legend ---- */
+.iw-legend { margin-top: 26px; text-align: center; }
+.iw-count { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: var(--tx-mute); }
+.iw-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+.iw-chip {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--tx-mute);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: default;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.iw-chip.on {
+  color: var(--orange);
+  border-color: color-mix(in srgb, var(--orange) 45%, var(--line));
+  background: color-mix(in srgb, var(--orange) 8%, transparent);
+}
+
+@media (max-width: 560px) {
+  .iw { padding: 22px 14px 20px; }
+  .iw-grid { margin-top: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iw-cell, .iw-chip { transition: none; }
+}

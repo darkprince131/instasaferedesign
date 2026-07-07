@@ -1,0 +1,226 @@
+/* ============================================================
+   00y · Access Pipeline — left copy + 3-stage ZTNA flowchart.
+   Orange pulse cycles col1 → col2 → col3 → col1 forever.
+   Scoped .ap-; tokens from .iz (orange · dark + paper).
+   ============================================================ */
+
+/* ── outer layout: left copy | right board ── */
+.ap {
+  display: grid;
+  grid-template-columns: 1fr 1.45fr;
+  gap: 52px;
+  align-items: center;
+}
+
+/* ── LEFT copy ── */
+.ap-ey {
+  display: block;
+  font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+}
+.ap-hl {
+  font-family: var(--disp); font-weight: var(--fw-disp);
+  font-size: clamp(26px, 3.2vw, 38px);
+  line-height: var(--lh-h2); letter-spacing: var(--ls-h2);
+  color: var(--tx); margin: 14px 0 0;
+}
+.ap-hl em { font-style: normal; font-weight: 400; color: var(--orange); }
+.ap-sub {
+  font-size: 14px; line-height: 1.65; color: var(--tx-dim);
+  margin: 14px 0 0; max-width: 38ch;
+}
+
+/* step chips — mirror active column */
+.ap-steps { display: flex; flex-direction: column; gap: 8px; margin: 22px 0; }
+.ap-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 13px; border-radius: 9px;
+  border: 1px solid var(--line);
+  transition: border-color 0.55s ease, background 0.55s ease;
+}
+.ap-step.on {
+  border-color: color-mix(in srgb, var(--orange) 45%, var(--line));
+  background: color-mix(in srgb, var(--orange) 8%, transparent);
+}
+.ap-step-num {
+  flex: none; width: 22px; height: 22px; border-radius: 999px;
+  background: var(--ghost); display: grid; place-items: center;
+  font-family: var(--mono); font-size: 11px; color: var(--tx-mute);
+  transition: background 0.55s ease, color 0.55s ease;
+}
+.ap-step.on .ap-step-num { background: var(--orange); color: var(--btn-ink); }
+.ap-step-lbl {
+  font-size: 13px; font-weight: 500; color: var(--tx-dim);
+  transition: color 0.55s ease;
+}
+.ap-step.on .ap-step-lbl { color: var(--tx); }
+
+.ap-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px; font-weight: 500; color: var(--orange);
+}
+.ap-link:hover { text-decoration: underline; }
+.ap-link svg { width: 13px; height: 13px; transition: transform 0.2s ease; }
+.ap-link:hover svg { transform: translateX(3px); }
+
+/* ── RIGHT board ── */
+.ap-right { overflow: hidden; }
+
+/* 5-cell grid: col | 40px connector | col | 40px connector | col */
+.ap-board {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr 40px 1fr;
+  align-items: stretch;
+}
+
+/* ── COLUMN ── */
+.ap-col {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface); overflow: hidden;
+  box-shadow: var(--inset);
+  transition: border-color 0.55s ease, opacity 0.55s ease, box-shadow 0.55s ease;
+}
+.ap-col.active {
+  border-color: color-mix(in srgb, var(--orange) 55%, var(--line));
+  box-shadow:
+    var(--inset),
+    0 0 0 1px color-mix(in srgb, var(--orange) 15%, transparent),
+    0 8px 28px -12px color-mix(in srgb, var(--orange) 28%, transparent);
+}
+.ap-col.inactive { opacity: 0.36; }
+
+/* column header */
+.ap-col-h {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  transition: background 0.55s ease;
+}
+.ap-col.active .ap-col-h {
+  background: color-mix(in srgb, var(--orange) 11%, var(--surface-2));
+}
+.ap-col-label {
+  font-family: var(--disp); font-weight: 500; font-size: 12.5px;
+  color: var(--tx-dim); letter-spacing: -0.005em;
+  transition: color 0.55s ease;
+}
+.ap-col.active .ap-col-label { color: var(--orange); }
+.ap-col-count {
+  font-family: var(--mono); font-size: 9.5px; color: var(--tx-mute);
+}
+
+/* column body */
+.ap-col-body {
+  padding: 8px; display: flex; flex-direction: column; gap: 6px; flex: 1;
+}
+
+/* ── CARD ── */
+.ap-card {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 9px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg-2);
+  transition: border-color 0.55s ease, background 0.55s ease;
+}
+.ap-col.active .ap-card {
+  border-color: color-mix(in srgb, var(--orange) 18%, var(--line));
+  background: var(--surface);
+}
+
+/* card icon badge */
+.ap-card-ic {
+  flex: none; width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--surface);
+  display: grid; place-items: center; color: var(--tx-mute);
+  transition: color 0.55s ease, background 0.55s ease, border-color 0.55s ease;
+}
+.ap-col.active .ap-card-ic {
+  color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 10%, var(--bg-2));
+  border-color: color-mix(in srgb, var(--orange) 22%, var(--line));
+}
+.ap-card-ic svg { width: 14px; height: 14px; }
+
+/* card text */
+.ap-card-txt { min-width: 0; flex: 1; }
+.ap-card-label {
+  display: block;
+  font-family: var(--disp); font-size: 11.5px; font-weight: 500;
+  color: var(--tx-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: color 0.55s ease;
+}
+.ap-col.active .ap-card-label { color: var(--tx); }
+.ap-card-sub {
+  display: block;
+  font-family: var(--mono); font-size: 9.5px; color: var(--tx-mute);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── CONNECTOR (the 40px gap between columns) ── */
+.ap-connector {
+  position: relative;
+  display: flex;
+  align-items: center; /* vertically centres line + dot within the stretched grid row */
+}
+
+/* dashed horizontal guide line */
+.ap-conn-line {
+  position: absolute; left: 4px; right: 4px; height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--line-strong) 0, var(--line-strong) 3px,
+    transparent 3px, transparent 7px
+  );
+  transition: background 0.55s ease;
+}
+/* when the source column is active, hint the connector with orange */
+.ap-connector.lit .ap-conn-line {
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--orange) 48%, var(--line-strong)) 0,
+    color-mix(in srgb, var(--orange) 48%, var(--line-strong)) 3px,
+    transparent 3px, transparent 7px
+  );
+}
+
+/* animated pulse dot — travels left→right during .pulsing */
+.ap-conn-dot {
+  position: absolute;
+  left: 4px;
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--orange);
+  box-shadow: 0 0 10px 3px color-mix(in srgb, var(--orange) 55%, transparent);
+  opacity: 0;
+  transform: translateX(-50%);
+}
+.ap-connector.pulsing .ap-conn-dot {
+  /* duration must match TRAVEL constant in AccessPipeline.tsx (900ms) */
+  animation: ap-travel 0.9s cubic-bezier(0.3, 0, 0.7, 1) forwards;
+}
+@keyframes ap-travel {
+  0%   { left: 4px;          opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { left: calc(100% - 4px); opacity: 0; }
+}
+
+/* ── responsive ── */
+@media (max-width: 1080px) {
+  .ap { grid-template-columns: 1fr; gap: 36px; }
+}
+@media (max-width: 680px) {
+  /* stack columns vertically; hide connectors */
+  .ap-board { grid-template-columns: 1fr; gap: 10px; }
+  .ap-connector { display: none; }
+  .ap-col.inactive { opacity: 0.55; } /* less fade on mobile */
+}
+
+/* ── reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .ap-col, .ap-col-h, .ap-col-label,
+  .ap-card, .ap-card-ic, .ap-card-label,
+  .ap-step, .ap-step-num, .ap-step-lbl,
+  .ap-conn-line, .ap-link svg { transition: none; }
+  .ap-conn-dot { animation: none !important; opacity: 0; }
+}

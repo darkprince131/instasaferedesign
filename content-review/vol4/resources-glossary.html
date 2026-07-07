@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero Trust Glossary — InstaSafe Content Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/review.css">
+</head>
+<body class="t-blue">
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="../index.html"><img src="../assets/brand/instasafe-lockup-white.svg" alt="InstaSafe" height="24"></a>
+    <span class="vol-label">Vol 4 · Company &amp; Resources</span>
+    <span class="cr-count" data-cr-count hidden>💬 0</span>
+    <a class="index-link" href="../index.html">← Index</a>
+  </div>
+</header>
+<main class="wrap page">
+  <div class="page-head" data-cb="b1">
+    <div class="route">/resources/glossary</div>
+    <h1 class="page-title">Zero Trust Glossary</h1>
+    <div class="chips"><span class="chip clean-chip">No review markers</span></div>
+    <div class="seo-meta"><span class="seo-k">SEO</span> Title: Zero Trust &amp; Access Security Glossary | InstaSafe | Meta: 40 terms, plain definitions, no jargon-defined-with-jargon. The vocabulary of modern access security.</div>
+  </div>
+  <article class="prose">
+<p data-cb="b2">*(Component: alphabet-jump list; each term = dt/dd pair; terms cross-link to product/education pages. Definitions ~2–3 sentences, written to be quotable.)*</p>
+<h3 data-cb="b3" class="seclabel">Access Policy</h3>
+<p data-cb="b4">The rule deciding whether a request is allowed: typically identity + device + context conditions mapped to an outcome (allow, deny, restrict, challenge). In InstaSafe, policies compose from 21 condition combinations.</p>
+<h3 data-cb="b5" class="seclabel">Agent</h3>
+<p data-cb="b6">Lightweight software on a device enabling deep checks (posture, binding) and non-web access (tunnels). Contrast: clientless.</p>
+<h3 data-cb="b7" class="seclabel">Agentless / Clientless</h3>
+<p data-cb="b8">Access requiring only a browser — nothing installed. The pattern for third parties and BYOD; session controls compensate for the absent agent.</p>
+<h3 data-cb="b9" class="seclabel">Always-On</h3>
+<p data-cb="b10">A secure connection established automatically at device boot, removing the "forgot to connect" failure mode entirely.</p>
+<h3 data-cb="b11" class="seclabel">Attack Surface</h3>
+<p data-cb="b12">Everything an attacker can see, touch, or probe. Zero Trust shrinks it structurally: dark infrastructure has almost none.</p>
+<h3 data-cb="b13" class="seclabel">Authentication (AuthN)</h3>
+<p data-cb="b14">Proving you are who you claim. <strong>Authorization (AuthZ)</strong> — Deciding what the proven you may do. The distinction matters: most breaches pass AuthN with stolen credentials and feast on over-generous AuthZ.</p>
+<h3 data-cb="b15" class="seclabel">Behavioural Authentication</h3>
+<p data-cb="b16">Using patterns (login times, locations, sequences, devices) as an identity signal; deviation raises risk. Habits are harder to steal than passwords.</p>
+<h3 data-cb="b17" class="seclabel">BYOD</h3>
+<p data-cb="b18">Bring Your Own Device: personal hardware touching corporate systems. Governable at the session level without seizing the device.</p>
+<h3 data-cb="b19" class="seclabel">CASB</h3>
+<p data-cb="b20">Cloud Access Security Broker: governs how sanctioned/unsanctioned SaaS is used. Adjacent to, not a substitute for, private-app access control.</p>
+<h3 data-cb="b21" class="seclabel">Contextual Access</h3>
+<p data-cb="b22">Letting where/when/what-device/what-role modulate the access decision, so identical credentials mean different things in different circumstances.</p>
+<h3 data-cb="b23" class="seclabel">Continuous Verification</h3>
+<p data-cb="b24">Re-evaluating trust during a session, not only at login — posture drift or anomalies can challenge or end a live session.</p>
+<h3 data-cb="b25" class="seclabel">Device Binding</h3>
+<p data-cb="b26">Cryptographically tying access to approved hardware via certificate. Right password + wrong laptop = denied.</p>
+<h3 data-cb="b27" class="seclabel">Device Posture</h3>
+<p data-cb="b28">The health state of a device (patches, AV, firewall, encryption) evaluated against policy before and during access.</p>
+<h3 data-cb="b29" class="seclabel">DLP (Data Loss Prevention)</h3>
+<p data-cb="b30">Controls preventing data leaving authorised boundaries. Session-layer DLP (watermarks, clipboard, download policy) governs the moment of use.</p>
+<h3 data-cb="b31" class="seclabel">Drop-All Firewall</h3>
+<p data-cb="b32">A default-deny stance: unsolicited traffic gets silence, not errors. To scanners, silence looks like nothing exists.</p>
+<h3 data-cb="b33" class="seclabel">East-West Traffic</h3>
+<p data-cb="b34">Movement *between* internal systems (vs. north-south in/out). Where lateral movement lives, and what per-app access eliminates.</p>
+<h3 data-cb="b35" class="seclabel">Geofencing</h3>
+<p data-cb="b36">Geographic conditions on access: inside the defined territory or denied/challenged, regardless of credentials.</p>
+<h3 data-cb="b37" class="seclabel">IAM</h3>
+<p data-cb="b38">Identity &amp; Access Management: the discipline and tooling of directories, roles, lifecycle, and authentication — the umbrella over SSO and MFA.</p>
+<h3 data-cb="b39" class="seclabel">IdP (Identity Provider)</h3>
+<p data-cb="b40">The service that authenticates users and issues trust assertions to applications (via SAML/OIDC). The "one login" behind SSO.</p>
+<h3 data-cb="b41" class="seclabel">Jump Box / Bastion</h3>
+<p data-cb="b42">A hardened intermediary host for admin access. Session-recorded direct access increasingly retires it.</p>
+<h3 data-cb="b43" class="seclabel">Lateral Movement</h3>
+<p data-cb="b44">An attacker's spread from initial foothold to valuable systems across internal trust. The behaviour Zero Trust is designed to starve.</p>
+<h3 data-cb="b45" class="seclabel">Least Privilege</h3>
+<p data-cb="b46">Minimum access, minimum duration, per task. The principle that pre-decides blast radius.</p>
+<h3 data-cb="b47" class="seclabel">MFA</h3>
+<p data-cb="b48">Multi-Factor Authentication: two or more different *kinds* of proof (know/have/are). The single highest-value control against credential theft.</p>
+<h3 data-cb="b49" class="seclabel">Microsegmentation</h3>
+<p data-cb="b50">Dividing infrastructure into tiny policy zones so nothing broad exists to roam. Per-app access is its logical endpoint.</p>
+<h3 data-cb="b51" class="seclabel">NIST SP 800-207</h3>
+<p data-cb="b52">The U.S. standards publication defining Zero Trust Architecture: policy engine, enforcement points, continuous evaluation. The reference blueprint.</p>
+<h3 data-cb="b53" class="seclabel">OIDC (OpenID Connect)</h3>
+<p data-cb="b54">Modern identity protocol atop OAuth 2.0; how newer apps consume SSO.</p>
+<h3 data-cb="b55" class="seclabel">Posture Drift</h3>
+<p data-cb="b56">A device falling out of compliance mid-session (AV disabled, patch stale). Continuous verification exists to catch exactly this.</p>
+<h3 data-cb="b57" class="seclabel">RADIUS / TACACS+</h3>
+<p data-cb="b58">Veteran authentication protocols spoken by VPNs, firewalls, and network gear — the bridge that brings MFA to equipment that predates it.</p>
+<h3 data-cb="b59" class="seclabel">RBAC</h3>
+<p data-cb="b60">Role-Based Access Control: entitlements attach to roles, people attach to roles, and access scales without per-person micromanagement.</p>
+<h3 data-cb="b61" class="seclabel">Risk-Based Authentication</h3>
+<p data-cb="b62">Authentication strength that responds to risk signals: routine request, light friction; anomalous request, step-up or denial.</p>
+<h3 data-cb="b63" class="seclabel">SAML</h3>
+<p data-cb="b64">Security Assertion Markup Language: the enterprise SSO workhorse. Think of it as a cryptographically signed letter of introduction from your IdP to an app.</p>
+<h3 data-cb="b65" class="seclabel">SASE</h3>
+<p data-cb="b66">Secure Access Service Edge: cloud-delivered bundle of network security functions (ZTNA, SWG, CASB, FWaaS). Architecturally: your traffic goes through the vendor. Compare privacy-first ZTNA, where it doesn't.</p>
+<h3 data-cb="b67" class="seclabel">Server Blackening</h3>
+<p data-cb="b68">Making infrastructure invisible to the internet: drop-all + authenticate-first. InstaSafe's implementation of SDP darkness.</p>
+<h3 data-cb="b69" class="seclabel">Session Recording</h3>
+<p data-cb="b70">Capturing privileged sessions for replay — the audit answer to "what exactly happened on that server?"</p>
+<h3 data-cb="b71" class="seclabel">Single Packet Authorization (SPA)</h3>
+<p data-cb="b72">The dark-infrastructure doorbell: a cryptographic first packet proves identity before the gateway responds at all.</p>
+<h3 data-cb="b73" class="seclabel">Split-Plane Architecture</h3>
+<p data-cb="b74">Control plane (decisions) separated from data plane (traffic). InstaSafe's privacy-first foundation: we decide; your data flows directly, never through us.</p>
+<h3 data-cb="b75" class="seclabel">SSO</h3>
+<p data-cb="b76">Single Sign-On: one authenticated session honoured by many applications. Fewer passwords, one control point, complete login visibility.</p>
+<h3 data-cb="b77" class="seclabel">Watermarking</h3>
+<p data-cb="b78">Rendering identity over on-screen content so any capture identifies its viewer. Deterrence through attribution.</p>
+<h3 data-cb="b79" class="seclabel">Zero Trust</h3>
+<p data-cb="b80">The model: never trust by location, always verify identity + device + context, grant least privilege, assume breach. <span class="xref">[→ full pillar guide]</span></p>
+<h3 data-cb="b81" class="seclabel">ZTAA</h3>
+<p data-cb="b82">Zero Trust Application Access: application-layer delivery through a governed portal — web, RDP, SSH, VNC, DB, file shares — with in-session controls. The user never touches the network.</p>
+<h3 data-cb="b83" class="seclabel">ZTNA</h3>
+<p data-cb="b84">Zero Trust Network Access: verify-then-connect access to private resources via narrow per-session tunnels. The VPN's architectural successor; in InstaSafe, the IP-layer complement to ZTAA.</p>
+<hr class="rule">
+  </article>
+  <nav class="pagenav">
+    <a class="pn prev" href="./resources-what-is.html"><span class="pn-k">← Prev</span><span class="pn-t">Education hub pages</span></a>
+    <a class="pn next" href="./production-notes.html"><span class="pn-k">Next →</span><span class="pn-t">Production notes</span></a>
+  </nav>
+</main>
+<footer class="pagefoot">
+  <div class="wrap">
+    <span>InstaSafe Content Master — Review Build</span>
+    <span class="dot">·</span>
+    <span>Vol 4 · Company & Resources</span>
+    <span class="dot">·</span>
+    <span>2026-07-07</span>
+    <span class="dot">·</span>
+    <a class="cr-export" href="#" data-cr-export>Export my comments</a>
+  </div>
+</footer>
+<script src="../assets/review-comments.js" defer></script>
+</body>
+</html>

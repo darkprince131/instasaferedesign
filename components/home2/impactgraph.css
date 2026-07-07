@@ -1,0 +1,83 @@
+/* ============================================================
+   C19 · Impact divergence graph. Scoped `.ig-`; tokens `.iz`.
+   ============================================================ */
+
+.ig-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  padding: 26px 28px 22px;
+  max-width: 900px;
+}
+.ig-head { max-width: 52ch; }
+.ig-head .iz-ey { margin-bottom: 12px; }
+.ig-lead { color: var(--tx-dim); font-size: 15.5px; line-height: 1.55; margin: 12px 0 0; max-width: 50ch; }
+
+.ig-legend { display: flex; gap: 18px; margin-top: 16px; }
+.ig-leg { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; color: var(--tx-dim); }
+.ig-leg i { width: 14px; height: 3px; border-radius: 999px; }
+.ig-leg.is i { background: var(--orange); }
+.ig-leg.lg i { background: var(--tx-mute); }
+
+/* ---- plot ---- */
+.ig-plot { position: relative; margin-top: 22px; cursor: crosshair; touch-action: none; }
+.ig-svg { width: 100%; height: 300px; display: block; overflow: visible; }
+
+.ig-grid { stroke: var(--line); stroke-width: 1; }
+.ig-axis { stroke: var(--line-strong); stroke-width: 1; }
+.ig-line { fill: none; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.ig-line.is { stroke: var(--orange); }
+.ig-line.lg { stroke: var(--tx-mute); opacity: 0.85; }
+.ig-guide { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+.ig-dot { vector-effect: non-scaling-stroke; }
+.ig-dot.is { fill: var(--orange); stroke: var(--surface); stroke-width: 2; }
+.ig-dot.lg { fill: var(--tx-mute); stroke: var(--surface); stroke-width: 2; }
+
+/* line draw-in on first paint */
+@keyframes ig-draw { from { stroke-dashoffset: 1400; } to { stroke-dashoffset: 0; } }
+.ig-line { stroke-dasharray: 1400; animation: ig-draw 1.5s ease forwards; }
+.ig-line.lg { animation-delay: 0.15s; }
+
+/* tooltip */
+.ig-tip {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  min-width: 140px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--inset), 0 18px 40px -16px rgba(0, 0, 0, 0.5);
+  padding: 8px 10px;
+  pointer-events: none;
+  z-index: 5;
+}
+.ig-tip-h { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--tx-mute); padding-bottom: 7px; margin-bottom: 7px; border-bottom: 1px solid var(--line); }
+.ig-tip-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 3px 0; }
+.ig-tip-k { font-family: var(--mono); font-size: 11.5px; color: var(--tx-mute); }
+.ig-tip-v { font-family: var(--mono); font-size: 11.5px; font-weight: 600; border-radius: 5px; padding: 2px 7px; }
+.ig-tip-v.is { color: var(--orange); background: color-mix(in srgb, var(--orange) 14%, transparent); }
+.ig-tip-v.lg { color: var(--tx-dim); background: color-mix(in srgb, var(--tx-mute) 18%, transparent); }
+
+/* x-axis labels */
+.ig-xaxis { position: relative; height: 18px; margin-top: 6px; }
+.ig-xaxis span { position: absolute; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+
+.ig-foot { display: flex; justify-content: space-between; margin-top: 8px; }
+.ig-cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--tx-mute); }
+
+.ig-learn { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: 13.5px; font-weight: 500; color: var(--orange); }
+.ig-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.ig-learn:hover svg { transform: translateX(3px); }
+
+@media (max-width: 560px) {
+  .ig-card { padding: 20px 18px 18px; }
+  .ig-svg { height: 240px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-line { animation: none; stroke-dasharray: none; }
+  .ig-learn svg { transition: none; }
+}

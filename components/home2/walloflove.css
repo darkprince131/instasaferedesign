@@ -1,0 +1,80 @@
+/* ============================================================
+   C32 · Mac Dock Nav — "Wall of love" / trusted-by section.
+   A magnify-on-hover floating dock of customer logos; hovering
+   one swaps the app-window preview above (+ a dock tooltip).
+   Logos are placeholders — swap freely later.
+   Scoped `.wol-`; tokens from `.iz` (orange · dark + paper).
+   ============================================================ */
+
+.wol-head { text-align: center; max-width: 60ch; margin: 0 auto; }
+.wol-pill {
+  display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+  border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 13px;
+}
+.wol-pill svg { width: 13px; height: 13px; }
+.wol-h { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(30px, 4.5vw, 50px); line-height: var(--lh-hero); letter-spacing: var(--ls-hero); margin: 20px 0 0; }
+.wol-h em { font-style: normal; font-weight: 400; color: var(--orange); }
+
+/* ---- stage backdrop ---- */
+.wol-frame {
+  position: relative; margin-top: 40px; border-radius: 24px;
+  background: radial-gradient(120% 86% at 50% -8%, color-mix(in srgb, var(--orange) 15%, transparent), transparent 58%), var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 40px 30px 78px;
+  overflow: hidden;
+}
+
+/* ---- app-window preview ---- */
+.wol-window {
+  max-width: 760px; margin: 0 auto; border-radius: 14px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--inset), var(--panel-sh);
+}
+.wol-bar { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.wol-bar .dots { display: inline-flex; gap: 6px; }
+.wol-bar .dots i { width: 10px; height: 10px; border-radius: 999px; background: var(--ghost); }
+.wol-bar .wt { flex: 1; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--tx-mute); }
+.wol-body { padding: 40px 28px; min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: wol-in 0.4s ease; }
+@keyframes wol-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.wol-logo-lg { width: 62px; height: 62px; border-radius: 16px; display: grid; place-items: center; font-family: var(--disp); font-weight: 600; font-size: 26px; color: #fff; box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.5); }
+.wol-name { font-family: var(--disp); font-weight: 500; font-size: 23px; color: var(--tx); margin-top: 18px; letter-spacing: -0.01em; }
+.wol-sector { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tx-mute); margin-top: 6px; }
+.wol-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+.wol-stat { font-family: var(--mono); font-size: 12px; color: var(--tx-dim); border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; background: var(--bg-2); }
+.wol-stat b { color: var(--orange); font-weight: 600; }
+.wol-badge { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; font-family: var(--mono); font-size: 11px; color: var(--allow); }
+.wol-badge svg { width: 14px; height: 14px; }
+
+/* ---- floating dock ---- */
+.wol-dock {
+  position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+  display: flex; align-items: flex-end; gap: 12px; padding: 10px 14px;
+  border-radius: 18px; background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border: 1px solid var(--line-strong); box-shadow: var(--inset), 0 18px 40px -18px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+.wol-icon { position: relative; flex: none; background: none; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.wol-icon .logo {
+  width: 100%; height: 100%; border-radius: 14px; display: grid; place-items: center;
+  font-family: var(--disp); font-weight: 600; color: #fff; font-size: 0.42em;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 10px -4px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s ease;
+}
+.wol-icon.on .logo { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 0 0 2px var(--orange), 0 6px 14px -4px rgba(0, 0, 0, 0.5); }
+.wol-tip {
+  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  background: var(--tx); color: var(--bg); font-family: var(--body); font-size: 12.5px; font-weight: 600;
+  border-radius: 7px; padding: 5px 11px; white-space: nowrap; pointer-events: none;
+}
+
+/* ---- responsive ---- */
+@media (max-width: 700px) {
+  .wol-frame { padding: 30px 16px 70px; }
+  .wol-dock { gap: 8px; padding: 8px 10px; }
+  .wol-body { padding: 30px 18px; }
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .wol-body { animation: none; }
+}

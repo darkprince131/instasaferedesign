@@ -1,0 +1,231 @@
+/* ============================================================
+   Capabilities Deck (C1) — NetBird-style interactive feature
+   explainer. Tab strip swaps a stage: interactive console (left)
+   + infographic bullets (right). PPT auto-advance + clickable.
+   Scoped `.cap`, lives inside `.iz` so it inherits the theme
+   tokens (orange now, blue later — no rewrite needed).
+   ============================================================ */
+
+.cap { position: relative; }
+
+/* ---- tab strip ---- */
+.cap-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cap-tabs::-webkit-scrollbar { display: none; }
+.cap-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 16px 18px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--tx-mute);
+  text-align: left;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+  flex: 0 0 auto;
+}
+.cap-tab:hover { color: var(--tx-dim); }
+.cap-tab.on { color: var(--tx); }
+.cap-tab .ic { width: 22px; height: 22px; color: var(--tx-mute); transition: color 0.2s ease; }
+.cap-tab.on .ic { color: var(--orange); }
+.cap-tab .lb { display: flex; flex-direction: column; line-height: 1.15; font-size: 14px; }
+.cap-tab .lb .lb1 { font-family: var(--disp); font-weight: 400; }
+.cap-tab .lb .lb2 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--tx-mute); }
+/* progress underline */
+.cap-tab .bar { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: transparent; }
+.cap-tab.on .bar { background: var(--line-strong); }
+.cap-tab.on .bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: var(--orange);
+}
+.cap-tab.on.play .bar::after { animation: cap-prog var(--cap-dur, 7s) linear forwards; }
+@keyframes cap-prog { to { width: 100%; } }
+
+/* ---- stage ---- */
+.cap-stage {
+  position: relative;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 106, 44, 0.1), transparent 55%),
+    radial-gradient(120% 100% at 100% 0%, rgba(255, 106, 44, 0.06), transparent 60%),
+    var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+}
+.iz[data-theme="paper"] .cap-stage {
+  background:
+    linear-gradient(135deg, rgba(242, 72, 10, 0.08), transparent 55%),
+    var(--surface);
+}
+.cap-grid { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 0; }
+.cap-left { padding: 30px; border-right: 1px solid var(--line); min-height: 420px; display: flex; align-items: center; }
+.cap-right { padding: 36px 34px; }
+
+.cap-title { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(24px, 3vw, 32px); letter-spacing: var(--ls-h2); line-height: var(--lh-h2); margin: 12px 0 0; }
+.cap-title em { font-style: normal; font-weight: 400; color: var(--orange); }
+.cap-sub { color: var(--tx-dim); font-size: 15px; line-height: 1.55; margin: 12px 0 0; max-width: 44ch; }
+
+.cap-bullets { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.cap-bullet { display: grid; grid-template-columns: 22px 1fr; gap: 12px; }
+.cap-bullet .bi { width: 18px; height: 18px; margin-top: 2px; color: var(--orange); }
+.cap-bullet .bt { font-size: 14px; line-height: 1.5; color: var(--tx-dim); }
+.cap-bullet .bt b { color: var(--tx); font-weight: 600; font-family: var(--body); }
+.cap-foot-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.cap-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+/* staggered reveal when a slide mounts */
+.cap-bullet { opacity: 0; transform: translateY(8px); animation: cap-in 0.45s ease forwards; }
+.cap-bullet:nth-child(1) { animation-delay: 0.05s; }
+.cap-bullet:nth-child(2) { animation-delay: 0.12s; }
+.cap-bullet:nth-child(3) { animation-delay: 0.19s; }
+.cap-bullet:nth-child(4) { animation-delay: 0.26s; }
+.cap-bullet:nth-child(5) { animation-delay: 0.33s; }
+.cap-bullet:nth-child(6) { animation-delay: 0.4s; }
+@keyframes cap-in { to { opacity: 1; transform: none; } }
+
+/* ---- prev / next ---- */
+.cap-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--tx-dim);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.18s ease;
+}
+.cap-arrow:hover { color: var(--orange); border-color: var(--orange); }
+.cap-arrow svg { width: 18px; height: 18px; }
+.cap-arrow.prev { left: 12px; }
+.cap-arrow.next { right: 12px; }
+
+/* ============================================================
+   Feature console visuals (left panel) — distinct per feature.
+   ============================================================ */
+.cap-vis { width: 100%; }
+.cap-vis .iz-panel { width: 100%; }
+.cap-vrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--tx-dim);
+}
+.cap-vrow:last-child { border-bottom: 0; }
+.cap-vrow .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--ghost); flex: 0 0 auto; }
+.cap-vrow.ok .dot { background: var(--allow); }
+.cap-vrow.no .dot { background: var(--deny); }
+.cap-vrow .tail { margin-left: auto; }
+.cap-vrow .pill { font-size: 11px; padding: 2px 9px; border-radius: 999px; }
+.cap-vrow .pill.allow { background: var(--allow-bg); color: var(--allow); }
+.cap-vrow .pill.deny { background: var(--deny-bg); color: var(--deny); }
+
+/* sequential check-in animation for rows */
+.cap-seq .cap-vrow { opacity: 0.35; transition: opacity 0.3s ease; }
+.cap-seq .cap-vrow .dot { background: var(--ghost); }
+.cap-seq.run .cap-vrow { animation: cap-rowin 0.4s ease forwards; }
+.cap-seq.run .cap-vrow:nth-child(1) { animation-delay: 0.2s; }
+.cap-seq.run .cap-vrow:nth-child(2) { animation-delay: 0.6s; }
+.cap-seq.run .cap-vrow:nth-child(3) { animation-delay: 1s; }
+.cap-seq.run .cap-vrow:nth-child(4) { animation-delay: 1.4s; }
+.cap-seq.run .cap-vrow:nth-child(5) { animation-delay: 1.8s; }
+.cap-seq.run .cap-vrow:nth-child(6) { animation-delay: 2.2s; }
+@keyframes cap-rowin { to { opacity: 1; } }
+
+/* tunnel (ZTNA) */
+.cap-tunnel { padding: 14px; }
+.cap-tunnel svg { width: 100%; height: auto; display: block; }
+.cap-packet { animation: cap-travel 2.4s linear infinite; }
+@keyframes cap-travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+.cap-blocked { animation: cap-block 2s ease-in-out infinite; }
+@keyframes cap-block { 0%, 100% { transform: translateX(0); opacity: 0.9; } 45% { transform: translateX(26px); opacity: 1; } 55% { transform: translateX(26px); opacity: 0; } 56% { transform: translateX(0); opacity: 0; } 70% { opacity: 0.9; } }
+
+/* chips matrix (platform / iam) */
+.cap-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px; }
+.cap-chip2 {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tx-dim);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--bg-2);
+}
+.cap-chips.flow .cap-chip2 { opacity: 0; animation: cap-in 0.4s ease forwards; }
+.cap-chips.flow .cap-chip2:nth-child(odd) { animation-delay: 0.15s; }
+.cap-chips.flow .cap-chip2:nth-child(even) { animation-delay: 0.3s; }
+.cap-group-h { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tx-mute); padding: 14px 16px 2px; }
+
+/* SSO app tiles */
+.cap-apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 16px; }
+.cap-app {
+  aspect-ratio: 1;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--tx-mute);
+  background: var(--bg-2);
+  position: relative;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.cap-app .lk, .cap-app .ck { position: absolute; transition: opacity 0.3s ease; }
+.cap-app .ck { opacity: 0; color: var(--allow); }
+.cap-apps.run .cap-app { color: var(--allow); border-color: var(--allow); }
+.cap-apps.run .cap-app .lk { opacity: 0; }
+.cap-apps.run .cap-app .ck { opacity: 1; }
+.cap-apps.run .cap-app:nth-child(1) { transition-delay: 0.3s; }
+.cap-apps.run .cap-app:nth-child(2) { transition-delay: 0.5s; }
+.cap-apps.run .cap-app:nth-child(3) { transition-delay: 0.7s; }
+.cap-apps.run .cap-app:nth-child(4) { transition-delay: 0.9s; }
+.cap-apps.run .cap-app .lk { transition-delay: inherit; }
+.cap-apps.run .cap-app .ck { transition-delay: inherit; }
+
+.cap-vbtn {
+  margin: 4px 16px 16px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 999px;
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  background: transparent;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.cap-vbtn:hover { background: var(--orange); color: var(--btn-ink); }
+
+@media (max-width: 880px) {
+  .cap-grid { grid-template-columns: 1fr; }
+  .cap-left { border-right: 0; border-bottom: 1px solid var(--line); min-height: 0; }
+  .cap-arrow { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cap-tab.on.play .bar::after { animation: none; width: 100%; }
+  .cap-bullet, .cap-chips.flow .cap-chip2 { opacity: 1; transform: none; animation: none; }
+  .cap-seq .cap-vrow { opacity: 1; }
+  .cap-packet, .cap-blocked { animation: none; }
+}

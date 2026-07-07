@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Device Authorization &amp; Binding — InstaSafe Content Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/review.css">
+</head>
+<body class="t-paper">
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="../index.html"><img src="../assets/brand/instasafe-lockup-color.svg" alt="InstaSafe" height="24"></a>
+    <span class="vol-label">Vol 1 · Platform</span>
+    <span class="cr-count" data-cr-count hidden>💬 0</span>
+    <a class="index-link" href="../index.html">← Index</a>
+  </div>
+</header>
+<main class="wrap page">
+  <div class="page-head" data-cb="b1">
+    <div class="route">/platform/device-binding</div>
+    <h1 class="page-title">Device Authorization &amp; Binding</h1>
+    <div class="chips"><span class="chip todo-chip">1 review marker</span></div>
+    <div class="seo-meta"><span class="seo-k">SEO</span> Title: Device Binding &amp; Authorization | InstaSafe | Meta: Approve every device before first access. Certificate-bound sessions, instant revocation, admin review workflow.</div>
+  </div>
+  <article class="prose">
+<h3 data-cb="b2" class="seclabel">Hero</h3>
+<header data-cb="b3" class="hero">
+<div class="hero-ey">DEVICE BINDING</div>
+<h2 data-cb="b4" class="hero-h1">Credentials say who. Binding says from what.</h2>
+<p class="hero-sub">Every device is reviewed, approved, and certificated before its first session — and revocable in one click after its last.</p>
+<div class="hero-cta"><span class="pill pri">Book a Demo</span><span class="pill ghost">See the Approval Flow ↓</span></div>
+</header>
+<h3 data-cb="b5" class="seclabel">Plain answer — What is device binding?</h3>
+<p data-cb="b6">Device binding attaches identity to hardware. When a user first connects from a new laptop or phone, the device is registered and held for administrator review. Approve it, and a certificate is installed that cryptographically ties future sessions to that physical machine. From then on, the user's credentials work *from that device* — and a thief with a perfect password but the wrong laptop fails at the device gate.</p>
+<p data-cb="b7">It also closes quieter risks: the employee's personal desktop quietly added to the pool, the shared login used from six machines, the departed contractor's still-configured laptop. Binding turns "which devices can access us?" from an unknown into a managed list with an owner, an approval date, and a revoke button.</p>
+<h3 data-cb="b8" class="seclabel">How the workflow runs</h3>
+<div data-cb="b9" class="spec"><pre>1. ENROL      First connection from a new device → registration captured
+              (user, device identifiers, posture snapshot).
+2. REVIEW     Admin approves or rejects from the console queue. Nothing
+              connects while pending.
+3. BIND       Approval installs the device certificate; sessions
+              thereafter must present it.
+4. GOVERN     Per-user device limits (e.g. single-device login),
+              posture rules layered on top.
+5. REVOKE     Lost, stolen, or retired → certificate revoked, access
+              dead instantly, event logged.</pre></div>
+<p data-cb="b10"><strong>Operational note (honest guidance):</strong> approval queues are real work at scale — plan owner and SLA for the review step, and use group-level auto-approval policies where risk allows. [This mirrors real-world ticket patterns in device-approval-heavy deployments.]</p>
+<h3 data-cb="b11" class="seclabel">Quick scan</h3>
+<div data-cb="b12" class="spec"><pre>Trust anchor         Per-device certificate
+Approval             Admin review before first access; group auto-rules
+Limits               Concurrent-device caps per user (single-device
+                     login enforceable)
+Revocation           Instant, logged
+Pairs with           Posture checks (state) — binding covers identity
+                     of the machine, posture covers its health</pre></div>
+<h3 data-cb="b13" class="seclabel">FAQs</h3>
+<div data-cb="b14" class="spec"><pre>Q: Binding vs posture — what's the difference?
+A: Binding = is this an APPROVED machine (identity of hardware).
+Posture = is it a HEALTHY machine (state of hardware). InstaSafe
+enforces both.
+
+Q: What if an employee gets a new laptop?
+A: New device enrols, admin approves, old certificate is revoked.
+Minutes, fully logged.
+
+Q: Can we auto-approve corporate-imaged devices?
+A: Group-level policies can streamline approval for known-build devices
+while keeping BYOD in manual review. <mark class="todo">[CONFIRM exact auto-approval
+mechanics — Product]</mark>
+
+Q: Does this stop credential sharing?
+A: Largely — shared credentials fail from unbound devices, and
+single-device policies prevent parallel use.</pre></div>
+<p data-cb="b15"><strong>Related:</strong> Device Posture · Contextual Access · IAM</p>
+<hr class="rule">
+<hr class="rule">
+  </article>
+  <nav class="pagenav">
+    <a class="pn prev" href="./platform-device-posture.html"><span class="pn-k">← Prev</span><span class="pn-t">Device Posture Check</span></a>
+    <a class="pn next" href="./platform-endpoint-controls.html"><span class="pn-k">Next →</span><span class="pn-t">Endpoint Controls</span></a>
+  </nav>
+</main>
+<footer class="pagefoot">
+  <div class="wrap">
+    <span>InstaSafe Content Master — Review Build</span>
+    <span class="dot">·</span>
+    <span>Vol 1 · Platform</span>
+    <span class="dot">·</span>
+    <span>2026-07-07</span>
+    <span class="dot">·</span>
+    <a class="cr-export" href="#" data-cr-export>Export my comments</a>
+  </div>
+</footer>
+<script src="../assets/review-comments.js" defer></script>
+</body>
+</html>

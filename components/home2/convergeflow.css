@@ -1,0 +1,58 @@
+/* ============================================================
+   C21 · Convergence flow. Scoped `.cf-`; tokens `.iz`.
+   ============================================================ */
+
+.cf {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  padding: 26px 28px 22px;
+  max-width: 1060px;
+}
+.cf-head { max-width: 60ch; }
+.cf-head .iz-ey { margin-bottom: 12px; }
+.cf-lead { color: var(--tx-dim); font-size: 15.5px; line-height: 1.55; margin: 12px 0 0; max-width: 56ch; }
+
+.cf-svg { width: 100%; height: auto; display: block; margin-top: 12px; overflow: visible; }
+
+/* connectors */
+.cf-conn { fill: none; stroke: var(--line-strong); stroke-width: 1.4; stroke-dasharray: 4 5; }
+
+/* left tiles */
+.cf-tile { fill: transparent; stroke: var(--line); stroke-width: 1; }
+.cf-mark { fill: var(--ghost); }
+.cf-cat { fill: var(--tx); font-family: var(--disp); font-weight: 500; font-size: 22px; dominant-baseline: middle; }
+
+/* core node */
+.cf-node-halo { fill: color-mix(in srgb, var(--orange) 7%, transparent); }
+.cf-node { fill: var(--surface); stroke: color-mix(in srgb, var(--orange) 45%, var(--line-strong)); stroke-width: 1.5; }
+.cf-lock rect, .cf-lock circle { fill: var(--orange); }
+.cf-lock path { stroke: var(--orange); stroke-width: 4; }
+.cf-node-label { fill: var(--tx); font-family: var(--disp); font-weight: 600; font-size: 24px; text-anchor: middle; }
+
+/* right panel */
+.cf-panel { fill: var(--bg-2); stroke: var(--line); stroke-width: 1; }
+.cf-panel-title { fill: var(--tx-dim); font-family: var(--disp); font-weight: 500; font-size: 14px; text-anchor: middle; }
+.cf-bar { fill: var(--ghost); }
+.cf-bar.hot { fill: var(--orange); }
+.cf-panel-rule { stroke: var(--line); stroke-width: 1; }
+.cf-prow { fill: var(--surface); stroke: var(--line); stroke-width: 1; }
+.cf-pdot { fill: var(--orange); opacity: 0.6; }
+
+/* pulses */
+.cf-pulse { fill: var(--orange); }
+
+@media (max-width: 640px) {
+  .cf { padding: 20px 16px 18px; }
+  .cf-cat { font-size: 26px; }
+  .cf-node-label { font-size: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-pulse { display: none; }
+}
+
+.cf-learn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; font-size: 13.5px; font-weight: 500; color: var(--orange); }
+.cf-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.cf-learn:hover svg { transform: translateX(3px); }

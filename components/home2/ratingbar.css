@@ -1,0 +1,108 @@
+/* ============================================================
+   00ab · Rating Bar — platform badges with star ratings.
+   Scoped .rb-; tokens from .iz (dark + paper).
+   ============================================================ */
+
+/* ── row layout ── */
+.rb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+}
+
+/* ── badge (the whole clickable unit) ── */
+.rb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 6px 4px;
+  transition: opacity 0.2s ease;
+}
+.rb-badge:hover { opacity: 0.9; }
+.rb-badge:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* featured badge: outlined card */
+.rb-badge.featured {
+  border: 1px solid var(--line-strong);
+  padding: 6px 12px;
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+}
+
+/* ── platform circle ── */
+.rb-circle {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--orange);
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.rb-badge:hover .rb-circle { transform: scale(1.1); }
+
+/* letter SVG inside circle — always white */
+.rb-letter {
+  width: 32px;
+  height: 18px;
+  color: #fff;
+}
+
+/* ── stars row ── */
+.rb-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* individual star SVG */
+.rb-star {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  overflow: visible;
+}
+
+/* background layer — empty/muted state */
+.rb-s-bg {
+  fill: var(--ghost);
+  transition: fill 0.18s ease;
+}
+
+/* foreground layer — filled/orange state */
+.rb-s-fill {
+  fill: var(--orange);
+  transition: fill 0.18s ease;
+}
+
+/* on badge hover: filled stars → bright amber */
+.rb-badge:hover .rb-s-fill { fill: #f5c518; }
+
+/* ── review count ── */
+.rb-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+
+/* ── responsive ── */
+@media (max-width: 600px) {
+  .rb { gap: 16px; }
+  .rb-count { display: none; }
+}
+
+/* ── reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .rb-circle,
+  .rb-s-bg,
+  .rb-s-fill { transition: none; }
+}

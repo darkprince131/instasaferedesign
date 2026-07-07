@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Factor Authentication — InstaSafe Content Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/review.css">
+</head>
+<body class="t-paper">
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="../index.html"><img src="../assets/brand/instasafe-lockup-color.svg" alt="InstaSafe" height="24"></a>
+    <span class="vol-label">Vol 1 · Platform</span>
+    <span class="cr-count" data-cr-count hidden>💬 0</span>
+    <a class="index-link" href="../index.html">← Index</a>
+  </div>
+</header>
+<main class="wrap page">
+  <div class="page-head" data-cb="b1">
+    <div class="route">/platform/mfa</div>
+    <h1 class="page-title">Multi-Factor Authentication</h1>
+    <div class="chips"><span class="chip todo-chip">3 review markers</span></div>
+    <div class="seo-meta"><span class="seo-k">SEO</span> Title: Multi-Factor Authentication (MFA) | InstaSafe | Meta: Six MFA methods including continuous facial authentication. Protect web apps, Windows/Linux/Mac logins, RDP, VPNs, and network devices via RADIUS and TACACS+.</div>
+  </div>
+  <article class="prose">
+<p data-cb="b2">*(Page already built with simulator — this content refreshes/extends it; retrofit only with DJ sign-off per v2 §E5.)*</p>
+<h3 data-cb="b3" class="seclabel">Hero</h3>
+<header data-cb="b4" class="hero">
+<div class="hero-ey">MULTI-FACTOR AUTHENTICATION</div>
+<h2 data-cb="b5" class="hero-h1">A password is a guess. Prove it's really them.</h2>
+<p class="hero-sub">Six authentication methods across web apps, desktops, servers, and network equipment — from SMS OTP to continuous facial verification.</p>
+<div class="hero-cta"><span class="pill pri">Book a Demo</span><span class="pill ghost">Try the Simulator ↓</span></div>
+</header>
+<h3 data-cb="b6" class="seclabel">Plain answer — What is MFA?</h3>
+<p data-cb="b7">Multi-Factor Authentication asks for two or more different *kinds* of proof before letting someone in. The kinds matter: something you know (a password or PIN), something you have (your phone, a hardware key), something you are (your fingerprint, your face). A password alone fails silently — stolen credentials work perfectly for the thief. Add a second factor of a different kind, and a stolen password becomes a dead end: the attacker knows the secret but doesn't hold the phone.</p>
+<p data-cb="b8">MFA vs 2FA, since it's the most-asked question: 2FA is exactly two factors; MFA is two *or more*, and in practice means a system flexible about which factors, per user, per risk level. Every 2FA is MFA; not every MFA stops at two.</p>
+<h3 data-cb="b9" class="seclabel">The six methods (full descriptions)</h3>
+<div data-cb="b10" class="spec"><pre>OTP (SMS/EMAIL)        Six-digit, time-limited code to a registered
+                       channel. The universal baseline — works on any
+                       phone, zero rollout friction.
+T-OTP                  Time-based codes generated on-device (InstaSafe
+                       Authenticator or standard TOTP apps). No network
+                       dependency, immune to SIM-swap.
+PIN                    Device-bound MPIN as an additional knowledge
+                       factor for quick re-verification.
+BIOMETRIC              Fingerprint or facial recognition via device
+                       sensors — the highest-convenience strong factor.
+PUSH NOTIFICATION      One-tap approve/deny on the InstaSafe
+                       Authenticator app, with request context shown.
+HARDWARE TOKEN         Physical security keys, including FIDO-compliant
+                       keys, for the highest-assurance roles.
+                       <mark class="todo">[Guardrail: supported as a factor; do NOT claim
+                       end-to-end passwordless FIDO2 until confirmed.]</mark></pre></div>
+<h3 data-cb="b11" class="seclabel">Signature capability — Continuous Facial Authentication</h3>
+<p data-cb="b12">Standard MFA proves identity once, at login. Continuous facial authentication keeps proving it: the camera re-verifies liveness roughly every 30 seconds for designated high-sensitivity applications. Walk away from the screen, or let someone else step in front of it, and the session logs out automatically. For trading systems, medical records, or payment operations, it closes the oldest gap in authentication — the authenticated-then-abandoned session.</p>
+<h3 data-cb="b13" class="seclabel">Where MFA applies (coverage table — condensed from old site's four blocks, duplicates removed)</h3>
+<div data-cb="b14" class="spec"><pre>WEB &amp; SAAS APPS        Via SAML/OAuth/OIDC — O365, Zoho, Salesforce,
+                       GitLab, Atlassian; mail clients incl. Zimbra,
+                       ICEWrap, Exchange.
+DESKTOP LOGIN          Windows, Linux, macOS logon MFA; RDP services.
+                       Protocols: RADIUS, LDAP, Kerberos/AD, SSH.
+NETWORK DEVICES        VPNs, firewalls, routers, switches via RADIUS and
+                       TACACS+ — incl. Cisco AnyConnect, Juniper,
+                       Palo Alto. (Yes: InstaSafe MFA can harden a VPN
+                       you haven't replaced yet.)
+ADFS / LDAP APPS       Directory-integrated legacy applications.
+Compliance supported   PCI DSS, HIPAA, GDPR, SOX, NERC CIP.</pre></div>
+<h3 data-cb="b15" class="seclabel">Deployment</h3>
+<p data-cb="b16">Authenticator platform deployable in public cloud or on-premises data centre. InstaSafe controller can act as the RADIUS or TACACS+ server itself.</p>
+<h3 data-cb="b17" class="seclabel">Quick scan</h3>
+<div data-cb="b18" class="spec"><pre>Methods              6 (OTP, T-OTP, PIN, biometric, push, hardware token)
+Continuous auth      Facial liveness re-check ~30s (designated apps)
+Protocols            RADIUS, TACACS+, SAML, OAuth, OIDC, LDAP, Kerberos, SSH
+Coverage             Web/SaaS, Windows/Linux/macOS logon, RDP, network gear
+Profiles             8 auth profiles; per-group method policy
+Pricing              $[X]/user/month <mark class="todo">[PLACEHOLDER]</mark></pre></div>
+<h3 data-cb="b19" class="seclabel">Three outcomes</h3>
+<div data-cb="b20" class="spec"><pre>01  STOLEN PASSWORDS STOP WORKING
+    The phish succeeds; the login still fails.
+02  MFA EVERYWHERE, NOT JUST THE WEB
+    The OS logon, the switch console, and the legacy app get the same
+    protection as the SaaS suite.
+03  FRICTION PROPORTIONAL TO RISK
+    Push-to-approve for daily work; hardware keys and continuous facial
+    for the crown jewels.</pre></div>
+<h3 data-cb="b21" class="seclabel">FAQs (rewritten, de-duplicated from old site's set)</h3>
+<div data-cb="b22" class="spec"><pre>Q: MFA vs 2FA?
+A: 2FA = exactly two factors. MFA = two or more, with flexibility about
+which. MFA systems let you scale factor strength to role and risk.
+
+Q: Can MFA itself be hacked?
+A: No control is absolute — SIM-swap targets SMS, fatigue attacks target
+push. Layering (T-OTP or hardware keys for admins, risk-based step-up,
+device binding) is exactly why MFA platforms beat single-method bolt-ons.
+
+Q: What's the risk of not using MFA?
+A: Credential theft becomes account takeover with no further obstacle —
+the single most common breach path. <mark class="todo">[SOURCE NEEDED for stat]</mark>
+
+Q: Which method should we roll out first?
+A: Push or T-OTP for the workforce (low friction), hardware keys for
+admins, continuous facial for the few screens that justify it.
+
+Q: Does InstaSafe MFA require the full platform?
+A: No — it runs standalone (including in front of an existing VPN) and
+integrates natively when you adopt ZTNA/ZTAA.
+
+Q: How does MFA interact with SSO?
+A: Perfectly — that's the design. One strong MFA-protected login, then
+SSO carries the trust to every app.</pre></div>
+<p data-cb="b23"><strong>Related:</strong> SSO · IAM · Behavioural Authentication · Device Binding</p>
+<hr class="rule">
+<hr class="rule">
+  </article>
+  <nav class="pagenav">
+    <a class="pn prev" href="./platform-sso.html"><span class="pn-k">← Prev</span><span class="pn-t">Single Sign-On</span></a>
+    <a class="pn next" href="./platform-secure-browser.html"><span class="pn-k">Next →</span><span class="pn-t">Secure Enterprise Browser</span></a>
+  </nav>
+</main>
+<footer class="pagefoot">
+  <div class="wrap">
+    <span>InstaSafe Content Master — Review Build</span>
+    <span class="dot">·</span>
+    <span>Vol 1 · Platform</span>
+    <span class="dot">·</span>
+    <span>2026-07-07</span>
+    <span class="dot">·</span>
+    <a class="cr-export" href="#" data-cr-export>Export my comments</a>
+  </div>
+</footer>
+<script src="../assets/review-comments.js" defer></script>
+</body>
+</html>

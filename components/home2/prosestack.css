@@ -1,0 +1,205 @@
+/* ============================================================
+   00aa · Prose Stack — left copy + right stacked panels.
+   Scoped .pst-; tokens from .iz (dark + paper).
+   ============================================================ */
+
+/* ── layout ── */
+.pst {
+  display: grid;
+  grid-template-columns: 1fr 1.45fr;
+  gap: 72px;
+  align-items: start;
+}
+
+/* ── LEFT column ── */
+.pst-left { display: flex; flex-direction: column; }
+
+.pst-ey {
+  display: block;
+  font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 20px;
+}
+
+.pst-hl {
+  font-family: var(--disp); font-weight: var(--fw-disp);
+  font-size: clamp(30px, 4.2vw, 50px);
+  line-height: var(--lh-hero); letter-spacing: var(--ls-hero);
+  color: var(--tx); margin: 0 0 22px;
+}
+
+.pst-body-txt {
+  font-size: 15px; line-height: 1.72; color: var(--tx-dim);
+  margin: 0 0 26px; max-width: 46ch;
+}
+
+/* ── CTA button ── */
+.pst-cta {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--mono); font-size: 12px; color: var(--tx);
+  border: 1px solid var(--line-strong); border-radius: 8px;
+  padding: 10px 16px; text-decoration: none; width: fit-content;
+  background: var(--surface); box-shadow: var(--panel-sh);
+  transition: border-color 0.2s ease, color 0.2s ease;
+  margin-bottom: 44px;
+}
+.pst-cta svg { width: 13px; height: 13px; flex: none; }
+.pst-cta-arr { margin-left: 4px; }
+.pst-cta:hover { border-color: var(--orange); color: var(--orange); }
+
+/* ── feature bullets ── */
+.pst-bullets { display: flex; flex-direction: column; gap: 24px; }
+.pst-bullet strong {
+  display: block; font-size: 14px; font-weight: 500; color: var(--tx);
+  margin-bottom: 5px;
+}
+.pst-bullet p {
+  font-size: 14px; line-height: 1.65; color: var(--tx-dim);
+  margin: 0; max-width: 44ch;
+}
+
+/* ── RIGHT column ── */
+.pst-right { display: flex; flex-direction: column; gap: 11px; }
+
+/* ── shared panel shell ── */
+.pst-panel {
+  border: 1px solid var(--line-strong);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: var(--panel-sh);
+}
+
+/* panel title bar */
+.pst-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border-bottom: 1px solid var(--line-strong);
+  background: var(--surface-2);
+}
+.pst-dot {
+  width: 8px; height: 8px; border-radius: 999px; flex: none;
+}
+.pst-dot.red   {
+  background: var(--deny);
+  box-shadow: 0 0 7px 1px color-mix(in srgb, var(--deny) 55%, transparent);
+}
+.pst-dot.green {
+  background: var(--allow);
+  box-shadow: 0 0 7px 1px color-mix(in srgb, var(--allow) 55%, transparent);
+}
+.pst-bar-title {
+  font-family: var(--disp); font-size: 12.5px; font-weight: 500; color: var(--tx);
+}
+.pst-bar-sep  { color: var(--tx-mute); font-size: 10px; }
+.pst-bar-sub  { font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); }
+.pst-live-pill { margin-left: auto; }
+
+/* panel body */
+.pst-body {
+  padding: 10px 14px;
+  background: var(--surface);
+}
+
+/* panel footer */
+.pst-foot {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 14px; border-top: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  font-family: var(--mono); font-size: 10px; color: var(--tx-mute);
+}
+.pst-foot svg { width: 11px; height: 11px; }
+
+/* ============================================================
+   PANEL 1 — Threat feed (darker background)
+   ============================================================ */
+.pst-panel.threat .pst-bar,
+.pst-panel.threat .pst-foot { background: var(--bg-2); }
+.pst-panel.threat .pst-body { background: var(--bg-2); }
+
+.pst-th-head {
+  display: grid; grid-template-columns: 1.1fr 0.85fr 0.7fr 36px;
+  gap: 8px; padding: 3px 0 7px; margin-bottom: 2px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--tx-mute);
+}
+.pst-th-row {
+  display: grid; grid-template-columns: 1.1fr 0.85fr 0.7fr 36px;
+  gap: 8px; align-items: center; padding: 5px 0;
+}
+.pst-th-row + .pst-th-row {
+  border-top: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+}
+
+.pst-ip   { font-family: var(--mono); font-size: 11px; color: var(--tx-dim); }
+.pst-type { font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); }
+.pst-blocked {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.05em;
+  font-weight: 600; color: var(--deny);
+}
+.pst-hits {
+  font-family: var(--mono); font-size: 10px; color: var(--tx-mute);
+  text-align: right;
+}
+.pst-deny-ic { color: var(--deny); }
+
+/* ============================================================
+   PANEL 2 — Policy evaluation
+   ============================================================ */
+.pst-chk-row {
+  display: grid; grid-template-columns: 15px 76px 1fr;
+  gap: 8px; align-items: center; padding: 6px 0;
+}
+.pst-chk-row + .pst-chk-row {
+  border-top: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+}
+.pst-ok-ic    { width: 13px; height: 13px; color: var(--allow); flex: none; }
+.pst-chk-label {
+  font-family: var(--disp); font-size: 12px; font-weight: 500; color: var(--tx-dim);
+}
+.pst-chk-val {
+  font-family: var(--mono); font-size: 10.5px; color: var(--tx-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pst-allow-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.pst-allow-badge {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.05em; color: var(--allow);
+  background: var(--allow-bg);
+  border: 1px solid color-mix(in srgb, var(--allow) 22%, var(--line));
+  border-radius: 6px; padding: 4px 10px;
+}
+.pst-allow-sub {
+  font-family: var(--mono); font-size: 10px; color: var(--tx-mute);
+}
+
+/* ============================================================
+   PANEL 3 — Active session
+   ============================================================ */
+.pst-sess-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;
+}
+.pst-sess-item { display: flex; flex-direction: column; gap: 2px; }
+.pst-sess-label {
+  font-family: var(--mono); font-size: 9px; color: var(--tx-mute);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.pst-sess-val {
+  font-family: var(--mono); font-size: 12px; color: var(--tx-dim);
+  font-weight: 500;
+}
+
+/* ── responsive ── */
+@media (max-width: 960px) {
+  .pst { grid-template-columns: 1fr; gap: 40px; }
+  .pst-hl { font-size: clamp(26px, 7vw, 40px); }
+  .pst-body-txt { max-width: 100%; }
+  .pst-bullet p { max-width: 100%; }
+}
+
+/* ── reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .pst-cta { transition: none; }
+}

@@ -1,0 +1,33 @@
+/* ============================================================
+   C23 · Console Row (stackable).
+   Left ~40% text + CTA, right ~60% interactive i365 console —
+   the reversible "feature beside a live console" pattern.
+   `reverse` flips it (console left / text right) so stacked
+   rows alternate sides. Scoped `.cr`; tokens from `.iz`.
+   The console itself is a real i365 console view (its own
+   `--db` theme); this file only styles the row + text block.
+   ============================================================ */
+
+.cr-row { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 52px; align-items: center; }
+.cr-text { order: 1; }
+.cr-console { order: 2; min-width: 0; }
+.cr-row.reverse { grid-template-columns: 1.18fr 0.82fr; }
+.cr-row.reverse .cr-text { order: 2; }
+.cr-row.reverse .cr-console { order: 1; }
+
+.cr-text .iz-ey { margin-bottom: 14px; }
+.cr-lead { color: var(--tx-dim); font-size: 17px; line-height: 1.6; max-width: 42ch; margin: 16px 0 0; }
+.cr-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 15px; font-weight: 500; color: var(--orange); }
+.cr-cta svg { width: 16px; height: 16px; transition: transform 0.25s ease; }
+.cr-cta:hover svg { transform: translateX(4px); }
+
+/* ---- responsive ---- */
+@media (max-width: 940px) {
+  .cr-row, .cr-row.reverse { grid-template-columns: 1fr; gap: 30px; }
+  .cr-text, .cr-console, .cr-row.reverse .cr-text, .cr-row.reverse .cr-console { order: 0; }
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .cr-cta:hover svg { transform: none; }
+}

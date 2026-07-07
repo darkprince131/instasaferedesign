@@ -1,0 +1,342 @@
+/* ============================================================
+   00z · Accordion Showcase — 3-section hover-open accordion.
+   At rest: sec 1 open (2fr) + sec 2+3 closed (1fr each) = 4 cols.
+   Scoped .aca-; tokens from .iz (dark + paper).
+   ============================================================ */
+
+.aca { display: flex; flex-direction: column; gap: 20px; }
+
+/* ── board ── */
+.aca-board {
+  display: grid;
+  transition: grid-template-columns 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 460px;
+  border-radius: 16px;
+  border: 1px solid var(--line-strong);
+  overflow: hidden;
+  box-shadow: var(--panel-sh);
+}
+
+/* ── section ── */
+.aca-sec {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+.aca-sec:not(:last-child) { border-right: 1px solid var(--line-strong); }
+.aca-sec:focus-visible    { outline: 2px solid var(--orange); outline-offset: -2px; }
+
+/* ── left pane (always visible) ── */
+.aca-left {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--bg-2);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px;
+  position: relative;
+}
+
+/* ── right pane (revealed on open) ── */
+.aca-right {
+  flex: 1;
+  max-width: 0;         /* collapses to 0 when closed */
+  overflow: hidden;
+  min-width: 0;
+  opacity: 0;
+  background: var(--surface);
+  border-left: 1px solid var(--line-strong);
+  transition:
+    max-width 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity   0.28s ease;
+}
+.aca-sec.open .aca-right {
+  max-width: 100%;      /* flex splits it 50/50 with left */
+  opacity: 1;
+  transition:
+    max-width 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity   0.28s ease 0.22s;
+}
+
+/* ── expand chevron (shown when closed) ── */
+.aca-chevron {
+  position: absolute; right: 10px; top: 50%;
+  transform: translateY(-50%);
+  width: 22px; height: 22px; border-radius: 999px;
+  background: color-mix(in srgb, var(--orange) 12%, var(--bg-2));
+  border: 1px solid color-mix(in srgb, var(--orange) 28%, var(--line));
+  display: grid; place-items: center;
+  color: var(--orange);
+  opacity: 0.75;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+.aca-chevron svg { width: 11px; height: 11px; }
+.aca-sec.open .aca-chevron {
+  opacity: 0;
+  transform: translateY(-50%) translateX(8px);
+}
+
+/* ── section eyebrow (icon + count) ── */
+.aca-eye {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute);
+  margin-bottom: 14px; flex: none;
+}
+.aca-eye svg { width: 13px; height: 13px; color: var(--orange); }
+
+/* ── footer row (aligns with board columns) ── */
+.aca-footer {
+  display: grid;
+  transition: grid-template-columns 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.aca-foot { padding: 2px 2px 0; }
+.aca-foot-h {
+  font-family: var(--disp); font-weight: 500;
+  font-size: clamp(16px, 1.8vw, 20px);
+  letter-spacing: -0.01em; color: var(--tx);
+  margin: 0 0 8px;
+}
+.aca-foot-p {
+  font-size: 13.5px; line-height: 1.6; color: var(--tx-dim);
+  margin: 0 0 12px; max-width: 42ch;
+}
+.aca-foot-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 500; color: var(--orange);
+  text-decoration: none;
+}
+.aca-foot-link svg { width: 11px; height: 11px; transition: transform 0.2s ease; }
+.aca-foot-link:hover svg { transform: translateX(3px); }
+
+/* ── shared colour helpers ── */
+.aca-ok-ic   { color: var(--allow); }
+.aca-deny-ic { color: var(--deny);  }
+.aca-ok-tx   { color: var(--allow); }
+
+/* ── shared right-panel header ── */
+.aca-rh {
+  font-family: var(--disp); font-size: 12.5px; font-weight: 500;
+  color: var(--tx); display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px; flex: none;
+}
+.aca-rh-ct {
+  font-family: var(--mono); font-size: 10px; color: var(--tx-mute);
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 7px;
+}
+
+/* ============================================================
+   SECTION 1 — Visibility & Audit
+   ============================================================ */
+
+/* left */
+.aca-audit-l { display: flex; flex-direction: column; height: 100%; }
+.aca-log { display: flex; flex-direction: column; gap: 7px; position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.aca-log-row {
+  display: grid;
+  grid-template-columns: 14px 0.85fr 1fr auto;
+  gap: 7px; align-items: center;
+  min-width: 0;
+}
+.aca-log-row svg { width: 12px; height: 12px; flex: none; }
+.aca-log-u {
+  font-family: var(--mono); font-size: 11px; color: var(--tx-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.aca-log-a {
+  font-family: var(--mono); font-size: 10px; color: var(--orange);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.aca-log-t {
+  font-family: var(--mono); font-size: 10px; color: var(--tx-mute);
+}
+.aca-log-fade {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 72px;
+  background: linear-gradient(to bottom, transparent, var(--bg-2));
+  pointer-events: none;
+}
+
+/* right */
+.aca-audit-r {
+  padding: 18px 16px; height: 100%; display: flex; flex-direction: column;
+  gap: 10px; overflow: hidden;
+}
+.aca-rec-bar {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--disp); font-size: 13px; font-weight: 500; color: var(--tx);
+  flex: none;
+}
+.aca-rec-ic {
+  flex: none; width: 24px; height: 24px; border-radius: 6px;
+  background: color-mix(in srgb, var(--orange) 12%, var(--surface-2));
+  border: 1px solid var(--line); display: grid; place-items: center; color: var(--orange);
+}
+.aca-rec-ic svg { width: 13px; height: 13px; }
+.aca-rec-lbl { flex: 1; }
+.aca-rec-screen {
+  position: relative; height: 130px; border-radius: 10px; overflow: hidden;
+  background: radial-gradient(120% 120% at 50% 30%,
+    color-mix(in srgb, var(--orange) 9%, var(--bg-2)), var(--bg-2));
+  border: 1px solid var(--line);
+  display: grid; place-items: center;
+  flex: none;
+}
+.aca-rec-play {
+  width: 34px; height: 34px; border-radius: 999px;
+  background: var(--orange); display: grid; place-items: center;
+  box-shadow: 0 0 20px -4px color-mix(in srgb, var(--orange) 60%, transparent);
+}
+.aca-rec-play svg { width: 14px; height: 14px; color: var(--btn-ink); }
+.aca-rec-scrub {
+  position: absolute; bottom: 10px; left: 12px; right: 12px;
+  height: 3px; border-radius: 999px; background: var(--line-strong); overflow: hidden;
+}
+.aca-rec-scrub i { display: block; height: 100%; background: var(--orange); }
+.aca-rec-meta { display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
+.aca-rec-meta div { font-family: var(--mono); font-size: 10.5px; color: var(--tx-dim); }
+.aca-rec-meta b { color: var(--tx-mute); font-weight: 500; margin-right: 5px; }
+
+/* ============================================================
+   SECTION 2 — Smart Access Rules (Policy Engine)
+   ============================================================ */
+
+/* left */
+.aca-pol-l { display: flex; flex-direction: column; height: 100%; }
+.aca-pol-card {
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--surface); padding: 12px 13px;
+  box-shadow: var(--inset); flex: 1;
+  display: flex; flex-direction: column; gap: 6px; overflow: hidden;
+}
+.aca-pol-name {
+  font-family: var(--disp); font-size: 12.5px; font-weight: 500;
+  color: var(--tx); margin-bottom: 4px;
+}
+.aca-pol-conds { display: flex; flex-direction: column; gap: 6px; }
+.aca-cond {
+  font-family: var(--mono); font-size: 11px; color: var(--tx-dim);
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+}
+.aca-cond b  { color: var(--orange); font-weight: 500; }
+.aca-cond em {
+  font-style: normal; background: var(--bg-2);
+  border: 1px solid var(--line); border-radius: 4px;
+  padding: 1px 5px; font-size: 10px;
+}
+.aca-cond.result b { color: var(--allow); }
+.aca-kw {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.06em;
+  color: var(--tx-mute); min-width: 30px; display: inline-block;
+}
+.aca-pol-hint {
+  font-family: var(--mono); font-size: 10px; color: var(--orange);
+  margin-top: auto;
+}
+
+/* right */
+.aca-pol-r {
+  padding: 18px 16px; height: 100%; display: flex; flex-direction: column;
+  gap: 7px; overflow: hidden;
+}
+.aca-pol-item {
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg-2); padding: 9px 11px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.aca-pol-item-h { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.aca-pol-ic { width: 12px; height: 12px; color: var(--orange); flex: none; }
+.aca-pol-item-n {
+  flex: 1; font-family: var(--disp); font-size: 11.5px; font-weight: 500;
+  color: var(--tx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.aca-pol-apps { display: flex; flex-wrap: wrap; gap: 4px; }
+.aca-pol-apps em {
+  font-style: normal; font-family: var(--mono); font-size: 9.5px;
+  color: var(--orange); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px;
+}
+
+/* ============================================================
+   SECTION 3 — Device Health Checks
+   ============================================================ */
+
+/* shared dot */
+.aca-dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 999px; flex: none;
+}
+.aca-dot.ok   { background: var(--allow); }
+.aca-dot.warn { background: #d98a1f; }
+.aca-dots { display: flex; gap: 5px; align-items: center; }
+.aca-dots.sm { gap: 4px; }
+
+/* left */
+.aca-dev-l { display: flex; flex-direction: column; height: 100%; }
+.aca-score-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+}
+.aca-score-card { display: flex; align-items: center; gap: 10px; }
+.aca-ring { width: 56px; height: 56px; flex: none; }
+.aca-score-nums { display: flex; align-items: baseline; gap: 3px; }
+.aca-score-big {
+  font-family: var(--disp); font-size: 30px; font-weight: var(--fw-disp);
+  color: var(--tx); letter-spacing: var(--ls-h2);
+}
+.aca-score-of { font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+.aca-score-meta { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.aca-dev-hostname { font-family: var(--mono); font-size: 11.5px; color: var(--tx-dim); }
+.aca-dev-sub      { font-family: var(--mono); font-size: 10px;   color: var(--allow); }
+
+/* right */
+.aca-dev-r {
+  padding: 18px 16px; height: 100%; display: flex; flex-direction: column;
+  gap: 6px; overflow: hidden;
+}
+.aca-dev-item {
+  display: grid;
+  grid-template-columns: 15px 1fr auto auto;
+  gap: 8px; align-items: center;
+  padding: 8px 10px; border: 1px solid var(--line);
+  border-radius: 8px; background: var(--bg-2); min-width: 0;
+}
+.aca-dev-ic   { width: 13px; height: 13px; color: var(--tx-mute); }
+.aca-dev-name {
+  font-family: var(--mono); font-size: 11px; color: var(--tx-dim);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.aca-dev-score { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.aca-dev-score.ok   { color: var(--allow); }
+.aca-dev-score.warn { color: #d98a1f; }
+.aca-dev-leg {
+  font-family: var(--mono); font-size: 9.5px; color: var(--tx-mute);
+  display: flex; align-items: center; gap: 5px; margin-top: 2px;
+}
+
+/* ── responsive ── */
+@media (max-width: 900px) {
+  .aca-board,
+  .aca-footer { display: flex; flex-direction: column; grid-template-columns: none !important; }
+  .aca-board  { height: auto; }
+  .aca-sec    {
+    flex-direction: column; border-right: none !important;
+    border-bottom: 1px solid var(--line-strong);
+    min-height: 220px;
+  }
+  .aca-sec:last-child { border-bottom: none; }
+  .aca-right  { max-width: 100% !important; opacity: 1 !important; border-left: none; border-top: 1px solid var(--line-strong); }
+  .aca-chevron { display: none; }
+  .aca-footer { gap: 16px; }
+  .aca-foot   { padding: 0; }
+}
+
+/* ── reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .aca-board, .aca-footer { transition: none; }
+  .aca-right   { transition: none; max-width: 100%; opacity: 1; }
+  .aca-chevron { display: none; }
+}

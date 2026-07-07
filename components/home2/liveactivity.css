@@ -1,0 +1,128 @@
+/* ============================================================
+   C-new · Live Activity — text left · two screens right.
+   Big screen graph fills over one pass then freezes; small
+   draggable screen loops the event feed indefinitely.
+   Scoped .lf-; tokens from .iz (orange · dark + paper).
+   amber (#d98a1f) reused for the "pending/warn" tone, matching
+   the rest of the system.
+   ============================================================ */
+
+.lf { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 48px; align-items: center; }
+
+/* ---- left copy ---- */
+.lf-text { max-width: 46ch; }
+.lf-lead { color: var(--tx-dim); font-size: 16px; line-height: 1.62; margin: 16px 0 0; }
+.lf-points { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-direction: column; gap: 11px; }
+.lf-points li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--tx-dim); }
+.lf-dot { width: 8px; height: 8px; border-radius: 999px; flex: none; }
+.lf-dot.ok { background: var(--allow); }
+.lf-dot.warn { background: #d98a1f; }
+.lf-dot.pending { background: #d98a1f; }
+.lf-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 14px; font-weight: 500; color: var(--orange); text-decoration: none; }
+.lf-cta svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.lf-cta:hover svg { transform: translateX(4px); }
+
+/* ---- stage ---- */
+.lf-stage { position: relative; }
+
+/* ---- big screen ---- */
+.lf-big {
+  border-radius: 14px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line-strong);
+  box-shadow: var(--inset), var(--panel-sh);
+}
+.lf-big-bar { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.lf-dots { display: inline-flex; gap: 6px; flex: none; }
+.lf-dots i { width: 10px; height: 10px; border-radius: 999px; background: var(--ghost); }
+.lf-big-title { font-family: var(--disp); font-weight: 500; font-size: 13px; color: var(--tx); margin-left: 4px; }
+.lf-status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; padding: 3px 9px; border-radius: 999px; }
+.lf-status i { width: 6px; height: 6px; border-radius: 999px; }
+.lf-status.live { background: var(--allow-bg); color: var(--allow); }
+.lf-status.live i { background: var(--allow); animation: lf-blink 1.4s ease-in-out infinite; }
+.lf-status.snap { background: var(--bg-2); color: var(--tx-mute); }
+.lf-status.snap i { background: var(--tx-mute); }
+@keyframes lf-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.lf-big-body { padding: 16px 18px 14px; }
+.lf-stats { display: flex; gap: 18px; margin-bottom: 6px; }
+.lf-stat { font-family: var(--mono); font-size: 12px; color: var(--tx-mute); }
+.lf-stat b { font-family: var(--disp); font-weight: 600; font-size: 19px; color: var(--allow); margin-right: 5px; letter-spacing: -0.01em; }
+.lf-stat.deny b { color: var(--deny); }
+.lf-stat.warn b { color: #d98a1f; }
+
+/* chart */
+.lf-chart { display: block; width: 100%; height: auto; }
+.lf-grid { stroke: var(--line); stroke-width: 1; }
+.lf-axis { fill: var(--tx-mute); font-family: var(--mono); font-size: 9px; }
+.lf-ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; transition: d 0.4s ease; }
+.lf-ln-allowed { stroke: var(--allow); }
+.lf-ln-blocked { stroke: var(--deny); stroke-width: 1.6; }
+.lf-ln-pending { stroke: #d98a1f; stroke-width: 1.6; }
+.lf-head { fill: var(--allow); }
+.lf-pulse { fill: var(--allow); opacity: 0.5; animation: lf-ping 1.5s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes lf-ping { 0% { transform: scale(1); opacity: 0.55; } 70%,100% { transform: scale(3.2); opacity: 0; } }
+
+.lf-legend { display: flex; gap: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.lf-legend span { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--tx-mute); }
+.lf-sw { width: 16px; height: 3px; border-radius: 2px; }
+.lf-sw.allowed { background: var(--allow); }
+.lf-sw.blocked { background: var(--deny); }
+.lf-sw.pending { background: #d98a1f; }
+
+/* ---- small draggable screen ---- */
+.lf-small {
+  position: absolute; right: -18px; bottom: -34px; width: 304px;
+  border-radius: 12px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line-strong);
+  box-shadow: 0 24px 50px -18px rgba(0,0,0,0.5), var(--inset);
+  z-index: 3;
+}
+.lf-small-bar { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); cursor: grab; touch-action: none; }
+.lf-small-bar.grabbing { cursor: grabbing; }
+.lf-grip { flex: none; width: 14px; height: 11px; opacity: 0.4; background-image: radial-gradient(circle, var(--tx-dim) 1.3px, transparent 1.3px); background-size: 5px 5px; }
+.lf-live-lbl { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tx-dim); }
+.lf-live-lbl i { width: 7px; height: 7px; border-radius: 999px; background: var(--allow); animation: lf-blink 1.4s ease-in-out infinite; }
+.lf-count { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, var(--surface)); border-radius: 999px; padding: 2px 9px; }
+
+.lf-feed { padding: 6px 6px; min-height: 232px; display: flex; flex-direction: column; -webkit-mask: linear-gradient(180deg, #000 78%, transparent 100%); mask: linear-gradient(180deg, #000 78%, transparent 100%); }
+.lf-feed-wait { padding: 24px 10px; text-align: center; color: var(--tx-mute); font-size: 12px; font-family: var(--mono); }
+.lf-item { display: flex; align-items: flex-start; gap: 9px; padding: 8px 8px; border-radius: 8px; animation: lf-slide 0.34s cubic-bezier(0.16,1,0.3,1); }
+@keyframes lf-slide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.lf-ic { flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; }
+.lf-ic svg { width: 13px; height: 13px; }
+.lf-txt { font-size: 12.5px; line-height: 1.4; color: var(--tx-dim); padding-top: 2px; }
+.lf-actor { color: var(--tx); font-weight: 600; }
+.lf-mono { font-family: var(--mono); font-size: 11.5px; }
+.lf-app { color: var(--orange); }
+
+/* tone tints on the icon chip */
+.tone-ok .lf-ic { background: var(--allow-bg); color: var(--allow); }
+.tone-info .lf-ic { background: color-mix(in srgb, var(--orange) 14%, var(--surface)); color: var(--orange); }
+.tone-pending .lf-ic { background: rgba(229,160,42,0.16); color: #d98a1f; }
+.tone-warn .lf-ic { background: rgba(229,160,42,0.16); color: #d98a1f; }
+.tone-deny .lf-ic { background: var(--deny-bg); color: var(--deny); }
+/* blocked/denied rows get a faint red wash so anomalies pop */
+.tone-deny { background: color-mix(in srgb, var(--deny) 6%, transparent); }
+
+.lf-small-foot { padding: 9px 12px; border-top: 1px solid var(--line); background: var(--surface-2); font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); }
+
+/* ---- responsive ---- */
+@media (max-width: 980px) {
+  .lf { grid-template-columns: 1fr; gap: 30px; }
+  .lf-text { max-width: none; }
+  .lf-stage { padding-bottom: 30px; }
+  .lf-small { right: 0; bottom: -20px; width: 280px; }
+}
+@media (max-width: 560px) {
+  .lf-small { position: relative; right: auto; bottom: auto; width: 100%; margin-top: 14px; box-shadow: var(--inset), var(--panel-sh); }
+  .lf-stage { padding-bottom: 0; }
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .lf-status.live i, .lf-live-lbl i, .lf-pulse { animation: none; }
+  .lf-pulse { display: none; }
+  .lf-item { animation: none; }
+  .lf-ln { transition: none; }
+  .lf-cta svg { transition: none; }
+}

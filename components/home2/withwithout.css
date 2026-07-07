@@ -1,0 +1,162 @@
+/* ============================================================
+   With / Without toggle (C2 · C14) — "InstaSafe OFF / ON".
+   One frame. Flip the switch and watch the layers between your
+   team and your apps lift away — the exposure, the hardware,
+   the detours, the bolt-ons. What's left: one verified tunnel.
+   Scoped `.ww`, lives inside `.iz`. Per InstaSafe_Design_Guide.
+   State class `.ww.on` drives every OFF→ON transition.
+   ============================================================ */
+
+.ww { position: relative; text-align: center; }
+
+/* ---- segmented OFF / ON switch ---- */
+.ww-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--inset);
+}
+.ww-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--tx-mute);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+.ww-toggle button .led { width: 7px; height: 7px; border-radius: 999px; background: var(--ghost); transition: background 0.2s ease; }
+.ww-toggle button.on-off { color: var(--btn-ink); background: var(--deny); }
+.ww-toggle button.on-off .led { background: var(--btn-ink); }
+.ww-toggle button.on-on { color: var(--btn-ink); background: var(--orange); }
+.ww-toggle button.on-on .led { background: var(--btn-ink); }
+
+.ww-head { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(26px, 3.4vw, 38px); letter-spacing: var(--ls-h2); line-height: 1.12; margin: 22px 0 0; }
+.ww-head em { font-style: normal; font-weight: 400; color: var(--orange); }
+.ww-sub { color: var(--tx-dim); font-size: 15.5px; line-height: 1.55; max-width: 62ch; margin: 14px auto 0; min-height: 48px; }
+.ww-sub b { color: var(--tx); font-weight: 600; }
+
+/* ---- stage ---- */
+.ww-stage {
+  text-align: left;
+  margin-top: 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 92, 114, 0.06), transparent 42%), var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  transition: background 0.6s ease;
+}
+.ww.on .ww-stage { background: linear-gradient(180deg, rgba(255, 106, 44, 0.08), transparent 42%), var(--surface); }
+
+.ww-diagram { padding: 30px 26px 26px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
+.ww-diagram svg { width: 100%; max-width: 860px; height: auto; display: block; margin: 0 auto; }
+
+.ww-side { padding: 22px 26px 26px; }
+.ww-side .iz-ey { display: inline-flex; margin: 4px 0 14px; }
+
+/* ---- counters (4-across strip under the diagram) ---- */
+.ww-counters { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg-2); }
+.ww-counter { display: flex; flex-direction: column; gap: 7px; padding: 13px 15px; border-right: 1px solid var(--line); }
+.ww-counter:last-child { border-right: 0; }
+.ww-counter .cl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em; color: var(--tx-mute); }
+.ww-counter .cv { font-family: var(--mono); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+.ww-counter .cv .from { color: var(--deny); }
+.ww-counter .cv .to { color: var(--tx-mute); opacity: 0.45; }
+.ww-counter .cv .ar { color: var(--tx-mute); }
+.ww.on .ww-counter .cv .from { color: var(--tx-mute); opacity: 0.4; text-decoration: line-through; }
+.ww.on .ww-counter .cv .to { color: var(--allow); opacity: 1; }
+
+/* ---- layers list (two columns under the counters) ---- */
+.ww-layers { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 30px; }
+.ww-layer { display: grid; grid-template-columns: 26px 1fr 18px; gap: 11px; align-items: start; padding: 9px 6px; border-radius: 8px; transition: background 0.2s ease; }
+.ww-layer .lx { font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); padding-top: 2px; }
+.ww-layer .lb { display: flex; flex-direction: column; gap: 3px; }
+.ww-layer .off { font-size: 13px; line-height: 1.4; color: var(--tx-dim); transition: color 0.3s ease; }
+.ww-layer .on { font-size: 13px; line-height: 1.4; color: var(--tx); display: none; }
+.ww-layer .on i { font-family: var(--mono); font-style: normal; font-size: 11px; color: var(--orange); margin-left: 4px; letter-spacing: 0.02em; }
+.ww-layer .lmk { position: relative; width: 18px; height: 18px; margin-top: 3px; }
+.ww-layer .lmark { position: absolute; inset: 0; color: var(--allow); opacity: 0; transition: opacity 0.3s ease; }
+.ww-layer .lmark svg { width: 16px; height: 16px; }
+.ww-layer .ldot { position: absolute; top: 5px; left: 5px; width: 7px; height: 7px; border-radius: 999px; background: var(--deny); transition: opacity 0.3s ease; }
+.ww.on .ww-layer .off { color: var(--tx-mute); text-decoration: line-through; opacity: 0.6; }
+.ww.on .ww-layer .on { display: block; }
+.ww.on .ww-layer .lmark { opacity: 1; }
+.ww.on .ww-layer .ldot { opacity: 0; }
+
+.ww-foot { margin-top: 18px; }
+
+/* ============================================================
+   SVG — the OFF→ON morph
+   ============================================================ */
+.ww-node { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.4; }
+.ww-glyph { color: var(--tx-dim); }
+.ww-nlbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; fill: var(--tx-mute); text-anchor: middle; }
+
+/* the six layer-slabs */
+.ww-slab {
+  transition: transform 0.6s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.45s ease;
+}
+.ww-slab-box { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.3; }
+.ww-slab-ic { color: var(--tx-dim); }
+.ww-slab-x { font-family: var(--mono); font-size: 9px; fill: var(--tx-mute); text-anchor: middle; }
+.ww-slab-dot { fill: var(--deny); transition: opacity 0.3s ease; }
+.ww.on .ww-slab { transform: translateY(-168px); opacity: 0; }
+.ww.on .ww-slab-dot { opacity: 0; }
+
+/* OFF exposure layer */
+.ww-risk { transition: opacity 0.4s ease; }
+.ww.on .ww-risk { opacity: 0; }
+.ww-expose-line { stroke: var(--line-strong); stroke-width: 2; stroke-dasharray: 2 5; }
+.ww-port { fill: var(--deny); }
+.ww-lat { stroke: var(--deny); stroke-width: 1.6; fill: none; }
+.ww-scan { stroke: var(--deny); stroke-width: 1.4; fill: none; opacity: 0.9; }
+.ww-scan-grp { animation: ww-scan 2.6s ease-in-out infinite; }
+@keyframes ww-scan { 0%, 100% { transform: translateY(-58px); } 50% { transform: translateY(58px); } }
+
+/* ON secure layer */
+.ww-secure { opacity: 0; transition: opacity 0.5s ease; }
+.ww.on .ww-secure { opacity: 1; transition-delay: 0.32s; }
+.ww-tunnel { stroke: var(--allow); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-dasharray: 7 8; animation: ww-flow 0.9s linear infinite; }
+.ww-shield-box { fill: var(--surface); stroke: var(--allow); stroke-width: 1.6; }
+.ww-shield-ic { color: var(--allow); }
+.ww-packet { fill: var(--allow); offset-rotate: 0deg; animation: ww-travel 1.7s ease-in-out infinite; }
+@keyframes ww-flow { to { stroke-dashoffset: -30; } }
+@keyframes ww-travel { 0% { offset-distance: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+
+/* app tiles */
+.ww-app { transition: opacity 0.5s ease; }
+.ww-app-box { fill: var(--bg-2); stroke: var(--line-strong); stroke-width: 1.3; }
+.ww-app-ic { color: var(--tx-mute); }
+.ww.on .ww-app.gone { opacity: 0.08; }
+.ww.on .ww-app.keep .ww-app-box { stroke: var(--allow); }
+.ww.on .ww-app.keep .ww-app-ic { color: var(--allow); }
+
+/* ---- responsive ---- */
+@media (max-width: 760px) {
+  .ww-counters { grid-template-columns: repeat(2, 1fr); }
+  .ww-counter:nth-child(2) { border-right: 0; }
+  .ww-counter:nth-child(1), .ww-counter:nth-child(2) { border-bottom: 1px solid var(--line); }
+  .ww-layers { grid-template-columns: 1fr; }
+  .ww-toggle button { padding: 9px 14px; font-size: 11.5px; }
+}
+
+/* ---- reduced motion: instant state, no travel/scan ---- */
+@media (prefers-reduced-motion: reduce) {
+  .ww-slab, .ww-risk, .ww-secure, .ww-app, .ww-stage, .ww-layer .off, .ww-layer .lmark, .ww-layer .ldot { transition: none; }
+  .ww-tunnel, .ww-packet, .ww-scan-grp { animation: none; }
+  .ww-tunnel { stroke-dasharray: none; }
+  .ww-packet { display: none; }
+}

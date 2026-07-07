@@ -1,0 +1,139 @@
+/* ============================================================
+   Aggregate access data — "AggregateStack" card.
+   A cascaded deck of summary screens. On card hover the deck
+   translates up and fans out (transform/opacity only).
+   Scoped `.ag-`; tokens from `.iz`.
+   ============================================================ */
+
+.ag-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  overflow: hidden;
+  max-width: 560px;
+}
+
+.ag-stage {
+  position: relative;
+  height: 300px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  perspective: 1100px;
+  -webkit-mask: linear-gradient(180deg, transparent, #000 14%, #000 92%, transparent);
+  mask: linear-gradient(180deg, transparent, #000 14%, #000 92%, transparent);
+  overflow: hidden;
+}
+/* isometric plane — the whole deck is tilted, screens separate along local Z */
+.ag-stack {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300px;
+  height: 150px;
+  transform: translate(-50%, -50%) rotateX(46deg) rotateZ(-34deg);
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ag-card:hover .ag-stack,
+.ag-card:focus-within .ag-stack {
+  transform: translate(-50%, -50%) rotateX(40deg) rotateZ(-30deg);
+}
+
+/* each summary screen — stacked in 3D; front sits highest (largest lift) */
+.ag-screen {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  min-height: 150px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--inset), 0 18px 30px -14px rgba(0, 0, 0, 0.5);
+  transform: translateZ(calc(var(--lift) * 26px));
+  z-index: calc(10 + var(--lift));
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+}
+.ag-card:hover .ag-screen,
+.ag-card:focus-within .ag-screen {
+  transform: translateZ(calc(var(--lift) * 48px));
+}
+
+.ag-screen-h {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--line);
+}
+.ag-ic {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--tx-dim);
+}
+.ag-ic svg { width: 15px; height: 15px; }
+.ag-name { font-family: var(--disp); font-weight: 500; font-size: 14px; color: var(--tx); }
+.ag-total { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--tx-mute); }
+
+.ag-rows { padding: 8px 13px 12px; display: flex; flex-direction: column; gap: 7px; }
+/* only the front screen shows its full row list; deeper screens are clipped by the cascade */
+.ag-screen:not(.front) .ag-rows { padding-bottom: 10px; }
+.ag-row { position: relative; display: flex; align-items: center; gap: 10px; padding: 6px 9px; border-radius: 7px; overflow: hidden; }
+.ag-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--orange) 9%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--orange) 22%, transparent);
+}
+.ag-row.hot .ag-bar { background: color-mix(in srgb, var(--orange) 16%, transparent); }
+.ag-lbl { position: relative; font-family: var(--mono); font-size: 11.5px; color: var(--tx-dim); }
+.ag-row.hot .ag-lbl { color: var(--tx); }
+.ag-val { position: relative; margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--tx-mute); }
+
+/* ---- embed mode: iso deck only, dropped into another card's media slot ---- */
+.ag-embed { width: 100%; min-width: 0; max-width: 100%; height: 100%; position: relative; min-height: 240px; display: flex; overflow: hidden; }
+.ag-stage.embed { background: transparent; border-bottom: 0; height: 260px; width: 100%; }
+.ag-embed:hover .ag-stack, .ag-embed:focus-within .ag-stack { transform: translate(-50%, -50%) rotateX(40deg) rotateZ(-30deg); }
+.ag-embed:hover .ag-screen, .ag-embed:focus-within .ag-screen { transform: translateZ(calc(var(--lift) * 48px)); }
+
+/* ---- card footer ---- */
+.ag-foot { padding: 22px 24px 24px; }
+.ag-foot .iz-ey { margin-bottom: 12px; }
+.ag-title {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: 23px;
+  letter-spacing: var(--ls-h2);
+  line-height: var(--lh-h2);
+  margin: 0;
+  color: var(--tx);
+}
+.ag-title em { font-style: normal; font-weight: 400; color: var(--orange); }
+.ag-desc { color: var(--tx-dim); font-size: 14.5px; line-height: 1.55; margin: 10px 0 0; max-width: 44ch; }
+.ag-learn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--orange);
+}
+.ag-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.ag-learn:hover svg { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-stack, .ag-screen { transition: none; }
+  .ag-card:hover .ag-stack, .ag-card:focus-within .ag-stack { transform: translate(-50%, -50%) rotateX(46deg) rotateZ(-34deg); }
+  .ag-card:hover .ag-screen, .ag-card:focus-within .ag-screen { transform: translateZ(calc(var(--lift) * 26px)); }
+  .ag-learn svg { transition: none; }
+}

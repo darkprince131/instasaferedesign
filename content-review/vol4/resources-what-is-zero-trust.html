@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PILLAR PAGE — InstaSafe Content Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/review.css">
+</head>
+<body class="t-blue">
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="../index.html"><img src="../assets/brand/instasafe-lockup-white.svg" alt="InstaSafe" height="24"></a>
+    <span class="vol-label">Vol 4 · Company &amp; Resources</span>
+    <span class="cr-count" data-cr-count hidden>💬 0</span>
+    <a class="index-link" href="../index.html">← Index</a>
+  </div>
+</header>
+<main class="wrap page">
+  <div class="page-head" data-cb="b1">
+    <div class="route">/resources/what-is-zero-trust</div>
+    <h1 class="page-title">PILLAR PAGE</h1>
+    <div class="chips"><span class="chip clean-chip">No review markers</span></div>
+    <div class="seo-meta"><span class="seo-k">SEO</span> Title: What is Zero Trust? The Complete Guide | InstaSafe | Meta: Zero Trust explained from first principles — the model, the architecture (NIST SP 800-207), ZTNA vs ZTAA vs SDP, and how to actually start. No jargon required to begin.</div>
+  </div>
+  <article class="prose">
+<p data-cb="b2">*(~2,000 words. The SEO pillar and the page every "plain answer" section links to. Written for a smart reader with zero security background; expert-useful via structure.)*</p>
+<hr class="rule">
+<h3 data-cb="b3">What is Zero Trust?</h3>
+<p data-cb="b4">Zero Trust is a security model built on one uncomfortable observation: <strong>the location of a request tells you nothing about whether to trust it.</strong></p>
+<p data-cb="b5">For decades, enterprise security worked like a castle. Build strong walls (firewalls), control the gates (VPNs), and treat everyone inside as friendly. It matched how work happened — employees at desks, applications in the server room, the "inside" a real physical place.</p>
+<p data-cb="b6">Then work left the castle. Applications moved to the cloud; employees moved to kitchen tables; contractors, vendors, and personal phones multiplied. And attackers noticed the model's fatal generosity: get inside once — one phished password, one exploited VPN box — and the castle's trust becomes your weapon. You're inside, therefore you're friendly, therefore the interior barely resists. Nearly every headline breach of the last decade follows this arc: modest initial entry, then free movement inside a perimeter that assumed insiders are safe.</p>
+<p data-cb="b7">Zero Trust abandons the castle. Its rule: <strong>never trust, always verify.</strong> No request is trusted because of where it comes from — not from the office, not from the VPN, not from "inside." Every single request must prove, every time: the *person* is who they claim (identity, multi-factor), the *device* is known and healthy (posture, binding), the *context* makes sense (location, time, behaviour) — and then it receives access to the one thing it asked for. Not the network. The application.</p>
+<p data-cb="b8">If you remember one sentence: <strong>Zero Trust replaces "where are you?" with "who are you, on what device, and does this request make sense?" — asked on every request, forever.</strong></p>
+<h3 data-cb="b9">The principles, concretely</h3>
+<p data-cb="b10"><strong>1. Verify explicitly.</strong> Authenticate and authorise every request using all available signals — identity, device state, location, time, workload, anomaly score. One check at the front door is not a security model; it's a hope.</p>
+<p data-cb="b11"><strong>2. Least privilege.</strong> Grant the minimum access the task requires, for the minimum time. The intern doesn't see finance; the vendor's access expires with the contract; the admin's power activates only in its window. Blast radius is decided *before* the breach, by policy.</p>
+<p data-cb="b12"><strong>3. Assume breach.</strong> Design as though an attacker is already present — because statistically, eventually, one is. Segment access so compromise doesn't spread; log everything so nothing hides; encrypt so interception yields nothing. The measure of a security architecture isn't whether breach attempts happen; it's what one costs.</p>
+<h3 data-cb="b13">The architecture: how it's actually built</h3>
+<p data-cb="b14">The U.S. standards body NIST codified the model in <strong>SP 800-207</strong>, and its core structure appears in every serious implementation, InstaSafe included:</p>
+<ul data-cb="b15" class="list"><li>A <strong>policy engine</strong> decides: given this identity, this device, this context, and these rules — allow, deny, or challenge? (In InstaSafe, this is the Trust Engine: 21 policy combinations, 12 risk triggers, 4 automatic responses.)</li><li><strong>Enforcement points</strong> sit in front of every resource and obey the engine. Nothing is reachable except through them.</li><li><strong>Signal feeds</strong> keep the decision honest: directory identity, device posture, geolocation, time, behavioural baselines — evaluated continuously, not once.</li></ul>
+<p data-cb="b16">A sibling architecture, the <strong>Software-Defined Perimeter (SDP)</strong> from the Cloud Security Alliance, adds the stealth layer: infrastructure stays *dark*, refusing all unauthenticated traffic (drop-all), revealing itself only to callers that pre-authenticate (Single Packet Authorization). You can't attack what won't answer. InstaSafe implements this as server blackening.</p>
+<h3 data-cb="b17">ZTNA, ZTAA, SDP — sorting the acronyms</h3>
+<ul data-cb="b18" class="list"><li><strong>SDP</strong> — the architectural pattern: dark infrastructure, verify-then-connect.</li><li><strong>ZTNA (Zero Trust Network Access)</strong> — the product category applying it to access: verify user + device + context, then open a narrow tunnel to one resource. The VPN's replacement. In InstaSafe, ZTNA specifically covers *IP-layer* access — thick clients, protocols, legacy systems.</li><li><strong>ZTAA (Zero Trust Application Access)</strong> — one level up: the user never touches a network path at all; applications (web, RDP, SSH, databases, file shares) are delivered through a governed browser portal with in-session controls — recording, watermarking, clipboard policy.</li><li><strong>SASE</strong> — a broader bundle: ZTNA plus traffic-inspection services (SWG, CASB, firewall-as-a-service) delivered through a vendor's cloud. Note the architectural trade: SASE routes your traffic *through the vendor*. Privacy-first ZTNA (InstaSafe's model) deliberately doesn't. <span class="xref">[→ /compare/ztna-vs-sase]</span></li></ul>
+<h3 data-cb="b19">What Zero Trust is *not*</h3>
+<p data-cb="b20">Not a product you buy once — it's an architecture you adopt (any vendor claiming a Zero-Trust-in-a-box is selling the box, not the model). Not "trust no one ever" — it's *verified* trust, granted precisely and continuously instead of assumed broadly. Not a rip-and-replace project — real adoptions are staged: strongest identity first, then device trust, then per-app access, retiring the perimeter piece by piece. And not only for giants: the model scales down cleanly; lean teams arguably benefit most, because policy replaces headcount.</p>
+<h3 data-cb="b21">Starting, practically</h3>
+<ul data-cb="b22" class="list"><li><strong>Identity first.</strong> One directory of truth, SSO in front of the app estate, MFA everywhere — the highest security-per-effort step that exists.</li><li><strong>Know your devices.</strong> Binding (is this machine approved?) and posture (is it healthy?) turn "credentials" into "credentials from a trustworthy machine."</li><li><strong>Per-app access.</strong> Publish applications through governed access (portal/tunnels); stop granting network membership. Start with the riskiest population — usually third parties.</li><li><strong>Go dark.</strong> Blacken what no longer needs to be internet-visible. Watch your scannable footprint approach zero.</li><li><strong>Let context work.</strong> Time windows, geofencing, risk-based step-up — the policies that do headcount's work.</li></ul>
+<p data-cb="b23">Each step pays for itself independently. That's the practical genius of the model: it's adoptable in slices, and every slice reduces real risk.</p>
+<p data-cb="b24">*Ready to see it running? [Book a demo →] Or continue into the details: [What is ZTNA] · [What is MFA] · [What is SSO] · [Glossary].*</p>
+<hr class="rule">
+<hr class="rule">
+  </article>
+  <nav class="pagenav">
+    <a class="pn prev" href="./book-a-demo.html"><span class="pn-k">← Prev</span><span class="pn-t">Book a Demo</span></a>
+    <a class="pn next" href="./resources-what-is.html"><span class="pn-k">Next →</span><span class="pn-t">Education hub pages</span></a>
+  </nav>
+</main>
+<footer class="pagefoot">
+  <div class="wrap">
+    <span>InstaSafe Content Master — Review Build</span>
+    <span class="dot">·</span>
+    <span>Vol 4 · Company & Resources</span>
+    <span class="dot">·</span>
+    <span>2026-07-07</span>
+    <span class="dot">·</span>
+    <a class="cr-export" href="#" data-cr-export>Export my comments</a>
+  </div>
+</footer>
+<script src="../assets/review-comments.js" defer></script>
+</body>
+</html>

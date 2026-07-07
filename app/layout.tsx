@@ -1,0 +1,102 @@
+import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+
+const SITE_URL = "https://www.instasafe.com";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "InstaSafe ZTNA — Zero Trust Access in One Console | VPN Alternative",
+    template: "%s | InstaSafe",
+  },
+  description:
+    "Replace your VPN with InstaSafe ZTNA: Zero Trust network access, MFA, SSO, database and server access, privileged session recording, and endpoint control from one console.",
+  keywords: [
+    "Zero Trust",
+    "ZTNA",
+    "VPN alternative",
+    "MFA",
+    "SSO",
+    "secure remote access",
+    "privileged access management",
+    "InstaSafe",
+  ],
+  alternates: { canonical: "/" },
+  authors: [{ name: "InstaSafe Technologies" }],
+  openGraph: {
+    title: "InstaSafe ZTNA — Zero Trust Access in One Console",
+    description:
+      "8 auth profiles, 7 app types, 25 device checks and privileged session recording. One console, no VPN.",
+    url: SITE_URL,
+    siteName: "InstaSafe",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "InstaSafe ZTNA — Zero Trust Access in One Console",
+    description:
+      "Replace the VPN. Unify identity, access, devices and audit in a single Zero Trust platform.",
+  },
+  robots: { index: true, follow: true },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "InstaSafe Technologies",
+      url: SITE_URL,
+      description:
+        "InstaSafe provides Zero Trust security: ZTNA, MFA, SSO and privileged access from one platform.",
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+91-844-844-8548",
+        contactType: "sales",
+        email: "sales@instasafe.com",
+      },
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "InstaSafe ZTNA",
+      applicationCategory: "SecurityApplication",
+      operatingSystem: "Windows, macOS, Linux, iOS, Android",
+      offers: {
+        "@type": "Offer",
+        price: "2",
+        priceCurrency: "USD",
+        description: "Zero Trust Platform, per user per month, billed annually",
+      },
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+  ],
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en" className={`${inter.variable} ${mono.variable}`} data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.dataset.theme=t;}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {children}
+      </body>
+    </html>
+  );
+}

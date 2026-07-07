@@ -1,0 +1,291 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import {
+  Fingerprint,
+  Key,
+  SlidersHorizontal,
+  Gauge,
+  ShieldCheck,
+  MapPin,
+  VideoCamera,
+  Drop,
+  EyeSlash,
+  ArrowsLeftRight,
+  Export,
+  ListChecks,
+  ShareNetwork,
+  FileText,
+  Lock,
+  CheckCircle,
+  XCircle,
+  Circle,
+  Square,
+  SquaresFour,
+  DotsNine,
+  Cube,
+  Hash,
+  type Icon,
+} from "@phosphor-icons/react";
+
+/* ============================================================
+   C3 · Feature Index / Constellation — 3-tab feature showcase.
+     tab 0 → Identity stack (hover-interactive status cards)
+     tab 1 → Zero-trust controls hub (constellation)
+     tab 2 → Visibility log (draggable panel)
+   Autoplay: 5.5 s per tab, pauses on hover.
+   ============================================================ */
+
+const TAB_MS = 5500;
+
+const Arrow = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);
+
+/* ---------- center: constellation hub ---------- */
+type Cell =
+  | { k: "ghost"; icon: Icon }
+  | { k: "feat"; label: string; icon: Icon; href: string }
+  | { k: "hero" };
+
+const ghosts: Icon[] = [Circle, SquaresFour, DotsNine, Cube, Hash, Square];
+let gi = 0;
+const G = (): Cell => ({ k: "ghost", icon: ghosts[gi++ % ghosts.length] });
+const F = (label: string, icon: Icon, href: string): Cell => ({ k: "feat", label, icon, href });
+
+const CELLS: Cell[] = [
+  G(), G(), F("MFA", Fingerprint, "/multifactor-authentication"), F("Geo-fencing", MapPin, "/zero-trust-features/geo-binding"), G(), G(),
+  G(), F("SSO", Key, "/solutions/idam-single-sign-on"), F("Device posture", ShieldCheck, "/zero-trust-features/device-posture-check"), F("SIEM export", Export, "/zero-trust-network-access"), G(), G(),
+  G(), F("Per-app tunnel", ArrowsLeftRight, "/zero-trust-network-access"), { k: "hero" }, F("Risk scoring", Gauge, "/platform/iam"), G(),
+  G(), F("Session recording", VideoCamera, "/zero-trust-features/session-recording"), F("Audit logs", ListChecks, "/zero-trust-network-access"), F("Conditional access", SlidersHorizontal, "/platform/iam"), G(), G(),
+  G(), G(), F("Server blackening", EyeSlash, "/zero-trust-network-access"), F("Watermark", Drop, "/zero-trust-features/secure-browser"), G(), G(),
+];
+
+function HubView() {
+  return (
+    <div className="fh-view fh-hub">
+      {CELLS.map((c, i) => {
+        if (c.k === "hero") {
+          return (
+            <div className="fh-hero" key="hero">
+              <span className="mk">
+                <Lock weight="fill" />
+              </span>
+              <span>
+                <span className="ht">InstaSafe</span>
+                <span className="hs">zero-trust core</span>
+              </span>
+            </div>
+          );
+        }
+        if (c.k === "ghost") {
+          const I = c.icon;
+          return (
+            <div className="fh-tile ghost" key={`g${i}`} aria-hidden="true">
+              <span className="ti"><I weight="regular" /></span>
+            </div>
+          );
+        }
+        const I = c.icon;
+        return (
+          <a className="fh-tile feat" key={c.label} href={c.href} aria-label={c.label}>
+            <span className="ti"><I weight="regular" /></span>
+            <span className="tl">{c.label}</span>
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------- left: identity stack — cards are hover-interactive ---------- */
+function IdentityView() {
+  return (
+    <div className="fh-view fh-stack">
+      <div className="fh-srow">
+        <span className="si"><Key weight="regular" /></span>
+        <span>
+          <span className="sn">Single sign-on</span>
+          <span className="ss">SAML · OAuth · OpenID</span>
+        </span>
+        <span className="sgrow">
+          <span className="sstat">12.4K logins</span>
+          <span className="fh-pill ok"><CheckCircle weight="fill" /> Active</span>
+        </span>
+      </div>
+      <div className="fh-srow">
+        <span className="si"><Fingerprint weight="regular" /></span>
+        <span>
+          <span className="sn">Multi-factor auth</span>
+          <span className="ss">Push · TOTP · Hardware key</span>
+        </span>
+        <span className="sgrow">
+          <span className="sstat">6 methods</span>
+          <span className="fh-pill ok"><CheckCircle weight="fill" /> Active</span>
+        </span>
+      </div>
+      <div className="fh-srow col">
+        <span className="stop">
+          <span className="si"><SlidersHorizontal weight="regular" /></span>
+          <span>
+            <span className="sn">Conditional access</span>
+            <span className="ss">geo · device · time · risk</span>
+          </span>
+          <span className="sgrow">
+            <span className="fh-pill wait"><i /> Adaptive</span>
+          </span>
+        </span>
+        <span className="fh-rule">
+          <span className="fh-rule-h">WHEN A REQUEST COMES IN</span>
+          <span className="fh-rule-row">if device.posture <b>&lt; pass</b> → step-up MFA</span>
+          <span className="fh-rule-row">if geo <b>∉ allowed</b> → deny</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- right: visibility log — draggable panel ---------- */
+const LOG = [
+  { u: "anita.r",      a: "billing-portal", ok: true,  t: "09:41" },
+  { u: "build-svc",    a: "code-server",    ok: true,  t: "09:41" },
+  { u: "contractor-07",a: "finance-rdp",    ok: false, t: "09:41" },
+  { u: "priya.m",      a: "reports-db",     ok: true,  t: "09:42" },
+  { u: "ops-22",       a: "admin-panel",    ok: false, t: "09:42" },
+  { u: "sarah.k",      a: "finance-app",    ok: true,  t: "09:43" },
+];
+
+function AuditView() {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragging = useRef(false);
+  const origin = useRef({ mx: 0, my: 0, px: 0, py: 0 });
+
+  function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragging.current = true;
+    setIsDragging(true);
+    origin.current = { mx: e.clientX, my: e.clientY, px: pos.x, py: pos.y };
+  }
+  function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (!dragging.current) return;
+    setPos({
+      x: origin.current.px + e.clientX - origin.current.mx,
+      y: origin.current.py + e.clientY - origin.current.my,
+    });
+  }
+  function onPointerUp() {
+    dragging.current = false;
+    setIsDragging(false);
+  }
+
+  return (
+    <div className="fh-view fh-log-wrap">
+      <div
+        className={`fh-log${isDragging ? " dragging" : ""}`}
+        style={{ transform: `translate(${pos.x}px,${pos.y}px)` }}
+      >
+        <div
+          className="fh-log-h"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+        >
+          <span className="fh-drag-handle" aria-hidden="true" />
+          <span className="live"><i /> Live access</span>
+          <span className="exp"><Export weight="regular" /> SIEM</span>
+        </div>
+        <div className="fh-log-body">
+          {LOG.map((r) => (
+            <div className="fh-lrow" key={r.u + r.t}>
+              <span className="lic" style={{ color: r.ok ? "var(--allow)" : "var(--deny)" }}>
+                {r.ok ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />}
+              </span>
+              <span className="lu">{r.u}</span>
+              <span className="la">{r.a}</span>
+              <span
+                className={`fh-pill ${r.ok ? "ok" : ""}`}
+                style={r.ok ? undefined : { background: "var(--deny-bg)", color: "var(--deny)" }}
+              >
+                {r.ok ? "allowed" : "denied"}
+              </span>
+              <span className="lt">{r.t}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- tabs ---------- */
+interface Tab { icon: Icon; title: string; desc: string; href: string; }
+
+const TABS: Tab[] = [
+  { icon: Fingerprint, title: "Identity & access",    desc: "SSO, MFA and risk-based conditional access on every request.",                          href: "/platform/iam" },
+  { icon: ShareNetwork, title: "Zero-trust controls", desc: "Dozens of access controls — device, geo, session and more — around every app.",          href: "/platform" },
+  { icon: FileText,    title: "Visibility & audit",   desc: "Every access event, allowed or denied, streamed live to your SIEM.",                     href: "/zero-trust-network-access" },
+];
+
+const N = TABS.length;
+
+export function FeatureHub() {
+  const [tab, setTab] = useState(1);
+  const [paused, setPaused] = useState(false);
+
+  // Fresh TAB_MS countdown each time `tab` or `paused` changes.
+  useEffect(() => {
+    if (paused) return;
+    const id = setTimeout(() => setTab((t) => (t + 1) % N), TAB_MS);
+    return () => clearTimeout(id);
+  }, [tab, paused]);
+
+  function choose(i: number) { setTab(i); }
+
+  return (
+    <div
+      className="fh"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="fh-head">
+        <span className="iz-ey">One platform</span>
+        <h2 className="iz-h2">Every control, <em>around every app</em>.</h2>
+        <p className="fh-lead">Identity, device, session and audit — pick a layer to see it in action.</p>
+      </div>
+
+      <div className="fh-stage">
+        {tab === 0 ? <IdentityView key="i" /> : tab === 2 ? <AuditView key="a" /> : <HubView key="h" />}
+      </div>
+
+      <div className="fh-groups" role="tablist" aria-label="Feature categories">
+        {TABS.map((t, i) => (
+          <div
+            key={t.title}
+            role="tab"
+            tabIndex={0}
+            aria-selected={tab === i}
+            className={`fh-group ${tab === i ? "on" : ""}`}
+            onClick={() => choose(i)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(i); }
+            }}
+          >
+            {/* Progress bar — key forces CSS animation reset on every tab switch */}
+            {tab === i && (
+              <span className={`fh-prog${paused ? " paused" : ""}`} key={`prog-${i}-${tab}`} />
+            )}
+            <span className="gi"><t.icon weight={tab === i ? "fill" : "regular"} /></span>
+            <h4>{t.title}</h4>
+            <p>{t.desc}</p>
+            <a href={t.href} className="learn" onClick={(e) => e.stopPropagation()}>
+              Learn more {Arrow}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

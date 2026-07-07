@@ -1,0 +1,131 @@
+/* ============================================================
+   C38 · Q&A Triptych ("Ask anything").
+   3 query features left + 3 right flank a center chat panel
+   that answers the selected query. Click a feature OR the nav
+   below to switch. Two nav variants: icons / text-labels.
+   Scoped `.qa-`; tokens from `.iz` (orange · dark + paper).
+   ============================================================ */
+
+.qa { position: relative; }
+
+/* ---- header ---- */
+.qa-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.qa-eye {
+  display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--tx-mute); border: 1px solid var(--line-strong); border-radius: 6px; padding: 4px 10px;
+}
+.qa-h1 {
+  font-family: var(--disp); font-weight: 400; font-size: clamp(40px, 6.5vw, 76px); line-height: 0.96;
+  letter-spacing: var(--ls-hero); text-transform: uppercase; margin: 16px 0 0; color: var(--tx);
+}
+.qa-h1 em { font-style: normal; color: var(--orange); text-shadow: 0 0 32px color-mix(in srgb, var(--orange) 55%, transparent); }
+.qa-demo {
+  display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: var(--btn-ink);
+  font-family: var(--body); font-weight: 600; font-size: 13.5px; letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: 999px; padding: 12px 22px; box-shadow: var(--cta-glow); white-space: nowrap;
+  transition: transform 0.18s ease;
+}
+.qa-demo:hover { transform: translateY(-1px); }
+
+/* ---- grid ---- */
+.qa-grid { display: grid; grid-template-columns: 1fr 1.18fr 1fr; gap: 38px; align-items: start; margin-top: 44px; }
+
+/* ---- feature column ---- */
+.qa-side { position: relative; display: flex; flex-direction: column; }
+.qa-side::before { content: ""; position: absolute; left: 14px; top: 26px; bottom: 26px; width: 1px; background: var(--line); }
+.qa-feat {
+  display: grid; grid-template-columns: 29px 1fr; gap: 15px; align-items: start;
+  padding: 16px 0; cursor: pointer; background: none; border: 0; text-align: left; width: 100%; font: inherit;
+}
+.qa-feat .ic {
+  position: relative; z-index: 1; width: 29px; height: 29px; border-radius: 999px; flex: none;
+  background: var(--surface); border: 1px solid var(--line-strong); display: grid; place-items: center;
+  color: var(--tx-mute); transition: border-color 0.25s ease, color 0.25s ease, background-color 0.25s ease;
+}
+.qa-feat .ic svg { width: 15px; height: 15px; }
+.qa-feat .ttl { font-family: var(--disp); font-weight: 500; font-size: 18.5px; letter-spacing: -0.01em; color: var(--tx-dim); transition: color 0.25s ease; }
+.qa-feat .desc { font-size: 13.5px; line-height: 1.5; color: var(--tx-mute); margin-top: 6px; transition: color 0.25s ease, opacity 0.25s ease; opacity: 0.7; }
+.qa-feat:hover .ttl { color: var(--tx); }
+.qa-feat:hover .desc { opacity: 1; }
+.qa-feat:hover .ic { border-color: var(--tx-mute); color: var(--tx-dim); }
+.qa-feat.on .ic { border-color: var(--orange); color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, var(--surface)); }
+.qa-feat.on .ttl { color: var(--tx); }
+.qa-feat.on .desc { color: var(--tx-dim); opacity: 1; }
+
+/* ---- center panel ---- */
+.qa-center { display: flex; flex-direction: column; gap: 14px; }
+.qa-panel {
+  border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--inset), var(--panel-sh);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 430px;
+}
+.qa-chat { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+.qa-msg { display: grid; grid-template-columns: 34px 1fr; gap: 11px; padding: 13px 14px; border-radius: 13px; }
+.qa-msg.user { background: var(--surface-2); border: 1px solid var(--line); }
+.qa-msg.app { background: color-mix(in srgb, var(--orange) 7%, var(--surface)); border: 1px solid color-mix(in srgb, var(--orange) 32%, var(--line)); }
+.qa-av { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.qa-av.user { background: var(--ghost); color: var(--tx); }
+.qa-av.app { background: var(--orange); color: var(--btn-ink); }
+.qa-av.app svg { width: 18px; height: 18px; }
+.qa-mhead { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.qa-mhead .nm { font-size: 13.5px; font-weight: 600; color: var(--tx); }
+.qa-mhead .badge { font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--orange); border: 1px solid color-mix(in srgb, var(--orange) 40%, var(--line-strong)); border-radius: 4px; padding: 1px 4px; }
+.qa-mhead .tm { font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); }
+.qa-mbody { font-size: 13.5px; line-height: 1.55; color: var(--tx-dim); }
+.qa-mbody b { color: var(--tx); font-weight: 600; }
+.qa-mbody p { margin: 0; }
+.qa-mbody p + p { margin-top: 9px; }
+.qa-code { font-family: var(--mono); font-size: 12px; color: var(--tx); background: var(--bg-2); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+.qa-allow { color: var(--allow); font-weight: 600; }
+.qa-deny { color: var(--deny); font-weight: 600; }
+.qa-link { color: var(--orange); text-decoration: underline; text-underline-offset: 2px; font-weight: 500; }
+
+/* reveal on switch */
+.qa-msg { opacity: 0; transform: translateY(8px); animation: qa-in 0.4s ease forwards; }
+.qa-msg.user { animation-delay: 0.02s; }
+.qa-msg.app { animation-delay: 0.16s; }
+
+.qa-input { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); border-radius: 11px; padding: 12px 14px; color: var(--tx-mute); font-size: 13px; }
+.qa-input .blink { width: 1.5px; height: 15px; background: var(--orange); animation: qa-blink 1.1s step-end infinite; }
+
+/* ---- nav below (variant: icons / labels) ---- */
+.qa-nav { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.qa-nav.icons .qa-navi { width: 56px; height: 46px; }
+.qa-navi {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px; color: var(--tx-mute);
+  cursor: pointer; padding: 0 14px; position: relative; transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em; height: 40px; white-space: nowrap;
+}
+.qa-navi svg { width: 17px; height: 17px; }
+.qa-navi:hover { color: var(--tx-dim); border-color: var(--line-strong); }
+.qa-navi.on { color: var(--orange); border-color: color-mix(in srgb, var(--orange) 45%, var(--line-strong)); background: color-mix(in srgb, var(--orange) 8%, var(--surface)); }
+
+/* autoplay progress: active icon underline fills over the dwell time */
+.navi-prog { position: absolute; left: 16%; right: 16%; bottom: -1px; height: 2.5px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--orange) 22%, transparent); }
+.qa-prog-wrap { display: flex; justify-content: center; }
+.panel-prog { position: relative; width: 64%; max-width: 360px; height: 3px; margin-top: 2px; border-radius: 999px; overflow: hidden; background: var(--line); }
+.qa-fill { position: absolute; inset: 0; border-radius: 999px; background: var(--orange); transform: scaleX(0); transform-origin: left center; }
+.qa-fill.run { animation-name: qa-fill; animation-timing-function: linear; animation-fill-mode: forwards; }
+
+@keyframes qa-in { to { opacity: 1; transform: none; } }
+@keyframes qa-blink { 50% { opacity: 0; } }
+@keyframes qa-fill { to { transform: scaleX(1); } }
+
+/* ---- responsive ---- */
+@media (max-width: 1000px) {
+  .qa-grid { grid-template-columns: 1fr 1fr; }
+  .qa-center { grid-column: 1 / -1; order: -1; }
+}
+@media (max-width: 600px) {
+  .qa-grid { grid-template-columns: 1fr; }
+  .qa-nav.icons .qa-navi { width: 48px; }
+  .qa-navi { padding: 0 11px; font-size: 11px; }
+}
+
+/* ---- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .qa-msg { animation: none; opacity: 1; transform: none; }
+  .qa-input .blink { animation: none; }
+  .qa-demo:hover { transform: none; }
+}

@@ -1,0 +1,123 @@
+/* ============================================================
+   InstaSafe console — the access console in OUR design language
+   (orange · dark + paper, tokens from `.iz`). A compact admin
+   console: window chrome · left sidebar nav · topbar · content.
+   Sized to sit inside a C23 Console Row without breaking.
+   Scoped `.isc-` (distinct from the lab's `.izc-`).
+   The blue --db console stays as-is in the /console gallery.
+   ============================================================ */
+
+.isc-win {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--inset), var(--panel-sh);
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* window chrome */
+.isc-chrome { display: flex; align-items: center; gap: 8px; padding: 9px 13px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.isc-dots { display: inline-flex; gap: 6px; }
+.isc-dots i { width: 9px; height: 9px; border-radius: 999px; background: var(--ghost); }
+.isc-chrome .ttl { font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+
+/* body grid */
+.isc-body { display: grid; grid-template-columns: 144px 1fr; min-height: 320px; }
+
+/* sidebar */
+.isc-side { background: var(--bg-2); border-right: 1px solid var(--line); padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.isc-brand { display: flex; align-items: center; gap: 8px; padding: 2px 8px 14px; }
+.isc-brand b { font-family: var(--disp); font-weight: 600; font-size: 14px; letter-spacing: -0.01em; color: var(--tx); }
+.isc-nav { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 8px; font-size: 11.5px; color: var(--tx-dim); position: relative; white-space: nowrap; }
+.isc-nav svg { width: 15px; height: 15px; flex: none; color: var(--tx-mute); }
+.isc-nav.on { color: var(--tx); background: color-mix(in srgb, var(--orange) 12%, transparent); }
+.isc-nav.on svg { color: var(--orange); }
+.isc-nav.on::before { content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 17px; border-radius: 999px; background: var(--orange); }
+.isc-side .sp { flex: 1; }
+.isc-sign { display: flex; align-items: center; gap: 9px; padding: 7px 9px; font-size: 11.5px; color: var(--tx-mute); }
+.isc-sign svg { width: 15px; height: 15px; }
+
+/* main */
+.isc-main { display: flex; flex-direction: column; min-width: 0; }
+.isc-top { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+.isc-top h4 { font-family: var(--disp); font-weight: 500; font-size: 14px; margin: 0; color: var(--tx); }
+.isc-search { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; padding: 5px 9px; font-size: 10.5px; color: var(--tx-mute); }
+.isc-search svg { width: 12px; height: 12px; }
+.isc-clock { font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); font-variant-numeric: tabular-nums; }
+.isc-bell { color: var(--tx-dim); }
+.isc-bell svg { width: 15px; height: 15px; display: block; }
+.isc-av { width: 24px; height: 24px; border-radius: 999px; background: var(--orange); color: var(--btn-ink); display: grid; place-items: center; font-family: var(--mono); font-size: 10px; font-weight: 600; }
+
+.isc-content { padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+/* KPI tiles */
+.isc-kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.isc-kpi { border: 1px solid var(--line); border-radius: 11px; background: var(--bg-2); padding: 11px 12px; min-width: 0; }
+.isc-kpi .k { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tx-mute); }
+.isc-kpi .v { font-family: var(--disp); font-weight: 400; font-size: 21px; color: var(--tx); margin-top: 5px; display: flex; align-items: center; gap: 7px; line-height: 1; }
+.isc-kpi .v .suf { font-size: 12px; color: var(--tx-mute); }
+.isc-kpi.accent .v { color: var(--orange); }
+.isc-kpi .live { position: relative; width: 8px; height: 8px; flex: none; }
+.isc-kpi .live i { position: absolute; inset: 0; border-radius: 999px; background: var(--allow); }
+.isc-kpi .live i.ping { animation: isc-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+/* panel */
+.isc-panel { border: 1px solid var(--line); border-radius: 11px; background: var(--bg-2); padding: 12px; min-width: 0; }
+.isc-panel-h { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; font-weight: 600; color: var(--tx); margin-bottom: 10px; }
+.isc-panel-h .sub { font-family: var(--mono); font-size: 10px; color: var(--tx-mute); font-weight: 400; }
+.isc-area { width: 100%; height: auto; display: block; }
+
+/* live access log */
+.isc-log { border: 1px solid var(--line); border-radius: 11px; background: var(--bg-2); overflow: hidden; }
+.isc-log-row { display: grid; grid-template-columns: 1fr 1.1fr auto auto; gap: 10px; align-items: center; padding: 9px 12px; font-size: 11px; border-top: 1px solid var(--line); }
+.isc-log-row:first-child { border-top: 0; }
+.isc-log-row .u { color: var(--tx-dim); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.isc-log-row .ap { font-family: var(--mono); font-size: 10.5px; color: var(--orange); min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.isc-log-row .t { font-family: var(--mono); font-size: 10px; color: var(--tx-mute); text-align: right; }
+
+.isc-pill { font-family: var(--mono); font-size: 9px; font-weight: 600; border-radius: 999px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.isc-pill svg { width: 9px; height: 9px; }
+.isc-pill.allow { background: var(--allow-bg); color: var(--allow); }
+.isc-pill.deny { background: var(--deny-bg); color: var(--deny); }
+.isc-pill.warn { background: rgba(229, 160, 42, 0.15); color: #d98a1f; }
+.isc-pill.warn i { width: 6px; height: 6px; border-radius: 999px; background: #d98a1f; animation: isc-pulse 1.3s ease-in-out infinite; }
+
+/* devices table */
+.isc-tblbar { display: flex; align-items: center; gap: 8px; }
+.isc-tblbar .cnt { font-size: 11.5px; font-weight: 600; color: var(--tx); }
+.isc-add { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; background: var(--orange); color: var(--btn-ink); border-radius: 8px; padding: 5px 10px; font-size: 10.5px; font-weight: 600; }
+.isc-add svg { width: 12px; height: 12px; }
+.isc-tbl { border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+.isc-th, .isc-tr { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr; gap: 10px; align-items: center; padding: 9px 12px; }
+.isc-th { background: var(--surface-2); font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tx-mute); }
+.isc-tr { border-top: 1px solid var(--line); font-size: 11.5px; color: var(--tx); }
+.isc-tr .dev { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.isc-tr .dev svg { width: 14px; height: 14px; flex: none; color: var(--tx-dim); }
+.isc-tr .dev span { overflow: hidden; text-overflow: ellipsis; }
+.isc-tr .reg { font-family: var(--mono); font-size: 10px; color: var(--tx-mute); text-align: right; }
+.isc-page { display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--tx-mute); padding-top: 2px; }
+.isc-page .pages { display: inline-flex; gap: 4px; }
+.isc-page .pages span { font-family: var(--mono); border-radius: 5px; padding: 1px 6px; }
+.isc-page .pages .on { background: var(--orange); color: var(--btn-ink); }
+
+/* reveal */
+.isc-rev { opacity: 0; transform: translateY(6px); animation: isc-in 0.45s ease forwards; }
+
+@keyframes isc-in { to { opacity: 1; transform: none; } }
+@keyframes isc-ping { 75%, 100% { transform: scale(2.2); opacity: 0; } }
+@keyframes isc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* narrow: collapse sidebar to icons, KPIs already 2-col */
+@media (max-width: 760px) {
+  .isc-body { grid-template-columns: 50px 1fr; }
+  .isc-brand b, .isc-nav span, .isc-sign span { display: none; }
+  .isc-nav, .isc-sign { justify-content: center; padding: 8px 0; }
+  .isc-brand { justify-content: center; padding: 2px 0 12px; }
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .isc-rev { animation: none; opacity: 1; transform: none; }
+  .isc-kpi .live i.ping, .isc-pill.warn i { animation: none; }
+}
