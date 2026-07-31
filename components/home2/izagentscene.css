@@ -1,0 +1,594 @@
+/* ============================================================
+   izagentscene.css — IzAgentScene (lab 00ai)
+   TIER 2 SECTION. All values are iz-system.css tokens.
+   ============================================================ */
+
+.izas {
+  position: relative;
+  padding: var(--sp-section) 0 var(--sp-section);
+  background: var(--bg);
+  overflow: clip;
+}
+
+/* ---------- header (left half, same rhythm as IzUseCaseSwitch) ---------- */
+
+.izas-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-bottom: var(--sp-12);
+}
+.izas-head-l {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding-right: var(--sp-10);
+}
+
+.izas-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izas-kicker i {
+  font-style: normal;
+  color: var(--accent);
+  animation: izas-blink 1.1s steps(1) infinite;
+}
+@keyframes izas-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.izas-title {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izas-title mark {
+  background: none;
+  color: var(--accent);
+}
+
+.izas-sub {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+}
+
+.izas-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--tx);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izas-cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- stage ---------- */
+
+.izas-stagewrap {
+  position: relative;
+  padding: var(--sp-10) 0 var(--sp-8);
+}
+
+.izas-togglewrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-8);
+}
+
+.izas-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), var(--panel-sh);
+  cursor: pointer;
+}
+.izas-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.izas-tlabel {
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izas-track {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+  transition: background-color var(--dur) var(--ease);
+}
+.izas-toggle.on .izas-track {
+  background: var(--accent);
+}
+.izas-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  transition: transform var(--dur) var(--ease);
+}
+.izas-toggle.on .izas-knob {
+  transform: translateX(14px);
+}
+
+/* The stage is intentionally wider than the content column and clipped
+   by the section, so the two side windows run off the edges the way
+   the reference does. */
+.izas-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1.35fr 1fr;
+  align-items: center;
+  gap: var(--sp-6);
+  width: min(1440px, 118%);
+  margin: 0 auto;
+  padding: 0 var(--wrap-gutter);
+}
+
+/* ---------- window mockup ---------- */
+
+.izas-win {
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 18px 40px -28px color-mix(in srgb, var(--tx) 40%, transparent);
+  overflow: hidden;
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease),
+    filter var(--dur-slow) var(--ease);
+}
+.izas-win--side {
+  transform: scale(0.9);
+  opacity: 0.55;
+}
+/* Two columns inside a ~300px side window would be unreadable, so each
+   side window shows only one half — the left its form, the right its
+   summary. Same trick the reference uses: the outer windows are
+   partial views, not miniatures of the centre one. */
+.izas-win--side .izas-content {
+  grid-template-columns: 1fr;
+}
+.izas-win--l .izas-summary,
+.izas-win--r .izas-form {
+  display: none;
+}
+.izas-win--main {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------- window chrome ----------
+   Matched to the reference: dots → nav → refresh/stop → a tab pill
+   with a favicon → divider → muted right-hand actions. The dividers
+   and the tab pill are what stop it reading as a toy. */
+
+.izas-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+  background: var(--surface-2);
+}
+.izas-dots {
+  display: inline-flex;
+  gap: 5px;
+  flex: none;
+}
+.izas-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+}
+
+.izas-nav,
+.izas-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  color: var(--tx-mute);
+  opacity: 0.75;
+}
+.izas-nav svg,
+.izas-actions svg {
+  width: 11px;
+  height: 11px;
+}
+.izas-actions {
+  margin-left: auto;
+}
+
+.izas-div {
+  width: 1px;
+  height: 13px;
+  flex: none;
+  background: var(--line-strong);
+}
+
+.izas-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  flex: 1;
+  max-width: 190px;
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.izas-fav {
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  flex: none;
+  border-radius: var(--r-hair);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+.izas-fav svg {
+  width: 8px;
+  height: 8px;
+}
+.izas-tabname {
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- window content: form + access summary ---------- */
+
+.izas-content {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--sp-5);
+  padding: var(--sp-5);
+  min-height: 210px;
+}
+
+.izas-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.izas-url {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izas-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.izas-flabel {
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+.izas-finput {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izas-finput.mono {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+}
+.izas-submit {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-xs);
+  background: var(--tx);
+  color: var(--bg);
+  font-size: var(--fs-2xs);
+}
+
+/* the ZTNA equivalent of their order total: what was checked, ruled
+   off, and one verdict at the bottom */
+.izas-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  min-width: 0;
+}
+.izas-sumhead {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  margin-bottom: var(--sp-1);
+}
+.izas-sumrow,
+.izas-sumtotal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  min-width: 0;
+}
+.izas-sumrow b,
+.izas-sumtotal b {
+  font-weight: 400;
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izas-sumrow.t-allow b {
+  color: var(--allow);
+}
+.izas-sumrow.t-warn b {
+  color: var(--accent);
+}
+.izas-sumrow.t-deny b {
+  color: var(--deny);
+}
+.izas-sumrule {
+  height: 1px;
+  background: var(--line);
+  margin: var(--sp-1) 0;
+}
+.izas-sumtotal {
+  margin-top: auto;
+  font-size: var(--fs-sm);
+  color: var(--tx);
+}
+.izas-sumtotal b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+}
+.izas-sumtotal.t-allow b {
+  color: var(--allow);
+}
+.izas-sumtotal.t-warn b {
+  color: var(--accent);
+}
+.izas-sumtotal.t-deny b {
+  color: var(--deny);
+}
+
+/* ---------- markers ---------- */
+
+.izas-markers {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.izas-marker {
+  position: absolute;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 2px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+.izas-stage.in .izas-marker {
+  opacity: 1;
+  transform: none;
+}
+/* the whole point of the toggle: markers vanish, windows stay */
+.izas-stage.blind .izas-marker {
+  opacity: 0;
+  transform: translateY(4px);
+  transition-delay: 0ms;
+}
+.izas-stage.blind .izas-win {
+  filter: grayscale(1);
+  opacity: 0.62;
+}
+.izas-stage.blind .izas-win--side {
+  opacity: 0.4;
+}
+
+.izas-cursor {
+  width: 12px;
+  height: 14px;
+  flex: none;
+  fill: var(--tx);
+}
+
+.izas-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), var(--panel-sh);
+  white-space: nowrap;
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.izas-tag svg {
+  width: 12px;
+  height: 12px;
+  align-self: center;
+}
+.izas-tag b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 400;
+  color: var(--tx);
+}
+.izas-tag i {
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+
+.izas-marker.on .izas-tag {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px var(--line-strong), 0 6px 16px -8px color-mix(in srgb, var(--tx) 40%, transparent);
+}
+
+.izas-marker.t-allow .izas-tag svg,
+.izas-li.t-allow svg {
+  color: var(--allow);
+}
+.izas-marker.t-deny .izas-tag svg,
+.izas-li.t-deny svg {
+  color: var(--deny);
+}
+.izas-marker.t-warn .izas-tag svg,
+.izas-li.t-warn svg {
+  color: var(--accent);
+}
+.izas-marker.t-allow .izas-cursor {
+  fill: var(--allow);
+}
+.izas-marker.t-deny .izas-cursor {
+  fill: var(--deny);
+}
+.izas-marker.t-warn .izas-cursor {
+  fill: var(--accent);
+}
+
+/* ---------- phone list ---------- */
+
+.izas-list {
+  display: none;
+  list-style: none;
+  margin: var(--sp-6) 0 0;
+  padding: 0;
+  border-top: var(--bw) solid var(--line);
+}
+.izas-li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: var(--bw) solid var(--line);
+}
+.izas-li svg {
+  width: 15px;
+  height: 15px;
+}
+.izas-li b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 400;
+  color: var(--tx);
+}
+.izas-li span {
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  text-align: right;
+}
+
+.izas-caption {
+  margin: var(--sp-8) auto 0;
+  max-width: 56ch;
+  text-align: center;
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+}
+
+/* ---------- responsive ----------
+   Absolute-positioned tags over a scaled 3-up scene are unreadable on
+   a phone, so the outer windows and the floating markers both go and
+   the markers become a plain list that says the same thing. */
+@media (max-width: 900px) {
+  .izas-head {
+    grid-template-columns: 1fr;
+  }
+  .izas-head-l {
+    padding-right: 0;
+  }
+  .izas-stage {
+    grid-template-columns: 1fr;
+    width: 100%;
+    padding: 0;
+  }
+  .izas-win--side {
+    display: none;
+  }
+  .izas-content {
+    grid-template-columns: 1fr;
+  }
+  .izas-markers {
+    display: none;
+  }
+  .izas-list {
+    display: block;
+  }
+  .izas-caption {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izas-kicker i {
+    animation: none;
+  }
+  .izas-marker,
+  .izas-tag,
+  .izas-win,
+  .izas-track,
+  .izas-knob {
+    transition: none;
+  }
+  .izas-stage .izas-marker {
+    opacity: 1;
+    transform: none;
+  }
+}

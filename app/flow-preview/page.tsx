@@ -1,6 +1,7 @@
 import { izFontVars } from "@/lib/iz-fonts";
 import type { Metadata } from "next";
 import { FlowPreview } from "./FlowPreview";
+import "@/components/home2/iz-system.css";
 import "@/components/home2/home2.css";
 import "@/components/home2/zerotrustflow.css";
 

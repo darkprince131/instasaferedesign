@@ -1,0 +1,238 @@
+/* ============================================================
+   help-widget.css — site-wide help launcher (bottom-right).
+
+   Self-contained on purpose, mirroring consent.css: this widget is
+   mounted in the root layout, so it renders OUTSIDE `.iz` and
+   outside the v3 token scope. It defines its own `--help-*`
+   properties at :root, self-themes via prefers-color-scheme, then
+   lets `html[data-theme]` win by specificity.
+
+   Brand accent hardcoded (light #f2480a / dark #ff6a2c) — the same
+   two values consent.css uses, for the same reason.
+
+   z-index sits BELOW the consent layer (banner 999997, preference
+   centre 999998) so a required privacy notice is never covered.
+   ============================================================ */
+
+:root {
+  /* Dark palette — matches the boot-script default theme. */
+  --help-card-bg: #15181f;
+  --help-btn-bg: #15181f;
+  --help-border: rgba(255, 255, 255, 0.12);
+  --help-border-strong: rgba(255, 255, 255, 0.22);
+  --help-text: #f3f4f6;
+  --help-text-secondary: #a7acb9;
+  --help-hover-bg: rgba(255, 255, 255, 0.06);
+  --help-accent: #ff6a2c;
+  --help-accent-soft: rgba(255, 106, 44, 0.14);
+  --help-accent-contrast: #14151a;
+  --help-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --help-card-bg: #ffffff;
+    --help-btn-bg: #ffffff;
+    --help-border: rgba(20, 22, 30, 0.12);
+    --help-border-strong: rgba(20, 22, 30, 0.22);
+    --help-text: #15171e;
+    --help-text-secondary: #5b6070;
+    --help-hover-bg: rgba(20, 22, 30, 0.04);
+    --help-accent: #f2480a;
+    --help-accent-soft: rgba(242, 72, 10, 0.1);
+    --help-accent-contrast: #ffffff;
+    --help-shadow: 0 20px 50px -18px rgba(20, 22, 30, 0.28), 0 3px 12px rgba(20, 22, 30, 0.1);
+  }
+}
+
+/* The widget stamps its own resolved theme (see useEffectiveTheme) because
+   `.iz` pages keep their theme on the `.iz` wrapper, not on `html`. These
+   come last so they beat both the media query and the `html[data-theme]`
+   rules below regardless of which system the page is built in. */
+.izhw[data-help-theme="dark"] {
+  --help-card-bg: #15181f;
+  --help-btn-bg: #15181f;
+  --help-border: rgba(255, 255, 255, 0.12);
+  --help-border-strong: rgba(255, 255, 255, 0.22);
+  --help-text: #f3f4f6;
+  --help-text-secondary: #a7acb9;
+  --help-hover-bg: rgba(255, 255, 255, 0.06);
+  --help-accent: #ff6a2c;
+  --help-accent-soft: rgba(255, 106, 44, 0.14);
+  --help-accent-contrast: #14151a;
+  --help-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.izhw[data-help-theme="light"] {
+  --help-card-bg: #ffffff;
+  --help-btn-bg: #ffffff;
+  --help-border: rgba(20, 22, 30, 0.12);
+  --help-border-strong: rgba(20, 22, 30, 0.22);
+  --help-text: #15171e;
+  --help-text-secondary: #5b6070;
+  --help-hover-bg: rgba(20, 22, 30, 0.04);
+  --help-accent: #f2480a;
+  --help-accent-soft: rgba(242, 72, 10, 0.1);
+  --help-accent-contrast: #ffffff;
+  --help-shadow: 0 20px 50px -18px rgba(20, 22, 30, 0.28), 0 3px 12px rgba(20, 22, 30, 0.1);
+}
+
+html[data-theme="dark"] {
+  --help-card-bg: #15181f;
+  --help-btn-bg: #15181f;
+  --help-border: rgba(255, 255, 255, 0.12);
+  --help-border-strong: rgba(255, 255, 255, 0.22);
+  --help-text: #f3f4f6;
+  --help-text-secondary: #a7acb9;
+  --help-hover-bg: rgba(255, 255, 255, 0.06);
+  --help-accent: #ff6a2c;
+  --help-accent-soft: rgba(255, 106, 44, 0.14);
+  --help-accent-contrast: #14151a;
+  --help-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="light"] {
+  --help-card-bg: #ffffff;
+  --help-btn-bg: #ffffff;
+  --help-border: rgba(20, 22, 30, 0.12);
+  --help-border-strong: rgba(20, 22, 30, 0.22);
+  --help-text: #15171e;
+  --help-text-secondary: #5b6070;
+  --help-hover-bg: rgba(20, 22, 30, 0.04);
+  --help-accent: #f2480a;
+  --help-accent-soft: rgba(242, 72, 10, 0.1);
+  --help-accent-contrast: #ffffff;
+  --help-shadow: 0 20px 50px -18px rgba(20, 22, 30, 0.28), 0 3px 12px rgba(20, 22, 30, 0.1);
+}
+
+.izhw {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 999990;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---------- launcher ---------- */
+.izhw-btn {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--help-btn-bg);
+  border: 1.5px solid var(--help-accent);
+  color: var(--help-accent);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: var(--help-shadow);
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+.izhw-btn:hover { transform: translateY(-2px); }
+.izhw-btn:focus-visible {
+  outline: 2px solid var(--help-accent);
+  outline-offset: 3px;
+}
+
+/* ---------- panel ---------- */
+.izhw-panel {
+  width: 268px;
+  padding: 18px 16px 16px;
+  border-radius: 14px;
+  background: var(--help-card-bg);
+  border: 1px solid var(--help-border);
+  box-shadow: var(--help-shadow);
+  animation: izhw-in 0.18s ease-out;
+}
+.izhw-panel[hidden] { display: none; }
+
+@keyframes izhw-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.izhw-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--help-text);
+}
+.izhw-sub {
+  margin: 4px 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--help-text-secondary);
+}
+
+.izhw-list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.izhw-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 13.5px;
+  color: var(--help-text);
+  text-decoration: none;
+  transition: background-color 0.16s ease-out, border-color 0.16s ease-out;
+}
+.izhw-row svg { color: var(--help-accent); flex: none; }
+.izhw-row:hover,
+.izhw-row:focus-visible {
+  background: var(--help-hover-bg);
+  border-color: var(--help-border);
+  outline: none;
+}
+.izhw-row:focus-visible { border-color: var(--help-accent); }
+
+/* Outlined, not filled — matching the reference, and required either way:
+   the brand orange only reaches 3.68:1 against white, so accent text or
+   white-on-accent text would both miss AA. Ink on the card clears 17:1. */
+.izhw-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--help-text);
+  border: 1px solid var(--help-border-strong);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.16s ease-out, border-color 0.16s ease-out;
+}
+.izhw-primary:hover {
+  background: var(--help-hover-bg);
+  border-color: var(--help-accent);
+}
+.izhw-primary:focus-visible {
+  outline: 2px solid var(--help-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .izhw { right: 14px; bottom: 14px; }
+  .izhw-panel { width: min(268px, calc(100vw - 28px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izhw-btn,
+  .izhw-row,
+  .izhw-primary { transition: none; }
+  .izhw-btn:hover { transform: none; }
+  .izhw-panel { animation: none; }
+}

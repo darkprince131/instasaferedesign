@@ -7,19 +7,19 @@
    the rest of the system.
    ============================================================ */
 
-.lf { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 48px; align-items: center; }
+.lf { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: var(--sp-12); align-items: center; }
 
 /* ---- left copy ---- */
 .lf-text { max-width: 46ch; }
-.lf-lead { color: var(--tx-dim); font-size: 16px; line-height: 1.62; margin: 16px 0 0; }
-.lf-points { list-style: none; padding: 0; margin: 20px 0 0; display: flex; flex-direction: column; gap: 11px; }
-.lf-points li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--tx-dim); }
-.lf-dot { width: 8px; height: 8px; border-radius: 999px; flex: none; }
+.lf-lead { color: var(--tx-dim); font-size: var(--fs-body); line-height: 1.62; margin: var(--sp-4) 0 0; }
+.lf-points { list-style: none; padding: 0; margin: var(--sp-5) 0 0; display: flex; flex-direction: column; gap: 11px; }
+.lf-points li { display: flex; align-items: center; gap: 10px; font-size: var(--fs-body-sm); color: var(--tx-dim); }
+.lf-dot { width: 8px; height: 8px; border-radius: var(--r-pill); flex: none; }
 .lf-dot.ok { background: var(--allow); }
 .lf-dot.warn { background: #d98a1f; }
 .lf-dot.pending { background: #d98a1f; }
-.lf-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 14px; font-weight: 500; color: var(--orange); text-decoration: none; }
-.lf-cta svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.lf-cta { display: inline-flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-6); font-size: var(--fs-body-sm); font-weight: 500; color: var(--orange); text-decoration: none; }
+.lf-cta svg { width: 15px; height: 15px; transition: transform var(--dur-fast) var(--ease-out); }
 .lf-cta:hover svg { transform: translateX(4px); }
 
 /* ---- stage ---- */
@@ -27,44 +27,44 @@
 
 /* ---- big screen ---- */
 .lf-big {
-  border-radius: 14px; overflow: hidden;
+  border-radius: var(--r-lg); overflow: hidden;
   background: var(--surface); border: 1px solid var(--line-strong);
   box-shadow: var(--inset), var(--panel-sh);
 }
 .lf-big-bar { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
 .lf-dots { display: inline-flex; gap: 6px; flex: none; }
-.lf-dots i { width: 10px; height: 10px; border-radius: 999px; background: var(--ghost); }
-.lf-big-title { font-family: var(--disp); font-weight: 500; font-size: 13px; color: var(--tx); margin-left: 4px; }
-.lf-status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; padding: 3px 9px; border-radius: 999px; }
-.lf-status i { width: 6px; height: 6px; border-radius: 999px; }
+.lf-dots i { width: 10px; height: 10px; border-radius: var(--r-pill); background: var(--ghost); }
+.lf-big-title { font-family: var(--disp); font-weight: 500; font-size: var(--fs-sm); color: var(--tx); margin-left: 4px; }
+.lf-status { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: var(--fs-2xs); padding: 3px 9px; border-radius: var(--r-pill); }
+.lf-status i { width: 6px; height: 6px; border-radius: var(--r-pill); }
 .lf-status.live { background: var(--allow-bg); color: var(--allow); }
-.lf-status.live i { background: var(--allow); animation: lf-blink 1.4s ease-in-out infinite; }
+.lf-status.live i { background: var(--allow); animation: lf-blink 1.4s var(--ease-out) infinite; }
 .lf-status.snap { background: var(--bg-2); color: var(--tx-mute); }
 .lf-status.snap i { background: var(--tx-mute); }
 @keyframes lf-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 
 .lf-big-body { padding: 16px 18px 14px; }
 .lf-stats { display: flex; gap: 18px; margin-bottom: 6px; }
-.lf-stat { font-family: var(--mono); font-size: 12px; color: var(--tx-mute); }
-.lf-stat b { font-family: var(--disp); font-weight: 600; font-size: 19px; color: var(--allow); margin-right: 5px; letter-spacing: -0.01em; }
+.lf-stat { font-family: var(--mono); font-size: var(--fs-label); color: var(--tx-mute); }
+.lf-stat b { font-family: var(--disp); font-weight: 600; font-size: 19px; /* left hardcoded: exact tie between --fs-lead(18) and --fs-h3 min(20) */ color: var(--allow); margin-right: 5px; letter-spacing: -0.01em; }
 .lf-stat.deny b { color: var(--deny); }
 .lf-stat.warn b { color: #d98a1f; }
 
 /* chart */
 .lf-chart { display: block; width: 100%; height: auto; }
 .lf-grid { stroke: var(--line); stroke-width: 1; }
-.lf-axis { fill: var(--tx-mute); font-family: var(--mono); font-size: 9px; }
-.lf-ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; transition: d 0.4s ease; }
+.lf-axis { fill: var(--tx-mute); font-family: var(--mono); font-size: var(--fs-micro); }
+.lf-ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; transition: d 0.4s var(--ease-out); }
 .lf-ln-allowed { stroke: var(--allow); }
 .lf-ln-blocked { stroke: var(--deny); stroke-width: 1.6; }
 .lf-ln-pending { stroke: #d98a1f; stroke-width: 1.6; }
 .lf-head { fill: var(--allow); }
-.lf-pulse { fill: var(--allow); opacity: 0.5; animation: lf-ping 1.5s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+.lf-pulse { fill: var(--allow); opacity: 0.5; animation: lf-ping 1.5s var(--ease-out) infinite; transform-origin: center; transform-box: fill-box; }
 @keyframes lf-ping { 0% { transform: scale(1); opacity: 0.55; } 70%,100% { transform: scale(3.2); opacity: 0; } }
 
 .lf-legend { display: flex; gap: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
-.lf-legend span { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--tx-mute); }
-.lf-sw { width: 16px; height: 3px; border-radius: 2px; }
+.lf-legend span { display: inline-flex; align-items: center; gap: 7px; font-size: var(--fs-mono); color: var(--tx-mute); }
+.lf-sw { width: 16px; height: 3px; border-radius: var(--r-hair); }
 .lf-sw.allowed { background: var(--allow); }
 .lf-sw.blocked { background: var(--deny); }
 .lf-sw.pending { background: #d98a1f; }
@@ -72,7 +72,7 @@
 /* ---- small draggable screen ---- */
 .lf-small {
   position: absolute; right: -18px; bottom: -34px; width: 304px;
-  border-radius: 12px; overflow: hidden;
+  border-radius: var(--r-md); overflow: hidden;
   background: var(--surface); border: 1px solid var(--line-strong);
   box-shadow: 0 24px 50px -18px rgba(0,0,0,0.5), var(--inset);
   z-index: 3;
@@ -80,19 +80,19 @@
 .lf-small-bar { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); cursor: grab; touch-action: none; }
 .lf-small-bar.grabbing { cursor: grabbing; }
 .lf-grip { flex: none; width: 14px; height: 11px; opacity: 0.4; background-image: radial-gradient(circle, var(--tx-dim) 1.3px, transparent 1.3px); background-size: 5px 5px; }
-.lf-live-lbl { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tx-dim); }
-.lf-live-lbl i { width: 7px; height: 7px; border-radius: 999px; background: var(--allow); animation: lf-blink 1.4s ease-in-out infinite; }
-.lf-count { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, var(--surface)); border-radius: 999px; padding: 2px 9px; }
+.lf-live-lbl { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: var(--fs-mono-xs); letter-spacing: 0.05em; text-transform: uppercase; color: var(--tx-dim); }
+.lf-live-lbl i { width: 7px; height: 7px; border-radius: var(--r-pill); background: var(--allow); animation: lf-blink 1.4s var(--ease-out) infinite; }
+.lf-count { margin-left: auto; font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, var(--surface)); border-radius: var(--r-pill); padding: 2px 9px; }
 
 .lf-feed { padding: 6px 6px; min-height: 232px; display: flex; flex-direction: column; -webkit-mask: linear-gradient(180deg, #000 78%, transparent 100%); mask: linear-gradient(180deg, #000 78%, transparent 100%); }
-.lf-feed-wait { padding: 24px 10px; text-align: center; color: var(--tx-mute); font-size: 12px; font-family: var(--mono); }
-.lf-item { display: flex; align-items: flex-start; gap: 9px; padding: 8px 8px; border-radius: 8px; animation: lf-slide 0.34s cubic-bezier(0.16,1,0.3,1); }
+.lf-feed-wait { padding: 24px 10px; text-align: center; color: var(--tx-mute); font-size: var(--fs-label); font-family: var(--mono); }
+.lf-item { display: flex; align-items: flex-start; gap: 9px; padding: var(--sp-2); border-radius: var(--r-sm); animation: lf-slide var(--dur) var(--ease); }
 @keyframes lf-slide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
-.lf-ic { flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; }
+.lf-ic { flex: none; width: 24px; height: 24px; border-radius: var(--r-sm); display: grid; place-items: center; }
 .lf-ic svg { width: 13px; height: 13px; }
-.lf-txt { font-size: 12.5px; line-height: 1.4; color: var(--tx-dim); padding-top: 2px; }
+.lf-txt { font-size: var(--fs-label); line-height: 1.4; color: var(--tx-dim); padding-top: 2px; }
 .lf-actor { color: var(--tx); font-weight: 600; }
-.lf-mono { font-family: var(--mono); font-size: 11.5px; }
+.lf-mono { font-family: var(--mono); font-size: var(--fs-mono); }
 .lf-app { color: var(--orange); }
 
 /* tone tints on the icon chip */
@@ -104,7 +104,7 @@
 /* blocked/denied rows get a faint red wash so anomalies pop */
 .tone-deny { background: color-mix(in srgb, var(--deny) 6%, transparent); }
 
-.lf-small-foot { padding: 9px 12px; border-top: 1px solid var(--line); background: var(--surface-2); font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); }
+.lf-small-foot { padding: 9px 12px; border-top: 1px solid var(--line); background: var(--surface-2); font-family: var(--mono); font-size: var(--fs-2xs); color: var(--tx-mute); }
 
 /* ---- responsive ---- */
 @media (max-width: 980px) {

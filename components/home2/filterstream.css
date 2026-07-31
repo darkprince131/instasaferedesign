@@ -7,7 +7,7 @@
 
 .fs-card {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
   overflow: hidden;
@@ -34,7 +34,7 @@
   gap: 10px;
   flex: none;
   width: max-content;
-  animation: fs-marq var(--dur, 40s) linear infinite;
+  animation: fs-marq var(--dur, 40s) var(--ease-linear) infinite;
   will-change: transform;
   padding-right: 10px; /* matches inter-chip gap so the duplicated track loops cleanly */
 }
@@ -52,11 +52,11 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   height: 36px;
-  padding: 0 8px 0 12px;
+  padding: 0 var(--sp-2) 0 var(--sp-3);
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--surface);
   box-shadow: var(--inset);
   white-space: nowrap;
@@ -68,20 +68,20 @@
   gap: 7px;
   font-family: var(--disp);
   font-weight: 500;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--tx);
 }
 .fs-field svg { width: 15px; height: 15px; color: var(--tx-mute); }
-.fs-is { font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+.fs-is { font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--tx-mute); }
 .fs-val {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: var(--fs-label);
   color: var(--tx-dim);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 3px 10px;
 }
 .fs-val svg { width: 13px; height: 13px; color: var(--orange); }
@@ -90,40 +90,40 @@
   place-items: center;
   width: 18px;
   height: 18px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   color: var(--tx-mute);
 }
 .fs-x svg { width: 11px; height: 11px; }
 
 /* ---- embed mode: marquee only, dropped into another card's media slot ---- */
 .fs-embed { width: 100%; min-width: 0; max-width: 100%; height: 100%; display: flex; align-items: center; overflow: hidden; }
-.fs-stage.embed { background: transparent; border-bottom: 0; width: 100%; min-width: 0; padding: 16px 0; }
+.fs-stage.embed { background: transparent; border-bottom: 0; width: 100%; min-width: 0; padding: var(--sp-4) 0; }
 .fs-embed:hover .fs-track, .fs-embed:focus-within .fs-track { animation-play-state: paused; }
 
 /* ---- card footer ---- */
 .fs-foot { padding: 22px 24px 24px; }
-.fs-foot .iz-ey { margin-bottom: 12px; }
+.fs-foot .iz-ey { margin-bottom: var(--sp-3); }
 .fs-title {
   font-family: var(--disp);
   font-weight: var(--fw-disp);
-  font-size: 23px;
+  font-size: var(--fs-h3);
   letter-spacing: var(--ls-h2);
   line-height: var(--lh-h2);
   margin: 0;
   color: var(--tx);
 }
 .fs-title em { font-style: normal; font-weight: 400; color: var(--orange); }
-.fs-desc { color: var(--tx-dim); font-size: 14.5px; line-height: 1.55; margin: 10px 0 0; max-width: 44ch; }
+.fs-desc { color: var(--tx-dim); font-size: var(--fs-body-sm); line-height: 1.55; margin: 10px 0 0; max-width: 44ch; }
 .fs-learn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: 16px;
-  font-size: 13.5px;
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--orange);
 }
-.fs-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.fs-learn svg { width: 15px; height: 15px; transition: transform var(--dur-fast) var(--ease-out); }
 .fs-learn:hover svg { transform: translateX(3px); }
 
 @media (max-width: 560px) {

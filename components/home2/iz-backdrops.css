@@ -1,0 +1,173 @@
+/* ============================================================
+   iz-backdrops.css — TIER 3 of the component library: BACKGROUND
+   STYLES you apply to a section.
+
+   The library has three tiers, and they compose:
+     1. VISUALS   — things that live inside a section
+                    (consoles, browser mockups, diagrams, chips)
+     2. SECTIONS  — assembled blocks you drop into a page
+     3. BACKDROPS — this file: what a section sits ON
+
+   Everything here is a background. Nothing here owns layout, and
+   nothing here is interactive, so no reduced-motion handling is
+   needed except for the one animated bloom.
+
+   Analysed frame-by-frame from the /returning-user-experience/
+   recording: the reason that scene reads as "sleek" is that its
+   background is never flat. It layers, in order:
+       dashed macro lattice  →  soft radial colour bloom  →
+       a bordered stage panel split into two tonal zones
+   Each of those is a separate class below, so you can use one, two
+   or all three.
+
+   Import alongside izgrid.css. All values are iz-system.css tokens.
+   ============================================================ */
+
+/* ---------- 1. .iz-bd-macro — large dashed lattice ----------
+   Deliberately NOT `.iz-gridfield`. That one is a 16px texture for
+   the inside of a panel; this is a ~220px lattice for behind a whole
+   section. Using the fine grid at section scale is what makes a page
+   look busy rather than engineered.
+
+   Modifiers: --grid-macro (module), --macro-fade (how far the
+   lattice survives before the mask kills it). */
+.iz-bd-macro {
+  position: relative;
+  isolation: isolate;
+}
+.iz-bd-macro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--rail) 0 1px,
+      transparent 1px var(--grid-macro)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--rail) 0 1px,
+      transparent 1px var(--grid-macro)
+    );
+  /* Hairlines, not dashes. A 1px repeating-gradient can't dash itself,
+     and the multi-layer `mask-composite` trick that would dash it is
+     inconsistent across engines — at 220px spacing and --rail opacity
+     the difference is invisible anyway, and this version can't break.
+     The DASHED look still exists where it reads: the column rails in
+     izgrid.css and `.iz-bd-dashrule` below, which are real borders.
+
+     One mask layer (universally supported) fades the lattice out at the
+     edges so it never collides with the section's own rules. */
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, transparent var(--macro-fade, 80%));
+  mask-image: radial-gradient(ellipse at center, #000 35%, transparent var(--macro-fade, 80%));
+}
+
+/* ---------- 2. .iz-bd-bloom — soft radial colour wash ----------
+   One warm bloom, off-centre, very low strength. This is the single
+   cheapest thing that stops a light section reading as dead white.
+   Position it with --bloom-x/--bloom-y so it sits BEHIND the visual,
+   never behind body copy (it costs contrast). */
+.iz-bd-bloom {
+  position: relative;
+  isolation: isolate;
+}
+.iz-bd-bloom::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse var(--bloom-size) 80% at var(--bloom-x, 72%) var(--bloom-y, 62%),
+    color-mix(in srgb, var(--accent) var(--bloom-strength) , transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* a second, cooler bloom for the opposite corner — use both when a
+   scene is split left/right and needs the two halves to feel different */
+.iz-bd-bloom--cool::after {
+  background: radial-gradient(
+    ellipse var(--bloom-size) 80% at var(--bloom-x, 28%) var(--bloom-y, 55%),
+    color-mix(in srgb, var(--tx) 6%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+/* ---------- 3. .iz-bd-stage — the bordered scene panel ----------
+   A rounded, hairline-bordered panel that a visual sits inside, with
+   the panel itself split into two tonal zones by a 1px rule at
+   --stage-split. In the reference, the narration column is warm
+   off-white and the mockup column is a cool lavender; that tonal
+   split is doing as much work as the border. */
+.iz-bd-stage {
+  position: relative;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background:
+    linear-gradient(
+      to right,
+      var(--surface-2) 0 var(--stage-split),
+      var(--bg-2) var(--stage-split) 100%
+    );
+}
+/* the split rule itself */
+.iz-bd-stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--stage-split);
+  width: 0;
+  border-left: var(--bw) solid var(--line);
+  pointer-events: none;
+}
+/* below the split point the stage stacks, so the rule would cut through
+   content — drop it and let the zones become horizontal bands instead */
+@media (max-width: 900px) {
+  .iz-bd-stage {
+    background: linear-gradient(to bottom, var(--surface-2) 0 38%, var(--bg-2) 38% 100%);
+  }
+  .iz-bd-stage::before {
+    display: none;
+  }
+}
+
+/* ---------- 4. .iz-bd-dashrule — dashed section divider ----------
+   The reference closes its scene with a dashed horizontal rule rather
+   than a solid one; it reads as "drawing", not "card edge". */
+.iz-bd-dashrule {
+  border: 0;
+  height: 0;
+  border-top: var(--bw) var(--rail-style) var(--rail);
+  margin: 0;
+}
+
+/* ---------- 5. .iz-inverted — the flipped band ----------
+   The token flip lives in iz-system.css §7 (this class is listed in the
+   same selector as the dark theme block), so all this rule has to do is
+   paint the surface and own its edges. Any component inside it picks up
+   dark tokens automatically — no per-component dark variants. */
+.iz-inverted {
+  background: var(--bg);
+  color: var(--tx);
+  border-top: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+/* ---------- 6. composition helper ----------
+   The common recipe: macro lattice + bloom on the section, stage panel
+   inside it. Kept as one class so pages don't have to remember the
+   order (bloom must sit above lattice, both below content). */
+.iz-bd-scene {
+  position: relative;
+  isolation: isolate;
+}
+.iz-bd-scene > * {
+  position: relative;
+  z-index: 1;
+}

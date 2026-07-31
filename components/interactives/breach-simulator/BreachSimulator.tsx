@@ -74,9 +74,9 @@ function Avatar({ src, down, dim }: { src: string; down: boolean; dim: boolean }
   return (
     <span className="relative block overflow-hidden rounded-full" style={{ width: AV, height: AV, filter: dim ? "grayscale(1) brightness(0.6)" : "none", transition: "filter .8s ease" }}>
       {err || !src ? (
-        <svg viewBox="0 0 40 40" className="h-full w-full" style={{ background: "#1a2233" }}>
-          <circle cx="20" cy="15" r="7" fill="#39455f" />
-          <path d="M6 38c0-8 6-12 14-12s14 4 14 12" fill="#39455f" />
+        <svg viewBox="0 0 40 40" className="h-full w-full" style={{ background: "var(--db-surface-2)" }}>
+          <circle cx="20" cy="15" r="7" fill="var(--db-text-mute)" />
+          <path d="M6 38c0-8 6-12 14-12s14 4 14 12" fill="var(--db-text-mute)" />
         </svg>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
@@ -198,7 +198,7 @@ export function BreachSimulator() {
                   y1={NODE_POS[a].y}
                   x2={NODE_POS[b].x}
                   y2={NODE_POS[b].y}
-                  stroke={hot ? "#ef4444" : "#5b7099"}
+                  stroke={hot ? "var(--db-danger)" : "var(--db-text-mute)"}
                   strokeWidth={hot ? 0.55 : 0.3}
                   opacity={faded ? 0.04 : hot ? 0.85 : 0.18}
                   style={{ transition: "opacity .8s, stroke .8s" }}
@@ -220,7 +220,7 @@ export function BreachSimulator() {
                   <motion.circle
                     key={`pl-${k}`}
                     r={hot ? 1.3 : 0.8}
-                    fill={hot ? "#ff5a5a" : "#9ccdff"}
+                    fill={hot ? "var(--db-danger)" : "var(--db-accent)"}
                     filter={hot ? "url(#bs-glow)" : undefined}
                     initial={{ cx: A.x, cy: A.y, opacity: 0 }}
                     animate={{ cx: [A.x, B.x], cy: [A.y, B.y], opacity: [0, 1, 1, 0] }}
@@ -234,15 +234,22 @@ export function BreachSimulator() {
           <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
             {!reduce &&
               [0, 1].map((k) => (
-                <motion.span key={k} className="absolute left-1/2 top-1/2 rounded-full" style={{ width: 88, height: 88, marginLeft: -44, marginTop: -44, border: `1.5px solid ${engineBreached ? "#ef4444" : "#60a5fa"}` }} initial={{ scale: 0.7, opacity: 0.45 }} animate={{ scale: 1.9, opacity: 0 }} transition={{ duration: 2.8, repeat: Infinity, delay: k * 1.2, ease: "easeOut" }} />
+                <motion.span key={k} className="absolute left-1/2 top-1/2 rounded-full" style={{ width: 88, height: 88, marginLeft: -44, marginTop: -44, border: `1.5px solid ${engineBreached ? "var(--db-danger)" : "var(--db-accent)"}` }} initial={{ scale: 0.7, opacity: 0.45 }} animate={{ scale: 1.9, opacity: 0 }} transition={{ duration: 2.8, repeat: Infinity, delay: k * 1.2, ease: "easeOut" }} />
               ))}
             <motion.div
               className="relative flex h-[88px] w-[88px] flex-col items-center justify-center rounded-full border text-center"
-              style={{ background: "radial-gradient(circle at 40% 35%, #0f1828, #0a0f18)", borderColor: engineBreached ? "#ef4444" : "#60a5fa", boxShadow: engineBreached ? "0 0 44px rgba(239,68,68,.5)" : "0 0 40px rgba(96,165,250,.4)", transition: "border-color .6s, box-shadow .6s" }}
+              style={{
+                background: "radial-gradient(circle at 40% 35%, var(--db-surface-2), var(--db-bg))",
+                borderColor: engineBreached ? "var(--db-danger)" : "var(--db-accent)",
+                boxShadow: engineBreached
+                  ? "0 0 44px color-mix(in srgb, var(--db-danger) 50%, transparent)"
+                  : "0 0 40px color-mix(in srgb, var(--db-accent) 40%, transparent)",
+                transition: "border-color .6s, box-shadow .6s",
+              }}
               animate={reduce ? undefined : { scale: [1, 1.04, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              {mode === "ztna" ? <ShieldCheck size={24} weight="duotone" style={{ color: blocked ? "#34d399" : "#7dd3fc" }} /> : <LockKey size={24} weight="duotone" style={{ color: engineBreached ? "#f87171" : "#7dd3fc" }} />}
+              {mode === "ztna" ? <ShieldCheck size={24} weight="duotone" style={{ color: blocked ? "var(--db-success)" : "var(--db-accent)" }} /> : <LockKey size={24} weight="duotone" style={{ color: engineBreached ? "var(--db-danger)" : "var(--db-accent)" }} />}
               <span className="mt-1 text-[10px] font-extrabold tracking-wide text-white">ACCESS ENGINE</span>
               {mode === "ztna" && blocked && (
                 <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="absolute -bottom-3 whitespace-nowrap rounded-full px-2 py-0.5 text-[9px] font-bold" style={{ background: "#22c55e", color: "#04130a" }}>
@@ -321,7 +328,7 @@ export function BreachSimulator() {
         {/* right column */}
         <div className="flex flex-col gap-5">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent-blue-light)]">Breach simulator</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--db-accent)]">Breach simulator</div>
             <h3 className="mt-2 text-balance text-2xl font-bold leading-tight tracking-tight">One stolen key. Watch the blast radius.</h3>
             <p className="mt-2 text-sm leading-relaxed text-[var(--db-text-dim)]">
               Pick whose credential is stolen — the virus starts there and spreads. On a VPN it takes the whole team; on ZTNA it stops at one app.

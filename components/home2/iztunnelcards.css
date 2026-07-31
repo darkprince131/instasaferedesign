@@ -1,0 +1,190 @@
+/* ============================================================
+   00ba · IzTunnelCards — three tunnel scenes on 00an's four-grid.
+   Grid + selection chrome come from sections.css (.izug-*); only the
+   scene and its motion live here.
+
+   MOTION CONTRACT: every keyframe animation below is declared
+   inside `.is-live`. Nothing is declared outside it and paused.
+   On hover-out the class goes, the animation is REMOVED, and each
+   element snaps to its own base rule — which is written to already
+   be the finished state. That is what makes the still (touch,
+   reduced motion, hover-out) correct without a second code path.
+   ============================================================ */
+
+/* ---------- scene scaffolding ---------- */
+.iztc-scene {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+}
+.iztc-scene--two { align-items: center; }
+.iztc-fan {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+.iztc-apps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+/* ---------- nodes ---------- */
+.iztc-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  flex: none;
+}
+.iztc-node i {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+}
+.iztc-node--user i { border-radius: var(--r-pill); }
+.iztc-node em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.03em;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+
+/* ---------- tunnel ---------- */
+.iztc-tunnel {
+  position: relative;
+  flex: 1;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.iztc-pipe {
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--orange) 34%, transparent);
+  /* BASE = finished: full width, present. The keyframe grows it FROM 0. */
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+.iztc-packet {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: var(--r-pill);
+  background: var(--orange);
+  /* base: not in flight — the still shows a built tunnel, not packets
+     frozen mid-air */
+  opacity: 0;
+}
+.iztc-lock {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--deny);
+  color: var(--deny);
+  font-size: 10px;
+  line-height: 1;
+}
+/* the severed tunnel's resting state: dimmed pipe, lock shown */
+.iztc-tunnel.is-dead .iztc-pipe { background: color-mix(in srgb, var(--deny) 30%, transparent); }
+
+/* ============================================================
+   LIVE — the only place animations exist
+   ============================================================ */
+
+/* pipe: grow, then breathe so it reads as alive rather than drawn once */
+.izug-cell.is-live .iztc-pipe {
+  animation: iztc-grow 620ms var(--ease), iztc-breathe 2.4s var(--ease-out) 620ms infinite;
+}
+/* packets: continuous flow, staggered per --p */
+.izug-cell.is-live .iztc-packet {
+  animation: iztc-flow 1.9s linear infinite;
+  animation-delay: calc(var(--p) * 0.63s + 620ms);
+}
+/* tunnel 2 runs on its own clock — the point of "independent" is that the
+   two are visibly NOT in step */
+.izug-cell.is-live .iztc-tunnel--2 .iztc-packet {
+  animation-duration: 2.6s;
+  animation-delay: calc(var(--p) * 0.87s + 900ms);
+}
+
+/* case 3: tunnel 1 is struck, locks, stays gone a beat, then reconnects —
+   and NOTHING about tunnel 2 references this timeline */
+.izug-cell.is-live .iztc-tunnel.is-dead .iztc-pipe {
+  animation: iztc-sever 4.2s var(--ease) infinite;
+}
+.izug-cell.is-live .iztc-tunnel.is-dead .iztc-packet {
+  animation: iztc-flow-cut 4.2s linear infinite;
+  animation-delay: calc(var(--p) * 0.5s);
+}
+.izug-cell.is-live .iztc-lock { animation: iztc-lock-in 4.2s var(--ease) infinite; }
+
+@keyframes iztc-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes iztc-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+/* travel is expressed in `left` percentages so a packet crosses the ACTUAL
+   pipe width — a transform distance would need a pixel value the CSS cannot
+   know, and every tunnel here is a different width. */
+@keyframes iztc-flow {
+  0% { left: 0%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+/* packets stop while the tunnel is severed, resume when it returns */
+@keyframes iztc-flow-cut {
+  0% { left: 0%; opacity: 0; }
+  6% { opacity: 1; }
+  38% { left: 100%; opacity: 1; }
+  40% { opacity: 0; }
+  84% { opacity: 0; left: 0%; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+@keyframes iztc-sever {
+  0%, 40% { background: color-mix(in srgb, var(--orange) 34%, transparent); transform: scaleX(1); }
+  46% { background: var(--deny); }
+  52%, 78% { background: color-mix(in srgb, var(--deny) 22%, transparent); transform: scaleX(0.06); }
+  92%, 100% { background: color-mix(in srgb, var(--orange) 34%, transparent); transform: scaleX(1); }
+}
+@keyframes iztc-lock-in {
+  0%, 44% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  52%, 76% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  88%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+}
+
+/* ---------- copy ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .izug-cell,
+  .izug-cell.is-live .iztc-pipe,
+  .izug-cell.is-live .iztc-packet,
+  .izug-cell.is-live .iztc-lock { animation: none; transition: none; }
+}

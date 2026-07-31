@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ShieldCheck, ArrowRight } from "@phosphor-icons/react";
 
 /* ============================================================
@@ -15,7 +15,11 @@ import { ShieldCheck, ArrowRight } from "@phosphor-icons/react";
 
 const TYPING_MS = 620;
 
-interface QA { q: string; a: string; }
+export interface QA { q: string; a: string; }
+
+/* default FAQ = homepage/lab content; pass `items` to reuse this
+   component on other `.iz` pages (e.g. the SSO page) with their
+   own Q&A while keeping the exact same chat-thread UI. */
 const FAQ: QA[] = [
   {
     q: "How is this different from a VPN?",
@@ -49,10 +53,31 @@ const Avatar = ({ sm }: { sm?: boolean }) => (
   </span>
 );
 
-export function ChatFaq() {
+export interface ChatFaqProps {
+  items?: QA[];
+  eyebrow?: string;
+  heading?: ReactNode;
+  sub?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+}
+
+export function ChatFaq({
+  items = FAQ,
+  eyebrow = "FAQ",
+  heading = <>Frequently asked <em>questions</em>.</>,
+  sub = "Tap a question — our assistant answers on the spot. Still curious? A real human is one click away.",
+  ctaHref = "/contact-us",
+  ctaLabel = "Talk to us",
+}: ChatFaqProps = {}) {
   const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [open, setOpen] = useState<number | null>(null);
   const [typing, setTyping] = useState(false);
+  /* "show all" — expand every answer at once so a reader who wants the whole
+     thing can scroll it instead of clicking six times. Answers render with no
+     typing delay in this mode: the delay is a nicety when you asked ONE
+     question, and pure obstruction when you asked for all of them. */
+  const [showAll, setShowAll] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
@@ -66,6 +91,7 @@ export function ChatFaq() {
   }
 
   function toggle(i: number) {
+    if (showAll) return; // every answer is already open
     if (open === i) {
       if (timer.current) clearTimeout(timer.current);
       setOpen(null);
@@ -73,6 +99,18 @@ export function ChatFaq() {
       return;
     }
     reveal(i);
+  }
+
+  function toggleAll() {
+    if (timer.current) clearTimeout(timer.current);
+    setTyping(false);
+    setShowAll((v) => {
+      const next = !v;
+      /* leaving show-all returns to a single open thread rather than
+         collapsing to nothing, so the block never reads as empty */
+      setOpen(next ? null : 0);
+      return next;
+    });
   }
 
   // auto-open first question once in view
@@ -94,23 +132,35 @@ export function ChatFaq() {
     <div className="cf" ref={rootRef}>
       {/* LEFT — heading */}
       <div className="cf-left">
-        <span className="cf-pill"><i /> FAQ</span>
-        <h2 className="iz-h2">Frequently asked <em>questions</em>.</h2>
-        <p className="cf-sub">Tap a question — our assistant answers on the spot. Still curious? A real human is one click away.</p>
-        <a className="cf-cta" href="/contact-us">Talk to us <ArrowRight weight="bold" /></a>
+        <span className="cf-pill"><i /> {eyebrow}</span>
+        <h2 className="iz-h2">{heading}</h2>
+        <p className="cf-sub">{sub}</p>
+        <a className="cf-cta" href={ctaHref}>{ctaLabel} <ArrowRight weight="bold" /></a>
       </div>
 
       {/* RIGHT — floating chat thread (no panel chrome) */}
       <div className="cf-right">
-        <div className="cf-thread">
-          {FAQ.map((f, i) => {
-            const isOpen = open === i;
+        <div className="cf-thread-head">
+          <button
+            type="button"
+            className="cf-all"
+            aria-pressed={showAll}
+            onClick={toggleAll}
+          >
+            {showAll ? "Collapse answers" : "Show all answers"}
+            <i aria-hidden="true">{showAll ? "–" : "+"}</i>
+          </button>
+        </div>
+        <div className={`cf-thread${showAll ? " cf-thread--all" : ""}`}>
+          {items.map((f, i) => {
+            const isOpen = showAll || open === i;
             return (
               <div className="cf-item" key={i}>
                 <button
                   className={`cf-q${isOpen ? " on" : ""}`}
                   onClick={() => toggle(i)}
                   aria-expanded={isOpen}
+                  disabled={showAll}
                 >
                   {f.q}
                 </button>
@@ -118,7 +168,7 @@ export function ChatFaq() {
                 {isOpen && (
                   <div className="cf-a-wrap">
                     <Avatar sm />
-                    {typing ? (
+                    {typing && !showAll ? (
                       <div className="cf-typing" aria-label="Assistant is typing">
                         <i /><i /><i />
                       </div>

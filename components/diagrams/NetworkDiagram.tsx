@@ -30,13 +30,13 @@ const nodes: {
 ];
 
 const connections = [
-  { from: "user1", to: "core", color: "#3B82F6" },
-  { from: "user2", to: "core", color: "#8B5CF6" },
-  { from: "user3", to: "core", color: "#14B8A6" },
-  { from: "core", to: "app1", color: "#3B82F6" },
-  { from: "core", to: "app2", color: "#22C55E" },
-  { from: "core", to: "app3", color: "#F97316" },
-  { from: "core", to: "app4", color: "#8B5CF6" },
+  { from: "user1", to: "core", color: "var(--db-accent)" },
+  { from: "user2", to: "core", color: "var(--db-accent-2)" },
+  { from: "user3", to: "core", color: "var(--db-success)" },
+  { from: "core", to: "app1", color: "var(--db-accent)" },
+  { from: "core", to: "app2", color: "var(--db-success)" },
+  { from: "core", to: "app3", color: "var(--db-warning)" },
+  { from: "core", to: "app4", color: "var(--db-accent-2)" },
 ];
 
 type Node = (typeof nodes)[number];
@@ -123,15 +123,15 @@ export function NetworkDiagram() {
                   cy={node.y}
                   r={40}
                   fill="none"
-                  stroke="#3B82F6"
+                  stroke="var(--db-accent)"
                   strokeOpacity={0.2}
                   animate={{ r: [40, 70], opacity: [0.3, 0] }}
                   transition={{ duration: 2.5, delay: ring * 0.8, repeat: Infinity, ease: "easeOut" }}
                 />
               ))}
-              <circle cx={node.x} cy={node.y} r={38} fill="var(--bg-card)" stroke="#3B82F6" strokeWidth={1.5} />
-              <circle cx={node.x} cy={node.y} r={32} fill="rgba(59,130,246,0.1)" />
-              <text x={node.x} y={node.y - 4} textAnchor="middle" fill="#60A5FA" fontSize="11" fontWeight="700">
+              <circle cx={node.x} cy={node.y} r={38} fill="var(--db-surface)" stroke="var(--db-accent)" strokeWidth={1.5} />
+              <circle cx={node.x} cy={node.y} r={32} fill="color-mix(in srgb, var(--db-accent) 10%, transparent)" />
+              <text x={node.x} y={node.y - 4} textAnchor="middle" fill="var(--db-accent)" fontSize="11" fontWeight="700">
                 ZTNA
               </text>
               <text x={node.x} y={node.y + 10} textAnchor="middle" fill="var(--text-secondary)" fontSize="7">
@@ -147,7 +147,7 @@ export function NetworkDiagram() {
                 cx={node.x}
                 cy={node.y}
                 r={22}
-                fill="var(--bg-card)"
+                fill="var(--db-surface)"
                 stroke="var(--border-card)"
                 strokeWidth={1}
               />
@@ -158,7 +158,7 @@ export function NetworkDiagram() {
                   width={20}
                   height={20}
                   weight="duotone"
-                  color="#60A5FA"
+                  color="var(--db-accent)"
                 />
               )}
             </motion.g>
@@ -185,7 +185,7 @@ export function NetworkDiagram() {
             fill="rgba(34,197,94,0.1)"
             stroke="rgba(34,197,94,0.3)"
           />
-          <text x={174} y={112 + i * 140} textAnchor="middle" fill="#22C55E" fontSize="8" fontWeight="600">
+          <text x={174} y={112 + i * 140} textAnchor="middle" fill="var(--db-success)" fontSize="8" fontWeight="600">
             {label}
           </text>
         </motion.g>

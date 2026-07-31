@@ -1,0 +1,819 @@
+/* ============================================================
+   sections.css — IzMocks + IzUseCaseGrid + IzAgentCards (00an)
+
+   MOTION CONTRACT (the whole file depends on it):
+   every animation here is declared with `animation-play-state:
+   paused`, and only an ancestor carrying `.is-live` starts it. The
+   sections set that class on hover, one at a time. Nothing moves
+   until it is looked at, and never more than one mock at once.
+   ============================================================ */
+
+/* ============================================================
+   1. MOCK SHELL
+   ============================================================ */
+
+.izm {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 260px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 10px 26px -20px color-mix(in srgb, var(--tx) 55%, transparent);
+  overflow: visible;
+}
+
+.izm-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izm-dots {
+  display: inline-flex;
+  gap: 3px;
+  flex: none;
+}
+.izm-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+}
+.izm-livedot {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+}
+.izm-url {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.izm-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  min-width: 0;
+}
+
+.izm-label {
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+}
+.izm-sent {
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+
+.izm-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  height: 22px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+.izm-field svg {
+  width: 11px;
+  height: 11px;
+  flex: none;
+}
+.izm-mask {
+  letter-spacing: 0.12em;
+}
+
+.izm-btn {
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-xs);
+  background: var(--tx);
+  color: var(--bg);
+  font-size: var(--fs-3xs);
+}
+
+/* pills, verdicts, feet ------------------------------------ */
+
+.izm-pill,
+.izm-verdict,
+.izm-foot,
+.izm-scan {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-3xs);
+  white-space: nowrap;
+}
+.izm-pill svg,
+.izm-verdict svg,
+.izm-foot svg,
+.izm-scan svg {
+  width: 11px;
+  height: 11px;
+  flex: none;
+}
+
+.izm-pill {
+  align-self: flex-start;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-xs);
+}
+.izm-pill.t-allow {
+  background: var(--allow-bg);
+  color: var(--allow);
+}
+.izm-pill.t-warn {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+/* the floating verdict chip that sits off the mock's corner */
+.izm-verdict {
+  position: absolute;
+  right: -14px;
+  bottom: -12px;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 8px 20px -14px color-mix(in srgb, var(--tx) 55%, transparent);
+  color: var(--tx-dim);
+}
+.izm-verdict.t-allow svg {
+  color: var(--allow);
+}
+.izm-verdict.t-warn svg {
+  color: var(--accent);
+}
+
+.izm-foot {
+  justify-content: space-between;
+  padding: var(--sp-2) var(--sp-3);
+  border-top: var(--bw) solid var(--line);
+}
+.izm-foot.t-allow {
+  background: var(--allow-bg);
+  color: var(--allow);
+}
+
+/* ============================================================
+   2. PER-MOCK ANIMATION — each one has one specialty
+
+   EVERY animation below is declared INSIDE `.is-live`, never outside
+   it with a paused play-state. That distinction is the whole
+   behaviour: an animation that only exists while live is *removed*
+   on hover-out, so the element snaps back to its natural end state
+   and the next hover replays from frame zero. Pausing instead would
+   freeze each mock wherever the cursor happened to leave, and the
+   second hover would resume from that stuck position.
+
+   The corollary: every element's UNANIMATED state must already be
+   its finished state. That is what makes the mobile and
+   reduced-motion stills correct for free — there is nothing to
+   switch off, because there was never an animation to begin with.
+   ============================================================ */
+
+/* --- 1. MockWelcome · RESOLUTION -------------------------- */
+
+.is-live .izm-welcome .izm-pill,
+.is-live .izm-welcome .izm-person {
+  animation: izm-rise 520ms var(--ease-out) both;
+}
+.is-live .izm-welcome .izm-person {
+  animation-delay: 120ms;
+}
+.is-live .izm-welcome .izm-verdict {
+  animation: izm-pop 420ms var(--ease-out) 340ms both;
+}
+
+.izm-hi {
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+}
+.izm-person {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--sp-2);
+  align-items: center;
+  padding: var(--sp-2);
+  border-radius: var(--r-xs);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.izm-person i {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--btn-ink);
+  font-style: normal;
+  font-size: var(--fs-3xs);
+}
+.izm-person b {
+  font-weight: 500;
+  font-size: var(--fs-3xs);
+  color: var(--tx);
+}
+.izm-person em {
+  font-style: normal;
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+
+/* --- 2. MockChallenge · ESCALATION ------------------------ */
+
+.izm-otp {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--sp-1);
+}
+.izm-otp i {
+  display: grid;
+  place-items: center;
+  height: 22px;
+  border-radius: var(--r-2xs);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx);
+}
+/* only the filled boxes get the accent ring */
+.izm-otp i:not(:empty) {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.is-live .izm-otp i {
+  animation: izm-fill 300ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 130ms + 200ms);
+}
+.is-live .izm-challenge .izm-pill {
+  animation: izm-rise 480ms var(--ease-out) both;
+}
+.is-live .izm-challenge .izm-verdict {
+  animation: izm-pop 420ms var(--ease-out) 700ms both;
+}
+
+/* --- 3. MockLoop · REPETITION THAT NEVER RESOLVES ---------
+   The only infinite animation in the file. It must not succeed:
+   the cursor arrives, presses, the field rejects, and it starts
+   over. A loop that resolved would say the attacker got in. */
+
+.izm-field--bad {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--deny) 55%, transparent);
+  color: var(--deny);
+}
+.izm-field--bad svg {
+  color: var(--deny);
+}
+.izm-btn--bad {
+  background: var(--deny);
+  color: var(--surface);
+}
+.izm-ghost {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.is-live .izm-field--bad {
+  animation: izm-reject 2600ms var(--ease) infinite;
+}
+.is-live .izm-btn--bad {
+  animation: izm-press 2600ms var(--ease) infinite;
+}
+.is-live .izm-ghost {
+  animation: izm-try 2600ms var(--ease) infinite;
+}
+.izm-ghost svg {
+  width: 13px;
+  height: 13px;
+  color: var(--tx);
+}
+.izm-ghost i {
+  padding: 1px var(--sp-2);
+  border-radius: var(--r-2xs);
+  background: var(--tx);
+  color: var(--bg);
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  white-space: nowrap;
+}
+
+/* --- 4. MockVerify · PROGRESS TO A VERDICT ---------------- */
+
+.izm-progress {
+  display: block;
+  height: 3px;
+  background: var(--line);
+  border-radius: var(--r-pill) var(--r-pill) 0 0;
+  overflow: hidden;
+}
+/* Base is the FINISHED bar, not an empty one: the unanimated state
+   has to be the end state, or the still would read as "stalled at
+   zero" on mobile and after hover-out. */
+.izm-progress i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: 0 50%;
+}
+.is-live .izm-progress i {
+  animation: izm-grow 1500ms linear both;
+}
+.izm-idrow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2);
+  border-radius: var(--r-xs);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.izm-avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  color: var(--tx-mute);
+}
+.izm-avatar svg {
+  width: 13px;
+  height: 13px;
+}
+.is-live .izm-avatar svg {
+  animation: izm-spin 900ms linear infinite;
+}
+.izm-idtext {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.izm-idtext b {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--fs-3xs);
+  color: var(--tx);
+}
+.izm-idtext em {
+  font-style: normal;
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+.is-live .izm-verify .izm-foot {
+  animation: izm-rise 460ms var(--ease-out) 1500ms both;
+}
+
+/* --- 5. MockInspect · INSPECTION -------------------------- */
+
+.izm-line {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-2xs);
+  background: var(--surface-2);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+.is-live .izm-line {
+  animation: izm-rise 420ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+.izm-scan {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-xs);
+  background: var(--tx);
+  color: var(--bg);
+  font-family: var(--mono);
+}
+.is-live .izm-scan {
+  animation: izm-pop 420ms var(--ease-out) 520ms both;
+}
+.is-live .izm-scan svg {
+  animation: izm-spin 900ms linear infinite;
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes izm-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes izm-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@keyframes izm-fill {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+@keyframes izm-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes izm-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes izm-try {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  30% {
+    transform: translate(-58px, -26px);
+  }
+  42%,
+  58% {
+    transform: translate(-58px, -22px);
+  }
+  72% {
+    transform: translate(-58px, -26px);
+  }
+}
+@keyframes izm-press {
+  0%,
+  38%,
+  62%,
+  100% {
+    filter: none;
+  }
+  46%,
+  54% {
+    filter: brightness(0.86);
+  }
+}
+@keyframes izm-reject {
+  0%,
+  56%,
+  100% {
+    transform: translateX(0);
+  }
+  62%,
+  74% {
+    transform: translateX(-3px);
+  }
+  68%,
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* No play-state switch is needed: the animations only exist inside
+   `.is-live`, so removing the class removes them and the mock resets
+   to its finished still. */
+
+/* ============================================================
+   3. USE-CASE GRID
+   ============================================================ */
+
+.izug {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+
+.izug-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: var(--bw) solid var(--line);
+  border-left: var(--bw) solid var(--line);
+}
+.izug-head,
+.izug-copy,
+.izug-cell {
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  min-width: 0;
+}
+
+.izug-head {
+  display: grid;
+  place-items: center;
+  padding: var(--sp-10) var(--sp-6);
+}
+.izug-head h2 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  text-align: center;
+}
+
+.izug-copy {
+  display: grid;
+  align-items: center;
+  padding: var(--sp-8);
+}
+.izug-copy p {
+  margin: 0;
+  max-width: 42ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-mute);
+}
+.izug-copy b {
+  font-weight: 500;
+  color: var(--tx);
+}
+
+/* ---------- the cell, and the selection it grows on hover ----------
+   This is the hero's language reused, not re-invented: a 1px accent
+   outline, four corner handles, and `.iz-gridfield` lit in accent
+   underneath. Same surface, moved under the visitor's control. */
+
+.izug-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-8) var(--sp-8) var(--sp-5);
+  min-height: 260px;
+  isolation: isolate;
+  transition: background-color var(--dur) var(--ease);
+}
+.izug-cell:focus-visible {
+  outline: none;
+}
+
+.izug-field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  color: color-mix(in srgb, var(--accent) 38%, transparent);
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.izug-sel {
+  position: absolute;
+  inset: 0;
+  border: var(--bw) solid var(--accent);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+  pointer-events: none;
+}
+.izug-h {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--surface);
+  border: var(--bw) solid var(--accent);
+}
+.izug-h--tl {
+  left: -3.5px;
+  top: -3.5px;
+}
+.izug-h--tr {
+  right: -3.5px;
+  top: -3.5px;
+}
+.izug-h--bl {
+  left: -3.5px;
+  bottom: -3.5px;
+}
+.izug-h--br {
+  right: -3.5px;
+  bottom: -3.5px;
+}
+
+.izug-cell.is-live {
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+.izug-cell.is-live .izug-field {
+  opacity: 1;
+}
+.izug-cell.is-live .izug-sel {
+  opacity: 1;
+}
+
+.izug-stage {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  padding: var(--sp-2) var(--sp-4) var(--sp-4);
+}
+
+.izug-label {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  text-align: right;
+  transition: color var(--dur) var(--ease);
+}
+.izug-cell.is-live .izug-label {
+  color: var(--accent);
+}
+
+/* ============================================================
+   4. AGENT CARDS
+   ============================================================ */
+
+.izac {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+
+.izac-head {
+  max-width: 60ch;
+  margin-bottom: var(--sp-12);
+}
+.izac-title {
+  margin: 0 0 var(--sp-4);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  text-wrap: balance;
+}
+.izac-title mark {
+  background: none;
+  color: var(--accent);
+}
+.izac-sub {
+  margin: 0;
+  max-width: 54ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.izac-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+}
+
+.izac-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-8) var(--sp-5) var(--sp-10);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  overflow: hidden;
+  isolation: isolate;
+  transition: box-shadow var(--dur) var(--ease);
+}
+.izac-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.izac-card.is-live {
+  box-shadow: 0 0 0 1px var(--line-strong), 0 18px 40px -32px color-mix(in srgb, var(--tx) 60%, transparent);
+}
+
+.izac-cardtitle {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.35;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  text-align: center;
+}
+
+.izac-stage {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  flex: 1;
+  padding: 0 var(--sp-3) var(--sp-2);
+}
+
+/* the wash rises from the card's foot and is tinted to the verdict
+   the animation inside actually reaches */
+.izac-wash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.izac-card.is-live .izac-wash {
+  opacity: 1;
+}
+.izac-card.t-allow .izac-wash {
+  background: linear-gradient(to top, color-mix(in srgb, var(--allow) 16%, transparent), transparent);
+}
+.izac-card.t-deny .izac-wash {
+  background: linear-gradient(to top, color-mix(in srgb, var(--deny) 16%, transparent), transparent);
+}
+.izac-card.t-warn .izac-wash {
+  background: linear-gradient(to top, color-mix(in srgb, var(--accent) 16%, transparent), transparent);
+}
+
+/* ============================================================
+   5. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .izug-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izug-head {
+    padding: var(--sp-6) var(--sp-5);
+  }
+  .izug-copy,
+  .izug-cell {
+    padding: var(--sp-6) var(--sp-5);
+  }
+  .izug-cell {
+    min-height: 0;
+  }
+  /* nothing to hover, so the selection chrome would be a permanent
+     decoration on one arbitrary cell — drop it and keep the label */
+  .izug-cell.is-live {
+    background: none;
+  }
+  .izug-cell.is-live .izug-sel,
+  .izug-cell.is-live .izug-field {
+    opacity: 0;
+  }
+  .izug-label {
+    text-align: left;
+  }
+
+  /* Every mock is a finished still here. A narrow window on a
+     hoverable device can still set `.is-live`, so this has to be an
+     explicit override rather than relying on touch alone. */
+  .is-live .izm * {
+    animation: none !important;
+  }
+
+  .izac-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izac-head {
+    margin-bottom: var(--sp-8);
+  }
+}
+
+/* Every mock freezes at its END state, never mid-way, so it still
+   reads as a finished thought rather than a stalled one. */
+@media (prefers-reduced-motion: reduce) {
+  .is-live .izm * {
+    animation: none !important;
+  }
+  .izug-cell,
+  .izug-field,
+  .izug-sel,
+  .izug-label,
+  .izac-card,
+  .izac-wash {
+    transition: none;
+  }
+}

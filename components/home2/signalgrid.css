@@ -1,0 +1,582 @@
+/* ============================================================
+   signalgrid.css — IzSignalGrid (lab 00ac)
+
+   Layout contract (see IzSignalGrid.tsx header for the why):
+   - phone  (<700px) : 4 cols, tiles flow, copy block on top
+   - tablet (700px+) : 6 cols x 5 rows, copy at 1/1/4/4
+   - desktop(1100px+): 10 cols x 7 rows, copy at 2/1/7/6
+
+   Tiles never carry media queries of their own — they read the
+   coordinates their JSX handed them as custom properties, and the
+   three blocks below decide which pair is in force. Adding a tile
+   is therefore a data edit, never a CSS edit.
+
+   All values are iz-system.css tokens. No literal hex, no literal
+   radii. Depends on izgrid.css for `.iz-gridfield` / `.iz-cross`.
+   ============================================================ */
+
+.izsg {
+  position: relative;
+}
+
+/* ---------- 1. the grid ---------- */
+
+.izsg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-2);
+  align-content: start;
+}
+
+/* ---------- 2. tiles ---------- */
+
+/* Visual recipe measured off fingerprint.com's own tiles rather than
+   guessed, because the first pass didn't look anything like theirs:
+     - centred column, icon ABOVE label, both centred   (not left-aligned rows)
+     - icon AND label the same muted grey at rest       (not near-black text)
+     - a hairline RING (box-shadow 0 0 0 1px), no border — borders read heavy
+     - 12px radius on a landscape tile (theirs is 99x87)
+     - 4px padding; the label wraps and centres inside it
+   The active state is equally restrained: the surface lifts to the
+   lighter panel colour and ONLY THE ICON turns accent. No tinted
+   background, no accent border — that was the main thing making the
+   first version look cheap next to theirs. */
+.izsg-tile {
+  /* phone: flow order, optional 2-col span for texture */
+  grid-column: span var(--sm-span, 1);
+  min-width: 0;
+  min-height: 84px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1);
+  text-align: center;
+
+  background: var(--surface-2);
+  border: 0;
+  border-radius: var(--r-md);
+  color: var(--tx-mute);
+  font-family: var(--body);
+  font-size: var(--fs-2xs);
+  line-height: 1.28;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px var(--line);
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.izsg-tile svg {
+  width: 16px;
+  height: 16px;
+  color: var(--tx-mute);
+  flex: none;
+  transition: color var(--dur) var(--ease);
+}
+
+.izsg-tile > span {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.izsg-tile:hover {
+  background: var(--surface);
+  color: var(--tx-dim);
+  box-shadow:
+    0 0 0 1px var(--line-strong),
+    0 2px 4px -2px color-mix(in srgb, var(--tx) 10%, transparent);
+}
+.izsg-tile:hover svg {
+  color: var(--tx-dim);
+}
+
+.izsg-tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.izsg-tile.on {
+  background: var(--surface);
+  color: var(--tx-dim);
+  box-shadow:
+    0 0 0 1px var(--line-strong),
+    0 1px 3px -1.5px color-mix(in srgb, var(--tx) 10%, transparent),
+    0 3px 6px -3px color-mix(in srgb, var(--tx) 10%, transparent);
+}
+.izsg-tile.on svg {
+  color: var(--accent);
+}
+
+/* ---------- 3. empty cells ----------
+   Invisible on purpose. Verified against fingerprint.com: their
+   placeholder cells carry no background, no border and no texture —
+   they are pure spacers, and the asymmetry comes from the GAPS, not
+   from drawn boxes. The first version gave these a dashed border plus
+   `.iz-gridfield`, which put a grid inside a grid and made the whole
+   block noisy. They stay in the DOM only to hold their cell. */
+
+.izsg-ph {
+  display: block;
+  min-height: 84px;
+  pointer-events: none;
+}
+
+/* ---------- 4. the copy block — a GRID ITEM ---------- */
+
+.izsg-copy {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding-right: var(--sp-6);
+  margin-bottom: var(--sp-4);
+}
+
+.izsg-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izsg-kicker i {
+  font-style: normal;
+  color: var(--accent);
+  animation: izsg-blink 1.1s steps(1) infinite;
+}
+@keyframes izsg-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Capped below --fs-h2 on purpose: the copy block shares its rows with
+   the tiles, so a 44px head pushes every tile from landscape to
+   portrait. Theirs sits at 36px for the same reason. */
+.izsg-title {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: clamp(26px, 2.6vw, 36px);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izsg-title mark {
+  background: none;
+  color: var(--accent);
+}
+
+.izsg-sub {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+}
+
+.izsg-learn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+  text-decoration: none;
+  border-bottom: var(--bw) solid var(--line-strong);
+  padding-bottom: 2px;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.izsg-learn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.izsg-learn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- 5. the console ---------- */
+
+/* Same ring-not-border treatment as the tiles, so the console reads as
+   the same family of surface. Header is a thin rule, no filled bar. */
+.izsg-con {
+  width: 100%;
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  overflow: hidden;
+}
+
+.izsg-con-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
+  border-bottom: var(--bw) solid var(--line);
+  background: transparent;
+}
+
+.izsg-con-name {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.izsg-con-name svg {
+  width: 15px;
+  height: 15px;
+  color: var(--accent);
+  flex: none;
+}
+.izsg-con-name .nm {
+  font-size: var(--fs-sm);
+  color: var(--tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.izsg-con-name .ty {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-hair);
+  padding: 1px var(--sp-1);
+  flex: none;
+}
+
+.izsg-con-act {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+.izsg-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-2xs);
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.izsg-cta svg {
+  width: 11px;
+  height: 11px;
+}
+.izsg-cta:hover {
+  text-decoration: underline;
+}
+
+.izsg-pager {
+  display: inline-flex;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  overflow: hidden;
+}
+.izsg-pager button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 20px;
+  background: var(--surface);
+  border: 0;
+  color: var(--tx-mute);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+.izsg-pager button + button {
+  border-left: var(--bw) solid var(--line);
+}
+.izsg-pager button:hover {
+  color: var(--tx);
+  background: var(--surface-2);
+}
+.izsg-pager button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.izsg-pager svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* Tight on purpose: the console shares its rows with the tile grid, so
+   every px here is a px added to each tile's height. */
+.izsg-con-b {
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* two-state toggle — one capability, two truths, side by side */
+/* Their indicator is a plain white pill with a soft shadow — no colour.
+   Ours matches, and the allow/deny meaning is carried by a small tone
+   dot on the label instead. Tinting the whole pill (the first attempt)
+   made the control shout louder than the payload it explains. */
+.izsg-vt {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 3px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.izsg-vt-ind {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / 2);
+  border-radius: var(--r-2xs);
+  background: var(--surface);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--tx) 5%, transparent),
+    0 1px 3px -1.5px color-mix(in srgb, var(--tx) 8%, transparent);
+  transform: translateX(calc(var(--active-index, 0) * 100%));
+  transition: transform var(--dur) var(--ease);
+  pointer-events: none;
+}
+.izsg-vt-b {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  background: none;
+  border: 0;
+  font-family: var(--body);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease);
+}
+.izsg-vt-b::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--tx-mute);
+  flex: none;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.izsg-vt-b.on {
+  color: var(--tx);
+}
+.izsg-vt-b.on[data-tone="allow"]::before {
+  background: var(--allow);
+}
+.izsg-vt-b.on[data-tone="deny"]::before {
+  background: var(--deny);
+}
+.izsg-vt-b.on[data-tone="warn"]::before {
+  background: var(--accent);
+}
+.izsg-vt-b:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: var(--r-2xs);
+}
+
+.izsg-con-blurb {
+  margin: 0;
+  color: var(--tx-dim);
+  font-size: var(--fs-2xs);
+  line-height: var(--lh-body);
+}
+
+.izsg-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+}
+.izsg-field {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+}
+.izsg-field b {
+  font-weight: 400;
+  color: var(--tx-dim);
+}
+.izsg-field i {
+  font-style: normal;
+  color: var(--tx-mute);
+}
+
+/* Fixed floor sized to the tallest payload (8 lines). Autoplay cycles
+   controls whose payloads differ in length, and without this the whole
+   grid's row heights would breathe on every step. Keep payloads at or
+   under 8 lines and this never needs touching. */
+.izsg-fade {
+  min-height: 176px;
+  animation: izsg-in var(--dur) var(--ease) both;
+}
+@keyframes izsg-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* Typography and syntax colours come from `.izp-json` (izpanel.css) —
+   this class only adds the inset-panel chrome the signal grid needs. */
+.izsg-json {
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+}
+
+/* ---------- 6. entrance ---------- */
+
+.izsg-grid .izsg-tile,
+.izsg-grid .izsg-ph {
+  opacity: 0;
+  transform: scale(0.85);
+}
+.izsg-grid.in .izsg-tile,
+.izsg-grid.in .izsg-ph {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease),
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+  transition-delay: calc(var(--i, 0) * 14ms);
+}
+.izsg-grid.in .izsg-ph {
+  opacity: 1;
+}
+
+/* ---------- 7. breakpoints — the only place coordinates apply ---------- */
+
+/* tablet: copy is a full-width band on row 1, tiles scatter across
+   6 x 4 beneath it. The copy leaves the scatter here because at this
+   width a 3-column copy block would force ~200px rows and the tiles
+   would read as slabs rather than a surface. Row 1 is `auto` (the
+   copy sizes itself); the four tile rows are `1fr` so they equalise. */
+@media (min-width: 700px) {
+  .izsg-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: auto repeat(4, minmax(96px, 1fr));
+  }
+  .izsg-copy {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-bottom: var(--sp-2);
+  }
+  .izsg-tile,
+  .izsg-ph {
+    grid-column: var(--gc-md);
+    grid-row: var(--gr-md);
+  }
+  .izsg-x-md {
+    display: none;
+  }
+}
+
+/* tablet only: inside the copy band, text left / console right, so the
+   console doesn't stretch into a full-width slab */
+@media (min-width: 700px) and (max-width: 1099px) {
+  .izsg-copy {
+    display: grid;
+    grid-template-columns: 1fr minmax(320px, 46%);
+    gap: var(--sp-4) var(--sp-8);
+    align-items: start;
+    padding-right: 0;
+  }
+  .izsg-kicker,
+  .izsg-title,
+  .izsg-sub,
+  .izsg-learn {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .izsg-con {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+  }
+}
+
+/* desktop: 10 x 7, copy occupies rows 2-6 / cols 1-5 so tiles
+   spill around the text on the row above and below it */
+@media (min-width: 1100px) {
+  .izsg-grid {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    grid-template-rows: repeat(7, minmax(96px, 1fr));
+  }
+  .izsg-copy {
+    grid-area: 2 / 1 / 7 / 6;
+  }
+  .izsg-tile,
+  .izsg-ph {
+    grid-column: var(--gc);
+    grid-row: var(--gr);
+    min-height: 0;
+  }
+  .izsg-x-md {
+    display: flex;
+  }
+  .izsg-ph.izsg-x-md {
+    display: block;
+  }
+}
+
+/* phone: hide the tiles that have no phone slot */
+@media (max-width: 699px) {
+  .izsg-x-sm {
+    display: none;
+  }
+  .izsg-title {
+    font-size: var(--fs-h3);
+  }
+}
+
+/* ---------- 8. reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .izsg-grid .izsg-tile,
+  .izsg-grid .izsg-ph {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .izsg-grid.in .izsg-ph {
+    opacity: 0.55;
+  }
+  .izsg-kicker i {
+    animation: none;
+  }
+  .izsg-fade {
+    animation: none;
+  }
+  .izsg-vt-ind {
+    transition: none;
+  }
+  .izsg-tile:hover,
+  .izsg-tile.on {
+    transform: none;
+  }
+}

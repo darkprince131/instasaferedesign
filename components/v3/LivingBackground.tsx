@@ -48,7 +48,7 @@ function Packet({ from, to, delay }: { from: Node; to: Node; delay: number }) {
   return (
     <motion.circle
       r={2.5}
-      fill="#60A5FA"
+      fill="var(--db-accent)"
       initial={{ cx: from.x, cy: from.y, opacity: 0 }}
       animate={{ cx: to.x, cy: to.y, opacity: [0, 1, 1, 0] }}
       transition={{ duration: 2.4, delay, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" }}
@@ -111,7 +111,7 @@ export function LivingBackground() {
         className="lb-wash absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 100% 60% at 50% -10%, rgba(59,130,246,0.10), transparent 60%), radial-gradient(ellipse 80% 50% at 80% 110%, rgba(139,92,246,0.08), transparent 60%)",
+            "radial-gradient(ellipse 100% 60% at 50% -10%, color-mix(in srgb, var(--db-accent) 10%, transparent), transparent 60%), radial-gradient(ellipse 80% 50% at 80% 110%, color-mix(in srgb, var(--db-accent-2) 8%, transparent), transparent 60%)",
         }}
       />
       <svg
@@ -137,7 +137,7 @@ export function LivingBackground() {
             y1={nodes[a].y}
             x2={nodes[b].x}
             y2={nodes[b].y}
-            stroke="#3B82F6"
+            stroke="var(--db-accent)"
             strokeWidth={1}
             initial={{ opacity: 0.05 }}
             animate={reduce ? undefined : { opacity: [0.05, 0.22, 0.05] }}
@@ -157,14 +157,14 @@ export function LivingBackground() {
         {nodes.map((n) => {
           if (n.guard) {
             const s = guardState(n.id);
-            const color = s === 0 ? "#475569" : s === 1 ? "#F97316" : "#22C55E";
+            const color = s === 0 ? "var(--db-text-mute)" : s === 1 ? "var(--db-accent)" : "var(--db-success)";
             return (
               <g key={n.id} filter="url(#lbglow)">
                 <motion.circle
                   cx={n.x}
                   cy={n.y}
                   r={9}
-                  fill="#0C1526"
+                  fill="var(--db-surface)"
                   stroke={color}
                   strokeWidth={1.5}
                   animate={reduce ? undefined : { scale: s === 1 ? [1, 1.25, 1] : 1 }}
@@ -188,7 +188,7 @@ export function LivingBackground() {
               cx={n.x}
               cy={n.y}
               r={3.5}
-              fill="#60A5FA"
+              fill="var(--db-accent)"
               filter="url(#lbglow)"
               initial={{ opacity: 0.3 }}
               animate={reduce ? undefined : { opacity: [0.25, 1, 0.25], scale: [1, 1.4, 1] }}
@@ -222,17 +222,17 @@ export function LivingBackground() {
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: "radial-gradient(var(--accent-blue-light) 1.3px, transparent 1.3px)",
+                backgroundImage: "radial-gradient(var(--db-accent) 1.3px, transparent 1.3px)",
                 backgroundSize: "30px 30px",
                 opacity: 0.45,
               }}
             />
             <svg viewBox="0 0 1440 820" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full">
               {edges.map(([a, b], i) => (
-                <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} stroke="#60A5FA" strokeWidth={1.4} opacity={0.7} />
+                <line key={i} x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} stroke="var(--db-accent)" strokeWidth={1.4} opacity={0.7} />
               ))}
               {nodes.map((n) => (
-                <circle key={n.id} cx={n.x} cy={n.y} r={n.guard ? 6 : 4.5} fill="#93c5fd" filter="url(#lbglow)" />
+                <circle key={n.id} cx={n.x} cy={n.y} r={n.guard ? 6 : 4.5} fill="var(--db-accent)" filter="url(#lbglow)" />
               ))}
             </svg>
           </div>
@@ -243,7 +243,7 @@ export function LivingBackground() {
               opacity: "var(--lb-on, 0)",
               transition: "opacity .4s ease",
               background:
-                "radial-gradient(circle 250px at var(--lb-x, -300px) var(--lb-y, -300px), rgba(96,165,250,0.12), transparent 70%)",
+                "radial-gradient(circle 250px at var(--lb-x, -300px) var(--lb-y, -300px), color-mix(in srgb, var(--db-accent) 12%, transparent), transparent 70%)",
             }}
           />
         </div>

@@ -1,0 +1,248 @@
+/* ============================================================
+   OneLoginRace — hero centerpiece. Console-window chrome matches
+   IzConsole's language (dots, mono title bar); two timed panels
+   inside. Tokens only — no new hex/px/duration literals.
+   ============================================================ */
+
+.olr-win {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--inset), var(--panel-sh);
+  overflow: hidden;
+  position: relative;
+}
+
+.olr-chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--pad-console);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+}
+.olr-dots { display: inline-flex; gap: 6px; }
+.olr-dots i { width: 9px; height: 9px; border-radius: var(--r-pill); background: var(--ghost); display: inline-block; }
+.olr-chrome-title { font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--tx-mute); }
+.olr-replay {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.olr-replay svg { width: 11px; height: 11px; }
+.olr-replay:hover { color: var(--accent); border-color: var(--accent); }
+
+.olr-body {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+}
+.olr-divider { width: 1px; background: var(--line); }
+
+.olr-panel {
+  padding: var(--pad-panel);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.olr-panel-head { display: flex; align-items: center; justify-content: space-between; }
+.olr-label {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.olr-timer {
+  font-family: var(--mono);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--tx-dim);
+}
+.olr-timer.accent { color: var(--accent); }
+
+/* ---------- queue (left) ---------- */
+.olr-queue { display: flex; flex-direction: column; gap: 8px; }
+.olr-tile {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  padding: 9px 12px;
+  transition: border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.olr-tile.queued { opacity: 0.5; }
+.olr-tile.active { border-color: color-mix(in srgb, var(--accent) 40%, var(--line-strong)); }
+.olr-tile.done { opacity: 0.65; }
+
+.olr-tile-head { display: flex; align-items: center; gap: 10px; }
+.olr-tile-idx { font-family: var(--mono); font-size: var(--fs-3xs); color: var(--tx-mute); letter-spacing: 0.06em; }
+.olr-tile-name { font-family: var(--disp); font-size: var(--fs-sm); font-weight: 500; color: var(--tx); }
+.olr-tile-tick {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--allow);
+}
+
+/* ---------- mini login form (shared left/right) ---------- */
+.olr-form { display: flex; flex-direction: column; gap: 7px; margin-top: 9px; }
+.olr-field { display: flex; align-items: center; gap: 8px; }
+.olr-field-lbl {
+  width: 32px;
+  flex: none;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.olr-bar { flex: 1; height: 5px; border-radius: var(--r-pill); background: var(--line); overflow: hidden; }
+.olr-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--tx-mute);
+  border-radius: var(--r-pill);
+  transition: width 0.42s var(--ease-out);
+}
+.olr-bar-fill.on { width: 100%; }
+.olr-dots-row { display: inline-flex; gap: 4px; }
+.olr-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--tx-mute);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.22s var(--ease-out), transform 0.22s var(--ease-out);
+}
+.olr-dot.on { opacity: 1; transform: scale(1); }
+
+.olr-status {
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+}
+.olr-status.dim { color: var(--tx-mute); background: var(--surface-2); }
+.olr-status.allow { color: var(--allow); background: var(--allow-bg); }
+.olr-status.deny { color: var(--deny); background: var(--deny-bg); animation: olr-pulse 1s ease-in-out infinite; }
+.olr-status.accent { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); animation: olr-pulse 1s ease-in-out infinite; }
+
+/* ---------- right: single login + cascade ---------- */
+.olr-single {
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line-strong));
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  padding: 9px 12px;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.olr-single.done { border-color: var(--line); }
+.olr-single .olr-form { margin-top: 0; }
+.olr-single-done {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+.olr-single-done .olr-tile-tick { font-size: var(--fs-sm); }
+
+.olr-cascade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.olr-ctile {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.4;
+  transform: translateY(2px);
+  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out), border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.olr-ctile .olr-tile-name { font-size: var(--fs-2xs); }
+.olr-ctile.unlocked {
+  opacity: 1;
+  transform: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
+  box-shadow: 0 0 14px -6px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.olr-ctile .olr-tile-tick { margin-left: auto; }
+
+/* ---------- finish + hold state ---------- */
+.olr-finish { min-height: 26px; display: flex; }
+.olr-chip {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+}
+.olr-chip.allow { color: var(--allow); background: var(--allow-bg); }
+.olr-chip.deny { color: var(--deny); background: var(--deny-bg); }
+.olr-chip.final { opacity: 0; animation: olr-pop 0.3s var(--ease-out) forwards; }
+
+.olr-stat {
+  text-align: center;
+  padding: var(--sp-3) var(--pad-console) var(--sp-4);
+  border-top: 1px dashed var(--line-strong);
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+  opacity: 0;
+  animation: olr-pop 0.4s var(--ease-out) forwards;
+}
+.olr-stat em { font-style: normal; color: var(--accent); }
+
+@keyframes olr-pop { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@keyframes olr-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+/* ---------- reduced motion: static end-state ---------- */
+.olr-static .olr-bar-fill,
+.olr-static .olr-dot,
+.olr-static .olr-ctile,
+.olr-static .olr-chip.final,
+.olr-static .olr-stat {
+  transition: none;
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .olr-bar-fill, .olr-dot, .olr-ctile, .olr-chip.final, .olr-stat, .olr-status {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 940px) {
+  .olr-body { grid-template-columns: 1fr; }
+  .olr-divider { width: auto; height: 1px; }
+}
+@media (max-width: 520px) {
+  .olr-cascade { grid-template-columns: repeat(2, 1fr); }
+}

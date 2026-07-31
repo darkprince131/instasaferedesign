@@ -39,7 +39,7 @@
   align-items: stretch;
   width: 290px;
   min-height: 350px;
-  border-radius: 4px 12px 12px 4px; /* spine left / pages right */
+  border-radius: var(--r-2xs) var(--r-md) var(--r-md) var(--r-2xs); /* spine left / pages right */
   overflow: hidden;
   transition: box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -51,20 +51,20 @@
 
 /* ---- inner bits ---- */
 .bc-head { padding: 30px 20px 24px; }
-.bc-title { margin: 0; font-family: var(--disp); font-weight: 400; font-size: 20px; line-height: 1.1; letter-spacing: -0.4px; }
+.bc-title { margin: 0; font-family: var(--disp); font-weight: 400; font-size: var(--fs-h3); line-height: 1.1; letter-spacing: -0.4px; }
 .bc-title span { display: block; }
 .bc-title em { font-style: normal; color: var(--orange); }
 
-.bc-divider { height: 1px; margin: 0 20px; }
-.bc-sub { padding: 0 20px; margin-top: 10px; font-family: var(--mono); font-size: 8.5px; font-weight: 500; letter-spacing: var(--ls-mono); text-transform: uppercase; }
+.bc-divider { height: 1px; margin: 0 var(--sp-5); }
+.bc-sub { padding: 0 var(--sp-5); margin-top: 10px; font-family: var(--mono); font-size: 8.5px; /* left hardcoded: below --fs-micro(9px), deliberate book-spine micro-label */ font-weight: 500; letter-spacing: var(--ls-mono); text-transform: uppercase; }
 
-.bc-cover { padding: 12px 20px 0; }
-.bc-cover img { width: 100%; height: auto; display: block; border-radius: 6px; }
+.bc-cover { padding: var(--sp-3) var(--sp-5) 0; }
+.bc-cover img { width: 100%; height: auto; display: block; border-radius: var(--r-xs); }
 
 .bc-foot {
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 20px 18px; margin-top: auto;
-  font-family: var(--mono); font-size: 8px; font-weight: 500; letter-spacing: 0.08em;
+  font-family: var(--mono); font-size: 8px; /* left hardcoded: below --fs-micro(9px), deliberate book-footer micro-label */ font-weight: 500; letter-spacing: 0.08em;
 }
 
 /* ---- the frosted pocket lip ---- */
@@ -74,9 +74,9 @@
   height: 33%;
   z-index: 3;
   pointer-events: none;
-  border-radius: 4px 4px 16px 16px;
+  border-radius: var(--r-2xs) var(--r-2xs) var(--r-lg) var(--r-lg);
   -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
-  transition: backdrop-filter 0.5s ease, background-color 0.5s ease, border-color 0.5s ease;
+  transition: backdrop-filter 0.5s var(--ease-out), background-color 0.5s var(--ease-out), border-color 0.5s var(--ease-out);
 }
 .bc-link:hover .bc-pocket,
 .bc-link:focus-visible .bc-pocket { -webkit-backdrop-filter: blur(3.5px); backdrop-filter: blur(3.5px); }
@@ -84,11 +84,11 @@
 /* ---- caption / CTA ---- */
 .bc-caption {
   margin-top: 30px;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em;
-  color: var(--tx-mute); transition: color 0.3s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  font-family: var(--mono); font-size: var(--fs-label); letter-spacing: 0.02em;
+  color: var(--tx-mute); transition: color var(--dur) var(--ease-out);
 }
-.bc-caption .arrow { display: inline-flex; transform: translateX(-5px); opacity: 0; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease; }
+.bc-caption .arrow { display: inline-flex; transform: translateX(-5px); opacity: 0; transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity var(--dur) var(--ease-out); }
 .bc-link:hover .bc-caption,
 .bc-link:focus-visible .bc-caption { color: var(--tx); }
 .bc-link:hover .bc-caption .arrow,
@@ -120,8 +120,8 @@
 }
 .iz[data-theme="dark"] .bc-link:hover .bc-book,
 .iz[data-theme="dark"] .bc-link:focus-visible .bc-book {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(255, 106, 44, 0.3),
-    0 20px 34px -18px rgba(255, 106, 44, 0.26);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 20px 34px -18px color-mix(in srgb, var(--accent) 26%, transparent);
 }
 .iz[data-theme="dark"] .bc-spine { background: linear-gradient(270deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.12) 60%, rgba(0, 0, 0, 0) 100%); box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.05); }
 .iz[data-theme="dark"] .bc-title { color: var(--tx); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45); }

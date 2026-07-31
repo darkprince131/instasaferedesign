@@ -61,7 +61,7 @@ export function AdminDashboard() {
             className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${
               activeRow === i ? "bg-blue-500/5" : ""
             }`}
-            animate={activeRow === i ? { backgroundColor: "rgba(59,130,246,0.06)" } : {}}
+            animate={activeRow === i ? { backgroundColor: "color-mix(in srgb, var(--db-accent) 6%, transparent)" } : {}}
           >
             <span className="w-4 text-white/50">{row.device}</span>
             <span className="flex-1 truncate text-white/70">{row.user}</span>

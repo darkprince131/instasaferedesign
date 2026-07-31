@@ -24,37 +24,68 @@
   height: 64px;
   flex-wrap: wrap;
 }
-.izc-title { display: inline-flex; align-items: center; gap: 8px; font-family: var(--disp); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; }
+.izc-title { display: inline-flex; align-items: center; gap: var(--sp-2); font-family: var(--disp); font-weight: 500; font-size: var(--fs-lead); letter-spacing: -0.01em; }
 .izc-title b { font-weight: 600; }
-.izc-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tx-mute); }
-.izc-head-right { display: flex; align-items: center; gap: 12px; }
+.izc-sub { font-family: var(--mono); font-size: var(--fs-mono-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tx-mute); }
+.izc-head-right { display: flex; align-items: center; gap: var(--sp-3); }
 
-.izc-jump { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 0; border-bottom: 1px solid var(--line); }
+/* design-system switcher — segmented control next to the theme toggle.
+   Each button carries its own fixed reference dot (not var(--accent),
+   which would just show the currently-active system on every dot). */
+.izc-sys {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  padding: var(--sp-1);
+  background: var(--surface);
+}
+.izc-sys button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--tx-mute);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  padding: 6px var(--sp-3);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.izc-sys button .dot { width: 8px; height: 8px; border-radius: var(--r-pill); flex: none; display: inline-block; }
+.izc-sys button.on { background: var(--surface-2); color: var(--tx); }
+@media (max-width: 720px) { .izc-sys button span { display: none; } }
+
+.izc-jump { display: flex; gap: 6px; flex-wrap: wrap; padding: var(--sp-3) 0; border-bottom: 1px solid var(--line); }
 .izc-jump a {
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: var(--fs-mono);
   color: var(--tx-dim);
   border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 5px 12px;
-  transition: all 0.15s ease;
+  border-radius: var(--r-pill);
+  padding: var(--sp-1) var(--sp-3);
+  transition: all var(--dur-fast) var(--ease-out);
 }
 .izc-jump a:hover { border-color: var(--orange); color: var(--orange); }
 
-.izc-sec { padding: 72px 0 8px; }
+.izc-sec { padding: 72px 0 var(--sp-2); }
 .izc-sec-h {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--sp-3);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: var(--fs-label);
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
   color: var(--orange);
-  margin-bottom: 4px;
+  margin-bottom: var(--sp-1);
 }
 .izc-sec-h .n { color: var(--tx-mute); }
-.izc-sec-desc { color: var(--tx-dim); font-size: 14.5px; max-width: 60ch; margin: 0 0 22px; }
+.izc-sec-desc { color: var(--tx-dim); font-size: var(--fs-body-sm); max-width: 60ch; margin: 0 0 22px; }
 
 /* specimen card */
 .izc-grid { display: grid; gap: 18px; }
@@ -64,38 +95,75 @@
 .izc-spec {
   position: relative;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   background:
     linear-gradient(var(--bg) 0 0) padding-box,
     repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 9px) border-box;
-  padding: 40px 26px 26px;
+  padding: var(--sp-10) var(--sp-6) var(--sp-6);
   margin-top: 18px;
 }
-.izc-spec.pad-lg { padding: 52px 32px 32px; }
+.izc-spec.pad-lg { padding: var(--sp-12) var(--sp-8) var(--sp-8); }
 .izc-spec.center { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px; min-height: 110px; }
 .izc-label {
   position: absolute;
   top: 12px;
   left: 16px;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--fs-mono-xs);
   letter-spacing: 0.08em;
   color: var(--tx-mute);
 }
 .izc-label b { color: var(--tx-dim); font-weight: 500; }
 
+/* illustration sample */
+.izc-illus-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.izc-illus-sample { width: 320px; max-width: 100%; }
+.izc-illus-wide { width: 100%; max-width: 860px; }
+.izc-illus-cap { font-family: var(--mono); font-size: var(--fs-label); line-height: 1.7; color: var(--tx-mute); text-align: center; max-width: 52ch; }
+.izc-illus-cap code { color: var(--tx-dim); }
+
 /* swatches */
-.izc-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-.izc-sw { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.izc-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--sp-3); }
+.izc-sw { border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; }
 .izc-sw .chip { height: 56px; }
-.izc-sw .meta { padding: 8px 10px; font-family: var(--mono); font-size: 11px; }
+.izc-sw .meta { padding: var(--sp-2) 10px; font-family: var(--mono); font-size: var(--fs-mono-xs); }
 .izc-sw .meta .nm { color: var(--tx); }
 .izc-sw .meta .vl { color: var(--tx-mute); }
 
 /* type specimens */
-.izc-type-row { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
-.izc-type-row .spec-meta { font-family: var(--mono); font-size: 11px; color: var(--tx-mute); white-space: nowrap; }
+.izc-type-row { padding: var(--sp-3) 0; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
+.izc-type-row .spec-meta { font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--tx-mute); white-space: nowrap; }
 
 @media (max-width: 820px) {
   .izc-grid.two, .izc-grid.three { grid-template-columns: 1fr; }
+}
+
+/* ---------- inspector scene (00ae/00af) ----------
+   Stage layout for the composed demo: narration column on the warm
+   zone, panel on the cool zone, matching --stage-split so the tonal
+   boundary lands exactly on the column boundary. */
+.izc-scene-stage {
+  display: grid;
+  grid-template-columns: var(--stage-split) 1fr;
+  align-items: stretch;
+  min-height: 300px;
+}
+.izc-scene-panel {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-8) var(--sp-6);
+  min-width: 0;
+}
+.izc-scene-panel .izp {
+  width: 100%;
+  max-width: 460px;
+}
+
+@media (max-width: 900px) {
+  .izc-scene-stage {
+    grid-template-columns: 1fr;
+  }
+  .izc-scene-panel {
+    padding: var(--sp-5);
+  }
 }

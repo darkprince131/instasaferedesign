@@ -1,0 +1,39 @@
+/* ============================================================
+   iz-fx — removable v3-derived effects, re-expressed in `.iz`
+   tokens. Scoped entirely under `.iz` so it never leaks into
+   the rest of the site. Pair with fx.config.ts (IZ_FX flags) to
+   kill any effect site-wide from one file.
+   ============================================================ */
+
+/* NodalField line/node colors — follow theme automatically via
+   the existing illustration + text tokens (iz-system.css §8). */
+.iz {
+  --fx-line: var(--il-faint);
+  --fx-node: var(--tx-mute);
+}
+
+/* ---------- .iz-fx-card — backlit hover ----------
+   Drop alongside an existing card class (.iz-bento-cell,
+   .iz-panel, .iz-price-card…) to add the accent-glow hover.
+   Pure hover behavior — no base card styling here, so it never
+   duplicates iz-*.css primitives. */
+.iz-fx-card {
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.iz-fx-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
+  box-shadow:
+    0 0 24px -6px color-mix(in srgb, var(--accent) 35%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* escape hatch — set data-fx="off" on `.iz` (or any subtree) to
+   neutralize the backlight hover without touching fx.config.ts */
+.iz[data-fx="off"] .iz-fx-card:hover {
+  border-color: var(--line);
+  box-shadow: var(--inset), var(--panel-sh);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iz-fx-card { transition: none; }
+}

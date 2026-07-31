@@ -1,0 +1,478 @@
+/* ============================================================
+   ztna.css — /zero-trust-network-access
+   ============================================================ */
+
+/* the sticky nav measures 66px; everything that pins must clear it */
+.iz { --zt-nav: 66px; }
+
+/* ============================================================
+   HeroConsole — a HINT of tilt (5deg), not a perspective stunt
+   ============================================================ */
+.ztconsole { perspective: 1800px; }
+.ztconsole-tilt {
+  transform-origin: 50% 0%;
+  transform:
+    rotateX(calc((1 - var(--p, 0)) * 5deg))
+    scale(calc(0.975 + var(--p, 0) * 0.025));
+  will-change: transform;
+}
+.ztconsole-tilt > * {
+  display: block;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 calc(14px + var(--p, 0) * 18px) calc(34px + var(--p, 0) * 30px) -26px
+    color-mix(in srgb, var(--tx) calc(24% + var(--p, 0) * 14%), transparent);
+}
+
+/* ============================================================
+   Page rhythm — each mechanism is a SECTION, not a numbered part
+   ============================================================ */
+.ztna-sec { padding: var(--sp-section) 0; }
+.ztna-sec--tight { padding: var(--sp-12) 0 var(--sp-10); }
+/* alternating ground so consecutive sections never read as one slab */
+.ztna-sec--alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+.ztna-head { margin-bottom: var(--sp-10); max-width: 60ch; }
+.ztna-head.center { margin-inline: auto; text-align: center; }
+.ztna-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.ztna-head h2 em { font-style: normal; color: var(--orange); }
+.ztna-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* a mechanism section: heading + lead + visual */
+.ztna-mech { padding: var(--sp-section) 0; }
+.ztna-mech-h {
+  max-width: 62ch;
+  margin-bottom: var(--sp-8);
+}
+.ztna-mech-h h3 {
+  margin: var(--sp-3) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.ztna-mech-h h3 em { font-style: normal; color: var(--orange); }
+.ztna-mech-h p {
+  margin: var(--sp-5) 0 0;
+  /* was --fs-body-sm and genuinely too small for body copy at this width */
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ConsoleRow ships full-bleed; constrain it to the page measure and give
+   the copy real type sizes */
+.ztna-crow .cr-row {
+  max-width: var(--wrap-max);
+  margin-inline: auto;
+  padding-inline: var(--wrap-gutter);
+  gap: var(--sp-12);
+  align-items: center;
+}
+.ztna-crow .cr-lead {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  max-width: 52ch;
+}
+.ztna-crow .iz-h2 { text-wrap: balance; }
+
+/* Quick scan in two columns — each column is its own rail with its own
+   spine, so 10 specs read at half the height and collapse to one column
+   without any of them changing shape. */
+.ztna-spec2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-10);
+}
+
+/* ============================================================
+   BlackeningScene — the WHOLE section is dark, not just the panel
+   ============================================================ */
+.ztna-darksec {
+  background: var(--bg);
+  color: var(--tx);
+  padding: var(--sp-section) 0;
+}
+.ztbl {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+.ztbl-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.ztbl-mlab {
+  margin-right: auto;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.ztbl-mlab i { font-style: normal; color: var(--orange); }
+.ztbl-toggle { display: flex; gap: var(--sp-1); }
+.ztbl-toggle button {
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--tx-dim);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.ztbl-toggle button:hover { color: var(--tx); }
+.ztbl-toggle button[aria-pressed="true"] {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--btn-ink);
+}
+.ztbl-toggle button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.ztbl-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.ztbl-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-5) var(--sp-4);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  transition: opacity 300ms var(--ease);
+  transition-delay: calc(var(--i) * 55ms);
+}
+.ztbl-port { font-size: var(--fs-sm); color: var(--tx); }
+.ztbl-state { font-size: var(--fs-mono-xs); letter-spacing: var(--ls-mono); text-transform: uppercase; color: var(--deny); }
+.ztbl-grid.is-dark .ztbl-cell { opacity: 0.24; }
+.ztbl-grid.is-dark .ztbl-state { color: var(--tx-dim); }
+
+.ztbl-foot {
+  margin: 0;
+  padding: var(--sp-5) var(--sp-6);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.ztbl-foot b { color: var(--tx); }
+
+/* ============================================================
+   AlwaysOnBoot — a desktop, at a sane size
+   ============================================================ */
+.ztboot { max-width: 560px; }
+.ztboot-screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: #0b0d11;
+  overflow: hidden;
+}
+
+/* boot layer */
+.ztboot-boot {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-4);
+  background: #0b0d11;
+  z-index: 2;
+}
+.ztboot-bar {
+  display: block;
+  width: 110px;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+.ztboot-bar i { display: block; height: 100%; width: 0%; background: var(--orange); }
+.ztboot-msg {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* desktop layer — wallpaper, icons, taskbar */
+.ztboot-desk {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(120% 90% at 20% 10%, #2a4a6b 0%, transparent 55%),
+    radial-gradient(120% 90% at 85% 80%, #6b3a2a 0%, transparent 55%),
+    linear-gradient(160deg, #14202e, #0d1218);
+  display: flex;
+  flex-direction: column;
+}
+.ztboot-icons {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  align-items: flex-start;
+  margin: 0;
+  padding: var(--sp-4);
+  list-style: none;
+}
+.ztboot-icons li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 66px;
+}
+.ztboot-icons span {
+  width: 26px;
+  height: 22px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+.ztboot-icons em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  line-height: 1.25;
+}
+.ztboot-taskbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 5px var(--sp-3);
+  background: rgba(8, 12, 18, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+}
+.ztboot-start {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.ztboot-agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: var(--r-xs);
+  background: rgba(255, 255, 255, 0.09);
+  font-family: var(--mono);
+  font-size: 9px;
+  opacity: 0;
+}
+.ztboot-agent em { font-style: normal; color: rgba(255, 255, 255, 0.7); }
+.ztboot-agent b { color: #46d38a; font-weight: 500; }
+.ztboot-clock { font-family: var(--mono); font-size: 9px; color: rgba(255, 255, 255, 0.45); }
+
+/* sequence — only once the section is actually reached */
+.ztboot.is-live .ztboot-bar i { animation: zt-fill 1400ms var(--ease-out) 200ms forwards; }
+.ztboot.is-live .ztboot-boot { animation: zt-out 400ms var(--ease) 1750ms forwards; }
+.ztboot.is-live .ztboot-desk { animation: zt-in 420ms var(--ease) 1780ms forwards; }
+.ztboot.is-live .ztboot-agent { animation: zt-pop 380ms var(--ease) 2300ms forwards; }
+
+@keyframes zt-fill { to { width: 100%; } }
+@keyframes zt-out { to { opacity: 0; visibility: hidden; } }
+@keyframes zt-in { to { opacity: 1; } }
+@keyframes zt-pop { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+.ztboot-cap {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   OutcomesEstate — scattered map of the estate
+   ============================================================ */
+.ztes { display: block; }
+.ztes-map {
+  --cols: 8;
+  --rows: 7;
+  --cell: clamp(52px, 7.2vw, 82px);
+  position: relative;
+  width: calc(var(--cell) * var(--cols));
+  height: calc(var(--cell) * var(--rows));
+  margin: 0 auto;
+  max-width: 100%;
+}
+/* the measurement surface the estate is plotted on — kept very faint and
+   faded at the edges so it reads as a plane, not as wallpaper */
+.ztes-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 50%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(70% 70% at 50% 50%, #000 40%, transparent 100%);
+  opacity: 0.9;
+}
+
+/* every tile is placed by its cell — coordinates are data */
+.ztes-app,
+.ztes-core {
+  position: absolute;
+  left: calc(var(--c) * var(--cell));
+  top: calc(var(--r) * var(--cell));
+  width: calc(var(--cell) * 0.92);
+  height: calc(var(--cell) * 0.92);
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--tx) 30%, transparent),
+    0 0 0 1px var(--line);
+}
+.ztes-app img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.ztes-app em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  line-height: 1.2;
+  text-align: center;
+  color: var(--tx-dim);
+  word-break: break-word;
+}
+.ztes-core {
+  z-index: 2;
+  background: var(--surface);
+  box-shadow: 0 10px 26px -10px color-mix(in srgb, var(--tx) 38%, transparent),
+    0 0 0 1px var(--line-strong);
+}
+
+/* the alert — struck top-right of the map */
+.ztes-alert {
+  position: absolute;
+  left: calc(5 * var(--cell));
+  top: calc(0.4 * var(--cell));
+  color: var(--deny);
+  opacity: 0;
+  transform: scale(0.86);
+  z-index: 3;
+}
+
+/* --- resting states (also the still: touch, reduced motion) --- */
+.ztes-app.is-cleared {
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--allow) 45%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--allow) 55%, var(--line)),
+    0 0 22px 2px color-mix(in srgb, var(--allow) 26%, transparent);
+}
+.ztes-app.is-struck {
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--tx) 30%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--tx) 14%, transparent),
+    0 0 0 1px var(--line);
+}
+
+/* --- the sequence, once --- */
+.ztes.is-live .ztes-alert { animation: ztes-alert 1500ms var(--ease) 300ms; }
+.ztes.is-live .ztes-app.is-struck { animation: ztes-struck 3200ms var(--ease) 600ms; }
+.ztes.is-live .ztes-core { animation: ztes-index 1000ms steps(6, end) 1500ms; }
+.ztes.is-live .ztes-app.is-cleared { animation: ztes-clear 1600ms var(--ease) 2400ms; }
+
+@keyframes ztes-alert {
+  0% { opacity: 0; transform: scale(0.86) translateY(6px); }
+  16%, 60% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.94) translateY(-4px); }
+}
+@keyframes ztes-struck {
+  0% { box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--tx) 30%, transparent), 0 0 0 1px var(--line); }
+  18%, 52% {
+    box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--deny) 40%, transparent),
+      0 0 0 4px color-mix(in srgb, var(--deny) 22%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--deny) 50%, var(--line));
+  }
+  100% {
+    box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--tx) 30%, transparent),
+      0 0 0 3px color-mix(in srgb, var(--tx) 14%, transparent),
+      0 0 0 1px var(--line);
+  }
+}
+@keyframes ztes-index {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes ztes-clear {
+  0% {
+    box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--tx) 30%, transparent), 0 0 0 1px var(--line);
+  }
+  40%, 70% {
+    box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--allow) 55%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--allow) 26%, transparent),
+      0 0 30px 4px color-mix(in srgb, var(--allow) 34%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--allow) 60%, var(--line));
+  }
+  100% {
+    box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--allow) 45%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--allow) 55%, var(--line)),
+      0 0 22px 2px color-mix(in srgb, var(--allow) 26%, transparent);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1000px) {
+  .ztna-spec2 { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+  .ztna-crow .cr-row { gap: var(--sp-8); }
+  .ztbl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ztconsole-tilt { transform: none; }
+  .ztboot { max-width: 100%; }
+  .ztes-map { --cell: clamp(44px, 11vw, 62px); }
+}
+
+@media (max-width: 700px) {
+  /* no choreography on a phone — the resting states already say it */
+  .ztes.is-live .ztes-alert { animation: none; opacity: 1; transform: scale(1); }
+  .ztes.is-live .ztes-core,
+  .ztes.is-live .ztes-app { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ztconsole-tilt { transform: none; }
+  .ztboot.is-live * { animation: none !important; }
+  .ztboot-boot { opacity: 0; visibility: hidden; }
+  .ztboot-desk { opacity: 1; }
+  .ztboot-agent { opacity: 1; }
+  .ztes.is-live * { animation: none !important; }
+  .ztes-alert { opacity: 1; transform: scale(1); }
+  .ztbl-cell { transition: none; }
+}

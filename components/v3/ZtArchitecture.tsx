@@ -100,7 +100,7 @@ export function ZtArchitecture() {
           {conns.map((c, i) => {
             const d = path(c);
             const on = c.stage === stage;
-            const color = c.secure ? "#22C55E" : "var(--accent-blue)";
+            const color = c.secure ? "var(--db-success)" : "var(--db-accent)";
             return (
               <g key={i}>
                 <path
@@ -157,7 +157,7 @@ export function ZtArchitecture() {
                     cy={n.y}
                     r={30}
                     fill="none"
-                    stroke="var(--accent-blue)"
+                    stroke="var(--db-accent)"
                     animate={{ r: [30, 46], opacity: [0.4, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
@@ -167,7 +167,7 @@ export function ZtArchitecture() {
                   cy={n.y}
                   r={30}
                   fill="var(--bg-elevated)"
-                  stroke={on ? "var(--accent-blue)" : "var(--border-card)"}
+                  stroke={on ? "var(--db-accent)" : "var(--border-card)"}
                   strokeWidth={on ? 2 : 1.5}
                   style={{ transition: "stroke 0.4s", opacity: on || hovered ? 1 : 0.55 }}
                 />
@@ -177,7 +177,7 @@ export function ZtArchitecture() {
                   width={26}
                   height={26}
                   weight="duotone"
-                  color={on ? "var(--accent-blue-light)" : "var(--text-muted)"}
+                  color={on ? "var(--db-accent)" : "var(--text-muted)"}
                 />
                 <text
                   x={n.x}
@@ -204,14 +204,14 @@ export function ZtArchitecture() {
             className="flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition-colors"
             style={{
               borderColor: stage === s.id ? "var(--border-accent)" : "var(--border-card)",
-              background: stage === s.id ? "color-mix(in srgb, var(--accent-blue) 12%, transparent)" : "transparent",
+              background: stage === s.id ? "color-mix(in srgb, var(--db-accent) 12%, transparent)" : "transparent",
               color: stage === s.id ? "var(--text-primary)" : "var(--text-muted)",
             }}
           >
             <span
               className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold"
               style={{
-                background: stage === s.id ? "var(--accent-blue)" : "var(--surface-faint)",
+                background: stage === s.id ? "var(--db-accent)" : "var(--surface-faint)",
                 color: stage === s.id ? "#fff" : "var(--text-muted)",
               }}
             >

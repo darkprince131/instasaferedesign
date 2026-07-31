@@ -16,9 +16,9 @@
 .cr-row.reverse .cr-console { order: 1; }
 
 .cr-text .iz-ey { margin-bottom: 14px; }
-.cr-lead { color: var(--tx-dim); font-size: 17px; line-height: 1.6; max-width: 42ch; margin: 16px 0 0; }
-.cr-cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 15px; font-weight: 500; color: var(--orange); }
-.cr-cta svg { width: 16px; height: 16px; transition: transform 0.25s ease; }
+.cr-lead { color: var(--tx-dim); font-size: 17px; /* left hardcoded: exact tie between --fs-body(16) and --fs-lead(18) */ line-height: 1.6; max-width: 42ch; margin: var(--sp-4) 0 0; }
+.cr-cta { display: inline-flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-6); font-size: var(--fs-body-sm); font-weight: 500; color: var(--orange); }
+.cr-cta svg { width: 16px; height: 16px; transition: transform var(--dur) var(--ease-out); }
 .cr-cta:hover svg { transform: translateX(4px); }
 
 /* ---- responsive ---- */

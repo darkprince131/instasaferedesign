@@ -1,0 +1,499 @@
+/* ============================================================
+   tabswitch.css — IzTabSwitch, both variants  (lab 00ao)
+
+   One skeleton, two skins:
+     .izts--console   permanently dark, in a window frame
+     .izts--resource  theme-aware, gridded cells
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+.izts {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+
+.izts-frame {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+/* the console skin keeps its window chrome */
+.izts--console .izts-frame {
+  border: 0;
+  box-shadow: 0 0 0 1px var(--line), 0 30px 70px -50px color-mix(in srgb, var(--tx) 70%, transparent);
+}
+.izts--resource .izts-frame {
+  border-radius: 0;
+  border-top: var(--bw) solid var(--line);
+  border-left: var(--bw) solid var(--line);
+}
+
+.izts-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+.izts-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.izts-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+}
+.izts-dots i:first-child {
+  background: var(--deny);
+}
+.izts-dots i:nth-child(2) {
+  background: var(--accent);
+}
+.izts-dots i:last-child {
+  background: var(--allow);
+}
+.izts-host {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+
+/* ---------- the two columns ---------- */
+
+.izts-cols {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  align-items: stretch;
+}
+.izts--resource .izts-cols {
+  grid-template-columns: 1fr 1fr;
+}
+
+.izts-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.izts--console .izts-left {
+  padding: var(--sp-8) var(--sp-8) 0;
+}
+
+.izts-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  flex: 1;
+  /* The CTAs and the tab row are two different kinds of control and
+     must not read as one stack. `flex: 1` alone left them touching
+     whenever the column had no slack to distribute. */
+  padding-bottom: var(--sp-10);
+}
+.izts--resource .izts-head {
+  padding: var(--sp-8) var(--sp-8) var(--sp-10);
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+/* ---------- head bits ---------- */
+
+.izts-star {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+}
+.izts-star svg {
+  width: 12px;
+  height: 12px;
+  color: var(--tx-mute);
+}
+.izts-star b {
+  padding: 1px var(--sp-2);
+  border-left: var(--bw) solid var(--line);
+  margin-left: var(--sp-1);
+  font-family: var(--mono);
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.izts-title {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  text-wrap: balance;
+}
+.izts-title mark {
+  background: none;
+  color: var(--accent);
+}
+.izts--resource .izts-title {
+  max-width: 14ch;
+}
+
+.izts-sub {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.izts-ctas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+.izts-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izts-btn svg {
+  width: 12px;
+  height: 12px;
+}
+.izts-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.izts-btn--primary {
+  background: var(--surface);
+}
+
+/* ---------- resource: the swapping copy cell ---------- */
+
+.izts-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-8);
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  animation: izts-in var(--dur-slow) var(--ease-out) both;
+}
+@keyframes izts-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.izts-copytitle {
+  margin: 0;
+  max-width: 26ch;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izts-copytitle mark {
+  background: none;
+  color: var(--accent);
+}
+.izts-copybody {
+  margin: 0;
+  max-width: 52ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izts-more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+}
+.izts-more svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--dur) var(--ease);
+}
+.izts-more:hover svg {
+  transform: translate(2px, -2px);
+}
+
+/* ---------- the three tabs ---------- */
+
+.izts-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--bw) solid var(--line);
+}
+.izts--resource .izts-tabs {
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.izts-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-2);
+  border: 0;
+  border-right: var(--bw) solid var(--line);
+  background: none;
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  color: var(--tx-mute);
+  cursor: pointer;
+  min-width: 0;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izts-tab:last-child {
+  border-right: 0;
+}
+.izts-tab svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+.izts-tab:hover {
+  color: var(--tx-dim);
+}
+.izts-tab.on {
+  background: var(--surface);
+  color: var(--tx);
+}
+.izts-tab.on svg {
+  color: var(--accent);
+}
+.izts-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
+}
+
+/* ---------- right column ---------- */
+
+.izts-right {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.izts--console .izts-right {
+  padding: var(--sp-8) var(--sp-8) var(--sp-8) 0;
+}
+.izts--resource .izts-right {
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  padding: var(--sp-8);
+  gap: var(--sp-5);
+}
+
+.izts-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+  flex: 1;
+}
+.izts-panel[hidden] {
+  display: none;
+}
+
+/* ---------- console: outcome sub-tabs + payload ---------- */
+
+.izts-outcomes {
+  display: flex;
+  gap: var(--sp-1);
+  padding: var(--sp-2);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izts-outcome {
+  padding: var(--sp-1) var(--sp-3);
+  border: 0;
+  border-radius: var(--r-xs);
+  background: none;
+  font-family: var(--body);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izts-outcome.on {
+  background: var(--surface-2);
+  color: var(--tx);
+}
+.izts-outcome:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.izts--console .izts-panel {
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  gap: 0;
+  overflow: hidden;
+}
+.izts-json {
+  padding: var(--sp-4);
+  flex: 1;
+}
+
+/* ---------- resource: the swapping visual ---------- */
+
+.izts-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  animation: izts-in var(--dur-slow) var(--ease-out) both;
+}
+.izts-art.tone-a {
+  background: linear-gradient(140deg, var(--accent), color-mix(in srgb, var(--accent) 24%, var(--surface)));
+}
+.izts-art.tone-b {
+  background: linear-gradient(140deg, var(--allow), color-mix(in srgb, var(--allow) 20%, var(--surface)));
+}
+.izts-art.tone-c {
+  background: linear-gradient(140deg, var(--deny), color-mix(in srgb, var(--deny) 22%, var(--surface)));
+}
+.izts-art-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  width: 54%;
+  padding: var(--sp-4);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--tx) 88%, transparent);
+}
+.izts-art-line {
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--bg) 40%, transparent);
+}
+.izts-art-line:nth-child(2) {
+  width: 70%;
+}
+.izts-art-line:last-child {
+  width: 45%;
+  background: var(--accent);
+}
+.izts-art-mark {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 2px solid color-mix(in srgb, var(--surface) 70%, transparent);
+  border-radius: var(--r-xs);
+  transform: rotate(12deg);
+}
+.izts-art-mark:first-of-type {
+  right: 12%;
+  top: 22%;
+}
+.izts-art-mark:last-of-type {
+  right: 20%;
+  bottom: 18%;
+  transform: rotate(-8deg);
+}
+
+.izts-byline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+.izts-avatar {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-style: normal;
+  color: var(--tx-dim);
+}
+.izts-byline b {
+  font-weight: 500;
+  color: var(--tx);
+}
+.izts-byline em {
+  font-style: normal;
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .izts-cols,
+  .izts--resource .izts-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izts--console .izts-left {
+    padding: var(--sp-6) var(--sp-5) 0;
+  }
+  .izts--console .izts-right {
+    padding: var(--sp-5);
+  }
+  .izts--resource .izts-head,
+  .izts-copy,
+  .izts--resource .izts-right {
+    padding: var(--sp-6) var(--sp-5);
+  }
+  /* three labelled tabs won't fit on one row at phone widths, and
+     truncating them would hide the only thing that says what each
+     panel is */
+  .izts-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izts-tab {
+    justify-content: flex-start;
+    border-right: 0;
+    border-bottom: var(--bw) solid var(--line);
+    padding: var(--sp-3) var(--sp-5);
+  }
+  .izts-tab:last-child {
+    border-bottom: 0;
+  }
+  .izts-art {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izts-copy,
+  .izts-art {
+    animation: none;
+  }
+  .izts-tab,
+  .izts-outcome,
+  .izts-btn,
+  .izts-more svg {
+    transition: none;
+  }
+}

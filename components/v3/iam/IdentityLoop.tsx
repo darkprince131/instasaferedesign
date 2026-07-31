@@ -163,7 +163,7 @@ export function IdentityLoop() {
           onBlur={() => setOpen(false)}
           aria-label="InstaSafe Identity Shield — verifying device posture, geo-location and session continuously"
           className="flex h-[72px] w-[72px] cursor-pointer items-center justify-center rounded-full border outline-none focus-visible:ring-4"
-          style={{ background: "radial-gradient(circle at 38% 32%, #0f2a1c, #0a1320)", borderColor: blocking ? "#ef4444" : "#22c55e", boxShadow: blocking ? "0 0 36px rgba(239,68,68,.55)" : "0 0 30px rgba(34,197,94,.45)", transition: "border-color .3s, box-shadow .3s" }}
+          style={{ background: "radial-gradient(circle at 38% 32%, #0f2a1c, #0b0d10)", borderColor: blocking ? "var(--db-danger)" : "var(--db-success)", boxShadow: blocking ? "0 0 36px color-mix(in srgb, var(--db-danger) 55%, transparent)" : "0 0 30px color-mix(in srgb, var(--db-success) 45%, transparent)", transition: "border-color .3s, box-shadow .3s" }}
           animate={reduce ? undefined : { scale: open ? 1.12 : 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >

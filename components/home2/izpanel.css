@@ -1,0 +1,228 @@
+/* ============================================================
+   izpanel.css — IzPanel / IzJson / IzToggle (lab 00ae)
+
+   TIER 1 VISUAL. Sits inside a section; owns no page layout.
+   Pair it with a TIER 3 backdrop (iz-backdrops.css) — the panel is
+   designed to float on a stage, not on flat white.
+
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+.izp {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  /* ring, not border — same treatment as the signal-grid tiles, so the
+     two read as one family of surface */
+  box-shadow: 0 0 0 1px var(--line);
+  overflow: hidden;
+}
+
+/* ---------- header ---------- */
+
+.izp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.izp-head-l,
+.izp-head-r {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.izp-title {
+  font-size: var(--fs-sm);
+  color: var(--tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.izp-type {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-hair);
+  padding: 1px var(--sp-1);
+  flex: none;
+}
+
+/* the muted window affordances — decorative, aria-hidden in the TSX */
+.izp-chrome {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--tx-mute);
+  opacity: 0.7;
+}
+.izp-chrome svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- toggle ---------- */
+
+.izp-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.izp-toggle {
+  --h: 18px;
+  position: relative;
+  width: 32px;
+  height: var(--h);
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
+}
+.izp-toggle:disabled {
+  cursor: default;
+}
+.izp-toggle.on {
+  background: var(--accent);
+}
+.izp-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.izp-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--accent);
+  transition: transform var(--dur) var(--ease);
+}
+.izp-toggle.on .izp-knob {
+  transform: translateX(14px);
+}
+.izp-knob svg {
+  width: 9px;
+  height: 9px;
+}
+
+.izp-toggle-label {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--dur) var(--ease);
+}
+.izp-toggle-label.on {
+  color: var(--accent);
+}
+
+/* ---------- body ---------- */
+
+.izp-body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ---------- payload ----------
+   Allowed to overflow horizontally on purpose: a console that wraps
+   its own output looks staged. The scrollbar is styled thin so the
+   overflow reads as intentional rather than broken. */
+
+.izp-json {
+  margin: 0;
+  padding: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.62;
+  color: var(--tx-dim);
+  white-space: pre;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ghost) transparent;
+}
+.izp-json::-webkit-scrollbar {
+  height: 6px;
+}
+.izp-json::-webkit-scrollbar-thumb {
+  background: var(--ghost);
+  border-radius: var(--r-pill);
+}
+.izp-json::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.izp-j-k {
+  color: var(--tx);
+}
+.izp-j-s {
+  color: var(--accent);
+}
+.izp-j-n {
+  color: var(--tx-dim);
+}
+.izp-j-b-t {
+  color: var(--allow);
+}
+.izp-j-b-f {
+  color: var(--deny);
+}
+.izp-j-p {
+  color: var(--tx-mute);
+}
+
+/* ---------- footer meta strip ---------- */
+
+.izp-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-top: var(--bw) solid var(--line);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izp-foot span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.izp-foot span:last-child {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izp-toggle,
+  .izp-knob,
+  .izp-toggle-label {
+    transition: none;
+  }
+}

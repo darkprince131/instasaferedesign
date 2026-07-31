@@ -7,7 +7,7 @@
   display: grid;
   grid-template-columns: 0.92fr 1.08fr;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
   overflow: hidden;
@@ -16,19 +16,19 @@
 
 /* ---------------- LEFT ---------------- */
 .fx-left { padding: 30px 30px 26px; display: flex; flex-direction: column; }
-.fx-ey { font-family: var(--mono); font-size: 12px; letter-spacing: var(--ls-mono); color: var(--tx-mute); }
-.fx-title { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(26px, 3.4vw, 36px); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); margin: 14px 0 0; color: var(--tx); }
+.fx-ey { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: var(--ls-mono); color: var(--tx-mute); }
+.fx-title { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(26px, 3.4vw, 36px); /* left hardcoded: sits between --fs-h3(20-24) and --fs-h2(30-44), load-bearing for this split layout */ line-height: var(--lh-h2); letter-spacing: var(--ls-h2); margin: 14px 0 0; color: var(--tx); }
 .fx-title em { font-style: normal; font-weight: 400; color: var(--orange); }
-.fx-lead { color: var(--tx-dim); font-size: 15px; line-height: 1.55; margin: 14px 0 0; max-width: 42ch; }
+.fx-lead { color: var(--tx-dim); font-size: var(--fs-body-sm); line-height: 1.55; margin: 14px 0 0; max-width: 42ch; }
 .fx-cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px; }
-.fx-stat { font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+.fx-stat { font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--tx-mute); }
 
 /* feature grid 2×N */
 .fx-grid { display: grid; grid-template-columns: 1fr 1fr; margin-top: 30px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .fx-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--sp-3);
   padding: 16px 14px;
   text-align: left;
   background: transparent;
@@ -37,7 +37,7 @@
   border-bottom: 1px solid var(--line);
   cursor: pointer;
   position: relative;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .fx-item::before {
   content: "";
@@ -46,34 +46,34 @@
   width: 2px;
   background: var(--orange);
   transform: scaleY(0);
-  transition: transform 0.2s ease;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 .fx-item.on::before { transform: scaleY(1); }
 .fx-item.on { background: color-mix(in srgb, var(--orange) 7%, transparent); }
 .fx-item:not(.on):hover { background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
-.fx-item-ic { flex: none; display: grid; place-items: center; color: var(--tx-mute); transition: color 0.2s ease; }
+.fx-item-ic { flex: none; display: grid; place-items: center; color: var(--tx-mute); transition: color var(--dur-fast) var(--ease-out); }
 .fx-item-ic svg { width: 18px; height: 18px; }
 .fx-item.on .fx-item-ic { color: var(--orange); }
-.fx-item-t { font-family: var(--disp); font-weight: 500; font-size: 14px; color: var(--tx-dim); transition: color 0.2s ease; }
+.fx-item-t { font-family: var(--disp); font-weight: 500; font-size: var(--fs-body-sm); color: var(--tx-dim); transition: color var(--dur-fast) var(--ease-out); }
 .fx-item.on .fx-item-t { color: var(--tx); }
 
-.fx-all { margin-top: 18px; font-family: var(--mono); font-size: 12px; color: var(--tx-mute); transition: color 0.2s ease; }
+.fx-all { margin-top: 18px; font-family: var(--mono); font-size: var(--fs-label); color: var(--tx-mute); transition: color var(--dur-fast) var(--ease-out); }
 .fx-all:hover { color: var(--orange); }
 
 /* ---------------- RIGHT (screen) ---------------- */
-.fx-right { background: var(--bg-2); border-left: 1px solid var(--line); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.fx-window { width: 100%; max-width: 460px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); box-shadow: var(--inset), var(--panel-sh); overflow: hidden; }
+.fx-right { background: var(--bg-2); border-left: 1px solid var(--line); display: flex; align-items: center; justify-content: center; padding: var(--sp-6); }
+.fx-window { width: 100%; max-width: 460px; border: 1px solid var(--line-strong); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--inset), var(--panel-sh); overflow: hidden; }
 .fx-bar { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
 .fx-dots { display: inline-flex; gap: 6px; }
-.fx-dots i { width: 9px; height: 9px; border-radius: 999px; background: var(--ghost); }
-.fx-file { font-family: var(--mono); font-size: 12px; color: var(--tx-dim); }
-.fx-brand { margin-left: auto; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; color: var(--tx-mute); opacity: 0.6; }
+.fx-dots i { width: 9px; height: 9px; border-radius: var(--r-pill); background: var(--ghost); }
+.fx-file { font-family: var(--mono); font-size: var(--fs-label); color: var(--tx-dim); }
+.fx-brand { margin-left: auto; font-family: var(--mono); font-size: var(--fs-3xs); letter-spacing: 0.12em; color: var(--tx-mute); opacity: 0.6; }
 
-.fx-screen { min-height: 268px; padding: 16px 18px; animation: fx-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.fx-screen { min-height: 268px; padding: 16px 18px; animation: fx-fade 0.4s var(--ease); }
 @keyframes fx-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 /* json viz */
-.fx-json { font-family: var(--mono); font-size: 13px; line-height: 1.75; }
+.fx-json { font-family: var(--mono); font-size: var(--fs-sm); line-height: 1.75; }
 .fx-line { white-space: pre; color: var(--tx-dim); }
 .fx-key { color: var(--orange); }
 .fx-str { color: var(--tx); }
@@ -84,7 +84,7 @@
 .fx-pun { color: var(--tx-mute); }
 
 /* media / node viz */
-.fx-media { width: 100%; height: auto; min-height: 236px; max-height: 320px; object-fit: contain; display: block; border-radius: 8px; }
+.fx-media { width: 100%; height: auto; min-height: 236px; max-height: 320px; object-fit: contain; display: block; border-radius: var(--r-sm); }
 .fx-node { display: grid; place-items: center; min-height: 236px; }
 
 /* ---------------- responsive ---------------- */

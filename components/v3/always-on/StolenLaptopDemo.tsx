@@ -487,8 +487,8 @@ export function StolenLaptopDemo() {
           <div
             className="relative rounded-[18px] border p-2.5 sm:p-3"
             style={{
-              background: "linear-gradient(160deg,#1a2030,#0c111c)",
-              borderColor: "#2a3346",
+              background: "linear-gradient(160deg,#1b1d21,#0d0e11)",
+              borderColor: "#2b2e34",
               boxShadow: "var(--db-shadow)",
             }}
           >
@@ -615,13 +615,13 @@ export function StolenLaptopDemo() {
           </div>
 
           {/* hinge + base (sleek) */}
-          <div className="mx-auto h-2 w-[101%] rounded-b-[4px]" style={{ background: "linear-gradient(#2a3346,#171d2b)" }} />
+          <div className="mx-auto h-2 w-[101%] rounded-b-[4px]" style={{ background: "linear-gradient(#2b2e34,#191b1f)" }} />
           <div
             className="mx-auto h-3.5 rounded-b-2xl"
-            style={{ width: "108%", marginLeft: "-4%", background: "linear-gradient(180deg,#39435a,#1c2333)" }}
+            style={{ width: "108%", marginLeft: "-4%", background: "linear-gradient(180deg,#3a3e46,#1d1f24)" }}
           />
           {/* trackpad lip */}
-          <div className="mx-auto h-1 w-1/5 rounded-b-md" style={{ background: "#10162a" }} />
+          <div className="mx-auto h-1 w-1/5 rounded-b-md" style={{ background: "#111318" }} />
         </motion.div>
       </div>
     </div>

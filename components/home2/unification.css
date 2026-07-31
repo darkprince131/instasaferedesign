@@ -20,12 +20,12 @@
 
 /* ---- legend (colour coding, above the stage) ---- */
 .uni-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 14px; }
-.uni-leg { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.03em; color: var(--tx-dim); }
-.uni-leg .sw { width: 12px; height: 12px; border-radius: 4px; border: 1px solid; }
+.uni-leg { display: inline-flex; align-items: center; gap: var(--sp-2); font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: 0.03em; color: var(--tx-dim); }
+.uni-leg .sw { width: 12px; height: 12px; border-radius: var(--r-2xs); border: 1px solid; }
 .uni-leg.is .sw { background: color-mix(in srgb, var(--orange) 22%, transparent); border-color: var(--orange); }
 .uni-leg.is { color: var(--orange); font-weight: 500; }
 
-.uni-caption { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.uni-caption { display: flex; justify-content: space-between; gap: var(--sp-4); margin-bottom: 10px; font-family: var(--mono); font-size: var(--fs-mono-xs); letter-spacing: 0.08em; text-transform: uppercase; }
 .uni-caption .before { color: var(--tx-mute); }
 .uni-caption .after { color: var(--orange); }
 
@@ -33,7 +33,7 @@
 .uni-slider {
   position: relative;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   min-height: 430px;
   background: var(--bg-2);
@@ -57,7 +57,7 @@
   transform: translate(-50%, -50%);
   width: 46px;
   height: 46px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--orange);
   color: var(--btn-ink);
   display: grid;
@@ -74,7 +74,7 @@
   --c: var(--tx-mute);
   border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
   background: color-mix(in srgb, var(--c) 15%, transparent);
-  border-radius: 10px;
+  border-radius: var(--r-card);
   padding: 11px 12px;
   min-height: 74px;
   display: flex;
@@ -86,8 +86,8 @@
 .uni-box[data-g="dev"] { --c: var(--uni-dev); }
 .uni-box[data-g="pam"] { --c: var(--uni-pam); }
 .uni-box[data-g="log"] { --c: var(--uni-log); }
-.uni-box .nm { font-family: var(--disp); font-size: 13.5px; font-weight: 400; color: var(--tx); letter-spacing: -0.01em; }
-.uni-box .tag { display: flex; align-items: center; gap: 5px; margin-top: auto; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.03em; color: var(--c); }
+.uni-box .nm { font-family: var(--disp); font-size: var(--fs-sm); font-weight: 400; color: var(--tx); letter-spacing: -0.01em; }
+.uni-box .tag { display: flex; align-items: center; gap: 5px; margin-top: auto; font-family: var(--mono); font-size: var(--fs-3xs); letter-spacing: 0.03em; color: var(--c); }
 .uni-box .tag .ck { width: 11px; height: 11px; }
 
 /* top layer override: every box becomes "available in InstaSafe" (orange) */
@@ -101,13 +101,13 @@
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--tx-mute);
   background: var(--headerbg);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 5px 12px;
   pointer-events: none;
   z-index: 5;
@@ -115,8 +115,8 @@
 
 /* ---- stat + table below ---- */
 .uni-stat { display: flex; align-items: baseline; gap: 14px; justify-content: center; margin: 30px 0 6px; flex-wrap: wrap; }
-.uni-stat .big { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(40px, 6vw, 60px); letter-spacing: var(--ls-hero); color: var(--orange); }
-.uni-stat .lbl { font-size: 15px; color: var(--tx-dim); max-width: 24ch; }
+.uni-stat .big { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(40px, 6vw, 60px); /* left hardcoded: intentionally larger than --fs-hero(42-68), a standalone stat display */ letter-spacing: var(--ls-hero); color: var(--orange); }
+.uni-stat .lbl { font-size: var(--fs-body-sm); color: var(--tx-dim); max-width: 24ch; }
 
 @media (max-width: 720px) {
   .uni-grid { grid-template-columns: repeat(2, 1fr); }

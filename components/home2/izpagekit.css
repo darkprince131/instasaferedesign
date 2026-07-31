@@ -1,0 +1,314 @@
+/* ============================================================
+   izpagekit.css — reusable page furniture (lab 00ax–00az).
+   IzTrustBar · IzStatRibbon · IzProblemCards
+
+   These three appear on nearly every page, so they are written to
+   be dropped in with content and nothing else. Tokens only; quiet
+   text uses --tx-dim (--tx-mute misses AA at these sizes).
+   ============================================================ */
+
+/* ============================================================
+   00ax · IzTrustBar
+   ============================================================ */
+.iztb {
+  padding: var(--sp-8) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+
+.iztb-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.iztb .iztb-stat {
+  display: block;
+  padding: 0 var(--sp-6);
+  border-left: 1px solid var(--line);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.iztb .iztb-stat:first-child { border-left: 0; padding-left: 0; }
+.iztb .iztb-stat b {
+  display: block;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  line-height: 1.1;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.iztb .iztb-stat span {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.iztb .iztb-stat:hover b { color: var(--orange); }
+.iztb .iztb-stat:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+
+.iztb-second {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+}
+.iztb-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.iztb-logos li {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.iztb-ratings { margin-left: auto; }
+
+/* ============================================================
+   00ay · IzStatRibbon — indexed data ribbon (00am rail grammar)
+   ============================================================ */
+.izsr {
+  padding: var(--sp-6) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.izsr-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.izsr-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-6);
+  border-left: 1px solid var(--line);
+  min-width: 0;
+}
+.izsr-item:first-child { border-left: 0; padding-left: 0; }
+.izsr-i {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--orange);
+  flex: none;
+}
+.izsr-body { min-width: 0; }
+.izsr-body b {
+  display: block;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+.izsr-label {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.izsr-label i { font-style: normal; color: var(--orange); }
+
+/* ============================================================
+   00az · IzProblemCards
+   ============================================================ */
+.izpc { position: relative; padding: 0 0 var(--sp-section); }
+/* The contrasting band the panel lifts over. On paper this is the ink slab
+   the reference uses. On dark, `--tx` is near-white, which would invert it
+   into a bright block dropped mid-page — so the dark theme gets a raised
+   neutral instead, keeping the panel/band contrast without the flashbang. */
+.izpc-band {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 260px;
+  background: var(--tx);
+}
+/* --bg-2, not --surface-2: the panel is --surface, and the band has to sit
+   BELOW it in value or the "raised card" reads as a hole punched in a
+   lighter slab. */
+.iz[data-theme="dark"] .izpc-band { background: var(--bg-2); }
+.izpc .iz-wrap { position: relative; z-index: 1; }
+.izpc--band .iz-wrap { padding-top: var(--sp-10); }
+
+.izpc-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  padding: var(--sp-12) var(--sp-10);
+}
+.izpc-h {
+  margin: 0 0 var(--sp-10);
+  text-align: center;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.izpc-h em { font-style: normal; color: var(--orange); }
+
+.izpc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-10);
+}
+.izpc-tile {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid color-mix(in srgb, var(--orange) 40%, var(--line));
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--orange) 7%, transparent);
+  color: var(--orange);
+}
+.izpc-card h3 {
+  margin: var(--sp-5) 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izpc-card p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1000px) {
+  .iztb-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-5) 0; }
+  .iztb .iztb-stat:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .izsr-list { grid-auto-flow: row; grid-auto-columns: auto; }
+  .izsr-item { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
+  .izsr-item:first-child { border-top: 0; }
+  .izpc-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-8); }
+  .izpc-panel { padding: var(--sp-8) var(--sp-6); }
+  .izpc-band { height: 180px; }
+}
+
+@media (max-width: 620px) {
+  .iztb-stats { grid-template-columns: minmax(0, 1fr); }
+  .iztb .iztb-stat { border-left: 0; padding-left: 0; }
+  .iztb-ratings { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iztb .iztb-stat,
+  .iztb .iztb-stat b { transition: none; }
+}
+
+/* ============================================================
+   00bb · IzSideNav — right-edge section rail
+   Replaces the horizontal sub-nav bar: no vertical band spent, and
+   no second opaque bar competing with a transparent site nav.
+   ============================================================ */
+.izsn {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+}
+.izsn-blade {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: var(--sp-3) var(--sp-2);
+  list-style: none;
+  background: var(--orange);
+  /* trapezoid: the left edge slants so it reads as a tab fixed to the
+     screen edge rather than a pill floating near it */
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 18px), 0 18px);
+  border-radius: var(--r-md) 0 0 var(--r-md);
+  transition: padding var(--dur) var(--ease);
+}
+.izsn a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);
+  border-radius: var(--r-xs);
+  text-decoration: none;
+}
+/* collapsed: ticks only. The active one is longer and opaque, so the
+   rail communicates position with no labels showing. */
+.izsn-tick {
+  display: block;
+  width: 12px;
+  height: 3px;
+  flex: none;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--btn-ink) 55%, transparent);
+  transition: width var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.izsn a.on .izsn-tick {
+  width: 22px;
+  background: var(--btn-ink);
+}
+.izsn-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--btn-ink) 78%, transparent);
+  transition: max-width var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+/* hover OR keyboard focus inside the rail opens it */
+.izsn:hover .izsn-label,
+.izsn:focus-within .izsn-label {
+  max-width: 190px;
+  opacity: 1;
+}
+.izsn:hover .izsn-blade,
+.izsn:focus-within .izsn-blade { padding-left: var(--sp-4); }
+.izsn a:hover .izsn-label,
+.izsn a.on .izsn-label { color: var(--btn-ink); }
+.izsn a:hover .izsn-tick { background: var(--btn-ink); }
+.izsn a:focus-visible {
+  outline: 2px solid var(--btn-ink);
+  outline-offset: -2px;
+}
+
+/* a fixed side rail on a phone is noise, not navigation */
+@media (max-width: 900px) {
+  .izsn { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izsn-blade,
+  .izsn-tick,
+  .izsn-label { transition: none; }
+}

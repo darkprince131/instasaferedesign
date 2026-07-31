@@ -203,7 +203,10 @@ function DeviceClient({ d, state, onConnect }: { d: Device; state: "idle" | "ok"
 }
 
 /* ---------------- parent: shared state ---------------- */
-export function DeviceBindingDemo() {
+/* `consoleOnly` renders just the admin console. The "approve above, then
+   press Connect here" panel is a device-binding-page exercise; on other
+   pages it is a second window asking for work nobody came here to do. */
+export function DeviceBindingDemo({ consoleOnly = false }: { consoleOnly?: boolean } = {}) {
   const initApproved = useMemo(() => {
     const m: Record<string, boolean> = {};
     USERS.forEach((u) => u.devices.forEach((d) => (m[d.id] = d.approved)));
@@ -221,6 +224,10 @@ export function DeviceBindingDemo() {
   const connect = (id: string) => setResult((r) => ({ ...r, [id]: approved[id] ? "ok" : "denied" }));
 
   const lastDenied = user.devices.find((d) => result[d.id] === "denied");
+
+  if (consoleOnly) {
+    return <AdminConsole sel={sel} onSel={setSel} approved={approved} onToggle={toggle} />;
+  }
 
   return (
     <div className="space-y-6">

@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Logo, LogoMark } from "@/components/brand/Logo";
 import { CapabilitiesDeck } from "./CapabilitiesDeck";
 import { WithWithout } from "./WithWithout";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { useSectionReveals, useParallax } from "./useIzMotion";
+import { IzNav } from "./IzNav";
+import { IzFinalCta } from "./IzFinalCta";
+import { IzFooterGrid } from "./IzFooterGrid";
 
 /* ============================================================
    InstaSafe ZTNA — "Balanced" homepage, new design language.
@@ -15,6 +17,7 @@ import { useSectionReveals, useParallax } from "./useIzMotion";
    ============================================================ */
 
 type Theme = "dark" | "paper";
+type DesignSystem = "orange" | "teal" | "violet" | "blue";
 
 /* scroll-reveal moved to useIzMotion.ts (GSAP ScrollTrigger.batch,
    staggered; CSS `.iz-reveal` + reduced-motion block is the fallback). */
@@ -124,17 +127,6 @@ const Cross = () => (
     <path d="M18 6 6 18M6 6l12 12" />
   </svg>
 );
-const Sun = () => (
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="4" />
-    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-  </svg>
-);
-const Moon = () => (
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-  </svg>
-);
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 12h14M13 6l6 6-6 6" />
@@ -143,13 +135,14 @@ const Arrow = () => (
 
 export function Home2() {
   const [theme, setTheme] = useState<Theme>("paper");
+  const [system, setSystem] = useState<DesignSystem>("orange");
   const [cmp, setCmp] = useState<keyof typeof COMPARE>("vs VPN");
   const [visitor, setVisitor] = useState<[string, string][]>([]);
   const heroConsoleRef = useRef<HTMLDivElement>(null);
   const posturePanelRef = useRef<HTMLDivElement>(null);
   useSectionReveals();
-  useParallax(heroConsoleRef, 24);
-  useParallax(posturePanelRef, 24);
+  useParallax(heroConsoleRef);
+  useParallax(posturePanelRef);
 
   // theme bootstrap (scoped to this page; key = is-theme)
   useEffect(() => {
@@ -164,6 +157,15 @@ export function Home2() {
       localStorage.setItem("is-theme", t);
     } catch {}
   };
+
+  // design-system bootstrap — no UI here, just inherits whatever the
+  // Components Lab switcher last set (key = is-system), so this page stays clean.
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("is-system") as DesignSystem | null;
+      if (s === "orange" || s === "teal" || s === "violet" || s === "blue") setSystem(s);
+    } catch {}
+  }, []);
 
   // live visitor read — local only, no network
   useEffect(() => {
@@ -183,36 +185,9 @@ export function Home2() {
   }, []);
 
   return (
-    <div className="iz" data-theme={theme}>
+    <div className="iz" data-theme={theme} data-system={system}>
       {/* ---------------- NAV ---------------- */}
-      <header className="iz-nav">
-        <div className="iz-wrap iz-nav-in">
-          <a href="/" className="iz-mark">
-            <Logo height={24} />
-            <span className="iz-tag">ZTNA</span>
-          </a>
-          <nav className="iz-links">
-            <a href="/platform">Platform</a>
-            <a href="/solutions">Solutions</a>
-            <a href="/why-instasafe-zero-trust">Why InstaSafe</a>
-            <a href="/case-studies">Customers</a>
-            <a href="/instasafe-zero-trust-pricing">Pricing</a>
-          </nav>
-          <div className="iz-nav-right">
-            <div className="iz-switch" role="group" aria-label="Theme">
-              <button className={theme === "dark" ? "on" : ""} onClick={() => setT("dark")} aria-label="Dark theme" aria-pressed={theme === "dark"}>
-                <Moon />
-              </button>
-              <button className={theme === "paper" ? "on" : ""} onClick={() => setT("paper")} aria-label="Paper theme" aria-pressed={theme === "paper"}>
-                <Sun />
-              </button>
-            </div>
-            <a href="/book-a-demo" className="iz-btn iz-btn-pri iz-btn-sm">
-              Book a demo
-            </a>
-          </div>
-        </div>
-      </header>
+      <IzNav theme={theme} onThemeChange={setT} />
 
       {/* ---------------- HERO ---------------- */}
       <section className="iz-hero">
@@ -588,79 +563,10 @@ export function Home2() {
       </section>
 
       {/* ---------------- FINAL CTA ---------------- */}
-      <section className="iz-final">
-        <div className="iz-wrap iz-reveal">
-          <span className="iz-ey" style={{ justifyContent: "center", display: "inline-flex" }}>
-            Ready when you are
-          </span>
-          <h2>
-            Ditch the VPN. <em>Keep your apps invisible.</em>
-          </h2>
-          <div className="iz-hero-cta">
-            <Magnetic>
-              <a href="/book-a-demo" className="iz-btn iz-btn-pri">
-                Book a demo <Arrow />
-              </a>
-            </Magnetic>
-            <a href="/case-studies" className="iz-btn iz-btn-ghost">
-              Read case studies
-            </a>
-          </div>
-        </div>
-      </section>
+      <IzFinalCta />
 
       {/* ---------------- FOOTER ---------------- */}
-      <footer className="iz-foot">
-        <div className="iz-wrap">
-          <div className="iz-foot-grid">
-            <div>
-              <a href="/" className="iz-mark">
-                <Logo height={24} />
-                <span className="iz-tag">ZTNA</span>
-              </a>
-              <p className="iz-dim" style={{ fontSize: 14, marginTop: 14, maxWidth: "30ch" }}>
-                Unified Zero Trust access for the modern enterprise.
-              </p>
-            </div>
-            <div>
-              <h4>Platform</h4>
-              <a href="/zero-trust-network-access">ZTNA</a>
-              <a href="/zero-trust-application-access">ZTAA</a>
-              <a href="/platform/iam">Identity</a>
-              <a href="/multifactor-authentication">MFA</a>
-            </div>
-            <div>
-              <h4>Solutions</h4>
-              <a href="/vpn-alternative">VPN Alternative</a>
-              <a href="/secure-remote-access">Remote Access</a>
-              <a href="/secure-devops-access">DevOps</a>
-              <a href="/secure-cloud-applications">Cloud Apps</a>
-            </div>
-            <div>
-              <h4>Company</h4>
-              <a href="/about-us">About</a>
-              <a href="/careers">Careers</a>
-              <a href="/partners">Partners</a>
-              <a href="/contact-us">Contact</a>
-            </div>
-            <div>
-              <h4>Resources</h4>
-              <a href="/what-is-zero-trust">What is Zero Trust</a>
-              <a href="/blog">Blog</a>
-              <a href="/resource-center">Resource Center</a>
-              <a href="/awards">Awards</a>
-            </div>
-          </div>
-          <div className="iz-foot-badges">
-            <span>Gartner</span>
-            <span>Deloitte Fast 50</span>
-            <span>DSCI</span>
-            <span>G2 High Performer</span>
-            <span>NIST 800-207</span>
-          </div>
-          <div className="iz-foot-copy">© 2026 InstaSafe Technologies Pvt. Ltd. · Bengaluru · USA · Germany</div>
-        </div>
-      </footer>
+      <IzFooterGrid />
     </div>
   );
 }

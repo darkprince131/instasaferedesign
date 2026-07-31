@@ -4,17 +4,17 @@
 
 .cf {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
   padding: 26px 28px 22px;
   max-width: 1060px;
 }
 .cf-head { max-width: 60ch; }
-.cf-head .iz-ey { margin-bottom: 12px; }
-.cf-lead { color: var(--tx-dim); font-size: 15.5px; line-height: 1.55; margin: 12px 0 0; max-width: 56ch; }
+.cf-head .iz-ey { margin-bottom: var(--sp-3); }
+.cf-lead { color: var(--tx-dim); font-size: var(--fs-body); line-height: 1.55; margin: var(--sp-3) 0 0; max-width: 56ch; }
 
-.cf-svg { width: 100%; height: auto; display: block; margin-top: 12px; overflow: visible; }
+.cf-svg { width: 100%; height: auto; display: block; margin-top: var(--sp-3); overflow: visible; }
 
 /* connectors */
 .cf-conn { fill: none; stroke: var(--line-strong); stroke-width: 1.4; stroke-dasharray: 4 5; }
@@ -53,6 +53,6 @@
   .cf-pulse { display: none; }
 }
 
-.cf-learn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; font-size: 13.5px; font-weight: 500; color: var(--orange); }
-.cf-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.cf-learn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; font-size: var(--fs-sm); font-weight: 500; color: var(--orange); }
+.cf-learn svg { width: 15px; height: 15px; transition: transform var(--dur-fast) var(--ease-out); }
 .cf-learn:hover svg { transform: translateX(3px); }

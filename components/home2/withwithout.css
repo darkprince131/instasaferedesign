@@ -13,39 +13,39 @@
 .ww-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px;
+  gap: var(--sp-1);
+  padding: var(--sp-1);
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--surface);
   box-shadow: var(--inset);
 }
 .ww-toggle button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--sp-2);
   border: 0;
   background: transparent;
   color: var(--tx-mute);
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: var(--fs-label);
   letter-spacing: 0.04em;
   font-weight: 500;
   padding: 9px 18px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
   white-space: nowrap;
 }
-.ww-toggle button .led { width: 7px; height: 7px; border-radius: 999px; background: var(--ghost); transition: background 0.2s ease; }
+.ww-toggle button .led { width: 7px; height: 7px; border-radius: var(--r-pill); background: var(--ghost); transition: background var(--dur-fast) var(--ease-out); }
 .ww-toggle button.on-off { color: var(--btn-ink); background: var(--deny); }
 .ww-toggle button.on-off .led { background: var(--btn-ink); }
 .ww-toggle button.on-on { color: var(--btn-ink); background: var(--orange); }
 .ww-toggle button.on-on .led { background: var(--btn-ink); }
 
-.ww-head { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(26px, 3.4vw, 38px); letter-spacing: var(--ls-h2); line-height: 1.12; margin: 22px 0 0; }
+.ww-head { font-family: var(--disp); font-weight: var(--fw-disp); font-size: clamp(26px, 3.4vw, 38px); /* left hardcoded: sits between --fs-h3(20-24) and --fs-h2(30-44), load-bearing for this toggle layout */ letter-spacing: var(--ls-h2); line-height: 1.12; margin: 22px 0 0; }
 .ww-head em { font-style: normal; font-weight: 400; color: var(--orange); }
-.ww-sub { color: var(--tx-dim); font-size: 15.5px; line-height: 1.55; max-width: 62ch; margin: 14px auto 0; min-height: 48px; }
+.ww-sub { color: var(--tx-dim); font-size: var(--fs-body); line-height: 1.55; max-width: 62ch; margin: 14px auto 0; min-height: 48px; }
 .ww-sub b { color: var(--tx); font-weight: 600; }
 
 /* ---- stage ---- */
@@ -53,13 +53,13 @@
   text-align: left;
   margin-top: 28px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   background: linear-gradient(180deg, rgba(255, 92, 114, 0.06), transparent 42%), var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
-  transition: background 0.6s ease;
+  transition: background var(--dur-slow) var(--ease-out);
 }
-.ww.on .ww-stage { background: linear-gradient(180deg, rgba(255, 106, 44, 0.08), transparent 42%), var(--surface); }
+.ww.on .ww-stage { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 42%), var(--surface); }
 
 .ww-diagram { padding: 30px 26px 26px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
 .ww-diagram svg { width: 100%; max-width: 860px; height: auto; display: block; margin: 0 auto; }
@@ -68,11 +68,11 @@
 .ww-side .iz-ey { display: inline-flex; margin: 4px 0 14px; }
 
 /* ---- counters (4-across strip under the diagram) ---- */
-.ww-counters { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg-2); }
+.ww-counters { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--bg-2); }
 .ww-counter { display: flex; flex-direction: column; gap: 7px; padding: 13px 15px; border-right: 1px solid var(--line); }
 .ww-counter:last-child { border-right: 0; }
-.ww-counter .cl { font-family: var(--mono); font-size: 11px; letter-spacing: 0.02em; color: var(--tx-mute); }
-.ww-counter .cv { font-family: var(--mono); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+.ww-counter .cl { font-family: var(--mono); font-size: var(--fs-mono-xs); letter-spacing: 0.02em; color: var(--tx-mute); }
+.ww-counter .cv { font-family: var(--mono); font-size: var(--fs-label); font-weight: 500; display: inline-flex; align-items: center; gap: var(--sp-2); }
 .ww-counter .cv .from { color: var(--deny); }
 .ww-counter .cv .to { color: var(--tx-mute); opacity: 0.45; }
 .ww-counter .cv .ar { color: var(--tx-mute); }
@@ -81,16 +81,16 @@
 
 /* ---- layers list (two columns under the counters) ---- */
 .ww-layers { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 30px; }
-.ww-layer { display: grid; grid-template-columns: 26px 1fr 18px; gap: 11px; align-items: start; padding: 9px 6px; border-radius: 8px; transition: background 0.2s ease; }
-.ww-layer .lx { font-family: var(--mono); font-size: 10.5px; color: var(--tx-mute); padding-top: 2px; }
+.ww-layer { display: grid; grid-template-columns: 26px 1fr 18px; gap: 11px; align-items: start; padding: 9px 6px; border-radius: var(--r-sm); transition: background var(--dur-fast) var(--ease-out); }
+.ww-layer .lx { font-family: var(--mono); font-size: var(--fs-2xs); color: var(--tx-mute); padding-top: 2px; }
 .ww-layer .lb { display: flex; flex-direction: column; gap: 3px; }
-.ww-layer .off { font-size: 13px; line-height: 1.4; color: var(--tx-dim); transition: color 0.3s ease; }
-.ww-layer .on { font-size: 13px; line-height: 1.4; color: var(--tx); display: none; }
-.ww-layer .on i { font-family: var(--mono); font-style: normal; font-size: 11px; color: var(--orange); margin-left: 4px; letter-spacing: 0.02em; }
+.ww-layer .off { font-size: var(--fs-sm); line-height: 1.4; color: var(--tx-dim); transition: color var(--dur) var(--ease-out); }
+.ww-layer .on { font-size: var(--fs-sm); line-height: 1.4; color: var(--tx); display: none; }
+.ww-layer .on i { font-family: var(--mono); font-style: normal; font-size: var(--fs-mono-xs); color: var(--orange); margin-left: var(--sp-1); letter-spacing: 0.02em; }
 .ww-layer .lmk { position: relative; width: 18px; height: 18px; margin-top: 3px; }
-.ww-layer .lmark { position: absolute; inset: 0; color: var(--allow); opacity: 0; transition: opacity 0.3s ease; }
+.ww-layer .lmark { position: absolute; inset: 0; color: var(--allow); opacity: 0; transition: opacity var(--dur) var(--ease-out); }
 .ww-layer .lmark svg { width: 16px; height: 16px; }
-.ww-layer .ldot { position: absolute; top: 5px; left: 5px; width: 7px; height: 7px; border-radius: 999px; background: var(--deny); transition: opacity 0.3s ease; }
+.ww-layer .ldot { position: absolute; top: 5px; left: 5px; width: 7px; height: 7px; border-radius: var(--r-pill); background: var(--deny); transition: opacity var(--dur) var(--ease-out); }
 .ww.on .ww-layer .off { color: var(--tx-mute); text-decoration: line-through; opacity: 0.6; }
 .ww.on .ww-layer .on { display: block; }
 .ww.on .ww-layer .lmark { opacity: 1; }
@@ -103,41 +103,41 @@
    ============================================================ */
 .ww-node { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.4; }
 .ww-glyph { color: var(--tx-dim); }
-.ww-nlbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; fill: var(--tx-mute); text-anchor: middle; }
+.ww-nlbl { font-family: var(--mono); font-size: var(--fs-2xs); letter-spacing: 0.04em; fill: var(--tx-mute); text-anchor: middle; }
 
 /* the six layer-slabs */
 .ww-slab {
-  transition: transform 0.6s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.45s ease;
+  transition: transform var(--dur-slow) cubic-bezier(0.5, 0, 0.2, 1), opacity 0.45s var(--ease-out);
 }
 .ww-slab-box { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.3; }
 .ww-slab-ic { color: var(--tx-dim); }
-.ww-slab-x { font-family: var(--mono); font-size: 9px; fill: var(--tx-mute); text-anchor: middle; }
-.ww-slab-dot { fill: var(--deny); transition: opacity 0.3s ease; }
+.ww-slab-x { font-family: var(--mono); font-size: var(--fs-micro); fill: var(--tx-mute); text-anchor: middle; }
+.ww-slab-dot { fill: var(--deny); transition: opacity var(--dur) var(--ease-out); }
 .ww.on .ww-slab { transform: translateY(-168px); opacity: 0; }
 .ww.on .ww-slab-dot { opacity: 0; }
 
 /* OFF exposure layer */
-.ww-risk { transition: opacity 0.4s ease; }
+.ww-risk { transition: opacity 0.4s var(--ease-out); }
 .ww.on .ww-risk { opacity: 0; }
 .ww-expose-line { stroke: var(--line-strong); stroke-width: 2; stroke-dasharray: 2 5; }
 .ww-port { fill: var(--deny); }
 .ww-lat { stroke: var(--deny); stroke-width: 1.6; fill: none; }
 .ww-scan { stroke: var(--deny); stroke-width: 1.4; fill: none; opacity: 0.9; }
-.ww-scan-grp { animation: ww-scan 2.6s ease-in-out infinite; }
+.ww-scan-grp { animation: ww-scan 2.6s var(--ease-out) infinite; }
 @keyframes ww-scan { 0%, 100% { transform: translateY(-58px); } 50% { transform: translateY(58px); } }
 
 /* ON secure layer */
-.ww-secure { opacity: 0; transition: opacity 0.5s ease; }
+.ww-secure { opacity: 0; transition: opacity 0.5s var(--ease-out); }
 .ww.on .ww-secure { opacity: 1; transition-delay: 0.32s; }
-.ww-tunnel { stroke: var(--allow); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-dasharray: 7 8; animation: ww-flow 0.9s linear infinite; }
+.ww-tunnel { stroke: var(--allow); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-dasharray: 7 8; animation: ww-flow 0.9s var(--ease-linear) infinite; }
 .ww-shield-box { fill: var(--surface); stroke: var(--allow); stroke-width: 1.6; }
 .ww-shield-ic { color: var(--allow); }
-.ww-packet { fill: var(--allow); offset-rotate: 0deg; animation: ww-travel 1.7s ease-in-out infinite; }
+.ww-packet { fill: var(--allow); offset-rotate: 0deg; animation: ww-travel 1.7s var(--ease-out) infinite; }
 @keyframes ww-flow { to { stroke-dashoffset: -30; } }
 @keyframes ww-travel { 0% { offset-distance: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
 
 /* app tiles */
-.ww-app { transition: opacity 0.5s ease; }
+.ww-app { transition: opacity 0.5s var(--ease-out); }
 .ww-app-box { fill: var(--bg-2); stroke: var(--line-strong); stroke-width: 1.3; }
 .ww-app-ic { color: var(--tx-mute); }
 .ww.on .ww-app.gone { opacity: 0.08; }
@@ -150,7 +150,7 @@
   .ww-counter:nth-child(2) { border-right: 0; }
   .ww-counter:nth-child(1), .ww-counter:nth-child(2) { border-bottom: 1px solid var(--line); }
   .ww-layers { grid-template-columns: 1fr; }
-  .ww-toggle button { padding: 9px 14px; font-size: 11.5px; }
+  .ww-toggle button { padding: 9px 14px; font-size: var(--fs-mono); }
 }
 
 /* ---- reduced motion: instant state, no travel/scan ---- */

@@ -5,19 +5,19 @@
 .ig-card {
   position: relative;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
   padding: 26px 28px 22px;
   max-width: 900px;
 }
 .ig-head { max-width: 52ch; }
-.ig-head .iz-ey { margin-bottom: 12px; }
-.ig-lead { color: var(--tx-dim); font-size: 15.5px; line-height: 1.55; margin: 12px 0 0; max-width: 50ch; }
+.ig-head .iz-ey { margin-bottom: var(--sp-3); }
+.ig-lead { color: var(--tx-dim); font-size: var(--fs-body); line-height: 1.55; margin: var(--sp-3) 0 0; max-width: 50ch; }
 
-.ig-legend { display: flex; gap: 18px; margin-top: 16px; }
-.ig-leg { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; color: var(--tx-dim); }
-.ig-leg i { width: 14px; height: 3px; border-radius: 999px; }
+.ig-legend { display: flex; gap: 18px; margin-top: var(--sp-4); }
+.ig-leg { display: inline-flex; align-items: center; gap: var(--sp-2); font-family: var(--mono); font-size: var(--fs-mono); color: var(--tx-dim); }
+.ig-leg i { width: 14px; height: 3px; border-radius: var(--r-pill); }
 .ig-leg.is i { background: var(--orange); }
 .ig-leg.lg i { background: var(--tx-mute); }
 
@@ -37,7 +37,7 @@
 
 /* line draw-in on first paint */
 @keyframes ig-draw { from { stroke-dashoffset: 1400; } to { stroke-dashoffset: 0; } }
-.ig-line { stroke-dasharray: 1400; animation: ig-draw 1.5s ease forwards; }
+.ig-line { stroke-dasharray: 1400; animation: ig-draw 1.5s var(--ease-out) forwards; }
 .ig-line.lg { animation-delay: 0.15s; }
 
 /* tooltip */
@@ -47,29 +47,29 @@
   transform: translateX(-50%);
   min-width: 140px;
   border: 1px solid var(--line-strong);
-  border-radius: 10px;
+  border-radius: var(--r-card);
   background: var(--surface);
   box-shadow: var(--inset), 0 18px 40px -16px rgba(0, 0, 0, 0.5);
   padding: 8px 10px;
   pointer-events: none;
   z-index: 5;
 }
-.ig-tip-h { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--tx-mute); padding-bottom: 7px; margin-bottom: 7px; border-bottom: 1px solid var(--line); }
+.ig-tip-h { font-family: var(--mono); font-size: var(--fs-2xs); letter-spacing: 0.12em; color: var(--tx-mute); padding-bottom: 7px; margin-bottom: 7px; border-bottom: 1px solid var(--line); }
 .ig-tip-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 3px 0; }
-.ig-tip-k { font-family: var(--mono); font-size: 11.5px; color: var(--tx-mute); }
-.ig-tip-v { font-family: var(--mono); font-size: 11.5px; font-weight: 600; border-radius: 5px; padding: 2px 7px; }
+.ig-tip-k { font-family: var(--mono); font-size: var(--fs-mono); color: var(--tx-mute); }
+.ig-tip-v { font-family: var(--mono); font-size: var(--fs-mono); font-weight: 600; border-radius: var(--r-xs); padding: 2px 7px; }
 .ig-tip-v.is { color: var(--orange); background: color-mix(in srgb, var(--orange) 14%, transparent); }
 .ig-tip-v.lg { color: var(--tx-dim); background: color-mix(in srgb, var(--tx-mute) 18%, transparent); }
 
 /* x-axis labels */
 .ig-xaxis { position: relative; height: 18px; margin-top: 6px; }
-.ig-xaxis span { position: absolute; transform: translateX(-50%); font-family: var(--mono); font-size: 11px; color: var(--tx-mute); }
+.ig-xaxis span { position: absolute; transform: translateX(-50%); font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--tx-mute); }
 
-.ig-foot { display: flex; justify-content: space-between; margin-top: 8px; }
-.ig-cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--tx-mute); }
+.ig-foot { display: flex; justify-content: space-between; margin-top: var(--sp-2); }
+.ig-cap { font-family: var(--mono); font-size: var(--fs-2xs); letter-spacing: 0.1em; color: var(--tx-mute); }
 
-.ig-learn { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: 13.5px; font-weight: 500; color: var(--orange); }
-.ig-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.ig-learn { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; font-size: var(--fs-sm); font-weight: 500; color: var(--orange); }
+.ig-learn svg { width: 15px; height: 15px; transition: transform var(--dur-fast) var(--ease-out); }
 .ig-learn:hover svg { transform: translateX(3px); }
 
 @media (max-width: 560px) {

@@ -135,7 +135,9 @@ function Chart({ series, done }: { series: typeof FULL; done: boolean }) {
   );
 }
 
-export function LiveActivity() {
+/* `headless` drops the built-in eyebrow+H2 so a page that already wrote a
+   section header does not stack two headers on one section. */
+export function LiveActivity({ headless = false }: { headless?: boolean } = {}) {
   const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   const [feed, setFeed] = useState<FeedItem[]>(() =>
@@ -210,8 +212,12 @@ export function LiveActivity() {
     <div className="lf" ref={rootRef}>
       {/* LEFT — copy */}
       <div className="lf-text">
-        <span className="iz-ey">Real-time visibility</span>
-        <h2 className="iz-h2">Watch every access decision, <em>the moment it happens</em>.</h2>
+        {!headless && (
+          <>
+            <span className="iz-ey">Real-time visibility</span>
+            <h2 className="iz-h2">Watch every access decision, <em>the moment it happens</em>.</h2>
+          </>
+        )}
         <p className="lf-lead">
           Every login, request and block streams to one live feed — and straight to your SIEM. When a user trips
           repeated failures, InstaSafe spots the pattern and locks the account before it becomes a breach.

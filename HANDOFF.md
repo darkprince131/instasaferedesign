@@ -1,101 +1,82 @@
-# InstaSafe Website — Build Handoff (v2)
+# InstaSafe Website — Build Handoff (v5)
 
-Context for continuing in a new chat. Read this first, then `MEMORY.md` index at
+Read this first, then `MEMORY.md` index at
 `C:\Users\Darkprince131\.claude\projects\C--Instasafe-Webdesign\memory\`.
 
----
-
-## Project
-- **Path:** `C:\Instasafe Webdesign\`
-- **Stack:** Next.js 16 (App Router, Turbopack) · TypeScript · Tailwind v4 · Framer Motion · Phosphor Icons
-- **Dev:** `npm run dev` → http://localhost:3000 (use Claude Preview `preview_start` name `dev`, not Bash)
-- **Verify after edits:** `npx tsc --noEmit -p tsconfig.json` then `npm run build` (87 static pages, all prerender)
-- **Deps:** framer-motion, @phosphor-icons/react, gsap, three/fiber/drei, d3, lottie-react, react-countup, simple-icons, clsx, tailwind-merge. (lucide-react is in package.json but version looks unreliable — use **Phosphor**.)
-
-## ⚠️ Known environment quirks
-- **Preview screenshots wedge** mid-session (renderer hangs on capture; freezing animations/pausing does NOT help; recovers only on full `preview_stop`+`preview_start`). `preview_eval` keeps working — **verify via DOM probes + computed styles + `npm run build`** instead of relying on screenshots.
-- Pre-existing benign console error: `layout.tsx` injects JSON-LD via `<script>` in `<body>` → React 19 logs "Encountered a script tag while rendering". Harmless; can move to `<head>`/metadata to silence.
-- Windows: no `python`/`pandoc`/`extract-text` in PATH. Read docx via PowerShell unzip + regex; xlsx via Excel COM. Node is available.
-- `C:\` is **NOT a git repo** — no commits.
+**Supersedes v4.** v4 covered the fingerprint/firecrawl/hihobbes audit and components 00ac–00al. This session (still same day, 2026-07-26) added 00am–00ar — the full `/products/fingerprint-pro/` page recreation, two hover-animation sections, a tab-switch workhorse, two light blocks, a converge/events pair, and the sazabi outcomes skeleton. v4's content below is condensed, not dropped — read v4 in git history if full v3-era detail (SSO pilot, brand assets, consent, SEO) is needed.
 
 ---
 
-## TWO design systems live in this repo (decision pending)
+## ⚠️ READ THIS FIRST — user flagged quality this session
 
-### A. v3 system (original, dark/blue) — `html[data-theme="dark|light"]`, localStorage `theme`
-- Tokens in `app/globals.css`: `--bg-base`, `--accent-blue`, `--text-primary`, etc. `--db-*` for console palette.
-- Used by: all `/platform/*`, `/zero-trust-*`, scaffold pages (`ScaffoldPage.tsx`), `NavV3` mega-menu, `Footer`, `/v2`, `/console`, MFA/IAM/SSO/Always-On/Device-Binding bespoke pages.
-
-### B. Balanced system (NEW, dark/paper, orange) — being trialled, candidate to replace A
-- Spec: `InstaSafe_Design_Guide.md` (user's Downloads). **Fully isolated**: all CSS scoped under an `.iz` wrapper; own attribute `.iz[data-theme="dark|paper"]`; own localStorage key `is-theme`. Does NOT touch system A.
-- Files: `components/home2/home2.css` (tokens + base components), `Home2.tsx` (the homepage), plus per-component CSS.
-- Fonts: Space Grotesk (display, **weight 300**) + IBM Plex Mono (data) via next/font in the route's `page.tsx`; Inter (body) from `layout.tsx`. `<html>` has `suppressHydrationWarning` (theme boot script).
-- **Rules (differ from A!):** product name **"InstaSafe ZTNA"** publicly (NEVER "i365"). Themes **dark/paper** (not dark/light); paper = warm off-white + real AmpleMarket pastels. Display Space Grotesk 300, orange `<em>` emphasis word weight 400, NEVER bold headlines. IBM Plex Mono = ONLY for eyebrows/stats/chips/console labels. Single accent **orange** (#FF6A2C dark / #F2480A paper). Green `--allow`/red `--deny` = semantic only (access states), never decoration. NO drop shadows in dark (use `--inset` hairline). Pills 999px, panels 14px, console/bento 12px. Section pad 96px (final CTA 120px), max 1200px / 28px gutters.
-- **Decision pending:** "after components done, switch to blue (A) OR orange (B)." Build new components on `.iz` tokens so a theme swap = changing token values only.
+End of session, user said plainly: **"results are not being in their best."** Not tied to one component — a pattern read after ~13 build rounds. See memory `feedback_quality_below_bar.md` for the full note. Short version: nearly every component this arc shipped with at least one real defect I only found via automated `getComputedStyle` checks, not by looking, and the user caught several more from screenshots after I'd called things done. The checks are good at catching wiring bugs; they say nothing about taste, spacing feel, or whether a composition actually resembles its reference. **Next session: slow down, do fewer components more carefully, get visual confirmation before declaring a round finished — don't treat a clean build + DOM assertions as equivalent to "looks right."**
 
 ---
 
-## Routes / pages (87 total in build)
-| Route | What |
-|---|---|
-| `/` | **NEW Balanced homepage** (`Home2.tsx`) — flagship. Dark/Paper toggle. |
-| `/components` | **Component Lab** (`components/components-lab/ComponentsLab.tsx`) — gallery of every reusable Balanced component, dark/paper switch. Like `/console`. Jump-nav. `robots: noindex`. |
-| `/v2` | old v3 flagship home (system A) |
-| `/console` | v3 dashboard component gallery (system A) |
-| `/multifactor-authentication`, `/zero-trust-features/always-on`, `/zero-trust-features/single-sign-on`, `/zero-trust-features/device-binding`, `/platform/iam`, `/zero-trust-network-access` | bespoke v3 pages at correct sitemap URLs. ztna/sso/device-binding were MOVED here from old `/platform/*` & `/features/*` paths (308 redirects in `next.config.ts`). |
-| `app/[...slug]` | **catch-all** → `ScaffoldPage` for every other sitemap URL from `lib/site.ts` registry (`generateStaticParams` + `dynamicParams=false`). |
-
-URL/sitemap rules + scaffold mechanics: memory `project_seo_urls.md`. **Sitemap is SEO-locked — never rename existing URLs; can ADD pages.**
+## ⚠️ Repo state
+- Git repo, `main`, remote `github.com/darkprince131/instasaferedesign`. **Still one commit** (`c87eb9d`). 74+ files uncommitted. No safety net — ask before any commit.
+- Build: `npx tsc --noEmit -p tsconfig.json` then `npm run build` → **89 static pages**.
+- Dev: Claude Preview `preview_start` name `dev`, not Bash.
+- **The dev server died mid-session once** and `tsc` then failed against a corrupt generated `.next/dev/types/routes.d.ts` (server writing it while build read it) — not a code fault. Fix: stop the dev server, `rm -rf .next`, rebuild clean.
+- **Preview pane limits, confirmed repeatedly:** no compositing — screenshots fail, `window.scrollTo` no-ops, CSS transition/animation clocks are **frozen** (never advance, never fire `transitionend`/`animationend`). Verify motion/hover/autoplay structurally — class applied, computed style at each state, dispatched synthetic `PointerEvent`s, or inject a `<style>` disabling `transition`/`animation` to read the end-state instantly. This structural-only verification is very likely *part of why* the quality flag above happened — it proves wiring, not appearance.
 
 ---
 
-## Balanced homepage (`/`) — section order in `Home2.tsx`
-Nav · **Hero** (plain tagline "The right people get in. Everyone else stays out." + access-decision console) · **CapabilitiesDeck (C1)** · **Platform indexed rows** · **WithWithout / "How it works" (C2/C14)** + stat band (72%/500k/150+/$2 count-up) · **live activity-log console** · **pastel industries grid** · **comparison toggle** (vs VPN/Zscaler/Fortinet) + CTA · **live device-posture panel** (local navigator read, nothing sent) · **testimonials** · **pricing** · **final CTA** · **footer**.
+## Docs to read before touching component work
 
-## Reusable Balanced components built (`components/home2/`, also in `/components` lab)
-1. **CapabilitiesDeck (C1)** — `CapabilitiesDeck.tsx` + `capabilities.css`. NetBird-style PPT explainer: 6 feature tabs (Replace your VPN / One identity / One login / Stronger sign-in / Smart rules / Works everywhere) auto-advance 7s w/ progress bar; each swaps an interactive console (left) + plain bullets (right) + **CTA per slide** (feature page + Book a demo). Hover-pause, prev/next carets, reduced-motion. **Phosphor icons.**
-2. **WithWithout / "How it works" (C2/C14)** — `WithWithout.tsx` + `withwithout.css`. ONE flow diagram (person → check identity+device → one private door → one app lit, others dark/locked, attacker blocked). Toggle **"Plain English" ⇄ "Show the tech"** only swaps labels/bullets, NOT the picture. CTA. (Reworked from earlier castle-vs-zerotrust 2-diagram version per plain-language rule.)
-3. **UnificationSlider (C29)** — `UnificationSlider.tsx` + `unification.css`. Before/after reveal: **SAME 12 capability boxes, same grid, in BOTH layers** (verified overlay-aligned). Bottom = each box coloured by the separate product managing it (blue VPN / purple Identity-SSO·MFA / teal Device-MDM / pink Privileged-access / amber Logs-SIEM) with product tags; top = same boxes all orange "Available in InstaSafe". **Colour-coding legend above.** Draggable handle (pointer + keyboard `role=slider`, ←/→), `clip-path: inset(0 0 0 var(--pos))`. Below: "up to 70% lower cost" + stack-of-tools-vs-InstaSafe table (reuses `.iz-cmp`). **In lab only — NOT on homepage yet.** Vendor multi-hue = intentional exception to single-accent (fragmentation is the message); avoids semantic green/red.
+1. **`docs/research/fingerprint-audit-and-ideation.md`** — DOM audit of fingerprint.com/firecrawl.dev/hihobbes.com + 20 ideation specs (§C.1–C.20). Cite section numbers in code comments when building from it.
+2. **`docs/research/build-checklist.md`** — master checklist, every brief line, status per item, **27 rounds** of follow-up as of this writing. Read the latest round first, then its open-questions section at the bottom before assuming what's next.
 
-Lab also has specimens: foundations (tokens/pastels/type scale), buttons & chips, nav, panels & console, platform rows, pastel grid, bento, comparison, pricing, testimonials, live posture.
+Both are living docs — append rounds, don't rewrite history.
 
 ---
 
-## ⭐ PERMANENT RULE (memory `feedback_homepage_plain_language.md`)
-**Homepage = plain language, NO jargon, CTAs everywhere.** Visitors may want "a VPN replacement" and not know "ZTNA". Speak to problems/outcomes they recognise; hide the technical layer. Don't open with ZTNA/mTLS/SDP/posture/drop-all. CTAs in every major section + every deck slide. Toggles must simplify, not add load. **Deeper pages (`/platform/*`, features, compare) CAN be technical.** All homepage copy + deck + console labels already de-jargoned this session.
+## THE THREE-TIER COMPONENT LIBRARY (apply to everything)
+
+1. **VISUALS** — live *inside* a section (consoles, mocks, chips, rails). `components/home2/Iz*.tsx` or `components/izpages/pro/Iz*.tsx`.
+2. **SECTIONS** — assembled blocks a page drops in. Composes tier-1 + tier-3.
+3. **BACKDROPS** — what a section *sits on*. `components/home2/iz-backdrops.css`.
+
+Catalogue every new component in memory `project_built_components.md`, register in `ComponentsLab.tsx` + CSS import in `app/components/page.tsx`.
 
 ---
 
-## Source-of-truth docs (user's Downloads — NOT in repo)
-- `InstaSafe_Design_Guide.md` — Balanced spec (**have it; in memory**)
-- `instasafe-homepage-balanced.html` — approved visual source of truth (**NOT yet provided** — ask for it; current build is from the guide + content)
-- `InstaSafe_Website_Content_Master.docx` — copy/H1s/numbers (**captured** → `project_content_master.md`)
-- `InstaSafe_Component_Content.docx` + `InstaSafe_Component_Page_Guide.docx` — C1–C40 catalog (**captured** → `project_component_catalog.md`)
-- `Instasafe Website Sitemap.xlsx` — live URLs (**captured** → `project_seo_urls.md`)
-- Not yet provided: `InstaSafe_FINAL_MasterPrompt_v2.md`, `InstaSafe_Page_Stories.md`, `InstaSafe_ScrollAnimation_Pattern.md`, `InstaSafe_Dashboard_UI_Spec.md`, `InstaSafe_Site_Blueprint.md`.
+## Components built this session (00am–00ar) — full detail in memory `project_built_components.md`
 
-## Key proof numbers (memory `project_content_master.md` — use exactly)
-500,000+ devices · 150+ companies · 100+ Fortune 2000 · $2/user/mo platform ($1 SSO, $1 MFA) · 25 device checks · 7 app types · 8 DB drivers · 6 MFA methods · 8 auth profiles · 202 event types · 7 SIEM formats · up to 70% TCO cut · 50,000 users/2,000 branches (Gov PSU on-prem) · 65,000 users in 5 days (BPM).
+All in `components/izpages/pro/`, registered at `/components#<id>`.
 
-## Honesty guardrails — don't claim until Product confirms
-Screenshot/print/keylogger DLP · FIDO2-passwordless end-to-end · DB-access GA (Oracle/Elasticsearch beta, ClickHouse/MongoDB alpha) · auto-suspend · device-policy push.
+| id | Component | What it is |
+|---|---|---|
+| 00am | `IzProHero` + `IzProStack` + `IzProPanel` + `pro.config.tsx` | Full `/products/fingerprint-pro/` recreation. Hero = design-tool canvas conceit (selection rect, coordinate readout, proximity-lit cards), verified 0 img/svg/canvas/video, matching theirs. Stack = sticky scroll-stack, incoming slot has higher z-index and rises over outgoing (never leaves first) — `HOLD=0.55` constant added after finding slide 1 got zero dwell time otherwise. Mobile: stack **removed**, static list instead. All content is data in `pro.config.tsx` — one object per slide. |
+| 00an | `IzUseCaseGrid` + `IzAgentCards` + `IzMocks` (5 mock sub-components) + `useHoverIndex.ts` | Hover-animation sections. Each mock has one specialty (resolution / escalation / repetition-that-never-resolves / progress-to-verdict / inspection). **Motion contract: animations declared INSIDE `.is-live`, never outside it paused** — so hover-out removes them and the next hover replays from zero instead of resuming stuck. `useHoverIndex.ts` exists because React's `onPointerEnter`/`onPointerLeave` don't bubble and got this wrong **four times** before being fixed once, centrally. |
+| 00ao | `IzTabSwitch` | Copy+CTA left, 3 tabs, swapping panel right — fingerprint's use-case-page workhorse. Two variants (`console` permanently dark via `.iz-inverted`, `resource` theme-aware) are ONE component; which parts swap falls out of the data. ⚠️ **Resource variant has invented author names (Priya Menon, Arjun Rao, Evelyn Chea) that need replacing or reducing to role-only before ship** — flagged, not yet fixed. |
+| 00ap | `IzLogoGrid` + `IzTestimonial` | Ecosystem lattice (coordinates-as-data, same engine as IzSignalGrid) + customer quote with the mark behind/clipped as texture. ⚠️ Both carry placeholder content (text wordmarks not artwork; quote attributed by role+org only, no invented name — the one placeholder rule followed correctly). |
+| 00aq | `IzConverge` + `IzEventsHero` | Chip-marquee converging on the InstaSafe mark into a static SVG circuit (reuses FilterStream's exact marquee mechanism, all rows one direction). Events hero: calendar backdrop, card-then-grid-then-events entrance order (deliberately backwards from the obvious one). |
+| 00ar | `IzOutcomes` | The sazabi.com section skeleton — glow headline, flowchart connector that **draws outward from centre** (verified `transform-origin` at exact midpoint), 3 non-card outcomes. `side` prop must alternate down a page. Reusable — visual is a slot. |
+
+### Recurring bugs fixed this session — all now in memory as standing rules, check before writing new CSS/animation code
+1. **React's `onPointerEnter`/`onPointerLeave` don't bubble** — always use native listeners (`useHoverIndex.ts` pattern), never React's synthesized versions.
+2. **Hover animations must be declared INSIDE `.is-live`**, never `paused` outside it — or hover-out freezes the element instead of resetting it.
+3. **The spacing scale has NO `--sp-7`, `--sp-9`, `--sp-11`** (valid: 1 2 3 4 5 6 8 10 12) — an invalid `var()` silently computes the whole declaration to `0`, not to an earlier fallback. Shipped as 5 components with zero padding before caught. Warning now lives at the token definition in `iz-system.css`.
+4. **Dashed rails need `--rail-inset`** — `.iz-railed .iz-wrap` padding, fixed once centrally in `izgrid.css` after being patched per-component three times.
+5. **Grid cells must be explicitly positioned**, never left to auto-flow around already-placed items — auto-placement pushed backing cells into implicit rows twice (IzLogoGrid 4→7 rows).
+6. **IO-gated reveals need a ~2.5s failsafe timeout** — armed/pre-animation states are often invisible by design, so a missed observer must not leave content permanently broken.
 
 ---
 
-## Memory index (`MEMORY.md`)
-- `project_seo_urls.md` — sitemap URLs (locked), URL corrections done, scaffold system
-- `project_component_catalog.md` — C1–C40 components + build priority
-- `project_content_master.md` — H1s, proof numbers, brand voice, pricing
-- `project_design_language.md` — Balanced system, component status (C1/C2/C29 done)
-- `feedback_homepage_plain_language.md` — ⭐ the permanent plain-language rule
+## Illustrations — still deferred, PNG placeholders in use
+Two hand-vectorized SVGs were deleted (user: "turned out bad"). Pipeline (`Illustration.tsx`/`ThemedImage.tsx`) intact, no assets wired. Hero demos borrow existing `.webp` diagrams as placeholders. **The 89-illustration catalogue is a separate, later job — don't start unasked.**
 
-## Session behaviour notes
-- User runs `/ui-ux-pro-max <args>` each turn — treat args as the task.
-- "Caveman mode" active (terse replies); code/docs written normally.
-- User values: plain homepage, interactive "explain it" centrepieces, CTAs everywhere, theme-portability (build on tokens), better icons (Phosphor; swap library if one fails), accessibility, reduced-motion, performance.
+---
 
-## Likely next tasks
-- Build more C1–C40 components into the lab (priority: C14, C2, C20, C23, C9 — some done). User may give a canonical "tools InstaSafe replaces" list to snap UnificationSlider boxes/legend to.
-- Possibly drop UnificationSlider onto the homepage.
-- Eventually: pick blue (A) vs orange (B), then roll chosen system across all pages + nav.
-- User said "work on components later" — focus is the reusable component library in `/components`.
+## Open items / next steps
+1. **Read the quality flag above and change approach before building more components.**
+2. Fix `IzTabSwitch` resource-variant invented author names (round 10 finding, unaddressed).
+3. Continue closing `build-checklist.md` — check its open-questions section for what the user actually wants next; don't assume.
+4. None of 00ac–00ar are wired into a real page yet — all live only in `/components` lab.
+5. v3/v4 carryovers still open: SSO page sign-off, SEO fixes verification, Figma paused (don't resume unasked), one `[LEGAL REVIEW]` marker in consent center, 74+ uncommitted files.
+
+---
+
+## Session-standing rules (memory, all active)
+Model split Fable/Opus-Sonnet, avoid generic-AI look, homepage plain language, WCAG-by-default, docs as `.docx`, illustrations user-supplied (catalogue deferred), interaction-placement doctrine, sitemap SEO-locked, product name "InstaSafe ZTNA" never "i365", three-tier component library, draw-in scoped to component artwork not the catalogue, `.iz-inverted` always-dark-for-now, **+ new: quality-below-bar flag — verify visually, not just structurally.**

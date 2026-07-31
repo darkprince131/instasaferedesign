@@ -1,0 +1,448 @@
+/* ============================================================
+   consent.css — fully self-contained styling for the DPDP consent
+   system (banner, preference-center dialog, footer trigger).
+
+   Deliberately independent of both scoped design systems on this
+   site (v3 `app/globals.css` tokens, Balanced `.iz` `iz-system.css`
+   tokens). Defines its own `--consent-*` custom properties at
+   `:root` so it never collides with either system, then self-themes:
+     1. `@media (prefers-color-scheme)` sets the OS-level default
+     2. `html[data-theme="dark"|"light"]` overrides it (v3's theme
+        toggle sets this attribute; it wins via higher specificity
+        than the plain `:root` selector inside the media query)
+
+   Brand accent is intentionally hardcoded, not tokenized:
+   light `#f2480a` / dark `#ff6a2c`.
+   ============================================================ */
+
+:root {
+  /* Dark palette — matches the site's default boot-script theme. */
+  --consent-bg: #131620;
+  --consent-card-bg: #15181f;
+  --consent-border: rgba(255, 255, 255, 0.12);
+  --consent-border-strong: rgba(255, 255, 255, 0.22);
+  --consent-text: #f3f4f6;
+  --consent-text-secondary: #a7acb9;
+  --consent-text-muted: #6c7280;
+  --consent-accent: #ff6a2c;
+  --consent-accent-contrast: #14151a;
+  --consent-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --consent-backdrop: rgba(6, 7, 11, 0.6);
+  --consent-toggle-off: rgba(255, 255, 255, 0.16);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --consent-bg: #ffffff;
+    --consent-card-bg: #ffffff;
+    --consent-border: rgba(20, 22, 30, 0.12);
+    --consent-border-strong: rgba(20, 22, 30, 0.22);
+    --consent-text: #15171e;
+    --consent-text-secondary: #565b6b;
+    --consent-text-muted: #8a8fa0;
+    --consent-accent: #f2480a;
+    --consent-accent-contrast: #ffffff;
+    --consent-shadow: 0 24px 48px -24px rgba(20, 22, 30, 0.22), 0 2px 10px rgba(20, 22, 30, 0.08);
+    --consent-backdrop: rgba(20, 22, 30, 0.35);
+    --consent-toggle-off: rgba(20, 22, 30, 0.14);
+  }
+}
+
+/* Explicit theme attribute (v3's toggle) always wins over prefers-color-scheme. */
+html[data-theme="dark"] {
+  --consent-bg: #131620;
+  --consent-card-bg: #15181f;
+  --consent-border: rgba(255, 255, 255, 0.12);
+  --consent-border-strong: rgba(255, 255, 255, 0.22);
+  --consent-text: #f3f4f6;
+  --consent-text-secondary: #a7acb9;
+  --consent-text-muted: #6c7280;
+  --consent-accent: #ff6a2c;
+  --consent-accent-contrast: #14151a;
+  --consent-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --consent-backdrop: rgba(6, 7, 11, 0.6);
+  --consent-toggle-off: rgba(255, 255, 255, 0.16);
+}
+
+html[data-theme="light"] {
+  --consent-bg: #ffffff;
+  --consent-card-bg: #ffffff;
+  --consent-border: rgba(20, 22, 30, 0.12);
+  --consent-border-strong: rgba(20, 22, 30, 0.22);
+  --consent-text: #15171e;
+  --consent-text-secondary: #565b6b;
+  --consent-text-muted: #8a8fa0;
+  --consent-accent: #f2480a;
+  --consent-accent-contrast: #ffffff;
+  --consent-shadow: 0 24px 48px -24px rgba(20, 22, 30, 0.22), 0 2px 10px rgba(20, 22, 30, 0.08);
+  --consent-backdrop: rgba(20, 22, 30, 0.35);
+  --consent-toggle-off: rgba(20, 22, 30, 0.14);
+}
+
+/* ---------- shared type ---------- */
+
+.consent-banner,
+.consent-overlay,
+.consent-trigger {
+  font-family: ui-sans-serif, var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--consent-text);
+  box-sizing: border-box;
+}
+
+.consent-banner *,
+.consent-overlay *,
+.consent-trigger {
+  box-sizing: border-box;
+}
+
+.consent-banner__eyebrow,
+.consent-dialog__eyebrow {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--consent-accent);
+  margin: 0 0 8px;
+}
+
+/* ---------- banner ---------- */
+
+.consent-banner {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 999997;
+  max-width: 380px;
+  width: calc(100% - 32px);
+}
+
+.consent-banner__card {
+  background: var(--consent-card-bg);
+  border: 1px solid var(--consent-border);
+  border-radius: 8px;
+  box-shadow: var(--consent-shadow);
+  padding: 18px 20px 20px;
+}
+
+.consent-banner__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--consent-text-secondary);
+}
+
+.consent-banner__link {
+  color: var(--consent-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--consent-border-strong);
+}
+
+.consent-banner__link:hover {
+  text-decoration-color: var(--consent-accent);
+  color: var(--consent-accent);
+}
+
+.consent-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ---------- buttons (equal weight by default; .consent-btn--primary is the
+   one deliberate exception, used only for "Save preferences" inside the
+   preference center — never on the banner's first layer) ---------- */
+
+.consent-btn {
+  flex: 1 1 auto;
+  appearance: none;
+  border: 1px solid var(--consent-border-strong);
+  background: transparent;
+  color: var(--consent-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 9px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.consent-btn:hover {
+  border-color: var(--consent-accent);
+  color: var(--consent-accent);
+}
+
+.consent-btn:focus-visible {
+  outline: 2px solid var(--consent-accent);
+  outline-offset: 2px;
+}
+
+.consent-btn--primary {
+  background: var(--consent-accent);
+  border-color: var(--consent-accent);
+  color: var(--consent-accent-contrast);
+}
+
+.consent-btn--primary:hover {
+  filter: brightness(1.06);
+  color: var(--consent-accent-contrast);
+}
+
+/* ---------- footer trigger ---------- */
+
+.consent-trigger {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+.consent-trigger:hover {
+  color: var(--consent-accent);
+}
+
+.consent-trigger:focus-visible {
+  outline: 2px solid var(--consent-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- preference center overlay/dialog ---------- */
+
+.consent-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.consent-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--consent-backdrop);
+}
+
+.consent-dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 540px;
+  max-height: min(640px, 90vh);
+  overflow-y: auto;
+  background: var(--consent-card-bg);
+  border: 1px solid var(--consent-border);
+  border-radius: 10px;
+  box-shadow: var(--consent-shadow);
+  padding: 24px 24px 20px;
+}
+
+.consent-dialog__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consent-dialog__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.consent-dialog__close {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--consent-border);
+  color: var(--consent-text-secondary);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consent-dialog__close:hover {
+  border-color: var(--consent-accent);
+  color: var(--consent-accent);
+}
+
+.consent-dialog__close:focus-visible {
+  outline: 2px solid var(--consent-accent);
+  outline-offset: 2px;
+}
+
+.consent-dialog__body {
+  margin-top: 18px;
+  border-top: 1px solid var(--consent-border);
+}
+
+.consent-row {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--consent-border);
+}
+
+.consent-row__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consent-row__label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.consent-row__desc {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--consent-text-secondary);
+  max-width: 42ch;
+}
+
+.consent-row__locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.consent-row__locked-text {
+  font-size: 11px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--consent-text-muted);
+}
+
+/* toggle switch */
+
+.consent-toggle {
+  appearance: none;
+  border: none;
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--consent-toggle-off);
+  padding: 3px;
+  cursor: pointer;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.15s ease;
+}
+
+.consent-toggle.is-on {
+  background: var(--consent-accent);
+}
+
+.consent-toggle.is-locked {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.consent-toggle__thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transform: translateX(0);
+  transition: transform 0.15s ease;
+}
+
+.consent-toggle.is-on .consent-toggle__thumb {
+  transform: translateX(16px);
+}
+
+.consent-toggle:focus-visible {
+  outline: 2px solid var(--consent-accent);
+  outline-offset: 2px;
+}
+
+.consent-dialog__foot {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--consent-border);
+}
+
+.consent-dialog__note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--consent-text-muted);
+}
+
+.consent-dialog__link {
+  color: var(--consent-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.consent-dialog__link:hover {
+  color: var(--consent-accent);
+}
+
+.consent-legal-flag {
+  color: var(--consent-accent);
+  font-weight: 600;
+}
+
+.consent-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .consent-btn,
+  .consent-trigger,
+  .consent-dialog__close,
+  .consent-toggle,
+  .consent-toggle__thumb {
+    transition: none !important;
+  }
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 480px) {
+  .consent-banner {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
+    width: auto;
+  }
+
+  .consent-banner__actions {
+    flex-direction: column;
+  }
+
+  .consent-btn {
+    width: 100%;
+  }
+
+  .consent-dialog {
+    padding: 20px 18px 18px;
+  }
+}

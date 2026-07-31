@@ -7,7 +7,7 @@ import { motion, useReducedMotion } from "framer-motion";
    Sit as a faint background; card is tall, text lives at the foot.
    ============================================================ */
 
-const STROKE = "var(--accent-blue-light)";
+const STROKE = "var(--db-accent)";
 
 export function DeployIllustration({ type }: { type: "cloud" | "onprem" | "hybrid" }) {
   const common = {
@@ -135,7 +135,7 @@ export function CityMap({ className }: { className?: string }) {
       </defs>
       <g mask="url(#map-mask)">
         {MAP.lakes.map((d, i) => (
-          <path key={`l-${i}`} d={d} fill="rgba(96,165,250,0.16)" stroke="rgba(96,165,250,0.4)" strokeWidth="0.8" />
+          <path key={`l-${i}`} d={d} fill="color-mix(in srgb, var(--db-accent) 16%, transparent)" stroke="color-mix(in srgb, var(--db-accent) 40%, transparent)" strokeWidth="0.8" />
         ))}
         {MAP.streets.map((d, i) => (
           <path key={`s-${i}`} d={d} fill="none" stroke="rgba(210,112,63,0.30)" strokeWidth="0.7" />

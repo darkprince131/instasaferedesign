@@ -50,20 +50,31 @@
   --btn-fg: #05080f;
   --aurora-opacity: 0.55;
 
-  /* Console (dashboard graphic) tokens — dark default */
-  --db-bg: #0a0f1c;
-  --db-sidebar: #0c1322;
-  --db-surface: #111a2e;
-  --db-surface-2: #16213b;
+  /* Console (dashboard graphic) tokens — dark default.
+
+     These drive EVERY simulator and heavy interactive (MFA Simulator,
+     Interactive Console, Breach Simulator, the console/* set, …), which is
+     why the blue→orange migration happens here rather than in seventeen
+     components: the ones that never hardcoded a colour convert for free.
+
+     Surfaces were navy (#0a0f1c family); they are now the neutral dark of
+     iz-system.css so a console reads as native in either design system.
+     Accent is the brand orange. Success/warning/danger stay semantic —
+     they carry meaning, not brand, so they are aligned to the .iz
+     allow/deny values rather than recoloured away. */
+  --db-bg: #0a0b0d;
+  --db-sidebar: #0e0f12;
+  --db-surface: #121417;
+  --db-surface-2: #171a1e;
   --db-border: rgba(255, 255, 255, 0.08);
-  --db-text: #e8edf6;
-  --db-text-dim: #8595ad;
-  --db-text-mute: #4a5775;
-  --db-accent: #3b82f6;
-  --db-accent-2: #8b5cf6;
-  --db-success: #22c55e;
+  --db-text: #f1f1f3;
+  --db-text-dim: #a1a1aa;
+  --db-text-mute: #61626b;
+  --db-accent: #ff6a2c;
+  --db-accent-2: #ffa07a;
+  --db-success: #46d38a;
   --db-warning: #f59e0b;
-  --db-danger: #ef4444;
+  --db-danger: #ff5c72;
   --db-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
 }
 
@@ -102,21 +113,22 @@
   --btn-fg: #ffffff;
   --aurora-opacity: 0.28;
 
-  /* Console tokens — light */
-  --db-bg: #eef2f8;
+  /* Console tokens — light. Paper neutrals + brand orange, matching the
+     dark block above; see the note there. */
+  --db-bg: #f2f1ec;
   --db-sidebar: #ffffff;
   --db-surface: #ffffff;
-  --db-surface-2: #f3f6fb;
-  --db-border: rgba(15, 23, 42, 0.1);
-  --db-text: #0f172a;
-  --db-text-dim: #56657f;
-  --db-text-mute: #94a3b8;
-  --db-accent: #2563eb;
-  --db-accent-2: #7c3aed;
-  --db-success: #16a34a;
-  --db-warning: #d97706;
-  --db-danger: #dc2626;
-  --db-shadow: 0 24px 50px -24px rgba(15, 23, 42, 0.25);
+  --db-surface-2: #f6f5f1;
+  --db-border: rgba(20, 18, 12, 0.11);
+  --db-text: #1b1a17;
+  --db-text-dim: #5c594f;
+  --db-text-mute: #7a766e;
+  --db-accent: #f2480a;
+  --db-accent-2: #c2410c;
+  --db-success: #178a51;
+  --db-warning: #b45309;
+  --db-danger: #c32f46;
+  --db-shadow: 0 24px 50px -24px rgba(40, 30, 10, 0.22);
 }
 
 [data-theme="light"] .aurora {

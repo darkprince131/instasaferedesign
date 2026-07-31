@@ -1,0 +1,127 @@
+/* ============================================================
+   izsteprail.css — IzStepRail + IzChip (lab 00af)
+   TIER 1 VISUAL. All values are iz-system.css tokens.
+   ============================================================ */
+
+.izsr {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-6);
+  padding: var(--sp-8) var(--sp-6);
+  min-width: 0;
+}
+
+/* Each step owns its own rail segment on the right edge, so the accent
+   appears to travel down the column as steps advance — no separate
+   tracker element to keep in sync. */
+.izsr-step {
+  position: relative;
+  padding-right: var(--sp-5);
+  opacity: 0.42;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.izsr-step::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  right: 0;
+  width: 2px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transform-origin: 50% 50%;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.izsr-step.on {
+  opacity: 1;
+}
+.izsr-step.on::after {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.izsr-n {
+  display: block;
+  margin-bottom: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+
+/* Mixed weight inside one sentence: <strong> carries the subject and
+   the verdict, everything else stays light. That contrast is what makes
+   the narration scannable at a glance inside a busy scene. */
+.izsr-body {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.55;
+  color: var(--tx-dim);
+}
+.izsr-body strong {
+  font-weight: 500;
+  color: var(--tx);
+}
+
+/* ---------- inline chip ---------- */
+
+.izsr-chip {
+  display: inline-block;
+  padding: 1px var(--sp-2);
+  border-radius: var(--r-2xs);
+  border: var(--bw) solid transparent;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  line-height: 1.5;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+.izsr-chip--allow {
+  color: var(--allow);
+  background: var(--allow-bg);
+  border-color: color-mix(in srgb, var(--allow) 30%, transparent);
+}
+.izsr-chip--deny {
+  color: var(--deny);
+  background: var(--deny-bg);
+  border-color: color-mix(in srgb, var(--deny) 30%, transparent);
+}
+.izsr-chip--warn {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.izsr-chip--neutral {
+  color: var(--tx-dim);
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+
+@media (max-width: 900px) {
+  .izsr {
+    padding: var(--sp-6) var(--sp-5);
+    gap: var(--sp-5);
+  }
+  /* stacked layout puts the rail across the top of each step instead of
+     down the side, where there is no longer a column edge to sit on */
+  .izsr-step {
+    padding-right: 0;
+    padding-left: var(--sp-4);
+  }
+  .izsr-step::after {
+    right: auto;
+    left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izsr-step,
+  .izsr-step::after {
+    transition: none;
+  }
+}

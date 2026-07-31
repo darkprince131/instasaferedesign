@@ -1,0 +1,976 @@
+/* ============================================================
+   pro.css — IzProHero + IzProStack + IzProPanel  (lab 00am)
+
+   Two tunables sit at the top of .izpro-outer; everything else
+   derives. All values are iz-system.css tokens.
+   ============================================================ */
+
+/* ============================================================
+   1. HERO — the design canvas
+   ============================================================ */
+
+.izpro-hero {
+  position: relative;
+  padding: var(--sp-10) 0 0;
+  background: var(--bg);
+  overflow: clip;
+}
+
+.izpro-stage {
+  position: relative;
+  padding: var(--sp-10) var(--sp-8) var(--sp-12);
+  min-height: 460px;
+  isolation: isolate;
+}
+
+/* ---------- the cell grid ----------
+   Real cells, not a repeating gradient: the reference builds
+   102x40 boxes and shades a few, and that irregularity is the
+   whole texture. Shaded cells come from HERO.shaded in the config. */
+
+.izpro-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 12), 1fr);
+  grid-auto-rows: 1fr;
+  pointer-events: none;
+}
+.izpro-cell {
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izpro-cell.on {
+  background: var(--surface-2);
+}
+
+/* the pointer's soft spotlight — only present while --mx is set */
+.izpro-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    220px 220px at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 10%, transparent),
+    transparent 70%
+  );
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.izpro-stage:hover::before {
+  opacity: 1;
+}
+
+/* ---------- selection chrome ---------- */
+
+.izpro-sel {
+  position: absolute;
+  inset: 0;
+  border: var(--bw) solid var(--accent);
+  pointer-events: none;
+}
+.izpro-h {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: var(--surface);
+  border: var(--bw) solid var(--accent);
+}
+.izpro-h--tl {
+  left: -4px;
+  top: -4px;
+}
+.izpro-h--tr {
+  right: -4px;
+  top: -4px;
+}
+.izpro-h--bl {
+  left: -4px;
+  bottom: -4px;
+}
+.izpro-h--br {
+  right: -4px;
+  bottom: -4px;
+}
+
+.izpro-read {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-100%);
+  padding: 2px var(--sp-2);
+  background: var(--accent);
+  color: var(--btn-ink);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  white-space: nowrap;
+}
+
+/* ---------- ruler label ---------- */
+
+.izpro-ruler {
+  position: absolute;
+  left: 50%;
+  top: var(--sp-6);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.izpro-dim {
+  color: var(--tx-mute);
+}
+.izpro-bright {
+  color: var(--tx);
+}
+.izpro-caret {
+  width: 5px;
+  height: 11px;
+  background: var(--accent);
+  animation: izpro-blink 1.1s steps(1) infinite;
+}
+@keyframes izpro-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- verdict cards ---------- */
+
+.izpro-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 108px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: var(--bw) solid var(--line);
+  opacity: 0.5;
+  transition: opacity var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.izpro-card.near {
+  opacity: 1;
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, var(--tx) 55%, transparent);
+}
+.izpro-cardtag {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  transform: translateY(-100%);
+  padding: 1px var(--sp-2);
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--surface);
+  white-space: nowrap;
+}
+.izpro-card.t-allow .izpro-cardtag {
+  background: var(--allow);
+}
+.izpro-card.t-deny .izpro-cardtag {
+  background: var(--deny);
+}
+.izpro-cardlabel {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izpro-cardvalue {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  color: var(--tx-dim);
+}
+.izpro-card.t-allow .izpro-cardvalue {
+  color: var(--allow);
+}
+.izpro-card.t-deny .izpro-cardvalue {
+  color: var(--deny);
+}
+
+/* ---------- the headline, as a selected object ---------- */
+
+.izpro-title {
+  position: relative;
+  z-index: 2;
+  max-width: 22ch;
+  margin: clamp(72px, 9vw, 118px) 0 0 clamp(0px, 4vw, 64px);
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--surface);
+  outline: var(--bw) solid var(--accent);
+  outline-offset: 5px;
+}
+.izpro-titletag {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  transform: translateY(-100%);
+  padding: 2px var(--sp-2);
+  background: var(--accent);
+  color: var(--btn-ink);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.izpro-title h1 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--tx);
+}
+.izpro-title mark {
+  display: block;
+  background: none;
+  color: var(--accent);
+}
+
+.izpro-sub {
+  position: relative;
+  z-index: 2;
+  max-width: 46ch;
+  margin: var(--sp-8) 0 0 auto;
+  padding-right: var(--sp-4);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izpro-sub b {
+  font-weight: 500;
+  color: var(--tx);
+}
+.izpro-sub a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+/* ---------- stat marquee ---------- */
+
+.izpro-marquee {
+  margin-top: var(--sp-10);
+  border-top: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  overflow: hidden;
+}
+.izpro-mtrack {
+  display: flex;
+  width: max-content;
+  animation: izpro-scroll 48s linear infinite;
+}
+.izpro-mrun {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: var(--sp-3) var(--sp-5) var(--sp-3) 0;
+  white-space: nowrap;
+}
+.izpro-mtext,
+.izpro-mbox {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izpro-mbox {
+  padding: 2px var(--sp-2);
+  border: var(--bw) solid var(--accent);
+  color: var(--accent);
+  text-transform: none;
+}
+@keyframes izpro-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.izpro-marquee:hover .izpro-mtrack {
+  animation-play-state: paused;
+}
+
+/* ============================================================
+   2. STACK
+   ============================================================ */
+
+.izpro-section {
+  position: relative;
+  background: var(--bg);
+}
+
+.izpro-outer {
+  /* THE TWO TUNABLES.
+     --dwell   how much scroll each slide gets
+     --sticky-h  the height of the pinned viewport */
+  --dwell: 140vh;
+  --sticky-h: 100vh;
+  height: calc(var(--slides, 4) * var(--dwell) + var(--sticky-h));
+  display: none;
+}
+
+.izpro-sticky {
+  --local: 0;
+  position: sticky;
+  top: 0;
+  height: var(--sticky-h);
+  display: flex;
+  align-items: center;
+  overflow: clip;
+}
+
+.izpro-cols {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: clamp(var(--sp-8), 5vw, 80px);
+  align-items: center;
+  width: 100%;
+}
+
+/* ---------- left column ---------- */
+
+.izpro-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-5);
+  animation: izpro-in var(--dur-slow) var(--ease-out) both;
+}
+@keyframes izpro-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* The sequence is load-bearing here — it is a four-step walkthrough
+   and "where am I" is the information. Not decoration. */
+.izpro-eyebrow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izpro-eyebrow b {
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.izpro-h2 {
+  margin: 0;
+  max-width: 15ch;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  text-wrap: balance;
+}
+
+.izpro-cmd {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+.izpro-cmd code {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  color: var(--tx-dim);
+}
+.izpro-cmd svg {
+  width: 13px;
+  height: 13px;
+  color: var(--tx-mute);
+}
+
+.izpro-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+}
+.izpro-link svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--dur) var(--ease);
+}
+.izpro-link:hover svg {
+  transform: translate(2px, -2px);
+}
+
+.izpro-quote {
+  position: relative;
+  margin: var(--sp-6) 0 0;
+  padding-top: var(--sp-8);
+  max-width: 42ch;
+}
+.izpro-quote::before {
+  content: "”";
+  position: absolute;
+  left: -8px;
+  top: -34px;
+  font-family: var(--disp);
+  font-size: 120px;
+  line-height: 1;
+  color: var(--line);
+  pointer-events: none;
+}
+.izpro-quote blockquote {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.7;
+  color: var(--tx-dim);
+}
+.izpro-quote figcaption {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+
+/* ---------- right column: the stacked slots ---------- */
+
+.izpro-right {
+  position: relative;
+  height: min(74vh, 640px);
+  min-width: 0;
+}
+
+/* The incoming slot carries the HIGHER z-index and rises over the
+   outgoing one — the outgoing card never leaves first. That overlap
+   is what makes the change read as seamless rather than as a
+   slideshow, and it is exactly what the reference does. */
+.izpro-slot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-5);
+  will-change: transform, opacity;
+}
+.izpro-slot[data-state="current"] {
+  z-index: 10;
+  opacity: 1;
+  transform: none;
+}
+.izpro-slot[data-state="next"] {
+  z-index: 11;
+  opacity: var(--local);
+  transform: translateY(calc((1 - var(--local)) * 100%));
+}
+.izpro-slot[data-state="past"] {
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(-4%);
+}
+.izpro-slot[data-state="future"] {
+  z-index: 0;
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.izpro-body {
+  margin: 0;
+  max-width: 54ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-mute);
+}
+.izpro-body b {
+  font-weight: 500;
+  color: var(--tx-dim);
+}
+
+/* ---------- floating cards ---------- */
+
+.izpro-float {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--tx) 55%, transparent);
+  z-index: 3;
+}
+.izpro-floattag {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  transform: translateY(-100%);
+  padding: 1px var(--sp-2);
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  background: var(--tx-mute);
+  color: var(--surface);
+  white-space: nowrap;
+}
+.izpro-float.t-deny .izpro-floattag {
+  background: var(--deny);
+}
+.izpro-floattitle {
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+}
+.izpro-floatbody {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+}
+.izpro-float.t-deny .izpro-floatbody {
+  color: var(--deny);
+}
+.izpro-floatstat {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: 1;
+  color: var(--tx);
+}
+.izpro-floatlabel {
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+
+/* ---------- progress rail ---------- */
+
+.izpro-rail {
+  position: absolute;
+  right: max(var(--wrap-gutter), calc(50% - var(--wrap-max) / 2 + var(--sp-2)));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.izpro-rail li {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  opacity: 0.4;
+  transition: opacity var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izpro-rail li.on {
+  opacity: 1;
+  color: var(--accent);
+}
+.izpro-rail i {
+  font-style: normal;
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   3. PANELS
+   ============================================================ */
+
+.izpro-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 14px 34px -26px color-mix(in srgb, var(--tx) 50%, transparent);
+  overflow: hidden;
+}
+
+.izpro-phead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izpro-plabel,
+.izpro-pright,
+.izpro-paction {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izpro-paction {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  color: var(--tx-dim);
+  text-decoration: none;
+}
+.izpro-paction svg {
+  width: 10px;
+  height: 10px;
+}
+.izpro-paction:hover {
+  color: var(--accent);
+}
+
+/* ---------- code ---------- */
+
+.izpro-tabs {
+  display: flex;
+  gap: var(--sp-4);
+  padding: 0 var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izpro-tab {
+  padding: var(--sp-2) 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.izpro-tab.on {
+  color: var(--tx);
+  border-bottom-color: var(--accent);
+}
+.izpro-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.izpro-code {
+  margin: 0;
+  padding: var(--sp-4) var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.7;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.izpro-line {
+  display: block;
+  padding-left: calc(var(--in, 0) * var(--sp-4));
+}
+.izpro-t-k {
+  color: var(--tx);
+}
+.izpro-t-s {
+  color: var(--accent);
+}
+.izpro-t-n {
+  color: var(--tx-dim);
+}
+.izpro-t-b {
+  color: var(--allow);
+}
+.izpro-t-p {
+  color: var(--tx-mute);
+}
+
+/* ---------- table ---------- */
+
+.izpro-rows {
+  display: flex;
+  flex-direction: column;
+}
+.izpro-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+  min-width: 0;
+}
+.izpro-row:last-child {
+  border-bottom: 0;
+}
+/* An outline, not a tinted row: at this density a filled background
+   per hit turns the table into a traffic light. */
+.izpro-row.lit {
+  outline: var(--bw) solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: -1px;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.izpro-rlabel {
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izpro-rstatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+.izpro-rstatus i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+}
+.izpro-rstatus.t-allow i {
+  background: var(--allow);
+}
+.izpro-rstatus.t-deny i {
+  background: var(--deny);
+}
+.izpro-rstatus.t-warn i {
+  background: var(--accent);
+}
+.izpro-rvalue {
+  min-width: 3ch;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+}
+
+.izpro-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-top: var(--bw) solid var(--line);
+  background: var(--surface-2);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+.izpro-total b {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 400;
+  color: var(--tx);
+}
+.izpro-total svg {
+  width: 12px;
+  height: 12px;
+}
+.izpro-total.t-deny b {
+  color: var(--deny);
+}
+
+/* ---------- record ---------- */
+
+.izpro-greet {
+  padding: var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+}
+.izpro-greet b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 400;
+  color: var(--accent);
+}
+.izpro-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: var(--bw) solid var(--line);
+}
+.izpro-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--sp-3);
+  min-width: 0;
+}
+.izpro-stat + .izpro-stat {
+  border-left: var(--bw) solid var(--line);
+}
+.izpro-stat span {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izpro-stat b {
+  font-weight: 400;
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izpro-timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-3);
+}
+.izpro-when {
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  flex: none;
+  padding-top: 3px;
+}
+.izpro-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.izpro-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-2xs);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+.izpro-chip i {
+  font-style: normal;
+  color: var(--tx-mute);
+}
+.izpro-chip.t-allow {
+  border-color: color-mix(in srgb, var(--allow) 35%, transparent);
+  color: var(--allow);
+}
+.izpro-chip.t-deny {
+  border-color: color-mix(in srgb, var(--deny) 35%, transparent);
+  color: var(--deny);
+}
+
+/* ============================================================
+   4. MOBILE — the stack is REMOVED, not shrunk
+   ============================================================ */
+
+.izpro-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-10);
+  margin: 0;
+  padding: var(--sp-section) var(--wrap-gutter);
+  list-style: none;
+}
+.izpro-mcard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+}
+/* floats are absolutely placed against a stage that does not exist
+   here, and the panel already says what they say */
+.izpro-mobile .izpro-float,
+.izpro-mobile .izpro-rail {
+  display: none;
+}
+.izpro-mcard .izpro-panel {
+  width: 100%;
+}
+/* Row labels are content here — they're the log lines. In a narrow
+   panel they must wrap rather than ellipse away their own tail. */
+.izpro-mobile .izpro-row {
+  gap: var(--sp-3);
+}
+.izpro-mobile .izpro-rlabel {
+  white-space: normal;
+  text-overflow: clip;
+  line-height: 1.35;
+}
+
+@media (min-width: 1000px) {
+  .izpro-outer {
+    display: block;
+  }
+  .izpro-mobile {
+    display: none;
+  }
+}
+
+/* ---------- hero, narrow ---------- */
+
+@media (max-width: 1000px) {
+  .izpro-stage {
+    padding: var(--sp-8) var(--sp-5) var(--sp-10);
+    min-height: 0;
+  }
+  /* the scattered cards need a canvas to be scattered on; below this
+     width there isn't one, and they collide with the headline */
+  .izpro-card,
+  .izpro-read {
+    display: none;
+  }
+  .izpro-title {
+    max-width: none;
+    margin: var(--sp-10) 0 0;
+  }
+  .izpro-sub {
+    margin-left: 0;
+    max-width: none;
+  }
+  .izpro-ruler {
+    top: var(--sp-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izpro-caret,
+  .izpro-mtrack {
+    animation: none;
+  }
+  .izpro-left {
+    animation: none;
+  }
+  .izpro-card,
+  .izpro-slot,
+  .izpro-link svg,
+  .izpro-stage::before {
+    transition: none;
+  }
+  /* with the rAF loop disabled the slots would all sit at their
+     initial state, so make the current one plainly visible */
+  .izpro-slot[data-state="next"] {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}

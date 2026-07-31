@@ -1,0 +1,243 @@
+/* ============================================================
+   izgrid.css — "structural grid" background/section system for
+   `.iz`. Engineering-drawing rhythm analyzed from fingerprint.com
+   (dashed vertical rails at the content column + hairline panel
+   boxes + a fine grid texture used sparingly) and firecrawl.dev
+   (small plus/cross markers at grid intersections). All tokens
+   come from iz-system.css §9 — no new hex/px/duration literals.
+   Everything here is static CSS — zero JS, nothing animates, so
+   prefers-reduced-motion needs no special handling.
+
+   NOTE ON NAMING: home2.css already defines `.iz-cell` (the pastel
+   category-grid tile, with nth-child background colors). To avoid
+   colliding with that existing, differently-styled class, the
+   "boxed content cell" from this system is named `.iz-gridcell`.
+
+   Import this file directly in any page/route that uses the
+   classes below (it is NOT auto-imported by iz-system.css).
+   ============================================================ */
+
+/* ---------- 1. .iz-railed — continuous dashed column rails ----------
+   Two 1px dashed verticals at the ±(wrap-max/2) edges, i.e. exactly
+   where `.iz-wrap` content starts/ends. Apply directly to any
+   `position:relative` element that should own full-height rails
+   (typically a `.iz-section`) — the rails stretch the full height
+   of whatever element carries this class via inset pseudo-elements. */
+.iz-railed {
+  position: relative;
+}
+.iz-railed::before,
+.iz-railed::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px var(--rail-style) var(--rail);
+  pointer-events: none;
+}
+.iz-railed::before {
+  left: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2)));
+}
+.iz-railed::after {
+  right: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2)));
+  border-left: 0;
+  border-right: 1px var(--rail-style) var(--rail);
+}
+
+/* Breathing room off the rails — THE FIX BELONGS HERE, NOT PER SECTION.
+   Above ~1256px the rails sit outside `.iz-wrap`'s own gutter and
+   there is a natural gap. Below that, `max()` clamps them to exactly
+   `--wrap-gutter`, which is where `.iz-wrap`'s padding edge already
+   is — so the first character of every line lands ON the dashed line.
+   It looked like a per-component bug and got patched three times
+   before the cause was found; it is one rule.
+
+   Inset the content a further `--rail-inset` whenever a wrap sits
+   inside a railed section. Sections that genuinely want to run to
+   the rails opt out with `.iz-railed--flush`. */
+.iz-railed .iz-wrap {
+  padding-inline: calc(var(--wrap-gutter) + var(--rail-inset));
+}
+.iz-railed--flush .iz-wrap {
+  padding-inline: var(--wrap-gutter);
+}
+
+/* ---------- 2. .iz-cross — plus/cross marker ----------
+   9px (--cross-size) plus mark, two 1px lines in --cross-color,
+   centered on the element. Decorative — always render with
+   aria-hidden on the consuming <span>. Corner modifiers place it
+   at a corner of the nearest `position:relative` ancestor (a cell,
+   a railed section, a panel), centered exactly on that corner. */
+.iz-cross {
+  position: relative;
+  display: inline-block;
+  width: var(--cross-size);
+  height: var(--cross-size);
+  flex: none;
+  pointer-events: none;
+}
+.iz-cross::before,
+.iz-cross::after {
+  content: "";
+  position: absolute;
+  background: var(--cross-color);
+}
+.iz-cross::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+.iz-cross::after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+.iz-cross--tl,
+.iz-cross--tr,
+.iz-cross--bl,
+.iz-cross--br {
+  position: absolute;
+}
+.iz-cross--tl { top: 0; left: 0; transform: translate(-50%, -50%); }
+.iz-cross--tr { top: 0; right: 0; transform: translate(50%, -50%); }
+.iz-cross--bl { bottom: 0; left: 0; transform: translate(-50%, 50%); }
+.iz-cross--br { bottom: 0; right: 0; transform: translate(50%, 50%); }
+
+/* ---------- 3. .iz-gridfield — fine 16px grid texture ----------
+   Use SPARINGLY: inside panels / placeholder cells only, never as
+   a page-wide wash. Both axes via repeating-linear-gradient. */
+.iz-gridfield {
+  background-image:
+    repeating-linear-gradient(to right, var(--grid-line) 0 1px, transparent 1px var(--grid-module)),
+    repeating-linear-gradient(to bottom, var(--grid-line) 0 1px, transparent 1px var(--grid-module));
+}
+
+/* ---------- 4. .iz-gridcell — boxed content cell ----------
+   Solid 1px --line border, --r-md radius. Combine with `.iz-cross`
+   corner spans (aria-hidden) for corner-marked cells. */
+.iz-gridcell {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--pad-panel);
+}
+.iz-gridcell h3 {
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  margin: var(--sp-3) 0 var(--sp-2);
+  letter-spacing: -0.01em;
+}
+.iz-gridcell p {
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+  margin: 0;
+}
+
+/* ---------- 5. section rhythm variants ----------
+   Pair one of these with `.iz-section` so adjacent sections read
+   as structurally different. Each variant owns its own top divider
+   (1px solid --line) instead of patching the shared `.iz-section`
+   base, so pages/sections that don't opt in are unaffected. */
+.iz-sec--open,
+.iz-sec--railed,
+.iz-sec--cells,
+.iz-sec--band {
+  border-top: 1px solid var(--line);
+}
+
+/* open — plain, no rails, just the divider. The "breathing room" variant. */
+.iz-sec--open {
+  background: var(--bg);
+}
+
+/* railed — dashed column rails for the section's full height, plus
+   corner crosses where the rails meet the top/bottom edges. The
+   crosses are optional `.iz-cross--tl/tr/bl/br` spans a consumer
+   places as direct children (position:relative is already set here). */
+.iz-sec--railed {
+  position: relative;
+}
+.iz-sec--railed::before,
+.iz-sec--railed::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px var(--rail-style) var(--rail);
+  pointer-events: none;
+}
+.iz-sec--railed::before {
+  left: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2)));
+}
+.iz-sec--railed::after {
+  right: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2)));
+  border-left: 0;
+  border-right: 1px var(--rail-style) var(--rail);
+}
+
+/* cells — content laid into a bordered grid sharing 1px dividers.
+   `.iz-cellgrid` is the grid container; `.iz-gridcell` children lose
+   their own radius/full border so only one line separates neighbors,
+   and each cell grows a small cross at its top-left corner — since
+   cells tile edge to edge, that mark lands on every internal (and
+   outer) lattice intersection, matching the firecrawl.dev texture. */
+.iz-cellgrid {
+  display: grid;
+  grid-template-columns: repeat(var(--cellgrid-cols, 3), 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.iz-cellgrid.cols-2 { --cellgrid-cols: 2; }
+.iz-cellgrid.cols-3 { --cellgrid-cols: 3; }
+.iz-cellgrid.cols-4 { --cellgrid-cols: 4; }
+.iz-cellgrid .iz-gridcell {
+  border-radius: 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.iz-cellgrid .iz-gridcell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cross-size);
+  height: var(--cross-size);
+  transform: translate(-50%, -50%);
+  background-image: linear-gradient(var(--cross-color), var(--cross-color)), linear-gradient(var(--cross-color), var(--cross-color));
+  background-repeat: no-repeat;
+  background-position: center 50%, 50% center;
+  background-size: 100% 1px, 1px 100%;
+  pointer-events: none;
+}
+
+/* band — full-bleed alt background with an inset panel inside it. */
+.iz-sec--band {
+  background: var(--bg-2);
+}
+.iz-inset {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  padding: var(--sp-8);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 720px) {
+  .iz-railed::before,
+  .iz-railed::after,
+  .iz-sec--railed::before,
+  .iz-sec--railed::after {
+    display: none;
+  }
+  .iz-cellgrid {
+    grid-template-columns: 1fr;
+  }
+}

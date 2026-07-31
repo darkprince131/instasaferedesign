@@ -1,0 +1,331 @@
+/* ============================================================
+   blocks.css — IzLogoGrid + IzTestimonial  (lab 00ap)
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+/* ============================================================
+   1. LOGO GRID
+   ============================================================ */
+
+.izlg {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+
+.izlg-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  border-top: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+/* ---------- left ---------- */
+
+.izlg-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--sp-5);
+  padding: var(--sp-12) var(--sp-10) var(--sp-12) 0;
+  min-width: 0;
+}
+
+.izlg-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izlg-kicker svg {
+  width: 13px;
+  height: 13px;
+}
+.izlg-kicker i {
+  font-style: normal;
+  color: var(--accent);
+  animation: izlg-blink 1.1s steps(1) infinite;
+}
+@keyframes izlg-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* The words are separate spans so the sequence can wrap as units —
+   "Allow. Verify. Scope. Block." must never break mid-word. */
+.izlg-title {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izlg-title span {
+  white-space: nowrap;
+}
+.izlg-title span.on {
+  color: var(--accent);
+}
+
+.izlg-sub {
+  margin: 0;
+  max-width: 44ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.izlg-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--tx);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izlg-cta svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--dur) var(--ease);
+}
+.izlg-cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.izlg-cta:hover svg {
+  transform: translateX(2px);
+}
+
+/* ---------- right: the lattice ----------
+   Empty cells are drawn as real elements underneath, then logos and
+   the copy strip are placed onto named coordinates over them. Same
+   arrangement as IzSignalGrid, same reason: the gaps are the design. */
+
+.izlg-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows, 4), minmax(84px, 1fr));
+  border-left: var(--bw) solid var(--line);
+}
+.izlg-cell {
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+/* The last row's bottom border lands on exactly the same pixel as
+   `.izlg-cols`'s own, so they overlap rather than double — no
+   special case needed, and none is possible anyway since
+   `:nth-child()` cannot read a custom property. */
+
+.izlg-logo {
+  display: grid;
+  place-items: center;
+  padding: var(--sp-3);
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+  text-align: center;
+  overflow-wrap: anywhere;
+  z-index: 1;
+}
+
+.izlg-strip {
+  display: grid;
+  align-items: center;
+  margin: 0;
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--surface-2);
+  border-top: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx);
+  z-index: 1;
+}
+.izlg-strip mark {
+  background: none;
+  color: var(--accent);
+}
+
+/* ============================================================
+   2. TESTIMONIAL
+   ============================================================ */
+
+.izq {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+
+.izq-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+  text-align: center;
+  isolation: isolate;
+}
+
+/* Texture, not an icon: oversized, behind everything, and clipped
+   by the section. Beside the text it would read as punctuation. */
+.izq-mark {
+  position: absolute;
+  left: clamp(-8px, 4vw, 72px);
+  top: -46px;
+  z-index: -1;
+  font-family: var(--disp);
+  font-size: clamp(180px, 22vw, 300px);
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent) 9%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+
+.izq-logo {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+
+.izq-quote {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+  color: var(--tx-dim);
+  text-wrap: balance;
+}
+
+.izq-who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--sp-2);
+}
+.izq-who b {
+  font-weight: 500;
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izq-who span {
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+
+.izq-rule {
+  width: 26px;
+  height: 2px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  margin: var(--sp-2) 0 var(--sp-4);
+}
+
+/* A band, not a trailing link — it has to read as "there is more". */
+.izq-strip {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 28%, transparent);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.izq-strip p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+}
+.izq-strip a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.izq-strip a svg {
+  width: 12px;
+  height: 12px;
+  transition: transform var(--dur) var(--ease);
+}
+.izq-strip a:hover svg {
+  transform: translate(2px, -2px);
+}
+
+/* ============================================================
+   3. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .izlg-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izlg-left {
+    padding: var(--sp-8) 0;
+  }
+  .izlg-grid {
+    border-left: 0;
+    border-top: var(--bw) solid var(--line);
+    /* two columns keep each wordmark on one line; four would force
+       every one of them to wrap or ellipse */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(72px, auto);
+  }
+  /* placed coordinates are meaningless once the lattice is 2 wide —
+     let everything flow, and let the copy strip span the full width */
+  .izlg-grid > * {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+  .izlg-cell {
+    display: none;
+  }
+  .izlg-logo {
+    border-right: var(--bw) solid var(--line);
+    border-bottom: var(--bw) solid var(--line);
+  }
+  .izlg-strip {
+    grid-column: 1 / -1 !important;
+    padding: var(--sp-4) var(--sp-5);
+    font-size: var(--fs-body-sm);
+  }
+
+  .izq-mark {
+    left: -10px;
+    top: -30px;
+  }
+  .izq-strip {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izlg-kicker i {
+    animation: none;
+  }
+  .izlg-cta,
+  .izlg-cta svg,
+  .izq-strip a svg {
+    transition: none;
+  }
+}

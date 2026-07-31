@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "@/components/help/help-widget.css";
+import { ConsentProvider } from "@/components/consent/ConsentProvider";
+import { IzHelpWidget } from "@/components/help/IzHelpWidget";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -95,7 +98,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {children}
+        <ConsentProvider>
+          {children}
+          <IzHelpWidget />
+        </ConsentProvider>
       </body>
     </html>
   );

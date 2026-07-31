@@ -7,7 +7,7 @@
 
 .ag-card {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
   overflow: hidden;
@@ -33,7 +33,7 @@
   height: 150px;
   transform: translate(-50%, -50%) rotateX(46deg) rotateZ(-34deg);
   transform-style: preserve-3d;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.45s var(--ease);
 }
 .ag-card:hover .ag-stack,
 .ag-card:focus-within .ag-stack {
@@ -48,12 +48,12 @@
   top: 0;
   min-height: 150px;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--r-md);
   background: var(--surface);
   box-shadow: var(--inset), 0 18px 30px -14px rgba(0, 0, 0, 0.5);
   transform: translateZ(calc(var(--lift) * 26px));
   z-index: calc(10 + var(--lift));
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease-out);
 }
 .ag-card:hover .ag-screen,
 .ag-card:focus-within .ag-screen {
@@ -71,7 +71,7 @@
   flex: none;
   width: 26px;
   height: 26px;
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   background: var(--bg-2);
   border: 1px solid var(--line);
   display: grid;
@@ -79,13 +79,13 @@
   color: var(--tx-dim);
 }
 .ag-ic svg { width: 15px; height: 15px; }
-.ag-name { font-family: var(--disp); font-weight: 500; font-size: 14px; color: var(--tx); }
-.ag-total { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--tx-mute); }
+.ag-name { font-family: var(--disp); font-weight: 500; font-size: var(--fs-body-sm); color: var(--tx); }
+.ag-total { margin-left: auto; font-family: var(--mono); font-size: var(--fs-label); color: var(--tx-mute); }
 
 .ag-rows { padding: 8px 13px 12px; display: flex; flex-direction: column; gap: 7px; }
 /* only the front screen shows its full row list; deeper screens are clipped by the cascade */
 .ag-screen:not(.front) .ag-rows { padding-bottom: 10px; }
-.ag-row { position: relative; display: flex; align-items: center; gap: 10px; padding: 6px 9px; border-radius: 7px; overflow: hidden; }
+.ag-row { position: relative; display: flex; align-items: center; gap: 10px; padding: 6px 9px; border-radius: var(--r-sm); overflow: hidden; }
 .ag-bar {
   position: absolute;
   left: 0;
@@ -95,9 +95,9 @@
   border-right: 1px solid color-mix(in srgb, var(--orange) 22%, transparent);
 }
 .ag-row.hot .ag-bar { background: color-mix(in srgb, var(--orange) 16%, transparent); }
-.ag-lbl { position: relative; font-family: var(--mono); font-size: 11.5px; color: var(--tx-dim); }
+.ag-lbl { position: relative; font-family: var(--mono); font-size: var(--fs-mono); color: var(--tx-dim); }
 .ag-row.hot .ag-lbl { color: var(--tx); }
-.ag-val { position: relative; margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--tx-mute); }
+.ag-val { position: relative; margin-left: auto; font-family: var(--mono); font-size: var(--fs-mono); color: var(--tx-mute); }
 
 /* ---- embed mode: iso deck only, dropped into another card's media slot ---- */
 .ag-embed { width: 100%; min-width: 0; max-width: 100%; height: 100%; position: relative; min-height: 240px; display: flex; overflow: hidden; }
@@ -107,28 +107,28 @@
 
 /* ---- card footer ---- */
 .ag-foot { padding: 22px 24px 24px; }
-.ag-foot .iz-ey { margin-bottom: 12px; }
+.ag-foot .iz-ey { margin-bottom: var(--sp-3); }
 .ag-title {
   font-family: var(--disp);
   font-weight: var(--fw-disp);
-  font-size: 23px;
+  font-size: var(--fs-h3);
   letter-spacing: var(--ls-h2);
   line-height: var(--lh-h2);
   margin: 0;
   color: var(--tx);
 }
 .ag-title em { font-style: normal; font-weight: 400; color: var(--orange); }
-.ag-desc { color: var(--tx-dim); font-size: 14.5px; line-height: 1.55; margin: 10px 0 0; max-width: 44ch; }
+.ag-desc { color: var(--tx-dim); font-size: var(--fs-body-sm); line-height: 1.55; margin: 10px 0 0; max-width: 44ch; }
 .ag-learn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: 16px;
-  font-size: 13.5px;
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--orange);
 }
-.ag-learn svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+.ag-learn svg { width: 15px; height: 15px; transition: transform var(--dur-fast) var(--ease-out); }
 .ag-learn:hover svg { transform: translateX(3px); }
 
 @media (prefers-reduced-motion: reduce) {

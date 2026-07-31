@@ -2,6 +2,7 @@
 
 import { Logo } from "@/components/brand/Logo";
 import { EnvelopeSimple, MapPin, Phone } from "@phosphor-icons/react";
+import { ConsentTrigger } from "@/components/consent/ConsentTrigger";
 
 type Link = { label: string; href: string };
 
@@ -133,6 +134,7 @@ export function Footer() {
             <a href="/security" className="hover:text-[var(--text-secondary)]">
               Responsible Disclosure
             </a>
+            <ConsentTrigger className="hover:text-[var(--text-secondary)]" />
           </div>
         </div>
       </div>

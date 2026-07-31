@@ -1,7 +1,9 @@
 import { Home2 } from "@/components/home2/Home2";
+import "@/components/home2/iz-system.css";
 import "@/components/home2/home2.css";
 import "@/components/home2/capabilities.css";
 import "@/components/home2/withwithout.css";
+import "@/components/home2/izfootergrid.css";
 import { izFontVars } from "@/lib/iz-fonts";
 import type { Metadata } from "next";
 

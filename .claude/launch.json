@@ -4,9 +4,48 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000,
       "autoPort": false
+    },
+    {
+      "name": "deck",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "serve",
+        "decks",
+        "-l",
+        "4173"
+      ],
+      "port": 4173
+    },
+    {
+      "name": "deckapp",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5199",
+        "-d",
+        "C:/InstaSafe DeckDesign/deck/dist"
+      ],
+      "port": 5199
+    },
+    {
+      "name": "deckprev",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4188",
+        "-d",
+        "C:/InstaSafe DeckDesign/design-previews"
+      ],
+      "port": 4188
     }
   ]
 }

@@ -22,22 +22,22 @@ export const BLOCKED_SERVICES = [
 ];
 
 export const MANUFACTURERS = [
-  { name: "Dell", count: 219, color: "#3B82F6" },
-  { name: "HP", count: 143, color: "#8B5CF6" },
-  { name: "Apple", count: 134, color: "#14B8A6" },
-  { name: "Lenovo", count: 56, color: "#F59E0B" },
+  { name: "Dell", count: 219, color: "var(--db-accent)" },
+  { name: "HP", count: 143, color: "#14B8A6" },
+  { name: "Apple", count: 134, color: "#64748B" },
+  { name: "Lenovo", count: 56, color: "#EAB308" },
   { name: "ASUSTeK", count: 50, color: "#EF4444" },
   { name: "realme", count: 33, color: "#22C55E" },
   { name: "vivo", count: 33, color: "#EC4899" },
-  { name: "Others", count: 107, color: "#64748B" },
+  { name: "Others", count: 107, color: "#78716C" },
 ];
 
 export const OS_BREAKDOWN = [
-  { name: "Windows", count: 412, color: "#3B82F6" },
+  { name: "Windows", count: 412, color: "var(--db-accent)" },
   { name: "macOS", count: 168, color: "#14B8A6" },
   { name: "Android", count: 121, color: "#22C55E" },
-  { name: "iOS", count: 58, color: "#8B5CF6" },
-  { name: "Linux", count: 16, color: "#F59E0B" },
+  { name: "iOS", count: 58, color: "#64748B" },
+  { name: "Linux", count: 16, color: "#EAB308" },
 ];
 
 export const DEVICE_STATUS = [

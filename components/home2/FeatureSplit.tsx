@@ -31,13 +31,13 @@ import {
    else needs to change. Scoped `.fx-`; tokens from `.iz`.
    ============================================================ */
 
-type Viz =
+export type Viz =
   | { kind: "json"; file: string; lines: string[] }
   | { kind: "image"; file: string; src: string; alt: string }
   | { kind: "video"; file: string; src: string; poster?: string }
   | { kind: "node"; file: string; node: React.ReactNode };
 
-type Feature = { id: string; icon: Icon; title: string; viz: Viz };
+export type Feature = { id: string; icon: Icon; title: string; viz: Viz };
 
 const FEATURES: Feature[] = [
   {
@@ -229,28 +229,51 @@ function VizBody({ viz }: { viz: Viz }) {
   return <div className="fx-json">{viz.lines.map((l, i) => highlight(l, i))}</div>;
 }
 
-export function FeatureSplit() {
+/* `features`/`eyebrow` are optional and default to the lab set, so every
+   existing call site keeps working while real pages pass their own content. */
+export function FeatureSplit({
+  features = FEATURES,
+  eyebrow = "For security teams_",
+  title,
+  lead,
+  /* pages that already carry a CTA above/below this block pass cta={false}
+     rather than stacking a second "Book a demo" into the same screen */
+  cta = true,
+}: {
+  features?: Feature[];
+  eyebrow?: string;
+  title?: React.ReactNode;
+  lead?: string;
+  cta?: boolean;
+} = {}) {
   const [active, setActive] = useState(0);
-  const cur = FEATURES[active];
+  const cur = features[active];
 
   return (
     <div className="fx">
       {/* LEFT */}
       <div className="fx-left">
-        <span className="fx-ey">For security teams_</span>
+        <span className="fx-ey">{eyebrow}</span>
         <h2 className="fx-title">
-          One platform, <em>every signal</em>.
+          {title ?? (
+            <>
+              One platform, <em>every signal</em>.
+            </>
+          )}
         </h2>
         <p className="fx-lead">
-          Identity, device, location and session — over 100 checks behind every access decision, from $2/user/month.
+          {lead ??
+            "Identity, device, location and session — over 100 checks behind every access decision, from $2/user/month."}
         </p>
-        <div className="fx-cta">
-          <a href="/instasafe-zero-trust-pricing" className="iz-btn iz-btn-pri iz-btn-sm">Book a demo</a>
-          <span className="fx-stat">150+ enterprises · 500,000 endpoints</span>
-        </div>
+        {cta && (
+          <div className="fx-cta">
+            <a href="/instasafe-zero-trust-pricing" className="iz-btn iz-btn-pri iz-btn-sm">Book a demo</a>
+            <span className="fx-stat">150+ enterprises · 500,000 endpoints</span>
+          </div>
+        )}
 
         <div className="fx-grid" role="tablist" aria-label="Capabilities">
-          {FEATURES.map((f, i) => {
+          {features.map((f, i) => {
             const I = f.icon;
             return (
               <button

@@ -1,0 +1,188 @@
+/* ============================================================
+   SSO page (orange, `.iz`) — page-specific styling only. Every
+   value below consumes an iz-system.css / izgrid.css token; no new
+   hex, px radii or durations. Everything reusable (buttons, panels,
+   bento, chips, FAQ chat, rails/crosses/cells) lives in home2.css /
+   chatfaq.css / iz-fx/fx.css / izgrid.css and is intentionally not
+   duplicated here.
+   ============================================================ */
+
+/* ---------- hero: static grid layout, no FX host needed ---------- */
+.izsso-hero {
+  position: relative;
+}
+.izsso-hero-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--sp-10);
+  align-items: center;
+}
+.izsso-hero-copy {
+  max-width: 52ch;
+}
+.izsso-hero-visual {
+  min-width: 0;
+}
+
+/* ---------- hero still-frame: static app/login mock, no motion ---------- */
+.izsso-hero-stillframe {
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--surface);
+}
+.izsso-sf-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--pad-panel);
+  border-bottom: 1px solid var(--line);
+}
+.izsso-sf-url {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+}
+.izsso-sf-body {
+  padding: var(--pad-panel);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+.izsso-sf-login {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.izsso-sf-field {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: var(--sp-2) var(--sp-3);
+}
+.izsso-sf-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+}
+.izsso-sf-tile {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+  background: var(--surface-2);
+}
+
+/* ---------- one-login-race teaser: static stat card + opt-in button ---------- */
+.izsso-race-still {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-6);
+  padding: var(--sp-10);
+  text-align: center;
+}
+.izsso-race-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-10);
+  flex-wrap: wrap;
+}
+.izsso-race-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.izsso-race-label {
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izsso-race-num {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-num);
+}
+.izsso-race-num.deny { color: var(--deny); }
+.izsso-race-num.allow { color: var(--allow); }
+.izsso-race-vs {
+  font-family: var(--mono);
+  color: var(--tx-mute);
+  font-size: var(--fs-sm);
+}
+.izsso-race-btn {
+  margin-top: var(--sp-2);
+}
+
+/* ---------- integrations strip (mono chip row) ---------- */
+.izsso-integrations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* ---------- outcomes trio (numbered mono rows) ---------- */
+.izsso-outcomes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-grid);
+  margin-top: var(--sp-head);
+}
+.izsso-outcome {
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-6);
+}
+.izsso-num {
+  font-family: var(--mono);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  color: var(--orange);
+  letter-spacing: var(--ls-mono);
+}
+.izsso-outcome h3 {
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  letter-spacing: -0.01em;
+  margin: var(--sp-3) 0 var(--sp-2);
+}
+.izsso-outcome p {
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+}
+
+/* ---------- final CTA sub-line (Home2's .iz-final has no lead by default) ---------- */
+.izsso-final-sub {
+  margin: 18px auto 0;
+  text-align: center;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 940px) {
+  .izsso-outcomes {
+    grid-template-columns: 1fr;
+  }
+  .izsso-hero-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-8);
+  }
+  .izsso-hero-copy {
+    max-width: none;
+  }
+  .izsso-sf-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .izsso-race-row {
+    gap: var(--sp-6);
+  }
+}

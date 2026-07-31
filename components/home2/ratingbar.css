@@ -7,7 +7,7 @@
 .rb {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: var(--sp-6);
   align-items: center;
 }
 
@@ -18,9 +18,9 @@
   gap: 9px;
   text-decoration: none;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: var(--r-card);
   padding: 6px 4px;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 .rb-badge:hover { opacity: 0.9; }
 .rb-badge:focus-visible {
@@ -41,11 +41,11 @@
   flex: none;
   width: 34px;
   height: 34px;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: var(--orange);
   display: grid;
   place-items: center;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--dur-fast) var(--ease);
 }
 .rb-badge:hover .rb-circle { transform: scale(1.1); }
 
@@ -74,13 +74,13 @@
 /* background layer — empty/muted state */
 .rb-s-bg {
   fill: var(--ghost);
-  transition: fill 0.18s ease;
+  transition: fill var(--dur-fast) var(--ease-out);
 }
 
 /* foreground layer — filled/orange state */
 .rb-s-fill {
   fill: var(--orange);
-  transition: fill 0.18s ease;
+  transition: fill var(--dur-fast) var(--ease-out);
 }
 
 /* on badge hover: filled stars → bright amber */
@@ -89,14 +89,14 @@
 /* ── review count ── */
 .rb-count {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: var(--fs-2xs);
   color: var(--tx-mute);
   white-space: nowrap;
 }
 
 /* ── responsive ── */
 @media (max-width: 600px) {
-  .rb { gap: 16px; }
+  .rb { gap: var(--sp-4); }
   .rb-count { display: none; }
 }
 

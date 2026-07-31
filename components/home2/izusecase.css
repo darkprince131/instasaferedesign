@@ -1,0 +1,379 @@
+/* ============================================================
+   izusecase.css — IzUseCaseSwitch (lab 00ah)
+   TIER 2 SECTION. All values are iz-system.css tokens.
+   Depends on izgrid.css (.iz-railed) and iz-backdrops.css
+   (.iz-bd-dashrule).
+   ============================================================ */
+
+.izuc {
+  position: relative;
+  padding: var(--sp-section) 0 0;
+  background: var(--bg);
+}
+
+/* Rail breathing room now lives in izgrid.css (`--rail-inset`), so it
+   applies to every railed section instead of being patched here. */
+
+/* ---------- header band ----------
+   Split at 50% with the right half left empty on purpose: that void
+   is what makes the visual below read as a second register rather
+   than as decoration hanging off the headline. */
+.izuc-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-bottom: var(--sp-12);
+}
+.izuc-head-l {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding-right: var(--sp-10);
+}
+/* the rail that marks the split */
+.izuc-head::after {
+  content: "";
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: start;
+  width: 0;
+  height: 100%;
+  border-left: var(--bw) var(--rail-style) var(--rail);
+  margin-left: calc(var(--sp-10) * -1);
+}
+
+.izuc-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izuc-kicker i {
+  font-style: normal;
+  color: var(--accent);
+  animation: izuc-blink 1.1s steps(1) infinite;
+}
+@keyframes izuc-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.izuc-title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izuc-title mark {
+  background: none;
+  color: var(--accent);
+}
+
+.izuc-sub {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+}
+
+.izuc-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--tx);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izuc-cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- body: accordion + visual ---------- */
+
+.izuc-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+
+.izuc-acc {
+  border-right: var(--bw) var(--rail-style) var(--rail);
+  padding-right: var(--sp-8);
+}
+
+.izuc-item {
+  border-bottom: var(--bw) var(--rail-style) var(--rail);
+}
+.izuc-item:last-child {
+  border-bottom: 0;
+}
+
+.izuc-btn {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-4);
+  width: 100%;
+  padding: var(--sp-5) 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: var(--tx);
+}
+.izuc-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.izuc-ico {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 1px var(--line);
+  color: var(--accent);
+  transition: background-color var(--dur) var(--ease);
+}
+.izuc-ico svg {
+  width: 17px;
+  height: 17px;
+}
+
+.izuc-name {
+  font-size: var(--fs-h3);
+  font-family: var(--disp);
+  font-weight: 400;
+  letter-spacing: var(--ls-h3);
+}
+
+.izuc-caret {
+  width: 15px;
+  height: 15px;
+  color: var(--tx-mute);
+  transition: transform var(--dur) var(--ease);
+}
+.izuc-item.on .izuc-caret {
+  transform: rotate(180deg);
+}
+
+/* Closed panels collapse by height but the text stays in the DOM —
+   below 900px this copy is the whole section, so it must never be
+   hover- or state-gated there (see the media query at the bottom). */
+.izuc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-slow) var(--ease);
+}
+.izuc-item.on .izuc-panel {
+  grid-template-rows: 1fr;
+}
+.izuc-panel > p {
+  overflow: hidden;
+  margin: 0;
+  padding-left: calc(34px + var(--sp-4));
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  max-width: 44ch;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.izuc-item.on .izuc-panel > p {
+  opacity: 1;
+  padding-bottom: var(--sp-5);
+}
+
+/* ---------- visual half ---------- */
+
+.izuc-visual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  min-width: 0;
+}
+
+.izuc-fig {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-6);
+  min-width: 0;
+}
+.izuc-art {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  color: var(--tx-dim);
+}
+
+.izuc-inspect {
+  display: flex;
+  flex-direction: column;
+  border-left: var(--bw) var(--rail-style) var(--rail);
+  min-width: 0;
+}
+
+.izuc-irow {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: var(--bw) solid var(--line);
+  min-width: 0;
+}
+.izuc-irow:last-child {
+  border-bottom: 0;
+}
+
+.izuc-irow--head {
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+}
+.izuc-irow--head .izuc-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--sp-4) var(--sp-5);
+  min-width: 0;
+}
+.izuc-irow--head .izuc-cell + .izuc-cell {
+  border-left: var(--bw) solid var(--line);
+}
+
+/* the accent rail on the identity cell — the one place the eye should
+   land first in the whole panel */
+.izuc-cell--accent {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.izuc-ilabel {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.izuc-ivalue {
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+  overflow-wrap: anywhere;
+}
+.izuc-ivalue--id {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  color: var(--accent);
+}
+
+/* tone rails: a 2px inset bar, not a filled row — a tinted background
+   at this density turns the panel into a traffic light */
+.izuc-irow--data.t-allow {
+  box-shadow: inset 2px 0 0 var(--allow);
+}
+.izuc-irow--data.t-allow .izuc-ivalue {
+  color: var(--allow);
+}
+.izuc-irow--data.t-deny {
+  box-shadow: inset 2px 0 0 var(--deny);
+}
+.izuc-irow--data.t-deny .izuc-ivalue {
+  color: var(--deny);
+}
+.izuc-irow--data.t-accent {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+/* ---------- foot ---------- */
+
+.izuc-foot {
+  display: none;
+  padding: var(--sp-8) 0 var(--sp-section);
+}
+.izuc-more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--accent);
+  font-size: var(--fs-body-sm);
+  text-decoration: none;
+}
+.izuc-more svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- responsive ----------
+   Below 900px the visual is REMOVED, verified as exactly what the
+   reference does. The accordion then carries the section alone, so
+   every panel is forced open — a collapsed accordion with no visual
+   would leave the section saying nothing. */
+@media (max-width: 900px) {
+  .izuc-head {
+    grid-template-columns: 1fr;
+  }
+  .izuc-head::after {
+    display: none;
+  }
+  .izuc-head-l {
+    padding-right: 0;
+  }
+  .izuc-body {
+    grid-template-columns: 1fr;
+  }
+  .izuc-acc {
+    border-right: 0;
+    padding-right: 0;
+  }
+  .izuc-visual {
+    display: none;
+  }
+  .izuc-panel {
+    grid-template-rows: 1fr;
+  }
+  .izuc-panel > p {
+    opacity: 1;
+    padding-bottom: var(--sp-5);
+  }
+  .izuc-caret {
+    display: none;
+  }
+  .izuc-btn {
+    cursor: default;
+    padding-bottom: var(--sp-2);
+  }
+  .izuc-foot {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izuc-kicker i {
+    animation: none;
+  }
+  .izuc-panel,
+  .izuc-panel > p,
+  .izuc-caret {
+    transition: none;
+  }
+}

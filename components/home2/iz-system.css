@@ -1,0 +1,324 @@
+/* ============================================================
+   InstaSafe `.iz` — DESIGN SYSTEM (single source of truth)
+   ============================================================
+   Edit THIS file to reskin the entire `.iz` Balanced site
+   (homepage `/`, `/components` lab, `/flow-preview`). Every
+   token that controls type, spacing, radii, borders, motion,
+   color and illustrations for the flagship lives here.
+
+   To create a variant (e.g. for an A/B test or a new look):
+     1. Duplicate this file → `iz-system-<name>.css`.
+     2. Edit the values.
+     3. Swap the one import line in the entry points that use it:
+        app/page.tsx, app/components/page.tsx, app/flow-preview/page.tsx
+        (`import "@/components/home2/iz-system.css"` →
+         `import "@/components/home2/iz-system-<name>.css"`).
+   Nothing else needs to change — home2.css, lab.css and every
+   component file consume these tokens by var() reference only.
+
+   Scope: `.iz` ONLY. Never touches app/globals.css, v2/v3,
+   sections, or console — those have their own systems.
+   ============================================================ */
+
+/* ============================================================
+   1. TYPOGRAPHY — families, weights, type scale, tracking, leading
+   ============================================================ */
+.iz {
+  /* font wiring (next/font vars injected on the wrapper) */
+  --disp: var(--font-disp), "Geist", sans-serif;
+  --body: var(--font-body2), "Geist", sans-serif;
+  --mono: var(--font-mono2), "Geist Mono", ui-monospace, monospace;
+
+  /* display weight — replaces the old hardcoded 300 everywhere */
+  --fw-disp: 600;
+
+  /* letter-spacing axes: hero = biggest heads, h2 = section heads, mono = labels */
+  --ls-hero: -0.02em;
+  --ls-h2: -0.015em;
+  --ls-h3: -0.01em;
+  --ls-mono: 0.08em;
+
+  /* line-heights: hero heads, section heads, tight (cards/rows), readable body */
+  --lh-hero: 1.1;
+  --lh-h2: 1.15;
+  --lh-tight: 1.3;
+  --lh-body: 1.68;
+
+  /* prose measure */
+  --measure: 65ch;
+
+  /* type scale — fills the gaps between hero/h2 and body copy */
+  --fs-hero: clamp(42px, 5vw, 68px);
+  --fs-h2: clamp(30px, 3.6vw, 44px);
+  --fs-display: clamp(36px, 5vw, 54px);
+  --fs-stat: clamp(28px, 4vw, 44px);
+  --fs-h3: clamp(20px, 2vw, 24px);
+  --fs-lead: 18px;
+  --fs-body: 16px;
+  --fs-body-sm: 14.5px;
+  --fs-sm: 13.5px;
+  --fs-label: 12px;
+  --fs-mono: 11.5px;
+  --fs-mono-xs: 11px;
+  --fs-2xs: 10.5px;
+  --fs-3xs: 9.5px;
+  --fs-micro: 9px;
+
+  /* big numerals — pricing amounts, bento stat cells */
+  --fs-num: 46px;
+  --fs-num-sm: 40px;
+
+  /* wordmark */
+  --fs-mark: 19px;
+}
+
+/* ============================================================
+   2. SPACING — section rhythm, scale, component padding, wrap
+   ============================================================ */
+.iz {
+  --sp-section: clamp(96px, 11vw, 140px);
+  --sp-section-lg: clamp(120px, 13vw, 176px);
+  --sp-head: 56px;
+  --gap-grid: 20px;
+
+  /* base scale — VALID STEPS ARE 1 2 3 4 5 6 8 10 12 ONLY.
+     There is no --sp-7, --sp-9 or --sp-11, and reaching for one fails
+     SILENTLY AND BADLY: an undefined var() makes the whole declaration
+     invalid at computed-value time, so `padding: var(--sp-7) var(--sp-6)`
+     computes to 0 — it does NOT fall back to an earlier valid rule.
+     That shipped as five components with no padding before it was
+     caught. Round to a real step; don't invent one. */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* component padding */
+  --pad-panel: 20px;
+  --pad-console: 16px;
+  --pad-card: 16px;
+
+  /* page wrap */
+  --wrap-max: 1200px;
+  --wrap-gutter: 28px;
+}
+
+/* ============================================================
+   3. RADII — corner-rounding scale
+   ============================================================ */
+.iz {
+  --r-pill: 999px;
+  --r-lg: 14px;
+  --r-md: 12px;
+  --r-card: 10px;
+  --r-sm: 8px;
+  --r-xs: 6px;
+  --r-2xs: 4px;
+  --r-hair: 2px;
+}
+
+/* ============================================================
+   4. BORDERS
+   ============================================================ */
+.iz {
+  --bw: 1px;
+  --bw-thick: 1.5px;
+}
+
+/* ============================================================
+   5. MOTION — durations, easings, stagger/reveal/parallax feel
+   ============================================================ */
+.iz {
+  --dur-fast: 0.18s;
+  --dur: 0.3s;
+  --dur-slow: 0.65s;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: ease-out;
+  --ease-linear: linear;
+  --stagger: 0.08s;
+  --reveal-dist: 32px;
+  --parallax: 24px;
+}
+
+/* ============================================================
+   6. DESIGN SYSTEMS — accent palettes, swappable via `data-system`.
+   Each system = one line, two hexcodes (dark value, paper value).
+   To test a new system: add one line here + one entry in the lab
+   switcher (ComponentsLab.tsx SYSTEMS array). Everything else —
+   buttons, glows, hovers, links — derives from --accent via
+   color-mix(), so one hexcode drives the whole feel.
+   ============================================================ */
+.iz { --accent-d: #ff6a2c; --accent-p: #f2480a; } /* default = orange, used if no data-system is set */
+.iz[data-system="orange"] { --accent-d: #ff6a2c; --accent-p: #f2480a; }
+.iz[data-system="teal"]   { --accent-d: #2dd4bf; --accent-p: #0d9488; }
+.iz[data-system="violet"] { --accent-d: #a78bfa; --accent-p: #7c3aed; }
+.iz[data-system="blue"]   { --accent-d: #4a9eff; --accent-p: #2563eb; }
+
+/* ============================================================
+   7. COLOR — neutral + semantic tokens, per `data-theme`
+   ============================================================ */
+/* The second selector is the INVERTED BAND: any element carrying
+   `.iz-inverted` gets the dark palette regardless of the page theme, so
+   a paper page can hold one dark section (the fingerprint.com /
+   firecrawl move) without hardcoding a single hex.
+
+   Right now it is always-dark, which is what was asked for. To make it
+   a true inversion later — dark band on paper, light band on dark —
+   add ONE rule after the paper block below:
+     .iz[data-theme="dark"] .iz-inverted { …paper values… }
+   Nothing else needs to change. */
+.iz[data-theme="dark"],
+.iz .iz-inverted {
+  --bg: #0a0b0d;
+  --bg-2: #0e0f12;
+  --surface: #121417;
+  --surface-2: #171a1e;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.13);
+  --tx: #f1f1f3;
+  --tx-dim: #a1a1aa;
+  --tx-mute: #61626b;
+  --ghost: #2a2d33;
+  --accent: var(--accent-d);
+  --dot: rgba(255, 255, 255, 0.028);
+  --headerbg: rgba(10, 11, 13, 0.74);
+  --btn-ink: #0a0b0d;
+  --inset: inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  --panel-sh: none;
+  --cta-glow: 0 0 0 0.5px rgba(255, 255, 255, 0.12) inset,
+    0 10px 30px -12px color-mix(in srgb, var(--accent) 50%, transparent);
+  --allow: #46d38a;
+  --deny: #ff5c72;
+  --allow-bg: rgba(70, 211, 138, 0.13);
+  --deny-bg: rgba(255, 92, 114, 0.12);
+  --past-1: #19181e;
+  --past-2: #141a18;
+  --past-3: #1a1814;
+  --past-4: #161620;
+  --past-5: #1b1714;
+  --past-line: rgba(255, 255, 255, 0.1);
+}
+
+.iz[data-theme="paper"] {
+  --bg: #f9f9f7;
+  --bg-2: #f2f1ec;
+  --surface: #ffffff;
+  --surface-2: #f6f5f1;
+  --line: rgba(20, 18, 12, 0.11);
+  --line-strong: rgba(20, 18, 12, 0.17);
+  --tx: #1b1a17;
+  --tx-dim: #5c594f;
+  --tx-mute: #7a766e;
+  --ghost: #c9c6bc;
+  --accent: var(--accent-p);
+  --dot: rgba(20, 18, 12, 0.05);
+  --headerbg: rgba(249, 249, 247, 0.8);
+  --btn-ink: #ffffff;
+  --inset: inset 0 0 0 0.5px rgba(20, 18, 12, 0.04);
+  --panel-sh: 0 1px 3px rgba(40, 30, 10, 0.05);
+  --cta-glow: 0 8px 26px -8px color-mix(in srgb, var(--accent) 42%, transparent);
+  --allow: #178a51;
+  --deny: #c32f46;
+  --allow-bg: rgba(23, 138, 81, 0.1);
+  --deny-bg: rgba(195, 47, 70, 0.09);
+  --past-1: #ffd7f0;
+  --past-2: #b7efb2;
+  --past-3: #ffef99;
+  --past-4: #e2ddfd;
+  --past-5: #ffe0cc;
+  --past-line: rgba(20, 18, 12, 0.1);
+}
+
+/* ============================================================
+   7b. CONSOLE BRIDGE — `--db-*` → `.iz` tokens.
+
+   Every legacy simulator and heavy interactive (MfaSimulator,
+   InteractiveConsole, BreachSimulator, components/console/*) paints
+   itself from the `--db-*` set defined in app/globals.css. Those now
+   default to brand orange, but a component dropped into an `.iz` page
+   should follow THAT page — including the data-system switcher, so a
+   console on a teal page comes out teal instead of stubbornly orange.
+
+   Custom properties inherit, and `:root` matches <html> while this
+   matches the `.iz` element, so these always win inside `.iz` without
+   any specificity games. Deleting this block does not break anything —
+   the consoles simply fall back to the orange defaults.
+   ============================================================ */
+.iz {
+  --db-bg: var(--bg);
+  --db-sidebar: var(--bg-2);
+  --db-surface: var(--surface);
+  --db-surface-2: var(--surface-2);
+  --db-border: var(--line);
+  --db-text: var(--tx);
+  --db-text-dim: var(--tx-dim);
+  --db-text-mute: var(--tx-mute);
+  --db-accent: var(--accent);
+  --db-accent-2: color-mix(in srgb, var(--accent) 62%, var(--tx));
+  --db-success: var(--allow);
+  --db-danger: var(--deny);
+  --db-shadow: var(--panel-sh);
+}
+
+/* ============================================================
+   8. ILLUSTRATION — tokens for the illustration pipeline. Scoped
+   under `.iz` so they inherit the active theme's base tokens and
+   flip automatically with the toggle.
+   - --il-ink   : mono-weight line work            → text/ink token (--tx)
+   - --il-accent: THE one orange focal element      → --orange
+   - --il-chip  : monospace chip / ghost label text → muted text (--tx-mute)
+   - --il-faint : grid / haze / hairline scaffolding → --line-strong (flips per theme)
+   Base tokens already flip per theme, so a single mapping block covers both
+   dark and paper; no per-theme overrides needed (contrast holds on both).
+   ============================================================ */
+.iz {
+  --il-ink: var(--tx);
+  --il-accent: var(--orange);
+  --il-chip: var(--tx-mute);
+  --il-faint: var(--line-strong);
+}
+
+/* ============================================================
+   9. STRUCTURAL GRID — engineering-drawing background system
+   (dashed rails, plus/cross markers, fine grid texture). Consumed
+   by components/home2/izgrid.css. --rail and --cross-color alias
+   existing per-theme border tokens so they flip automatically;
+   --grid-line gets an explicit per-theme override below because
+   color-mix against --tx alone reads a touch faint on dark.
+   ============================================================ */
+.iz {
+  --rail: var(--line);
+  --rail-style: dashed;
+  --grid-module: 16px;
+  --grid-line: color-mix(in srgb, var(--tx) 6%, transparent);
+  --cross-size: 9px;
+  --cross-color: var(--line-strong);
+
+  /* How far content is inset from the dashed column rails. Consumed
+     by `.iz-railed .iz-wrap` in izgrid.css — below ~1256px the rails
+     clamp onto the wrap's own gutter, and without this the text sits
+     on the line. One knob for every railed section on the site. */
+  --rail-inset: var(--sp-6);
+
+  /* BACKDROPS (consumed by components/home2/iz-backdrops.css).
+     --grid-module (16px, above) is the FINE texture used inside panels.
+     --grid-macro is the LARGE dashed lattice used BEHIND a section to
+     break up a plain background — the thing fingerprint.com puts behind
+     its console scenes. Keep the two far apart in scale; at similar
+     sizes they read as one muddy texture. */
+  --grid-macro: 220px;
+  --bloom-size: 62%;
+  --bloom-strength: 16%;
+  --stage-split: 34%;
+}
+.iz[data-theme="dark"] {
+  --grid-line: color-mix(in srgb, var(--tx) 8%, transparent);
+}
+.iz[data-theme="paper"] {
+  --grid-line: color-mix(in srgb, var(--tx) 6%, transparent);
+}

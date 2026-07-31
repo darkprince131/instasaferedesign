@@ -1,0 +1,290 @@
+/* ============================================================
+   outcomes.css — IzOutcomes  (lab 00ar)
+
+   The sazabi section skeleton in our tokens, THEME-AWARE by default
+   — it inherits whatever theme the page is in (paper or dark) rather
+   than forcing the dark band, which only appears when a page opts in
+   via the `inverted` prop. All values from iz-system.css, so nothing
+   here hardcodes a colour.
+   ============================================================ */
+
+.izo {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+  overflow: clip;
+}
+
+/* ---------- top row: visual + copy, sides mirror ---------- */
+
+.izo-top {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(var(--sp-8), 5vw, 80px);
+  align-items: center;
+}
+/* The mirror. Consecutive sections MUST alternate or the page reads
+   as the same slab repeated. */
+.izo--right .izo-visual {
+  order: 2;
+}
+.izo--right .izo-copy {
+  order: 1;
+}
+
+.izo-visual {
+  min-width: 0;
+}
+
+.izo-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+/* the small outlined mono tag above the headline */
+.izo-tag {
+  padding: 3px var(--sp-3);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-2xs);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+/* Their headline is condensed neon caps. Ours reaches the same
+   register with the display face at its heaviest, uppercase, tight
+   tracking and a soft accent bloom — no second typeface, and the
+   glow is our accent rather than a borrowed red.
+
+   The bloom is deliberately restrained: a tight, faint shadow reads
+   as "lit from within," a wide saturated one reads as a sticker. On
+   paper theme especially, a loud halo of accent against a light
+   background just smears — so this is tuned to sit right at low
+   opacity and works on either theme without a separate value. */
+.izo-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: clamp(40px, 6.4vw, 88px);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.izo-sub {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: var(--lh-body);
+  color: var(--tx);
+}
+
+/* ============================================================
+   THE CONNECTOR
+
+   A drop out of the visual into a rule, and the rule feeds three
+   columns. Drawn, not merely present — it is asserting that the
+   three outcomes FOLLOW from the thing above them.
+   ============================================================ */
+
+.izo-wire {
+  position: relative;
+  height: 72px;
+  margin-top: clamp(var(--sp-10), 6vw, 72px);
+}
+
+/* the vertical drop, under the visual's side */
+.izo-drop {
+  position: absolute;
+  top: 0;
+  left: 26%;
+  width: 0;
+  height: 40px;
+  border-left: var(--bw) solid var(--line-strong);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 420ms var(--ease-out);
+}
+.izo--right .izo-drop {
+  left: auto;
+  right: 26%;
+}
+
+/* the rule — THE CENTRE-OUT DRAW.
+   scaleX from the centre reads as distribution: one source feeding
+   three. A left-to-right wipe would read as a progress bar, which is
+   the opposite claim. */
+.izo-rule {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: var(--bw) solid var(--line-strong);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+  transition: transform 720ms var(--ease-out) 300ms;
+}
+
+/* the three short feeds dropping to each column */
+.izo-feeds {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  height: 32px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(var(--sp-6), 4vw, 64px);
+}
+.izo-feeds i {
+  justify-self: start;
+  width: 0;
+  height: 100%;
+  border-left: var(--bw) solid var(--line-strong);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 300ms var(--ease-out);
+}
+
+.izo.in .izo-drop {
+  transform: scaleY(1);
+}
+.izo.in .izo-rule {
+  transform: scaleX(1);
+}
+.izo.in .izo-feeds i {
+  transform: scaleY(1);
+}
+.izo.in .izo-feeds i:nth-child(1) {
+  transition-delay: 900ms;
+}
+.izo.in .izo-feeds i:nth-child(2) {
+  transition-delay: 960ms;
+}
+.izo.in .izo-feeds i:nth-child(3) {
+  transition-delay: 1020ms;
+}
+
+/* ---------- the three outcomes ----------
+   NOT cards. No border, no background, no padding box — boxing them
+   turns a conclusion into a feature grid. */
+
+.izo-outcomes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(var(--sp-6), 4vw, 64px);
+}
+
+.izo-outcome {
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 520ms var(--ease-out), transform 520ms var(--ease-out);
+  transition-delay: calc(1000ms + var(--i, 0) * 110ms);
+}
+.izo.in .izo-outcome {
+  opacity: 1;
+  transform: none;
+}
+
+.izo-ico {
+  display: block;
+  margin-bottom: var(--sp-4);
+  color: var(--tx);
+}
+.izo-ico svg {
+  width: 22px;
+  height: 22px;
+}
+
+.izo-outcome h3 {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  text-wrap: balance;
+}
+.izo-outcome p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .izo-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-8);
+  }
+  /* the visual leads on phones regardless of desktop side */
+  .izo--right .izo-visual,
+  .izo-visual {
+    order: 1;
+  }
+  .izo--right .izo-copy,
+  .izo-copy {
+    order: 2;
+  }
+
+  .izo-outcomes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-8);
+  }
+
+  /* A connector fanning to three columns has nothing to fan to once
+     they stack, so it becomes a single short drop into the first
+     outcome — the claim survives, the diagram doesn't pretend. */
+  .izo-wire {
+    height: 40px;
+    margin-top: var(--sp-8);
+  }
+  .izo-drop,
+  .izo--right .izo-drop {
+    left: 0;
+    right: auto;
+    height: 40px;
+  }
+  .izo-rule,
+  .izo-feeds {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izo-drop,
+  .izo-rule,
+  .izo-feeds i,
+  .izo-outcome {
+    transition: none;
+  }
+  /* the connector must still be PRESENT, just not drawn */
+  .izo-drop,
+  .izo-feeds i {
+    transform: scaleY(1);
+  }
+  .izo-rule {
+    transform: scaleX(1);
+  }
+  .izo-outcome {
+    opacity: 1;
+    transform: none;
+  }
+}

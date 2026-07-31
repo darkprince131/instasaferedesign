@@ -1,0 +1,177 @@
+/* ============================================================
+   00as · IzProofGrid — bento fact-wall, tokens only (iz-system.css).
+   ============================================================ */
+
+.izpg { padding: var(--sp-section) 0; }
+
+.izpg-h {
+  text-align: center;
+  max-width: 30ch;
+  margin: var(--sp-5) auto 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+}
+.izpg-h em { font-style: normal; font-weight: inherit; color: var(--orange); }
+
+.izpg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(108px, auto);
+  grid-auto-flow: dense;
+  gap: var(--sp-4);
+  margin-top: var(--sp-10);
+}
+
+.izpg-cell {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: var(--sp-5);
+}
+
+/* ---- signal tag stack ---- */
+.izpg-signals {
+  grid-column: span 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+.izpg-tag {
+  display: inline-flex;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.03em;
+  color: var(--tx);
+}
+.izpg-tag.tone-1 { background: var(--past-1); }
+.izpg-tag.tone-2 { background: var(--past-2); }
+.izpg-tag.tone-3 { background: var(--past-3); }
+.izpg-tag.tone-4 { background: var(--past-4); }
+
+/* ---- arrow-led claim boxes ---- */
+.izpg-claim { display: flex; align-items: flex-start; gap: var(--sp-4); }
+.izpg-claim.span-md { grid-column: span 2; }
+.izpg-claim.span-lg { grid-column: span 3; }
+.izpg-arrow {
+  flex: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--orange);
+  padding-top: 2px;
+}
+.izpg-claim p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izpg-claim p b { color: var(--tx); font-weight: 600; }
+
+/* ---- compliance badge stack ---- */
+.izpg-badges {
+  grid-column: span 1;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+.izpg-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  padding: var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.02em;
+  color: var(--tx-dim);
+}
+
+/* ---- policy snippet card ---- */
+.izpg-snippet {
+  grid-column: span 3;
+  background: var(--bg-2);
+}
+.izpg-snippet-label {
+  display: block;
+  margin-bottom: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  /* --tx-mute measures under 4.5:1 on --bg-2 at this size; see izfootergrid.css */
+  color: var(--tx-dim);
+}
+
+/* ---- endpoint-count burst ---- */
+.izpg-burst {
+  grid-column: span 1;
+  grid-row: span 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  overflow: hidden;
+}
+.izpg-burst-ring {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.izpg-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--orange);
+  opacity: 0.55;
+  transform: rotate(calc(var(--i) * 45deg)) translateY(-56px);
+}
+.izpg-burst b {
+  position: relative;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+}
+.izpg-burst span {
+  position: relative;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-mute);
+  text-align: center;
+}
+
+/* ---- closing proof bar ---- */
+.izpg-proof {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-10);
+  padding-top: var(--sp-8);
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 900px) {
+  .izpg-grid { display: flex; flex-direction: column; }
+  .izpg-badges { flex-direction: row; flex-wrap: wrap; }
+  .izpg-badge { width: auto; flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izpg-dot { transition: none; }
+}

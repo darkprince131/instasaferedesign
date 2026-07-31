@@ -1,0 +1,441 @@
+/* ============================================================
+   Closing panel + lattice footer (homepage only).
+   Consumes iz-system.css tokens only — no literal colours,
+   no spacing steps outside the 1 2 3 4 5 6 8 10 12 scale.
+   ============================================================ */
+
+/* ---------- deflection field (canvas host) ---------- */
+.iz-shieldfield {
+  font-family: var(--mono);
+  width: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+.iz-shieldfield canvas {
+  display: block;
+  width: 100%;
+}
+
+/* ============================================================
+   FINAL CTA
+   ============================================================ */
+.izcta {
+  --izcta-mod: clamp(84px, 8.5vw, 132px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: var(--sp-section-lg) 0;
+  border-top: 1px solid var(--line);
+}
+
+/* drawn lattice: hairline modules + a centre tick in each cell */
+.izcta-lattice {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px),
+    radial-gradient(circle, var(--line-strong) 1px, transparent 1.5px);
+  background-size:
+    var(--izcta-mod) var(--izcta-mod),
+    var(--izcta-mod) var(--izcta-mod),
+    var(--izcta-mod) var(--izcta-mod);
+  background-position:
+    0 0,
+    0 0,
+    calc(var(--izcta-mod) / 2) calc(var(--izcta-mod) / 2);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+/* corner annotations — the four things every request goes through */
+.izcta-corner {
+  position: absolute;
+  z-index: 2;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  /* --tx-mute measures 4.29:1 on --bg and 4.0:1 on --bg-2, so it misses AA
+     for small text on its own; every quiet label here uses --tx-dim instead,
+     and separation comes from mono + tracking + uppercase rather than value.
+     (The token is used the same way across the older `.iz` footer — worth a
+     system-level pass, not something to change from inside one component.) */
+  color: var(--tx-dim);
+}
+.izcta-corner.c1 { top: var(--sp-8); left: var(--wrap-gutter); }
+.izcta-corner.c2 { top: var(--sp-8); right: var(--wrap-gutter); }
+.izcta-corner.c3 { bottom: var(--sp-8); left: var(--wrap-gutter); }
+.izcta-corner.c4 { bottom: var(--sp-8); right: var(--wrap-gutter); }
+
+.izcta-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 620px) 1fr;
+  align-items: end;
+  /* deliberately wider than --wrap-max: the fields need room to arc, and
+     the centre column stays on the page's optical axis regardless */
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 0 var(--wrap-gutter);
+}
+
+.izcta-field {
+  align-self: end;
+  margin-bottom: var(--sp-10);
+}
+
+.izcta-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  padding: var(--sp-12) var(--sp-8) var(--sp-10);
+}
+
+.izcta-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izcta-slash {
+  color: var(--orange);
+  opacity: 0.85;
+}
+
+.izcta-h {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-display);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  text-wrap: balance;
+  margin: var(--sp-5) 0 0;
+}
+.izcta-h em {
+  font-style: normal;
+  font-weight: inherit;
+  color: var(--orange);
+}
+
+.izcta-sub {
+  color: var(--tx-dim);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  text-wrap: pretty;
+  max-width: 46ch;
+  margin: var(--sp-5) auto 0;
+}
+
+.izcta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+.izcta a.izcta-tertiary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-6);
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izcta-tertiary svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.izcta a.izcta-tertiary:hover {
+  color: var(--orange);
+}
+.izcta-tertiary:hover svg {
+  transform: translateX(3px);
+}
+
+/* ============================================================
+   FOOTER LATTICE
+   ============================================================ */
+.izfg {
+  border-top: 1px solid var(--line);
+  padding: var(--sp-10) 0 var(--sp-8);
+  background: var(--bg);
+}
+
+.izfg-corner {
+  margin: 0 0 var(--sp-5);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+/* measured-drawing rule between blocks */
+.izfg-rail {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0;
+}
+.izfg-rail-bar {
+  flex: 1;
+  height: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+}
+.izfg-rail-bar:nth-child(3) { flex: 1.9; }
+.izfg-rail-node {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  flex: none;
+}
+
+/* ---- top block ---- */
+.izfg-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.izfg-brand {
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: var(--sp-8);
+  min-height: 320px;
+}
+.izfg-brand-copy {
+  position: relative;
+  z-index: 1;
+}
+.izfg-mark {
+  margin-bottom: var(--sp-4);
+}
+.izfg-tagline {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--tx-dim);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+}
+.izfg-field {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+/* rows size to their content — stretching them to 1fr dragged the brand cell
+   to ~580px and left a dead band between the tagline and the field */
+.izfg-proof {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: auto;
+}
+.izfg-cell {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.izfg-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-6);
+  min-height: 124px;
+}
+.izfg-cell-head {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izfg-stat b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  line-height: 1.1;
+}
+.izfg-stat-sub {
+  color: var(--tx-dim);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-tight);
+}
+.izfg-badge {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+  min-height: 62px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+
+/* ---- link table: one cell per link ---- */
+.izfg-table {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.izfg-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.izfg-colhead {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  background: var(--bg-2);
+}
+/* `.iz a { color: inherit }` in home2.css is (0,1,1) and outranks a bare
+   class, so these link rules have to carry the parent to win the colour. */
+.izfg a.izfg-link {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: var(--sp-3) var(--sp-6);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-tight);
+  color: var(--tx-dim);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.izfg a.izfg-link:hover,
+.izfg a.izfg-link:focus-visible {
+  color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 6%, transparent);
+}
+.izfg-hiring {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--orange) 12%, transparent);
+  color: var(--orange);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+/* project convention (chatfaq.css, accordionshowcase.css): 2px accent outline */
+.izfg a.izfg-link:focus-visible,
+.izfg .izfg-base-link:focus-visible,
+.izcta a.izcta-tertiary:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
+}
+
+/* ---- base bar ---- */
+.izfg-base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-5);
+  margin-top: var(--sp-6);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.izfg-base-geo {
+  color: var(--tx-dim);
+}
+.izfg-base-link {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--tx-dim);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izfg-base-link:hover {
+  color: var(--orange);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1000px) {
+  .izcta-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izcta-field {
+    display: none;
+  }
+  .izcta-inner {
+    border-left: 0;
+    border-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .izcta-corner.c1,
+  .izcta-corner.c2 {
+    display: none;
+  }
+
+  .izfg-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izfg-brand {
+    min-height: 300px;
+  }
+  .izfg-table {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .izcta-corner {
+    display: none;
+  }
+  .izfg-proof {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izfg-table {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izfg-base-link {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izcta-tertiary,
+  .izcta-tertiary svg,
+  .izfg-link {
+    transition: none;
+  }
+}

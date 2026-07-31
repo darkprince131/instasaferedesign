@@ -24,6 +24,21 @@ function prefersReducedMotion() {
 }
 
 /**
+ * Read a numeric CSS custom property off the `.iz` root element, so JS-driven
+ * motion (GSAP stagger/parallax) stays in sync with the single-source tokens
+ * in iz-system.css. Falls back to the given default if `.iz` isn't mounted
+ * yet or the token doesn't parse as a number.
+ */
+function izVar(name: string, fallback: number): number {
+  if (typeof document === "undefined") return fallback;
+  const iz = document.querySelector(".iz");
+  if (!iz) return fallback;
+  const v = getComputedStyle(iz).getPropertyValue(name).trim();
+  const n = parseFloat(v);
+  return isNaN(n) ? fallback : n;
+}
+
+/**
  * Reveal `.iz-reveal` elements in staggered batches as they enter
  * the viewport. Adds `reveal-on` (the existing CSS end-state) so
  * the transition matches the stylesheet. Under reduced motion, we
@@ -47,7 +62,7 @@ export function useSectionReveals() {
         gsap.to(elements, {
           onStart: () =>
             elements.forEach((el) => el.classList.add("reveal-on")),
-          stagger: 0.08,
+          stagger: izVar("--stagger", 0.08),
           overwrite: true,
         }),
     });
@@ -68,18 +83,19 @@ export function useSectionReveals() {
  */
 export function useParallax(
   ref: RefObject<HTMLElement | null>,
-  distance = 24
+  distance?: number
 ) {
   useEffect(() => {
     const el = ref.current;
     if (!el || prefersReducedMotion()) return;
+    const dist = distance ?? izVar("--parallax", 24);
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
         el,
-        { y: -distance / 2 },
+        { y: -dist / 2 },
         {
-          y: distance / 2,
+          y: dist / 2,
           ease: "none",
           scrollTrigger: {
             trigger: el,

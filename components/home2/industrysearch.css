@@ -4,7 +4,7 @@
 
 .iw {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
   padding: 30px 28px 26px;
@@ -13,7 +13,7 @@
 .iw-head { text-align: center; max-width: 60ch; margin: 0 auto; }
 .iw-head .iz-ey { justify-content: center; }
 .iw-head .iz-ey::before { display: none; }
-.iw-lead { color: var(--tx-dim); font-size: 15px; line-height: 1.55; margin: 12px auto 0; max-width: 52ch; }
+.iw-lead { color: var(--tx-dim); font-size: var(--fs-body-sm); line-height: 1.55; margin: var(--sp-3) auto 0; max-width: 52ch; }
 
 /* ---- letter grid ---- */
 .iw-grid { margin: 30px auto 0; width: fit-content; max-width: 100%; overflow-x: auto; }
@@ -25,9 +25,9 @@
   display: grid;
   place-items: center;
   font-family: var(--mono);
-  font-size: clamp(13px, 2.2vw, 19px);
+  font-size: clamp(13px, 2.2vw, 19px); /* left hardcoded: sized to fit the .iw-cell clamp(22-42/26-44) grid geometry */
   color: var(--tx-mute);
-  transition: color 0.25s ease, background 0.25s ease;
+  transition: color var(--dur) var(--ease-out), background var(--dur) var(--ease-out);
   user-select: none;
 }
 /* lit run → orange pill across the contiguous word (horizontal or vertical) */
@@ -38,26 +38,26 @@
 }
 /* horizontal: rails top & bottom, caps left & right */
 .iw-cell.lit.h { border-top: 1.5px solid var(--pill); border-bottom: 1.5px solid var(--pill); }
-.iw-cell.lit.h.s { border-left: 1.5px solid var(--pill); border-top-left-radius: 999px; border-bottom-left-radius: 999px; }
-.iw-cell.lit.h.e { border-right: 1.5px solid var(--pill); border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
+.iw-cell.lit.h.s { border-left: 1.5px solid var(--pill); border-top-left-radius: var(--r-pill); border-bottom-left-radius: var(--r-pill); }
+.iw-cell.lit.h.e { border-right: 1.5px solid var(--pill); border-top-right-radius: var(--r-pill); border-bottom-right-radius: var(--r-pill); }
 /* vertical: rails left & right, caps top & bottom */
 .iw-cell.lit.v { border-left: 1.5px solid var(--pill); border-right: 1.5px solid var(--pill); }
-.iw-cell.lit.v.s { border-top: 1.5px solid var(--pill); border-top-left-radius: 999px; border-top-right-radius: 999px; }
-.iw-cell.lit.v.e { border-bottom: 1.5px solid var(--pill); border-bottom-left-radius: 999px; border-bottom-right-radius: 999px; }
+.iw-cell.lit.v.s { border-top: 1.5px solid var(--pill); border-top-left-radius: var(--r-pill); border-top-right-radius: var(--r-pill); }
+.iw-cell.lit.v.e { border-bottom: 1.5px solid var(--pill); border-bottom-left-radius: var(--r-pill); border-bottom-right-radius: var(--r-pill); }
 
 /* ---- legend ---- */
 .iw-legend { margin-top: 26px; text-align: center; }
-.iw-count { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: var(--tx-mute); }
-.iw-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+.iw-count { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: 0.06em; color: var(--tx-mute); }
+.iw-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: 14px; }
 .iw-chip {
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: var(--fs-mono);
   color: var(--tx-mute);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 5px 12px;
   cursor: default;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
 }
 .iw-chip.on {
   color: var(--orange);

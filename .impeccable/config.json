@@ -1,0 +1,19 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      "app/globals.css"
+    ],
+    "ignoreValues": [
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "app/globals.css"
+        ],
+        "createdAt": "2026-07-30T20:18:12.634Z",
+        "reason": "Pre-existing v3 .dot-grid utility used across ~10 legacy section components; retires when those pages port to .iz. Fires every turn regardless of edits, drowning real findings."
+      }
+    ]
+  }
+}

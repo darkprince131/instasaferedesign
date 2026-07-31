@@ -1,0 +1,96 @@
+/* ============================================================
+   SsoFlowDiagram — "How SSO flows". Dotted-grid panel, animated
+   dash-flow connectors, cycling accent glow on the pipeline.
+   Tokens only.
+   ============================================================ */
+
+.sfd-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  padding: var(--sp-6) var(--sp-4) var(--sp-8);
+}
+
+.sfd-metric {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--sp-4);
+}
+
+.sfd-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1200 / 540;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: var(--r-md);
+}
+
+.sfd-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+.sfd-dash { animation: sfd-flow 1.4s linear infinite; }
+@keyframes sfd-flow { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
+
+.sfd-pulse { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 70%, transparent)); }
+
+.sfd-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 190px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx);
+  box-shadow: var(--inset);
+  transition: border-color 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), background 0.5s var(--ease-out);
+}
+.sfd-node svg { flex: none; color: var(--accent); }
+.sfd-node.dim { color: var(--tx-dim); }
+.sfd-node.dim svg { color: var(--tx-mute); }
+.sfd-node.glow {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line-strong));
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  box-shadow: 0 0 26px -4px color-mix(in srgb, var(--accent) 55%, transparent), var(--inset);
+}
+
+.sfd-detail {
+  position: absolute;
+  transform: translateX(-50%);
+  width: 208px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  padding: var(--sp-3);
+}
+.sfd-detail-title { font-family: var(--mono); font-size: var(--fs-2xs); font-weight: 600; color: var(--tx); margin-bottom: 6px; }
+.sfd-detail-line { font-family: var(--mono); font-size: var(--fs-3xs); line-height: 1.7; color: var(--tx-mute); }
+
+/* reduced motion: static paths + steady glow, no dashes/pulse */
+.sfd-static .sfd-dash,
+.sfd-static .sfd-pulse { display: none; }
+.sfd-static .sfd-node { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sfd-dash, .sfd-pulse { display: none; }
+  .sfd-node { transition: none; }
+}
+
+/* below the diagram's comfortable width, scroll horizontally
+   instead of relayouting — the node grid is coordinate-locked to
+   the svg viewBox, so it must scale as one unit, not restack. */
+.sfd-scroll { overflow-x: auto; }
+@media (max-width: 940px) {
+  .sfd-stage { width: 900px; }
+}
+

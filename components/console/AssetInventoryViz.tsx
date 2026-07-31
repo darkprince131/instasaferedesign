@@ -54,8 +54,8 @@ export function AssetInventoryViz({ standalone = false }: { standalone?: boolean
             <div className="flex items-center gap-4">
               <Donut
                 data={[
-                  { name: "Encrypted", count: 712, color: "#22C55E" },
-                  { name: "Not encrypted", count: 63, color: "#EF4444" },
+                  { name: "Encrypted", count: 712, color: "var(--db-success)" },
+                  { name: "Not encrypted", count: 63, color: "var(--db-danger)" },
                 ]}
                 size={80}
                 thickness={11}
