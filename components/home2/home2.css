@@ -143,6 +143,67 @@
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
 }
+/* Overlay mode: the bar floats transparent over a full-bleed hero and
+   only becomes a solid surface after the page scrolls. `--tx` already
+   flips with the theme, and the theme also selects the hero plate, so
+   nav text is always light-on-dark or dark-on-light without a scrim. */
+.iz-nav-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: transparent;
+  transition: background var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+/* Over a photographic hero the usual dimmed link colour disappears into
+   the plate. In overlay mode the links go full-strength and heavier —
+   --tx is already pure-ish white on dark and near-black on paper, and the
+   theme also selects the plate, so the pairing is always correct. */
+.iz-nav-overlay .iz-links a { color: var(--tx); font-weight: 600; }
+.iz-nav-overlay .iz-links a:hover { color: var(--orange); }
+.iz-nav-overlay .iz-mark { color: var(--tx); }
+.iz-nav-overlay .iz-switch { background: color-mix(in srgb, var(--surface) 45%, transparent); }
+
+/* Top scrim: a short vertical wash behind the bar so nav text always has
+   something to sit on, without putting a hard band across the image. It
+   is taller than the bar and fades to nothing, so the plate reads through.
+   Paper needs a stronger wash than dark — pale stone under near-black
+   type is the weaker pairing of the two. */
+.iz-nav-overlay::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 200%;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--nav-scrim) var(--nav-scrim-a), transparent),
+    transparent
+  );
+  transition: opacity var(--dur) var(--ease-out);
+}
+.iz[data-theme="dark"] .iz-nav-overlay { --nav-scrim: #000; --nav-scrim-a: 46%; }
+.iz[data-theme="paper"] .iz-nav-overlay { --nav-scrim: #fff; --nav-scrim-a: 72%; }
+/* once the bar is solid (scrolled, or the mobile sheet is open) the scrim
+   would double up with the real background */
+.iz-nav-overlay.is-solid::before,
+.iz-nav-overlay.is-open::before { opacity: 0; }
+/* Solid once scrolled, and also whenever the mobile sheet is open —
+   an open menu over a transparent bar reads as floating text on stone. */
+.iz-nav-overlay.is-solid,
+.iz-nav-overlay.is-open {
+  background: var(--headerbg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: var(--line);
+}
+.iz-nav-overlay.is-solid .iz-switch { background: var(--surface); }
+
 .iz-nav-in { display: flex; align-items: center; justify-content: space-between; width: 100%; }
 .iz-mark { display: inline-flex; align-items: center; gap: var(--sp-2); font-family: var(--disp); font-weight: 500; font-size: var(--fs-mark); letter-spacing: -0.01em; }
 .iz-mark b { font-weight: 600; }
@@ -179,6 +240,75 @@
 }
 .iz-links a:hover::after { width: 100%; }
 .iz-nav-right { display: flex; align-items: center; gap: 14px; }
+
+/* ---------- mobile nav: single theme circle + hamburger ---------- */
+/* Hidden on desktop; the two-button switch and full link row serve there. */
+.iz-theme-dot,
+.iz-burger,
+.iz-sheet { display: none; }
+
+@media (max-width: 900px) {
+  /* Scoped to .iz-nav so these beat the base `.iz-links` / `.iz-switch`
+     rules, which are declared later in this file. */
+  .iz-nav .iz-links { display: none; }
+  .iz-nav .iz-switch { display: none; }  /* two-state switch is too wide here */
+  .iz-nav .iz-nav-cta { display: none; } /* lives in the sheet instead */
+  .iz-nav-right { gap: 10px; }
+
+  .iz-theme-dot {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--tx);
+    cursor: pointer;
+  }
+  .iz-burger {
+    display: grid;
+    align-content: center;
+    gap: 5px;
+    width: 38px;
+    height: 38px;
+    padding: 0 9px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    cursor: pointer;
+  }
+  .iz-burger span {
+    display: block;
+    height: 1.5px;
+    width: 100%;
+    background: var(--tx);
+    transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+  }
+  .is-open .iz-burger span:first-child { transform: translateY(3.25px) rotate(45deg); }
+  .is-open .iz-burger span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+
+  .iz-theme-dot:focus-visible,
+  .iz-burger:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+  /* The header is a centred flex row, so the sheet has to be taken out of
+     that flow — as a flex child it was squeezed to a sliver above the bar. */
+  .iz-sheet {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    padding: var(--sp-4) var(--wrap-gutter) var(--sp-6);
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+  }
+  .iz-sheet[hidden] { display: none; }
+  .iz-sheet a { padding: 12px 2px; font-size: var(--fs-lead); color: var(--tx); }
+  .iz-sheet .iz-sheet-cta { margin-top: var(--sp-3); justify-content: center; text-align: center; }
+}
 
 /* theme switch */
 .iz-switch {

@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CapabilitiesDeck } from "./CapabilitiesDeck";
-import { WithWithout } from "./WithWithout";
-import { Magnetic } from "@/components/v2/Magnetic";
+import { IzAccessFlow } from "./IzAccessFlow";
+import "./izaccessflow.css";
 import { useSectionReveals, useParallax } from "./useIzMotion";
 import { IzNav } from "./IzNav";
 import { IzFinalCta } from "./IzFinalCta";
 import { IzFooterGrid } from "./IzFooterGrid";
+import { IzHeroPortal } from "./IzHeroPortal";
+import "./iz-hero-portal.css";
 
 /* ============================================================
    InstaSafe ZTNA — "Balanced" homepage, new design language.
@@ -138,10 +140,8 @@ export function Home2() {
   const [system, setSystem] = useState<DesignSystem>("orange");
   const [cmp, setCmp] = useState<keyof typeof COMPARE>("vs VPN");
   const [visitor, setVisitor] = useState<[string, string][]>([]);
-  const heroConsoleRef = useRef<HTMLDivElement>(null);
   const posturePanelRef = useRef<HTMLDivElement>(null);
   useSectionReveals();
-  useParallax(heroConsoleRef);
   useParallax(posturePanelRef);
 
   // theme bootstrap (scoped to this page; key = is-theme)
@@ -187,93 +187,14 @@ export function Home2() {
   return (
     <div className="iz" data-theme={theme} data-system={system}>
       {/* ---------------- NAV ---------------- */}
-      <IzNav theme={theme} onThemeChange={setT} />
+      <IzNav theme={theme} onThemeChange={setT} overlay />
 
       {/* ---------------- HERO ---------------- */}
-      <section className="iz-hero">
-        <div className="iz-wrap iz-hero-grid">
-          <div className="iz-reveal">
-            <span className="iz-ey">Secure access · without the VPN</span>
-            <h1 className="iz-h1">
-              The right people get in. <em>Everyone else stays out.</em>
-            </h1>
-            <p className="iz-lead">
-              Give your team fast, safe access to the exact work apps they need — no VPN to manage, nothing exposed to the
-              internet, and nothing for attackers to find.
-            </p>
-            <div className="iz-hero-cta">
-              <Magnetic>
-                <a href="/book-a-demo" className="iz-btn iz-btn-pri">
-                  Book a demo <Arrow />
-                </a>
-              </Magnetic>
-              <a href="#how" className="iz-btn iz-btn-ghost">
-                See how it works
-              </a>
-            </div>
-            <div className="iz-trust">
-              <span>Gartner-recognised</span>
-              <span>No VPN to manage</span>
-              <span>500,000+ devices protected</span>
-              <span>150+ companies</span>
-            </div>
-          </div>
-
-          {/* access-decision console */}
-          <div className="iz-reveal" data-dir="right">
-            <div className="iz-panel" ref={heroConsoleRef}>
-              <div className="iz-pbar">
-                <span className="iz-dots">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span className="iz-pbar-title">someone logging in</span>
-                <span className="iz-live">
-                  <i />
-                  CHECKING
-                </span>
-              </div>
-              <div className="iz-pbody">
-                <div className="iz-step">
-                  <span className="ic" style={{ color: "var(--allow)" }}>
-                    <Check />
-                  </span>
-                  <span className="who">it&apos;s really them</span>
-                  <span className="iz-pill allow">checked</span>
-                </div>
-                <div className="iz-step">
-                  <span className="ic" style={{ color: "var(--allow)" }}>
-                    <Check />
-                  </span>
-                  <span className="who">their device is safe</span>
-                  <span className="iz-pill allow">checked</span>
-                </div>
-                <div className="iz-step">
-                  <span className="ic" style={{ color: "var(--allow)" }}>
-                    <Check />
-                  </span>
-                  <span className="who">right place, right time</span>
-                  <span className="iz-pill allow">checked</span>
-                </div>
-                <div className="iz-step">
-                  <span className="ic" style={{ color: "var(--allow)" }}>
-                    <Check />
-                  </span>
-                  <span className="who">opening just their app</span>
-                  <span className="iz-pill allow">let in</span>
-                </div>
-              </div>
-              <div className="iz-dark-foot">
-                everything else stays hidden — your <b>other apps</b> and your <b>network</b> can&apos;t be seen at all.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <IzHeroPortal theme={theme} />
 
       {/* ---------------- CAPABILITIES DECK ---------------- */}
-      <section className="iz-section">
+      {/* rails: this block is wide and benefits from column edges */}
+      <section className="iz-section iz-railed iz-railed--fade">
         <div className="iz-wrap">
           <div className="iz-reveal iz-headblock">
             <span className="iz-ey">Everything it does</span>
@@ -291,7 +212,8 @@ export function Home2() {
       </section>
 
       {/* ---------------- PLATFORM ROWS ---------------- */}
-      <section className="iz-section alt">
+      {/* no rails — the rows already draw their own horizontals */}
+      <section className="iz-section alt iz-ruled-top">
         <div className="iz-wrap iz-stitch" style={{ paddingTop: 12, paddingBottom: 12 }}>
           <div className="iz-reveal">
             <span className="iz-ey">All in one place</span>
@@ -315,15 +237,19 @@ export function Home2() {
       </section>
 
       {/* ---------------- HOW IT WORKS (plain ⇄ tech flow) ---------------- */}
-      <section className="iz-section" id="how">
+      {/* one rail + a dashed top rule — no field texture */}
+      <section className="iz-section iz-railed iz-railed--fade iz-railed--left iz-ruled-top" id="how">
         <div className="iz-wrap">
-          <div className="iz-reveal" style={{ textAlign: "center", marginBottom: 8 }}>
+          <div className="iz-reveal iz-headblock" style={{ textAlign: "center" }}>
             <span className="iz-ey dim" style={{ justifyContent: "center", display: "inline-flex" }}>
               How it works
             </span>
+            <h2 className="iz-h2">
+              Watch one request <em>earn its way in</em>.
+            </h2>
           </div>
           <div className="iz-reveal">
-            <WithWithout />
+            <IzAccessFlow />
           </div>
           <div className="iz-reveal iz-block-top">
             <div className="iz-statband">
@@ -344,7 +270,7 @@ export function Home2() {
       </section>
 
       {/* ---------------- CONSOLE (live log) ---------------- */}
-      <section className="iz-section alt">
+      <section className="iz-section alt iz-ruled-top">
         <div className="iz-wrap">
           <div className="iz-reveal">
             <span className="iz-ey">Always watching</span>
@@ -408,7 +334,7 @@ export function Home2() {
       </section>
 
       {/* ---------------- COMPARISON ---------------- */}
-      <section className="iz-section alt">
+      <section className="iz-section alt iz-railed iz-railed--fade">
         <div className="iz-wrap">
           <div className="iz-reveal">
             <span className="iz-ey">The short version</span>
@@ -455,7 +381,7 @@ export function Home2() {
       </section>
 
       {/* ---------------- LIVE VISITOR ---------------- */}
-      <section className="iz-section">
+      <section className="iz-section iz-railed iz-railed--fade iz-railed--right">
         <div className="iz-wrap iz-hero-grid">
           <div className="iz-reveal">
             <span className="iz-ey">Try it right now</span>
@@ -528,7 +454,7 @@ export function Home2() {
       </section>
 
       {/* ---------------- PRICING ---------------- */}
-      <section className="iz-section">
+      <section className="iz-section iz-railed iz-railed--fade iz-ruled-top">
         <div className="iz-wrap">
           <div className="iz-reveal">
             <span className="iz-ey">Enterprise security, startup pricing</span>

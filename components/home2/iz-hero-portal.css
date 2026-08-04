@@ -1,0 +1,556 @@
+/* ============================================================
+   InstaSafe homepage hero — the doorway portal.
+
+   All colour / type / spacing / radius resolve from the `.iz`
+   tokens in iz-system.css. No new font families.
+
+   ANCHORS (Phase 2) — measured from the plates by pixel scan,
+   not eyeballed. Desktop and mobile are separate compositions
+   and carry separate anchor sets. Everything below positions off
+   these variables only.
+   ============================================================ */
+
+.iz-hero2 {
+  /* ---- DESKTOP plate 1672x941 ---- */
+  --p-ar: 177.68;          /* 1672/941 x100, drives the cover box   */
+  --p-portal-l: 32%;
+  --p-portal-r: 67.94%;
+  --p-portal-t: 13.92%;
+  --p-portal-b: 83.63%;
+  --p-safe-bot: 49.5%;     /* corridor begins — text must clear it  */
+  --p-reader-l: 20.04%;
+  --p-reader-t: 48.99%;
+  --p-reader-w: 2.33%;
+  --p-reader-h: 6.16%;
+  /* hand-traced in /hero-calibrate — the glass is shorter than a pixel
+     scan suggested, so the console has to be tight to stay inside it */
+  --p-display-l: 77.27%;
+  --p-display-t: 41.34%;
+  --p-display-w: 12.56%;
+  --p-display-h: 12.75%;
+  /* portal centre — the frame is pinned by this so the doorway
+     stays centred and the floor/wall crop instead */
+  --p-cx: 49.97%;
+  --p-cy: 48.78%;
+
+  position: relative;
+  width: 100%;
+  /* `height` must be definite, not just `min-height`. `container-type:
+     size` size-contains the element, so its height is resolved without
+     looking at its contents — and since every child here is absolutely
+     positioned, a min-height-only box computes to 0 and `1cqh` collapses
+     to 0. That silently killed the cqh branch of the cover max() below
+     and letterboxed the plate. */
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--bg);
+  container-type: size;
+}
+
+/* `object-fit: cover` expressed in layout, so the DOM rides the
+   image. width:max(100cqw, ar*1cqh) is exactly the size a cover
+   image resolves to; pinning by --p-cx/--p-cy keeps the portal
+   centred at every aspect ratio instead of the frame's midpoint. */
+.ihp-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-1 * var(--p-cx)), calc(-1 * var(--p-cy)));
+  width: max(100cqw, calc(var(--p-ar) * 1cqh));
+  aspect-ratio: var(--p-ar) / 100;
+}
+
+.ihp-frame picture { display: contents; }
+.ihp-plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: fill; /* the frame already IS the cover box */
+}
+
+/* ---------- light path (desktop only) ---------- */
+.ihp-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.ihp-track {
+  stroke: color-mix(in srgb, var(--accent) 26%, transparent);
+  stroke-width: 3;
+}
+.ihp-pulse {
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+
+/* ---------- content, inside the portal, clear of the corridor ---------- */
+.ihp-copy {
+  position: absolute;
+  left: var(--p-portal-l);
+  top: var(--p-portal-t);
+  width: calc(var(--p-portal-r) - var(--p-portal-l));
+  /* Full door height, top-aligned with a deep inset under the lintel.
+     Centring inside the T..safe-bottom band pushed the eyebrow hard up
+     against the lit lintel with no breathing space. Eyebrow/h1/sub now
+     sit in the door's upper half and the CTAs fall clear below them. */
+  height: calc(var(--p-portal-b) - var(--p-portal-t));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  /* NB: percentage padding resolves against the box's WIDTH, not height. */
+  padding: 5.5% 2.2cqw 0;
+}
+/* soft vertical gradient so type clears the corridor with no hard box */
+.ihp-copy::before {
+  content: "";
+  position: absolute;
+  inset: -12% -6% -46% -6%;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--bg) 62%, transparent) 18%,
+    color-mix(in srgb, var(--bg) 72%, transparent) 58%,
+    transparent 100%
+  );
+}
+
+/* Desktop: the stack is transparent to layout — eyebrow + stack are one flow. */
+.ihp-stack { display: contents; }
+
+.ihp-eyebrow {
+  font-family: var(--mono);
+  font-size: clamp(9.5px, 0.72cqw, 12.5px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.ihp-h1 {
+  margin: 0.7em 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: clamp(24px, 2.5cqw, 46px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--tx);
+  text-wrap: balance;
+}
+.ihp-h1 em { font-style: normal; color: var(--accent); }
+
+/* Measured against the real plates. On the dark plate full --accent
+   clears AA (eyebrow 6.96, "work." 6.84). On the light plate the pale
+   stone puts it at 2.34 / 2.64 — a clear fail. Mixing the SAME accent
+   65% with black lands on 4.71 / 5.29 and stays brand-linked, so the
+   design-system switcher still drives it. Only paper needs this. */
+.iz[data-theme="paper"] .ihp-eyebrow,
+.iz[data-theme="paper"] .ihp-h1 em {
+  color: color-mix(in srgb, var(--accent) 65%, #000);
+}
+/* The pale plate also washes out the dim ink used for the sub-line and the
+   ghost link, so paper takes full-strength text for both. */
+.iz[data-theme="paper"] .ihp-sub,
+.iz[data-theme="paper"] .ihp-ghost { color: var(--tx); }
+.ihp-sub {
+  margin: 0.85em 0 0;
+  max-width: 38ch;
+  font-family: var(--body);
+  font-size: clamp(12px, 0.93cqw, 16px);
+  line-height: 1.55;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+.ihp-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-top: 2.4em;
+}
+.ihp-btn {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--r-pill);
+  padding: 0.75em 1.5em;
+  font-family: var(--body);
+  font-size: clamp(12.5px, 0.88cqw, 15px);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.ihp-btn-pri { background: var(--accent); color: #fff; }
+.ihp-btn-pri:hover { background: color-mix(in srgb, var(--accent) 88%, #000); }
+/* Translucent, not hollow. Over the corridor the outline-only pill left
+   its label competing with whatever was behind it; a blurred surface
+   gives the text a consistent base without becoming a solid slab. */
+.ihp-btn-ghost {
+  color: var(--tx);
+  border-color: color-mix(in srgb, var(--tx) 30%, transparent);
+  background: color-mix(in srgb, var(--surface) 74%, transparent);
+}
+.ihp-btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+
+/* Same problem, worse: as a bare underlined label this sat directly on the
+   corridor and was effectively invisible. It keeps its quiet, secondary
+   weight but now reads against its own surface. */
+.ihp-ghost {
+  margin-top: 1.35em;
+  padding: 0.5em 1.1em;
+  border: 1px solid color-mix(in srgb, var(--tx) 16%, transparent);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: clamp(9.5px, 0.7cqw, 12px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.ihp-ghost:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+
+.ihp-btn:focus-visible,
+.ihp-ghost:focus-visible,
+.ihp-reader:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* The door is only ~36% of frame width, so below roughly 1100px the two
+   CTA pills stack and the block outgrew the opening. Tighten the inset
+   and the CTA gap there so everything stays inside the doorway. */
+@media (min-width: 768px) and (max-width: 1100px) {
+  .ihp-copy { padding-top: 5%; }
+  .ihp-ctas { margin-top: 1.5em; }
+  .ihp-ghost { margin-top: 0.9em; }
+}
+
+/* ---------- reader button (over the plate's physical panel) ---------- */
+.ihp-reader {
+  position: absolute;
+  left: var(--p-reader-l);
+  top: var(--p-reader-t);
+  width: var(--p-reader-w);
+  height: var(--p-reader-h);
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  overflow: hidden;
+}
+.ihp-reader:hover { border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
+
+/* lit glyph on the reader face */
+.ihp-reader-glyph {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 62%;
+  aspect-ratio: 1;
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.ihp-reader-glyph svg { width: 100%; height: 100%; display: block; }
+[data-verified] .ihp-reader-glyph { color: var(--allow); }
+[data-deny] .ihp-reader-glyph { color: var(--deny); }
+
+/* attention halo — stops for good once the control has been used, so it
+   never becomes ambient idle motion */
+.ihp-reader-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+/* Runs whenever the control is idle-and-ready — which on desktop means
+   after the load sequence resolves, since that is when a visitor might
+   want to replay it. Suppressed only while a run is actually playing.
+   This is a deliberate exception to "no ambient motion": without it the
+   reader reads as scenery and nobody discovers the interaction. */
+.iz-hero2:not([data-phase="run"]) .ihp-reader-halo {
+  animation: ihp-halo 2.6s var(--ease-out) infinite;
+}
+@keyframes ihp-halo {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.75; }
+  70% { transform: translate(-50%, -50%) scale(1.9); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1.9); opacity: 0; }
+}
+.ihp-reader::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+}
+.ihp-reader[data-scan]::after { animation: ihp-sweep 480ms var(--ease-out) 1 both; }
+@keyframes ihp-sweep {
+  from { top: 0; opacity: 1; }
+  to { top: 100%; opacity: 0; }
+}
+
+
+/* ---------- verdict panel — the payoff, hidden until resolved ---------- */
+.ihp-verdict {
+  position: absolute;
+  left: calc(var(--p-reader-l) - 4.6%);
+  top: calc(var(--p-reader-t) + var(--p-reader-h) + 6.4%);
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.7em 0.95em;
+  border: 1px solid color-mix(in srgb, var(--tx) 16%, transparent);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 380ms var(--ease-out), transform 380ms var(--ease-out);
+  pointer-events: none;
+  white-space: nowrap;
+  font: inherit;   /* it is a <button>; do not inherit UA button styling */
+  text-align: left;
+}
+.ihp-verdict.show { opacity: 1; transform: none; }
+.ihp-verdict-ic {
+  flex: none;
+  width: 1.55cqw;
+  min-width: 17px;
+  aspect-ratio: 1;
+  border-radius: var(--r-pill);
+  display: grid;
+  place-items: center;
+  background: var(--allow-bg);
+  color: var(--allow);
+}
+[data-deny] .ihp-verdict-ic { background: var(--deny-bg); color: var(--deny); }
+.ihp-verdict-ic svg { width: 60%; height: 60%; }
+.ihp-verdict-txt { display: flex; flex-direction: column; gap: 1px; }
+.ihp-verdict-txt b {
+  font-family: var(--body);
+  font-size: clamp(11px, 0.8cqw, 14px);
+  font-weight: 600;
+  color: var(--tx);
+  letter-spacing: -0.005em;
+}
+.ihp-verdict-txt i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: clamp(8.5px, 0.62cqw, 11px);
+  color: var(--tx-dim);
+}
+
+/* ---------- console, inside the recessed display ----------
+   No background, no border, no chrome — the glass in the plate
+   does that work. Rows are C14's `.ps-step2` markup so the reveal
+   behaviour, typography and spacing rhythm come from that
+   component, not from a second console built here. */
+.ihp-console {
+  position: absolute;
+  left: var(--p-display-l);
+  top: var(--p-display-t);
+  width: var(--p-display-w);
+  height: var(--p-display-h);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0.85cqw;
+  overflow: hidden;
+}
+.ihp-console .ps-step2 { grid-template-columns: 1.05cqw 1fr; gap: 0.5cqw; padding: 0.14cqw 0; }
+.ihp-console .ps-step2 .ic { width: 1.05cqw; height: 1.05cqw; min-width: 12px; min-height: 12px; }
+.ihp-console .ps-step2 .ring { width: 0.62cqw; height: 0.62cqw; min-width: 8px; min-height: 8px; }
+.ihp-console .ps-step2 .spin { width: 0.85cqw; height: 0.85cqw; min-width: 10px; min-height: 10px; border-width: 1.6px; }
+.ihp-console .ps-step2 .chk { width: 1.05cqw; height: 1.05cqw; min-width: 12px; min-height: 12px; }
+.ihp-console .ps-step2 .chk svg { width: 58%; height: 58%; }
+.ihp-console .ps-step2 .chk.fail { background: var(--deny-bg); color: var(--deny); }
+.ihp-console .ps-step2 .lbl { font-size: clamp(8px, 0.6cqw, 11px); line-height: 1.3; }
+.ihp-console .ps-step2.fail .lbl { color: var(--deny); }
+.ihp-console-foot {
+  margin-top: 0.5cqw;
+  font-family: var(--mono);
+  font-size: clamp(7.5px, 0.54cqw, 10px);
+  line-height: 1.35;
+  color: var(--tx-dim);
+  opacity: 0;
+  transition: opacity 380ms var(--ease-out);
+}
+.ihp-console-foot.show { opacity: 1; }
+
+/* ============================================================
+   MOBILE (<768px) — separate composition, separate anchors.
+   No display panel in the plate, so no console. No SVG, no path,
+   no timeline: the reader toggles the verdict instantly.
+   ============================================================ */
+@media (max-width: 767px) {
+  .iz-hero2 {
+    /* ---- MOBILE plate 1086x1448 — hand-traced in /hero-calibrate ---- */
+    --p-ar: 75;            /* 1086/1448 x100 */
+    /* full door */
+    --p-portal-l: 25.69%;
+    --p-portal-r: 80.75%;
+    --p-portal-t: 22.24%;
+    --p-portal-b: 79.01%;
+    /* the door's upper half — blank panel above the corridor, the only
+       region text may occupy */
+    --p-copy-l: 28.91%;
+    --p-copy-r: 77.72%;
+    --p-copy-t: 25.14%;
+    --p-copy-b: 56.91%;
+    --p-safe-bot: 56.91%;
+    --p-reader-l: 14.83%;
+    --p-reader-t: 55.59%;
+    --p-reader-w: 3.13%;
+    --p-reader-h: 4.35%;
+    /* Horizontal pin on the text panel's centre so the copy column lands
+       dead centre on screen. Vertical MUST stay 50%: on a tall phone the
+       cover box resolves to exactly the hero's height, so any other --p-cy
+       slides the plate off one edge and exposes a bare strip. */
+    --p-cx: 53.31%;
+    --p-cy: 50%;
+  }
+  /* No light path on mobile. (This selector previously ran on into the
+     .ihp-copy rule below after an edit dropped the line between them,
+     which silently gave the SVG `display: block` — hence a stray orange
+     path on phones.) */
+  .ihp-svg { display: none; }
+
+  /* The copy wrapper spans the frame; the eyebrow and the stack are placed
+     independently so the eyebrow can sit on the wall above the door. */
+  .ihp-copy {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    display: block;
+    padding: 0;
+  }
+  .ihp-copy::before { content: none; }
+
+  /* Eyebrow alone stays on the wall, sitting between the nav and the lit
+     lintel rather than hard against either. */
+  .ihp-eyebrow {
+    position: absolute;
+    left: var(--p-copy-l);
+    width: calc(var(--p-copy-r) - var(--p-copy-l));
+    bottom: calc(100% - var(--p-portal-t) + 3.2%);
+    text-align: center;
+  }
+  /* The whole stack — h1, sub, CTAs — lives inside the door's upper panel. */
+  .ihp-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    left: var(--p-copy-l);
+    width: calc(var(--p-copy-r) - var(--p-copy-l));
+    /* inset from the panel's top edge so the headline is not flush against
+       the lintel shadow */
+    top: calc(var(--p-copy-t) + 3.4%);
+  }
+  .ihp-h1 { margin-top: 0; }
+  .ihp-eyebrow { font-size: 10.5px; letter-spacing: 0.16em; }
+  .ihp-h1 { font-size: clamp(26px, 7vw, 34px); }
+  .ihp-sub { font-size: 14px; }
+  .ihp-btn { font-size: 14px; padding: 0.8em 1.4em; }
+  .ihp-ghost { font-size: 10.5px; }
+
+  /* Centring the frame on the text panel pushes the plate's reader (14.83%)
+     outside the visible crop, so it cannot serve as the control here — the
+     verdict panel takes over as the toggle instead. */
+  .ihp-reader { display: none; }
+  /* Anchored to the copy column, not the viewport. The panel lives inside
+     the frame, which is wider than the screen and offset, so hero-relative
+     units (50cqw / bottom) put it off-canvas. The copy column is already
+     centred on --p-cx, so matching it centres the verdict too. */
+  .ihp-verdict {
+    left: var(--p-copy-l);
+    width: calc(var(--p-copy-r) - var(--p-copy-l));
+    right: auto;
+    top: 72%;
+    bottom: auto;
+    transform: none;
+    justify-content: center;
+    white-space: normal;
+    pointer-events: auto;   /* it is the toggle on mobile */
+    cursor: pointer;
+    text-align: left;
+  }
+  .ihp-verdict.show { transform: none; }
+  .ihp-verdict:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .ihp-verdict-ic { min-width: 20px; }
+  .ihp-verdict-txt b { font-size: 14px; }
+  .ihp-verdict-txt i { font-size: 11px; }
+
+  /* The mobile plate has no wall display, so the check run gets its own
+     translucent panel in the empty floor area under the verdict. It starts
+     when it scrolls into view — no tap, no controls. */
+  .ihp-console {
+    display: block;
+    left: var(--p-copy-l);
+    width: calc(var(--p-copy-r) - var(--p-copy-l));
+    top: auto;
+    bottom: 5%;
+    height: auto;
+    padding: 0.85rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--tx) 14%, transparent);
+    border-radius: var(--r-md);
+    background: color-mix(in srgb, var(--surface) 74%, transparent);
+    overflow: visible;
+  }
+  .ihp-console .ps-steps2 { gap: 4px; }
+  .ihp-console .ps-step2 {
+    grid-template-columns: 20px 1fr;
+    gap: 10px;
+    padding: 3px 0;
+  }
+  .ihp-console .ps-step2 .ic,
+  .ihp-console .ps-step2 .chk { width: 20px; height: 20px; min-width: 20px; min-height: 20px; }
+  .ihp-console .ps-step2 .ring { width: 13px; height: 13px; min-width: 13px; min-height: 13px; }
+  .ihp-console .ps-step2 .spin { width: 16px; height: 16px; min-width: 16px; min-height: 16px; border-width: 2px; }
+  .ihp-console .ps-step2 .lbl { font-size: 12.5px; }
+}
+
+/* ============================================================
+   Reduced motion — resolved end state, no timeline. The deny
+   toggle still works, it just swaps instantly.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .ihp-pulse,
+  .ihp-verdict,
+  .ihp-console-foot { transition: none !important; }
+  .ihp-reader-halo,
+  .ihp-reader::after,
+  .ihp-console .ps-step2 .spin,
+  .ihp-console .ps-step2 .chk { animation: none !important; }
+}

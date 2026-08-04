@@ -241,3 +241,73 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   7. ADDITIONS — dashed rules + faded rail ends
+   Analysed from cloudflare.com and fingerprint.com. Two things
+   both do that this file did not:
+
+   a) Section boundaries are a DASHED rule, not a solid 1px border.
+      Cloudflare draws it with a repeating gradient
+      (12px dash / 4px gap) at ~30% opacity rather than
+      `border-style: dashed`, which gives control over dash length
+      independent of colour.
+
+   b) Lines FADE OUT at their ends instead of stopping dead against
+      a section edge — `mask-image: linear-gradient(...)` on both
+      the horizontal rules and the vertical rails. This is what
+      stops a grid reading as wallpaper: nothing terminates hard,
+      so the field feels like it belongs to the content rather than
+      the viewport.
+   ============================================================ */
+
+/* (a) dashed horizontal rule — use as a section boundary */
+.iz-hrule {
+  position: relative;
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--rail) 0,
+    var(--rail) 12px,
+    transparent 12px,
+    transparent 16px
+  );
+  background-size: 100% 1px;
+  background-repeat: repeat-x;
+  /* fade both ends so the rule never butts into the viewport edge */
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* the same rule, drawn at the top edge of a section */
+.iz-ruled-top { position: relative; }
+.iz-ruled-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--rail) 0,
+    var(--rail) 12px,
+    transparent 12px,
+    transparent 16px
+  );
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  pointer-events: none;
+}
+
+/* (b) rails that fade at top and bottom rather than running edge to edge.
+   Compose with `.iz-railed`: `class="iz-railed iz-railed--fade"`. */
+.iz-railed--fade::before,
+.iz-railed--fade::after {
+  mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+}
+
+/* Rails on ONE side only — for sections that sit next to a full-bleed
+   element and would look boxed in with both. */
+.iz-railed--left::after { display: none; }
+.iz-railed--right::before { display: none; }

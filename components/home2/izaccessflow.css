@@ -1,0 +1,384 @@
+/* ============================================================
+   How it works — Zero Trust access flow.
+   Tokens only: --bg/--bg-2/--surface/--line/--tx/--tx-dim,
+   --accent (via --orange), --allow, --r-*, --sp-*, --dur*, --ease*.
+
+   The container is a grid-framed FILLED panel, in the fingerprint
+   idiom — hairline rules crossing a tinted field — rather than the
+   fake browser/console chrome the old version used. A console frame
+   implied "terminal output", which is the wrong metaphor for an
+   architecture diagram.
+   ============================================================ */
+
+.izf {
+  position: relative;
+  display: grid;
+  gap: var(--sp-6);
+}
+
+/* ---------- segmented progress rail ---------- */
+/* Replaces four look-alike pills. The fill shows how far through the
+   walkthrough you are, so the control doubles as a position indicator. */
+.izf-rail {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+  padding-top: 14px;
+}
+.izf-rail-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.izf-rail-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--orange);
+  border-radius: inherit;
+  /* scaleX, not width — the fill animates on every phase change, and a
+     width transition relayouts the rail each frame. Visually identical
+     on a solid bar; the 1px pill radius distortion is not perceptible. */
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 620ms var(--ease);
+}
+.izf-seg {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  background: none;
+  border: 0;
+  border-top: 2px solid transparent;
+  margin-top: -14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--body);
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izf-seg:hover { color: var(--tx); }
+.izf-seg.on { color: var(--tx); }
+.izf-seg:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: var(--r-sm); }
+.izf-seg-n {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+}
+.izf-seg-n svg { width: 11px; height: 11px; }
+.izf-seg.on .izf-seg-n { background: var(--orange); border-color: var(--orange); color: var(--btn-ink); }
+.izf-seg.past .izf-seg-n { border-color: var(--allow); color: var(--allow); }
+.izf-seg-l { font-size: var(--fs-body-sm); font-weight: 600; letter-spacing: -0.005em; }
+
+/* ---------- the plate ---------- */
+.izf-plate {
+  position: relative;
+  aspect-ratio: 1200 / 640;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg-2);
+  overflow: hidden;
+  /* the fingerprint move: a filled field crossed by hairline rules,
+     faded at the ends so the frame never reads as a hard box */
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 25% 100%, 100% 33.33%;
+  background-position: 0 0;
+  /* Nodes are placed by PERCENTAGE but sized in their own units. If those
+     units are fixed px, every node occupies a larger share of the plate as
+     it narrows and they collide. Sizing them in cqw keeps node-to-plate
+     proportions constant, so the map holds its layout at any width. */
+  container-type: inline-size;
+}
+.izf-plate::after {
+  /* soften the rules toward the frame edges */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 100% at 50% 45%, transparent 45%, var(--bg-2) 100%);
+}
+
+.izf-wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+.izf-wire {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 6;
+  vector-effect: non-scaling-stroke;
+}
+.izf-wire-lit {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2.4;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  animation: izf-draw 620ms var(--ease) both;
+  stroke-dasharray: 1000;
+}
+.izf-allow .izf-wire-lit { stroke: var(--allow); }
+@keyframes izf-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+.izf-pkt {
+  fill: var(--orange);
+  offset-distance: 0%;
+  animation: izf-travel 1.15s var(--ease-linear) infinite;
+}
+.izf-pkt.rev { animation-direction: reverse; }
+.izf-allow .izf-pkt { fill: var(--allow); }
+@keyframes izf-travel {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+/* ---------- zone frames ---------- */
+.izf-zone {
+  position: absolute;
+  z-index: 1;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  pointer-events: none;
+}
+.izf-zone span {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  padding: 0 8px;
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izf-zone-user { left: 2.2%; top: 33%; width: 22%; bottom: 6%; }
+.izf-zone-apps { right: 2.2%; top: 25%; width: 30%; bottom: 12%; }
+
+/* ---------- nodes ---------- */
+.izf-node {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  padding: 1.1cqw 1.5cqw;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--tx);
+  white-space: nowrap;
+  transition: border-color var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
+}
+.izf-node b { font-family: var(--disp); font-size: clamp(11px, 1.3cqw, 16px); font-weight: 600; letter-spacing: -0.01em; }
+.izf-node.off { opacity: 0.34; }
+.izf-node.on { border-color: color-mix(in srgb, var(--orange) 50%, var(--line-strong)); }
+.izf-node.focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 16%, transparent);
+}
+.izf-allow .izf-node.on { border-color: color-mix(in srgb, var(--allow) 50%, var(--line-strong)); }
+.izf-allow .izf-node.focus {
+  border-color: var(--allow);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--allow) 16%, transparent);
+}
+
+.izf-ic { width: clamp(15px, 1.9cqw, 22px); height: clamp(15px, 1.9cqw, 22px); flex: none; color: var(--orange); }
+.izf-ic svg { width: 100%; height: 100%; display: block; }
+.izf-mark { width: clamp(17px, 2.2cqw, 26px); height: clamp(17px, 2.2cqw, 26px); flex: none; }
+
+/* user card — the avatar is what makes this read as a person, not a box */
+.izf-user { padding: 1.1cqw; }
+.izf-avatar { width: clamp(25px, 3.2cqw, 38px); height: clamp(25px, 3.2cqw, 38px); flex: none; color: var(--orange); }
+.izf-avatar svg { width: 100%; height: 100%; display: block; border-radius: var(--r-pill); }
+.izf-node-txt { display: flex; flex-direction: column; line-height: 1.25; }
+.izf-node-txt b { font-size: clamp(10px, 1.15cqw, 14.5px); }
+.izf-node-txt i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: clamp(7.5px, 0.85cqw, 10.5px);
+  color: var(--tx-dim);
+}
+
+/* gateway is the one filled node — it is where the decision lands */
+.izf-gateway.on,
+.izf-gateway.focus {
+  background: var(--orange);
+  color: var(--btn-ink);
+}
+.izf-gateway.on .izf-ic,
+.izf-gateway.focus .izf-ic { color: var(--btn-ink); }
+.izf-allow .izf-gateway.on,
+.izf-allow .izf-gateway.focus { background: var(--allow); }
+
+/* logo clusters */
+.izf-node-cap {
+  position: absolute;
+  top: -9px;
+  left: 12px;
+  padding: 0 7px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: clamp(7px, 0.82cqw, 10.5px);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izf-identity,
+.izf-apps { flex-direction: column; align-items: stretch; gap: 0.9cqw; padding: 1.5cqw; }
+.izf-logos { display: flex; align-items: center; gap: 1.2cqw; }
+.izf-logos.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1cqw 1.4cqw; }
+.izf-logos img {
+  height: clamp(12px, 1.65cqw, 20px);
+  width: auto;
+  max-width: clamp(42px, 6.2cqw, 74px);
+  object-fit: contain;
+  display: block;
+}
+.izf-logos img.wide { max-width: clamp(52px, 7.7cqw, 92px); }
+/* mono brand marks need lifting on the dark plate */
+.iz[data-theme="dark"] .izf-logos img { filter: brightness(1.08); }
+
+/* ---------- narration ---------- */
+.izf-narr {
+  display: grid;
+  gap: var(--sp-4);
+  border-left: 2px solid var(--orange);
+  padding-left: var(--sp-5);
+}
+.izf-allow .izf-narr { border-left-color: var(--allow); }
+.izf-tag {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.izf-allow .izf-tag { color: var(--allow); }
+.izf-narr-head h3 {
+  margin: 6px 0 0;
+  font-family: var(--disp);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-disp);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izf-narr-head p { margin: 8px 0 0; max-width: 62ch; color: var(--tx-dim); line-height: var(--lh-body); }
+
+.izf-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.izf-step {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: var(--sp-3);
+  align-items: center;
+  font-size: var(--fs-body-sm);
+  color: var(--tx-mute);
+  transition: color var(--dur) var(--ease-out);
+}
+.izf-step-i {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+}
+.izf-step-i svg { width: 11px; height: 11px; }
+.izf-step.cur { color: var(--tx); }
+.izf-step.cur .izf-step-i { background: var(--orange); border-color: var(--orange); color: var(--btn-ink); }
+.izf-step.past { color: var(--tx-dim); }
+.izf-step.past .izf-step-i { border-color: var(--allow); color: var(--allow); }
+.izf-allow .izf-step.cur .izf-step-i { background: var(--allow); border-color: var(--allow); }
+
+.izf-ctl { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.izf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 9px 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--tx);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.izf-btn svg { width: 14px; height: 14px; }
+.izf-btn:hover { border-color: var(--orange); color: var(--orange); }
+.izf-btn.pri { background: var(--orange); border-color: var(--orange); color: var(--btn-ink); }
+.izf-btn.pri:hover { color: var(--btn-ink); filter: brightness(1.06); }
+.izf-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* ============================================================
+   Responsive — the plate stops being a map below ~900px and the
+   nodes would collide, so it becomes a vertical list of the same
+   six parts in flow order. No information is dropped.
+   ============================================================ */
+@media (max-width: 900px) {
+  .izf-plate {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-5);
+    background-image: none;
+  }
+  .izf-plate::after { content: none; }
+  .izf-wires,
+  .izf-zone { display: none; }
+  .izf-node {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    transform: none;
+    white-space: normal;
+  }
+  .izf-node-cap { position: static; padding: 0; background: none; }
+  .izf-logos.grid { grid-template-columns: repeat(4, 1fr); }
+  .izf-rail { grid-template-columns: repeat(2, 1fr); row-gap: var(--sp-3); }
+  .izf-seg-l { font-size: var(--fs-sm); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izf-rail-fill,
+  .izf-node,
+  .izf-step { transition: none !important; }
+  .izf-wire-lit { animation: none !important; stroke-dasharray: none; }
+  .izf-pkt { animation: none !important; }
+}

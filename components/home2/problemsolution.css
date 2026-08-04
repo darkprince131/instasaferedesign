@@ -117,3 +117,8 @@
   .ps-step2 .chk { animation: none; }
   .ps-summary.show { transition: none; }
 }
+
+/* Fail state for the row mechanic — additive so both C14 and the
+   homepage hero console can express a blocked check. */
+.ps-step2.fail .lbl { color: var(--deny); }
+.ps-step2 .chk.fail { background: var(--deny-bg); color: var(--deny); }
