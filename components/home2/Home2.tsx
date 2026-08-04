@@ -75,16 +75,6 @@ const PILLARS = [
   { name: "See everything", desc: "Every login and every block shows up in the security tools you already use.", stat: ["7", "report formats"] },
 ];
 
-const INDUSTRIES = ["Banking & BFSI", "Government / PSU", "Logistics", "Manufacturing", "IT / ITES", "Healthcare", "Real Estate", "NBFC"];
-
-const LOGS = [
-  { u: "Anita (sales)", app: "Billing app", state: "allow", t: "09:41:02" },
-  { u: "Build server", app: "Code server", state: "allow", t: "09:41:07" },
-  { u: "Contractor", app: "Finance desktop", state: "deny", t: "09:41:09" },
-  { u: "Priya (data)", app: "Reports database", state: "allow", t: "09:41:15" },
-  { u: "Unknown device", app: "Admin panel", state: "deny", t: "09:41:21" },
-];
-
 const COMPARE: Record<string, [string, string, string][]> = {
   "vs VPN": [
     ["What they can reach", "Your whole network", "Just the one app they need"],
@@ -106,12 +96,6 @@ const COMPARE: Record<string, [string, string, string][]> = {
   ],
 };
 
-const PRICING = [
-  { name: "SSO", amt: "$1", feat: false, list: ["Unlimited SAML / OAuth / OIDC", "Desktop SSO + directory sync", "Device authentication", "11 report types"] },
-  { name: "Zero Trust Platform", amt: "$2", feat: true, list: ["25 device checks · 7 app types", "Session recording + watermark", "Agent + agentless access", "7 SIEM formats · 202 events"] },
-  { name: "MFA", amt: "$1", feat: false, list: ["TOTP, push, biometrics", "Hardware key + certificate", "OS MFA at Windows login", "Conditional MFA + backup codes"] },
-];
-
 const TESTIMONIALS = [
   { q: "InstaSafe simply stands out in its adaptability to expanding cloud environments. We have secure mobility we previously didn't possess.", name: "Ranjith P.", role: "Head of IT Security, BPM" },
   { q: "We scaled remote access security from 500 to 65,000 users in five days, with no hardware to rack.", name: "Hariharan S.", role: "Infrastructure Lead, BFSI" },
@@ -119,16 +103,6 @@ const TESTIMONIALS = [
 ];
 
 /* ---------- icons (inline, currentColor) ---------- */
-const Check = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
-);
-const Cross = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M18 6 6 18M6 6l12 12" />
-  </svg>
-);
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 12h14M13 6l6 6-6 6" />
@@ -186,6 +160,8 @@ export function Home2() {
 
   return (
     <div className="iz" data-theme={theme} data-system={system}>
+      {/* continuous outer rails, unbroken down the whole page */}
+      <div className="iz-rails" aria-hidden="true" />
       {/* ---------------- NAV ---------------- */}
       <IzNav theme={theme} onThemeChange={setT} overlay />
 
@@ -194,7 +170,7 @@ export function Home2() {
 
       {/* ---------------- CAPABILITIES DECK ---------------- */}
       {/* rails: this block is wide and benefits from column edges */}
-      <section className="iz-section iz-railed iz-railed--fade">
+      <section className="iz-section iz-irail" style={{ ["--ir-a" as string]: "38%" }}>
         <div className="iz-wrap">
           <div className="iz-reveal iz-headblock">
             <span className="iz-ey">Everything it does</span>
@@ -213,7 +189,7 @@ export function Home2() {
 
       {/* ---------------- PLATFORM ROWS ---------------- */}
       {/* no rails — the rows already draw their own horizontals */}
-      <section className="iz-section alt iz-ruled-top">
+      <section className="iz-section alt iz-irail" style={{ ["--ir-b" as string]: "62%" }}>
         <div className="iz-wrap iz-stitch" style={{ paddingTop: 12, paddingBottom: 12 }}>
           <div className="iz-reveal">
             <span className="iz-ey">All in one place</span>
@@ -255,7 +231,7 @@ export function Home2() {
       {/* one rail + a dashed top rule — no field texture */}
       {/* One full viewport: heading, diagram and steps all in frame, so the
           walkthrough never asks you to scroll away from what it describes. */}
-      <section className="iz-section iz-framed izf-section" id="how" style={{ ["--fr-l" as string]: "6%", ["--fr-r" as string]: "6%", ["--fr-t" as string]: "9%", ["--fr-b" as string]: "9%" }}>
+      <section className="iz-section iz-framed izf-section" id="how" style={{ ["--fr-t" as string]: "7%", ["--fr-b" as string]: "7%" }}>
         <div className="iz-wrap">
           <div className="iz-reveal izf-head">
             <span className="iz-ey dim">How it works</span>
@@ -269,72 +245,8 @@ export function Home2() {
         </div>
       </section>
 
-      {/* ---------------- CONSOLE (live log) ---------------- */}
-      <section className="iz-section alt iz-ruled-top">
-        <div className="iz-wrap">
-          <div className="iz-reveal">
-            <span className="iz-ey">Always watching</span>
-            <h2 className="iz-h2">
-              See every login, <em>as it happens</em>.
-            </h2>
-          </div>
-          <div className="iz-panel iz-reveal iz-block-top">
-            <div className="iz-pbar">
-              <span className="iz-dots">
-                <i />
-                <i />
-                <i />
-              </span>
-              <span className="iz-pbar-title">activity</span>
-              <span className="iz-pbar-cta">Export</span>
-            </div>
-            <div className="iz-tabs">
-              <span className="iz-tab on">Live</span>
-              <span className="iz-tab">Blocked</span>
-              <span className="iz-tab">Devices</span>
-            </div>
-            <div className="iz-toolbar">
-              <span className="iz-chip count">5 just now</span>
-              <span className="iz-chip">last 30 seconds</span>
-              <span className="iz-chip">everything logged</span>
-            </div>
-            <div className="iz-log">
-              {LOGS.map((l) => (
-                <div key={l.u + l.t} className={`iz-log-row ${l.state === "deny" ? "deny" : ""}`}>
-                  <span style={{ color: l.state === "deny" ? "var(--deny)" : "var(--allow)" }}>{l.state === "deny" ? <Cross /> : <Check />}</span>
-                  <span className="u">{l.u}</span>
-                  <span className="ap">{l.app}</span>
-                  <span className={`iz-pill ${l.state}`}>{l.state}</span>
-                  <span className="ti">{l.t}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------- INDUSTRIES (pastel) ---------------- */}
-      <section className="iz-section">
-        <div className="iz-wrap">
-          <div className="iz-reveal">
-            <span className="iz-ey">Trusted across sectors</span>
-            <h2 className="iz-h2">
-              150+ organisations, <em>every regulated industry</em>.
-            </h2>
-          </div>
-          <div className="iz-pastel iz-reveal">
-            {INDUSTRIES.map((t, i) => (
-              <div key={t} className="iz-cell">
-                <span className="k">{String(i + 1).padStart(2, "0")}</span>
-                <span className="t">{t}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ---------------- COMPARISON ---------------- */}
-      <section className="iz-section alt iz-railed iz-railed--fade">
+      <section className="iz-section alt iz-irail" style={{ ["--ir-a" as string]: "30%", ["--ir-b" as string]: "70%" }}>
         <div className="iz-wrap">
           <div className="iz-reveal">
             <span className="iz-ey">The short version</span>
@@ -381,7 +293,7 @@ export function Home2() {
       </section>
 
       {/* ---------------- LIVE VISITOR ---------------- */}
-      <section className="iz-section iz-railed iz-railed--fade iz-railed--right">
+      <section className="iz-section iz-irail" style={{ ["--ir-a" as string]: "55%" }}>
         <div className="iz-wrap iz-hero-grid">
           <div className="iz-reveal">
             <span className="iz-ey">Try it right now</span>
@@ -450,41 +362,6 @@ export function Home2() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ---------------- PRICING ---------------- */}
-      <section className="iz-section iz-railed iz-railed--fade iz-ruled-top">
-        <div className="iz-wrap">
-          <div className="iz-reveal">
-            <span className="iz-ey">Enterprise security, startup pricing</span>
-            <h2 className="iz-h2">
-              Public prices. <em>From $1 a user.</em>
-            </h2>
-          </div>
-          <div className="iz-price iz-reveal">
-            {PRICING.map((p) => (
-              <div key={p.name} className={`iz-price-card ${p.feat ? "feat" : ""}`}>
-                {p.feat && <span className="iz-badge">Most popular</span>}
-                <span className="iz-price-name">{p.name}</span>
-                <div className="iz-price-amt">
-                  {p.amt}
-                  <span className="suf"> / user / mo</span>
-                </div>
-                <ul className="iz-price-list">
-                  {p.list.map((li) => (
-                    <li key={li}>{li}</li>
-                  ))}
-                </ul>
-                <a href="/instasafe-zero-trust-pricing" className="iz-btn">
-                  {p.feat ? "Start here" : "Choose plan"}
-                </a>
-              </div>
-            ))}
-          </div>
-          <p className="iz-mono iz-mute" style={{ marginTop: 18, fontSize: 12 }}>
-            Billed annually · startup pricing under 50 users · enterprise on request.
-          </p>
         </div>
       </section>
 

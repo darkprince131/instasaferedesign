@@ -327,8 +327,11 @@
    the same frame.
    ============================================================ */
 .iz-framed {
-  --fr-l: 7%;
-  --fr-r: 7%;
+  /* Default to the SAME x as the page rails, so a framed section lines up
+     with every other section's content column. A raw percentage made the
+     frame narrower than the rest of the page. */
+  --fr-l: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2)));
+  --fr-r: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2)));
   --fr-t: 0px;
   --fr-b: 0px;
   position: relative;
@@ -377,3 +380,78 @@
   position: relative;
   padding-inline: calc(var(--wrap-gutter) + var(--rail-inset));
 }
+
+/* ============================================================
+   9. THE DASHED PAGE GRID
+   Analysed from fingerprint.com. Their filled sections are simply:
+
+     background: var(--white);
+     border-top: 1px dashed var(--dash-gray);
+     border-bottom: 1px dashed var(--dash-gray);
+     margin-bottom: -1px;      <-- borders COLLAPSE into one line
+
+   That last line is the whole trick: each section's bottom border lands
+   on the next section's top border, so the rule reads as one unbroken
+   line running the length of the page rather than as per-section edges.
+   Their dash tokens are --dash-gray #e4e5e1 / --dash-dark #2e2e2c; ours
+   is --rail, which already flips per theme.
+
+   Firecrawl builds the same structure with fine SOLID lines; we take
+   fingerprint's dashed treatment.
+   ============================================================ */
+
+/* ---- 9a. continuous outer rails ----
+   One element, dropped once at the top of `.iz`, drawing two dashed
+   verticals that run the FULL page height. Per-section rails could
+   never do this — they restart at every section boundary. */
+.iz-rails {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.iz-rails::before,
+.iz-rails::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, var(--rail) 0 5px, transparent 5px 11px);
+}
+.iz-rails::before { left: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2))); }
+.iz-rails::after { right: max(var(--wrap-gutter), calc(50% - (var(--wrap-max) / 2))); }
+
+/* content must sit above the rails */
+.iz-section,
+.iz-hero2 { position: relative; z-index: 1; }
+
+/* ---- 9b. continuous horizontal rule between sections ----
+   border-top on every section gives exactly one dashed line at each
+   boundary, edge to edge. */
+.iz-section + .iz-section,
+.iz-section:first-of-type {
+  border-top: var(--bw) var(--rail-style) var(--rail);
+}
+
+/* ---- 9c. inner rails — varied, per section ----
+   Set --ir-a / --ir-b to place one or two extra verticals inside a
+   section. This is what keeps the grid from repeating identically all
+   the way down while the outer rails stay constant. */
+.iz-irail {
+  position: relative;
+}
+.iz-irail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to bottom, var(--rail) 0 5px, transparent 5px 11px),
+    repeating-linear-gradient(to bottom, var(--rail) 0 5px, transparent 5px 11px);
+  background-size: 1px 100%, 1px 100%;
+  background-repeat: no-repeat;
+  background-position: var(--ir-a, -100px) 0, var(--ir-b, -100px) 0;
+}
+.iz-irail > * { position: relative; z-index: 1; }

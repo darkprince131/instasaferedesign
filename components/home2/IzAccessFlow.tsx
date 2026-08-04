@@ -23,7 +23,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type JSX 
    ============================================================ */
 
 const VB_W = 1200;
-const VB_H = 620;
+const VB_H = 660;
 
 type NodeId = "user" | "mfa" | "controller" | "identity" | "gateway" | "cloud" | "saas";
 type EdgeId =
@@ -51,26 +51,30 @@ interface Phase {
 }
 
 /* node centres, plate space */
+/* Rows are spread across the full plate height and the two app nodes are
+   pushed far enough apart to clear each other. At a narrower viewport the
+   stacked nodes are taller relative to the plate, and the previous
+   spacing let `saas` overlap `cloud` and run past the bottom edge. */
 const POS: Record<NodeId, { x: number; y: number }> = {
-  mfa: { x: 280, y: 150 },
-  controller: { x: 600, y: 150 },
-  identity: { x: 950, y: 150 },
+  mfa: { x: 280, y: 140 },
+  controller: { x: 600, y: 140 },
+  identity: { x: 950, y: 140 },
   user: { x: 150, y: 470 },
   gateway: { x: 600, y: 470 },
-  cloud: { x: 960, y: 395 },
-  saas: { x: 960, y: 545 },
+  cloud: { x: 960, y: 330 },
+  saas: { x: 960, y: 530 },
 };
 
 /* Right-angle routing only. Each entry also lists its port points so a
    nub can be stamped where the wire meets a node. */
 const EDGES: Record<EdgeId, { d: string; ports: [number, number][] }> = {
-  "user-mfa": { d: "M150 434 V150 H208", ports: [[150, 434], [208, 150]] },
-  "mfa-controller": { d: "M352 150 H515", ports: [[352, 150], [515, 150]] },
-  "controller-identity": { d: "M685 150 H845", ports: [[685, 150], [845, 150]] },
-  "controller-gateway": { d: "M600 186 V434", ports: [[600, 186], [600, 434]] },
+  "user-mfa": { d: "M150 437 V140 H208", ports: [[150, 437], [208, 140]] },
+  "mfa-controller": { d: "M352 140 H515", ports: [[352, 140], [515, 140]] },
+  "controller-identity": { d: "M685 140 H845", ports: [[685, 140], [845, 140]] },
+  "controller-gateway": { d: "M600 176 V437", ports: [[600, 176], [600, 437]] },
   "user-gateway": { d: "M240 470 H520", ports: [[240, 470], [520, 470]] },
-  "gateway-cloud": { d: "M680 470 H810 V395 H855", ports: [[680, 470], [855, 395]] },
-  "gateway-saas": { d: "M680 470 H810 V545 H855", ports: [[680, 470], [855, 545]] },
+  "gateway-cloud": { d: "M680 470 H800 V330 H855", ports: [[680, 470], [855, 330]] },
+  "gateway-saas": { d: "M680 470 H800 V530 H855", ports: [[680, 470], [855, 530]] },
 };
 const EDGE_ORDER = Object.keys(EDGES) as EdgeId[];
 
