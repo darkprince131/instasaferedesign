@@ -311,3 +311,69 @@
    element and would look boxed in with both. */
 .iz-railed--left::after { display: none; }
 .iz-railed--right::before { display: none; }
+
+/* ============================================================
+   8. .iz-framed — INSET RULES ENCLOSING A FILLED PANEL
+
+   The move analysed from fingerprint.com and cloudflare.com, and the
+   one this file was missing: hairline rules run edge to edge across a
+   tinted section, and the region they enclose is FILLED. The panel is
+   not a card sitting on a background — the grid itself makes the
+   panel, which is why those pages never read as content floating on a
+   blank field.
+
+   Usage:  <section class="iz-section iz-framed"> … </section>
+   Tune per section with the --fr-* insets so no two sections repeat
+   the same frame.
+   ============================================================ */
+.iz-framed {
+  --fr-l: 7%;
+  --fr-r: 7%;
+  --fr-t: 0px;
+  --fr-b: 0px;
+  position: relative;
+  background: var(--bg-2);
+  isolation: isolate;
+}
+
+/* the rules — full-bleed, so they read as page structure the panel
+   happens to sit inside, rather than as the panel's own border */
+.iz-framed::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--rail) 1px, transparent 1px),
+    linear-gradient(to right, var(--rail) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rail) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rail) 1px, transparent 1px);
+  background-repeat: no-repeat;
+  background-size: 1px 100%, 1px 100%, 100% 1px, 100% 1px;
+  background-position:
+    var(--fr-l) 0,
+    calc(100% - var(--fr-r)) 0,
+    0 var(--fr-t),
+    0 calc(100% - var(--fr-b));
+}
+
+/* the fill the rules enclose */
+.iz-framed::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: var(--fr-l);
+  right: var(--fr-r);
+  top: var(--fr-t);
+  bottom: var(--fr-b);
+  background: var(--surface);
+  pointer-events: none;
+}
+
+/* Content must clear the rules, or the first character sits on the
+   line — the same trap `--rail-inset` exists to solve for `.iz-railed`. */
+.iz-framed > .iz-wrap {
+  position: relative;
+  padding-inline: calc(var(--wrap-gutter) + var(--rail-inset));
+}

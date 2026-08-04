@@ -255,7 +255,7 @@ export function Home2() {
       {/* one rail + a dashed top rule — no field texture */}
       {/* One full viewport: heading, diagram and steps all in frame, so the
           walkthrough never asks you to scroll away from what it describes. */}
-      <section className="iz-section iz-railed iz-railed--fade iz-ruled-top izf-section" id="how">
+      <section className="iz-section iz-framed izf-section" id="how" style={{ ["--fr-l" as string]: "6%", ["--fr-r" as string]: "6%", ["--fr-t" as string]: "9%", ["--fr-b" as string]: "9%" }}>
         <div className="iz-wrap">
           <div className="iz-reveal izf-head">
             <span className="iz-ey dim">How it works</span>

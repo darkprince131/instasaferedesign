@@ -1,47 +1,44 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type JSX } from "react";
 
 /* ============================================================
    How it works — Zero Trust access flow.
 
-   Reworked from the lab's 00d signature (C2 · C14). The FLOW IS
-   UNCHANGED: same six nodes, same six edges, same three phases and
-   the same step copy. What changed is the visual language.
+   The FLOW IS UNCHANGED from the lab's 00d signature: same phases,
+   same order, same step copy. Only the drawing changed.
 
-   Why it was rebuilt rather than restyled:
-   - the old version drew every node as an identical rounded rect in
-     SVG <text>, which is why it read as generic. Nodes are now real
-     DOM, so they can hold vendor logos, an avatar and mixed type.
-   - each node carried a tiny sub-label ("multi-factor", "policy
-     engine"…) at ~9px. Those are gone; the node name plus the step
-     narration carries the meaning.
-   - the phase pills became a segmented progress rail that fills as
-     the walkthrough advances, so position in the flow is readable at
-     a glance instead of inferred from which pill is tinted.
+   Layout is TWO ROWS — control plane above, data plane below —
+   because the narration's whole point is "two planes, two jobs".
+   The arrangement is that sentence in space, and it gives each
+   phase a distinct spatial signature: phase 1 travels bottom to
+   top, phase 2 stays top, phase 3 stays bottom.
 
-   GEOMETRY: nodes are positioned in the plate's own coordinate space
-   (VB_W x VB_H) and converted to percentages, and the SVG edge layer
-   uses the same viewBox. Both therefore scale together and the wires
-   always meet the nodes, at any width.
+   Wires are ORTHOGONAL (H/V elbows), never curves, and every wire
+   terminates in a small square nub on the node edge — the port. A
+   curve implies an analogue path; this is a routed decision.
+
+   Apps are two nodes (cloud IaaS / SaaS) so the logos can be large
+   enough to actually read.
    ============================================================ */
 
 const VB_W = 1200;
-const VB_H = 640;
+const VB_H = 620;
 
-type NodeId = "user" | "mfa" | "controller" | "identity" | "gateway" | "apps";
+type NodeId = "user" | "mfa" | "controller" | "identity" | "gateway" | "cloud" | "saas";
 type EdgeId =
   | "user-mfa"
   | "mfa-controller"
   | "controller-identity"
   | "controller-gateway"
   | "user-gateway"
-  | "gateway-apps";
+  | "gateway-cloud"
+  | "gateway-saas";
 
 interface Step {
   t: string;
-  focus: NodeId;
-  light?: EdgeId;
+  focus: NodeId | NodeId[];
+  light?: EdgeId | EdgeId[];
   reverse?: boolean;
 }
 interface Phase {
@@ -53,42 +50,38 @@ interface Phase {
   steps: Step[];
 }
 
-/* node centres in plate space */
+/* node centres, plate space */
 const POS: Record<NodeId, { x: number; y: number }> = {
-  user: { x: 176, y: 498 },
-  mfa: { x: 176, y: 300 },
-  identity: { x: 610, y: 92 },
-  controller: { x: 520, y: 322 },
-  gateway: { x: 720, y: 322 },
-  apps: { x: 994, y: 340 },
+  mfa: { x: 280, y: 150 },
+  controller: { x: 600, y: 150 },
+  identity: { x: 950, y: 150 },
+  user: { x: 150, y: 470 },
+  gateway: { x: 600, y: 470 },
+  cloud: { x: 960, y: 395 },
+  saas: { x: 960, y: 545 },
 };
 
-/* Curved so the diagram reads as a route, not a wiring schematic. */
-const EDGES: Record<EdgeId, string> = {
-  "user-mfa": "M176 452 L176 344",
-  "mfa-controller": "M242 296 C 330 292, 380 312, 436 318",
-  "controller-identity": "M520 282 C 520 200, 540 150, 560 124",
-  "controller-gateway": "M604 322 L644 322",
-  "user-gateway": "M268 512 C 460 542, 600 476, 698 366",
-  "gateway-apps": "M796 322 C 802 322, 806 330, 812 336",
+/* Right-angle routing only. Each entry also lists its port points so a
+   nub can be stamped where the wire meets a node. */
+const EDGES: Record<EdgeId, { d: string; ports: [number, number][] }> = {
+  "user-mfa": { d: "M150 434 V150 H208", ports: [[150, 434], [208, 150]] },
+  "mfa-controller": { d: "M352 150 H515", ports: [[352, 150], [515, 150]] },
+  "controller-identity": { d: "M685 150 H845", ports: [[685, 150], [845, 150]] },
+  "controller-gateway": { d: "M600 186 V434", ports: [[600, 186], [600, 434]] },
+  "user-gateway": { d: "M240 470 H520", ports: [[240, 470], [520, 470]] },
+  "gateway-cloud": { d: "M680 470 H810 V395 H855", ports: [[680, 470], [855, 395]] },
+  "gateway-saas": { d: "M680 470 H810 V545 H855", ports: [[680, 470], [855, 545]] },
 };
-const EDGE_ORDER: EdgeId[] = [
-  "user-mfa",
-  "mfa-controller",
-  "controller-identity",
-  "controller-gateway",
-  "user-gateway",
-  "gateway-apps",
-];
+const EDGE_ORDER = Object.keys(EDGES) as EdgeId[];
 
-/* Step copy is carried over verbatim from the lab component. */
+/* Step copy verbatim. Only the app target is now two nodes. */
 const PHASES: Phase[] = [
   {
     tag: "OVERVIEW",
     title: "The whole path, one frame",
     purpose:
       "Six parts across two planes. Press play to watch identity get proven, access get authorized, then a single private tunnel open — one step at a time.",
-    active: ["user", "mfa", "controller", "identity", "gateway", "apps"],
+    active: ["user", "mfa", "controller", "identity", "gateway", "cloud", "saas"],
     steps: [],
   },
   {
@@ -119,26 +112,27 @@ const PHASES: Phase[] = [
     tag: "PHASE 3 / 3",
     title: "Open the secure session",
     purpose: "Only now does traffic flow — one encrypted tunnel to one app. Nothing else is reachable.",
-    active: ["user", "gateway", "apps"],
+    active: ["user", "gateway", "cloud", "saas"],
     allow: true,
     steps: [
       { t: "User opens a secure tunnel to the Gateway.", focus: "gateway", light: "user-gateway" },
       { t: "Gateway authorizes the session.", focus: "gateway" },
-      { t: "Gateway connects to just that one app.", focus: "apps", light: "gateway-apps" },
-      { t: "Application traffic flows safely back.", focus: "user", light: "gateway-apps", reverse: true },
+      {
+        t: "Gateway connects to just that one app.",
+        focus: ["cloud", "saas"],
+        light: ["gateway-cloud", "gateway-saas"],
+      },
+      {
+        t: "Application traffic flows safely back.",
+        focus: "user",
+        light: ["gateway-cloud", "gateway-saas"],
+        reverse: true,
+      },
     ],
   },
 ];
 
-const RAIL = ["Overview", "Authenticate", "Authorize", "Connect"];
-
-const IDP = [
-  { src: "/brand/instasafe-mark-color.svg", alt: "InstaSafe IdP", tall: false },
-  { src: "/brand/vendors/azure-ad.svg", alt: "Azure AD", tall: false },
-  { src: "/brand/vendors/microsoft.svg", alt: "Microsoft AD", tall: true },
-  { src: "/brand/vendors/google-workspace.svg", alt: "Google Workspace", tall: true },
-];
-const CSP = [
+const CLOUD = [
   { src: "/brand/vendors/aws.svg", alt: "AWS" },
   { src: "/brand/vendors/azure.svg", alt: "Azure" },
   { src: "/brand/vendors/ibm-cloud.svg", alt: "IBM Cloud" },
@@ -150,44 +144,82 @@ const SAAS = [
   { src: "/brand/vendors/slack.svg", alt: "Slack" },
   { src: "/brand/vendors/jira.svg", alt: "Jira" },
 ];
+const IDP = [
+  { src: "/brand/instasafe-mark-color.svg", alt: "InstaSafe IdP" },
+  { src: "/brand/vendors/azure-ad.svg", alt: "Azure AD" },
+  { src: "/brand/vendors/microsoft.svg", alt: "Microsoft AD" },
+  { src: "/brand/vendors/google-workspace.svg", alt: "Google Workspace" },
+];
 
-const IcShield = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M12 3l7 3v5c0 4.4-3 7.4-7 8.8C8 18.4 5 15.4 5 11V6z" />
-    <path d="M9 11.5l2 2 4-4" />
+const sIc = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.7,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+const IcGrid = (
+  <svg viewBox="0 0 24 24" {...sIc} aria-hidden="true">
+    <rect x={3} y={3} width={7.5} height={7.5} /><rect x={13.5} y={3} width={7.5} height={7.5} />
+    <rect x={3} y={13.5} width={7.5} height={7.5} /><rect x={13.5} y={13.5} width={7.5} height={7.5} />
+  </svg>
+);
+const IcFinger = (
+  <svg viewBox="0 0 24 24" {...sIc} aria-hidden="true">
+    <path d="M12 4a8 8 0 0 0-8 8" /><path d="M12 8a4 4 0 0 0-4 4v4" />
+    <path d="M12 12v5" /><path d="M16 12a4 4 0 0 0-4-4" /><path d="M20 12a8 8 0 0 0-8-8" />
+  </svg>
+);
+const IcShieldCheck = (
+  <svg viewBox="0 0 24 24" {...sIc} aria-hidden="true">
+    <path d="M12 3l7 3v5c0 4.4-3 7.4-7 8.8C8 18.4 5 15.4 5 11V6z" /><path d="M9 11.5l2 2 4-4" />
+  </svg>
+);
+const IcLink = (
+  <svg viewBox="0 0 24 24" {...sIc} aria-hidden="true">
+    <path d="M10 13a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.4 1.4" />
+    <path d="M14 11a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 1 0 5.7 5.7l1.4-1.4" />
+  </svg>
+);
+const RAIL: { label: string; icon: JSX.Element }[] = [
+  { label: "Overview", icon: IcGrid },
+  { label: "Authenticate", icon: IcFinger },
+  { label: "Authorize", icon: IcShieldCheck },
+  { label: "Connect", icon: IcLink },
+];
+
+const IcUser = (
+  <svg viewBox="0 0 24 24" {...sIc} aria-hidden="true">
+    <circle cx={12} cy={8} r={3.6} /><path d="M5.5 19.5a6.6 6.6 0 0 1 13 0" />
   </svg>
 );
 const IcGate = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg viewBox="0 0 24 24" {...sIc} aria-hidden="true">
     <path d="M12 3l7 3v5c0 4.4-3 7.4-7 8.8C8 18.4 5 15.4 5 11V6z" />
     <path d="M8.5 11.5h6M12.5 9l3 2.5-3 2.5" />
   </svg>
 );
-const IcPlay = (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>
-);
+const IcPlay = <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l12 7-12 7z" /></svg>;
 const IcPause = (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <rect x={6} y={5} width={4} height={14} rx={1} /><rect x={14} y={5} width={4} height={14} rx={1} />
+    <rect x={6} y={5} width={4} height={14} /><rect x={14} y={5} width={4} height={14} />
   </svg>
 );
 const IcReplay = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg viewBox="0 0 24 24" {...sIc} strokeWidth={2} aria-hidden="true">
     <path d="M3 12a9 9 0 1 0 3-6.7M3 4.5v4h4" />
   </svg>
 );
 const IcCheck = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M20 6L9 17l-5-5" />
-  </svg>
+  <svg viewBox="0 0 24 24" {...sIc} strokeWidth={3} aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
 );
 
 const STEP_MS = 1250;
-const pc = (v: number, total: number) => `${(v / total) * 100}%`;
-
-function nodeStyle(id: NodeId): CSSProperties {
-  return { left: pc(POS[id].x, VB_W), top: pc(POS[id].y, VB_H) };
-}
+const arr = <T,>(v: T | T[]): T[] => (Array.isArray(v) ? v : [v]);
+const nodeStyle = (id: NodeId): CSSProperties => ({
+  left: `${(POS[id].x / VB_W) * 100}%`,
+  top: `${(POS[id].y / VB_H) * 100}%`,
+});
 
 export function IzAccessFlow() {
   const [phase, setPhase] = useState(0);
@@ -202,9 +234,6 @@ export function IzAccessFlow() {
     reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }, []);
 
-  /* Autoplay once when the diagram is actually on screen — the walkthrough
-     is the point of the section, and making people hunt for a play button
-     buried under a diagram loses most of them. */
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
@@ -229,11 +258,11 @@ export function IzAccessFlow() {
         io.disconnect();
         begin();
       },
-      { threshold: 0.35 }
+      { threshold: 0.3 }
     );
     io.observe(el);
-    // Fallback: IO does not fire in a non-rendering tab, and without this the
-    // section sits on "Overview" forever with no way in but the play button.
+    // IO does not fire in a non-rendering tab; without this the section
+    // would sit on Overview forever.
     const safety = window.setTimeout(begin, 3000);
     return () => {
       io.disconnect();
@@ -298,146 +327,160 @@ export function IzAccessFlow() {
   const live = phase > 0;
 
   const lit = new Set<EdgeId>();
-  if (live) ph.steps.slice(0, step + 1).forEach((s) => s.light && lit.add(s.light));
+  if (live) ph.steps.slice(0, step + 1).forEach((s) => s.light && arr(s.light).forEach((e) => lit.add(e)));
   const rev = live ? !!ph.steps[step]?.reverse : false;
+  const focused = live ? arr(ph.steps[step]?.focus ?? []) : [];
 
   const state = (id: NodeId) => {
     if (overview) return "";
-    if (ph.active.includes(id)) return "on" + (ph.steps[step]?.focus === id ? " focus" : "");
+    if (ph.active.includes(id)) return "on" + (focused.includes(id) ? " focus" : "");
     return "off";
   };
 
-  /* rail fill: 0 at overview, then phase + within-phase progress */
   const railPct = overview
     ? 0
-    : ((phase - 1 + (done ? 1 : (step + 1) / Math.max(1, ph.steps.length))) / 3) * 100;
+    : (phase - 1 + (done ? 1 : (step + 1) / Math.max(1, ph.steps.length))) / 3;
 
   return (
     <div className={`izf${allow ? " izf-allow" : ""}`} ref={rootRef}>
-      {/* ---------- segmented progress rail (replaces the phase pills) ---------- */}
+      {/* ---------- step nav: icon chip + label, reads as a navbar ---------- */}
       <div className="izf-rail" role="tablist" aria-label="Flow phases">
         <span className="izf-rail-track" aria-hidden="true">
-          <span className="izf-rail-fill" style={{ transform: `scaleX(${railPct / 100})` }} />
+          <span className="izf-rail-fill" style={{ transform: `scaleX(${railPct})` }} />
         </span>
-        {RAIL.map((label, i) => (
+        {RAIL.map((r, i) => (
           <button
-            key={label}
+            key={r.label}
             role="tab"
             aria-selected={phase === i}
             className={`izf-seg${phase === i ? " on" : ""}${phase > i ? " past" : ""}`}
             onClick={() => goPhase(i)}
           >
-            <span className="izf-seg-n">{i === 0 ? "—" : phase > i ? IcCheck : i}</span>
-            <span className="izf-seg-l">{label}</span>
+            <span className="izf-seg-ic" aria-hidden="true">
+              {phase > i ? IcCheck : r.icon}
+            </span>
+            <span className="izf-seg-l">{r.label}</span>
           </button>
         ))}
       </div>
 
       <div className="izf-body">
-      {/* ---------- the plate ---------- */}
-      <div className="izf-plate">
-        <svg className="izf-wires" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="none" aria-hidden="true">
-          {EDGE_ORDER.map((id) => (
-            <path key={id} className="izf-wire" d={EDGES[id]} />
-          ))}
-          {Array.from(lit).map((id) => (
-            <g key={`${phase}-${id}`}>
-              <path className="izf-wire-lit" d={EDGES[id]} />
-              <circle r={5} className={`izf-pkt${rev ? " rev" : ""}`} style={{ offsetPath: `path('${EDGES[id]}')` } as CSSProperties} />
-            </g>
-          ))}
-        </svg>
+        {/* ---------- the diagram ---------- */}
+        <div className="izf-plate">
+          <svg className="izf-wires" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="none" aria-hidden="true">
+            {EDGE_ORDER.map((id) => (
+              <path key={id} className="izf-wire" d={EDGES[id].d} />
+            ))}
+            {Array.from(lit).map((id) => (
+              <path key={`${phase}-${id}`} className="izf-wire-lit" d={EDGES[id].d} />
+            ))}
+            {/* travelling packet rides the first lit wire only, so the eye
+                has one thing to follow rather than several at once */}
+            {Array.from(lit).slice(0, 1).map((id) => (
+              <rect
+                key={`p-${phase}-${id}`}
+                className={`izf-pkt${rev ? " rev" : ""}`}
+                x={-5}
+                y={-5}
+                width={10}
+                height={10}
+                style={{ offsetPath: `path('${EDGES[id].d}')` } as CSSProperties}
+              />
+            ))}
+            {/* port nubs */}
+            {EDGE_ORDER.flatMap((id) =>
+              EDGES[id].ports.map(([x, y], k) => (
+                <rect
+                  key={`${id}-${k}`}
+                  className={`izf-port${lit.has(id) ? " on" : ""}`}
+                  x={x - 4}
+                  y={y - 4}
+                  width={8}
+                  height={8}
+                />
+              ))
+            )}
+          </svg>
 
-        {/* zone frames — quiet labels that group the scene like the deck */}
-        <div className="izf-zone izf-zone-user"><span>End user</span></div>
-        <div className="izf-zone izf-zone-apps"><span>Apps horizon</span></div>
+          <div className={`izf-node izf-mfa ${state("mfa")}`} style={nodeStyle("mfa")}>
+            <span className="izf-ic">{IcShieldCheck}</span>
+            <b>MFA</b>
+          </div>
 
-        {/* --- user --- */}
-        <div className={`izf-node izf-user ${state("user")}`} style={nodeStyle("user")}>
-          <span className="izf-avatar" aria-hidden="true">
-            <svg viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="24" fill="currentColor" opacity="0.16" />
-              <circle cx="24" cy="19" r="7.5" fill="currentColor" />
-              <path d="M9 44a15 13 0 0 1 30 0z" fill="currentColor" />
-            </svg>
-          </span>
-          <span className="izf-node-txt">
+          <div className={`izf-node izf-controller ${state("controller")}`} style={nodeStyle("controller")}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/instasafe-mark-color.svg" alt="" className="izf-mark" />
+            <b>Controller</b>
+          </div>
+
+          <div className={`izf-node izf-stack izf-identity ${state("identity")}`} style={nodeStyle("identity")}>
+            <b>Identity</b>
+            <span className="izf-logos">
+              {IDP.map((l) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={l.alt} src={l.src} alt={l.alt} />
+              ))}
+            </span>
+          </div>
+
+          <div className={`izf-node izf-user ${state("user")}`} style={nodeStyle("user")}>
+            <span className="izf-ic">{IcUser}</span>
             <b>Alen Joseph</b>
-            <i>InstaSafe agent</i>
-          </span>
+          </div>
+
+          <div className={`izf-node izf-gateway ${state("gateway")}`} style={nodeStyle("gateway")}>
+            <span className="izf-ic">{IcGate}</span>
+            <b>Gateway</b>
+          </div>
+
+          <div className={`izf-node izf-stack izf-cloud ${state("cloud")}`} style={nodeStyle("cloud")}>
+            <b>Cloud platforms</b>
+            <span className="izf-logos big">
+              {CLOUD.map((l) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={l.alt} src={l.src} alt={l.alt} />
+              ))}
+            </span>
+          </div>
+
+          <div className={`izf-node izf-stack izf-saas ${state("saas")}`} style={nodeStyle("saas")}>
+            <b>SaaS apps</b>
+            <span className="izf-logos big">
+              {SAAS.map((l) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={l.alt} src={l.src} alt={l.alt} />
+              ))}
+            </span>
+          </div>
         </div>
 
-        {/* --- MFA --- */}
-        <div className={`izf-node izf-mfa ${state("mfa")}`} style={nodeStyle("mfa")}>
-          <span className="izf-ic">{IcShield}</span>
-          <b>MFA</b>
+        {/* ---------- narration, beside the diagram ---------- */}
+        <div className="izf-narr" aria-live="polite">
+          <div>
+            <span className="izf-tag">{ph.tag}</span>
+            <h3>{ph.title}</h3>
+            <p>{ph.purpose}</p>
+          </div>
+          {live && (
+            <ol className="izf-steps">
+              {ph.steps.map((s, i) => (
+                <li key={s.t} className={`izf-step${i < step ? " past" : ""}${i === step ? " cur" : ""}`}>
+                  <span className="izf-step-i">{i < step ? IcCheck : i + 1}</span>
+                  <span>{s.t}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+          <div className="izf-ctl">
+            <button className="izf-btn pri" onClick={toggle} aria-pressed={playing}>
+              {playing ? IcPause : IcPlay}
+              {playing ? "Pause" : done ? "Play again" : "Play walkthrough"}
+            </button>
+            <button className="izf-btn" onClick={restart} aria-label="Restart walkthrough">
+              {IcReplay} Restart
+            </button>
+          </div>
         </div>
-
-        {/* --- identity --- */}
-        <div className={`izf-node izf-identity ${state("identity")}`} style={nodeStyle("identity")}>
-          <span className="izf-node-cap">Identity system</span>
-          <span className="izf-logos">
-            {IDP.map((l) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={l.alt} src={l.src} alt={l.alt} className={l.tall ? "wide" : ""} />
-            ))}
-          </span>
-        </div>
-
-        {/* --- controller (our own mark) --- */}
-        <div className={`izf-node izf-controller ${state("controller")}`} style={nodeStyle("controller")}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/instasafe-mark-color.svg" alt="" className="izf-mark" />
-          <b>Controller</b>
-        </div>
-
-        {/* --- gateway --- */}
-        <div className={`izf-node izf-gateway ${state("gateway")}`} style={nodeStyle("gateway")}>
-          <span className="izf-ic">{IcGate}</span>
-          <b>Gateway</b>
-        </div>
-
-        {/* --- apps --- */}
-        <div className={`izf-node izf-apps ${state("apps")}`} style={nodeStyle("apps")}>
-          <span className="izf-node-cap">Cloud &amp; private apps</span>
-          <span className="izf-logos grid">
-            {CSP.concat(SAAS).map((l) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={l.alt} src={l.src} alt={l.alt} />
-            ))}
-          </span>
-        </div>
-      </div>
-
-      {/* ---------- narration — sits BESIDE the diagram, never below it,
-                so a reader never has to scroll away from the thing the
-                text is describing ---------- */}
-      <div className="izf-narr" aria-live="polite">
-        <div className="izf-narr-head">
-          <span className="izf-tag">{ph.tag}</span>
-          <h3>{ph.title}</h3>
-          <p>{ph.purpose}</p>
-        </div>
-        {live && (
-          <ol className="izf-steps">
-            {ph.steps.map((s, i) => (
-              <li key={s.t} className={`izf-step${i < step ? " past" : ""}${i === step ? " cur" : ""}`}>
-                <span className="izf-step-i">{i < step ? IcCheck : i + 1}</span>
-                <span>{s.t}</span>
-              </li>
-            ))}
-          </ol>
-        )}
-        <div className="izf-ctl">
-          <button className="izf-btn pri" onClick={toggle} aria-pressed={playing}>
-            {playing ? IcPause : IcPlay}
-            {playing ? "Pause" : done ? "Play again" : "Play walkthrough"}
-          </button>
-          <button className="izf-btn" onClick={restart} aria-label="Restart walkthrough">
-            {IcReplay} Restart
-          </button>
-        </div>
-      </div>
       </div>
     </div>
   );
