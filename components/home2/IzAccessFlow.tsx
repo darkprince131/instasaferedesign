@@ -333,6 +333,7 @@ export function IzAccessFlow() {
         ))}
       </div>
 
+      <div className="izf-body">
       {/* ---------- the plate ---------- */}
       <div className="izf-plate">
         <svg className="izf-wires" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="none" aria-hidden="true">
@@ -408,7 +409,9 @@ export function IzAccessFlow() {
         </div>
       </div>
 
-      {/* ---------- narration ---------- */}
+      {/* ---------- narration — sits BESIDE the diagram, never below it,
+                so a reader never has to scroll away from the thing the
+                text is describing ---------- */}
       <div className="izf-narr" aria-live="polite">
         <div className="izf-narr-head">
           <span className="izf-tag">{ph.tag}</span>
@@ -434,6 +437,7 @@ export function IzAccessFlow() {
             {IcReplay} Restart
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

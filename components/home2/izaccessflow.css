@@ -13,7 +13,18 @@
 .izf {
   position: relative;
   display: grid;
-  gap: var(--sp-6);
+  gap: clamp(var(--sp-4), 2.4vh, var(--sp-6));
+}
+
+/* Diagram and narration sit SIDE BY SIDE. Stacking them meant the steps
+   were below the fold of the thing they describe, so a reader had to
+   scroll down to read and back up to watch — the walkthrough was
+   unreadable in one frame. */
+.izf-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 1fr);
+  gap: clamp(var(--sp-6), 3vw, var(--sp-12));
+  align-items: center;
 }
 
 /* ---------- segmented progress rail ---------- */
@@ -87,32 +98,16 @@
 .izf-plate {
   position: relative;
   aspect-ratio: 1200 / 640;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: var(--bg-2);
-  overflow: hidden;
-  /* the fingerprint move: a filled field crossed by hairline rules,
-     faded at the ends so the frame never reads as a hard box */
-  background-image:
-    linear-gradient(to right, var(--line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
-  background-size: 25% 100%, 100% 33.33%;
-  background-position: 0 0;
+  /* No frame, no fill, no internal grid. The diagram sits directly in the
+     page's own grid field — boxing it and drawing a second grid inside
+     produced a panel-within-a-panel, which is the thing being avoided. */
+  overflow: visible;
   /* Nodes are placed by PERCENTAGE but sized in their own units. If those
      units are fixed px, every node occupies a larger share of the plate as
      it narrows and they collide. Sizing them in cqw keeps node-to-plate
      proportions constant, so the map holds its layout at any width. */
   container-type: inline-size;
 }
-.izf-plate::after {
-  /* soften the rules toward the frame edges */
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(120% 100% at 50% 45%, transparent 45%, var(--bg-2) 100%);
-}
-
 .izf-wires {
   position: absolute;
   inset: 0;
@@ -168,7 +163,7 @@
   top: -9px;
   left: 14px;
   padding: 0 8px;
-  background: var(--bg-2);
+  background: var(--bg);
   font-family: var(--mono);
   font-size: var(--fs-2xs);
   letter-spacing: var(--ls-mono);
@@ -268,10 +263,8 @@
 .izf-narr {
   display: grid;
   gap: var(--sp-4);
-  border-left: 2px solid var(--orange);
-  padding-left: var(--sp-5);
+  align-content: center;
 }
-.izf-allow .izf-narr { border-left-color: var(--allow); }
 .izf-tag {
   font-family: var(--mono);
   font-size: var(--fs-mono-xs);
@@ -350,6 +343,10 @@
    nodes would collide, so it becomes a vertical list of the same
    six parts in flow order. No information is dropped.
    ============================================================ */
+@media (max-width: 1000px) {
+  .izf-body { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 900px) {
   .izf-plate {
     aspect-ratio: auto;
@@ -381,4 +378,24 @@
   .izf-step { transition: none !important; }
   .izf-wire-lit { animation: none !important; stroke-dasharray: none; }
   .izf-pkt { animation: none !important; }
+}
+
+/* ============================================================
+   Section shell — one viewport, heading over the diagram.
+   ============================================================ */
+.izf-section {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  /* vh-based so a short laptop viewport trims the padding instead of
+     pushing the steps out of frame */
+  padding-block: clamp(var(--sp-6), 4.5vh, var(--sp-section));
+}
+.izf-head { margin-bottom: clamp(var(--sp-4), 2.2vh, var(--sp-8)); }
+.izf-head .iz-h2 { margin: var(--sp-3) 0 0; }
+
+/* Below the two-column breakpoint the stack is taller than a viewport,
+   so stop forcing it into one. */
+@media (max-width: 1000px) {
+  .izf-section { min-height: 0; display: block; }
 }

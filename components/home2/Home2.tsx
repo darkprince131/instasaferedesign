@@ -233,24 +233,6 @@ export function Home2() {
               </a>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ---------------- HOW IT WORKS (plain ⇄ tech flow) ---------------- */}
-      {/* one rail + a dashed top rule — no field texture */}
-      <section className="iz-section iz-railed iz-railed--fade iz-railed--left iz-ruled-top" id="how">
-        <div className="iz-wrap">
-          <div className="iz-reveal iz-headblock" style={{ textAlign: "center" }}>
-            <span className="iz-ey dim" style={{ justifyContent: "center", display: "inline-flex" }}>
-              How it works
-            </span>
-            <h2 className="iz-h2">
-              Watch one request <em>earn its way in</em>.
-            </h2>
-          </div>
-          <div className="iz-reveal">
-            <IzAccessFlow />
-          </div>
           <div className="iz-reveal iz-block-top">
             <div className="iz-statband">
               {[
@@ -265,6 +247,24 @@ export function Home2() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- HOW IT WORKS (plain ⇄ tech flow) ---------------- */}
+      {/* one rail + a dashed top rule — no field texture */}
+      {/* One full viewport: heading, diagram and steps all in frame, so the
+          walkthrough never asks you to scroll away from what it describes. */}
+      <section className="iz-section iz-railed iz-railed--fade iz-ruled-top izf-section" id="how">
+        <div className="iz-wrap">
+          <div className="iz-reveal izf-head">
+            <span className="iz-ey dim">How it works</span>
+            <h2 className="iz-h2">
+              Watch one request <em>earn its way in</em>.
+            </h2>
+          </div>
+          <div className="iz-reveal">
+            <IzAccessFlow />
           </div>
         </div>
       </section>
