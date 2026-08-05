@@ -342,7 +342,10 @@ export const HERO = {
     { id: "c1", tag: "Verified", label: "Access", value: "Granted", x: 6, y: 8 },
     { id: "c2", tag: "Unverified", label: "Access", value: "Refused", x: 15, y: 34 },
     { id: "c3", tag: "Verified", label: "Posture", value: "25/25", x: 71, y: 10 },
-    { id: "c4", tag: "Unverified", label: "Device", value: "Unbound", x: 62, y: 48 },
+    /* clear of the centred title box, which spans roughly 35–65% wide
+       and 38–62% tall — anything inside that lands behind the headline
+       and gets clipped by it */
+    { id: "c4", tag: "Unverified", label: "Device", value: "Unbound", x: 79, y: 44 },
     { id: "c5", tag: "Verified", label: "Tunnel", value: "Per session", x: 33, y: 76 },
     { id: "c6", tag: "Unverified", label: "Gateway", value: "Drop all", x: 3, y: 64 },
   ],

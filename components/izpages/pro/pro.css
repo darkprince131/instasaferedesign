@@ -1125,7 +1125,7 @@
 }
 /* give the wash a little room so it never crops the content it lights */
 .izpro-ft-params .izpro-focus {
-  inset: -6px -8px;
+  inset: 0 -2px -2px;
 }
 .izpro-focus-c {
   position: absolute;
@@ -1206,7 +1206,16 @@
   color: var(--tx-mute);
 }
 
-/* ---------- part-two table rows (step 03) ---------- */
+/* ---------- part-two table rows (step 03) ----------
+   The container collapses to nothing during part one, so the gateway
+   panel is exactly as tall as the four rows it is showing. It then
+   grows to hold the remaining eight. Same trade-off as the map
+   checks above: contained inside a fixed-height slot. */
+.izpro-rows-late {
+  overflow: hidden;
+  max-height: calc(var(--frame-t, 0) * 300px);
+  border-top: 1px solid color-mix(in srgb, var(--line) calc(var(--frame-t, 0) * 100%), transparent);
+}
 .izpro-row-late {
   --rr: clamp(0, calc((var(--frame-t, 0) - 0.44 - var(--ri, 0) * 0.05) / 0.26), 1);
   opacity: var(--rr);
@@ -1214,16 +1223,25 @@
 }
 
 /* ---------- part-two posture checks (step 02) ---------- */
+/* In normal flow, not overlaid. The absolute version sat on top of
+   the location/bound row and hid it. The container grows from zero as
+   part two runs, so the panel gets taller instead of the detail
+   covering what is already there.
+
+   max-height IS a layout property, which the motion rules normally
+   rule out — but this lives inside an absolutely-positioned, fixed-
+   height slot, so nothing outside the panel can reflow, and the whole
+   point of the interaction is that the console grows. */
 .izpro-mapchecks {
-  position: absolute;
-  left: var(--sp-3);
-  right: var(--sp-3);
-  bottom: calc(var(--sp-10) + var(--sp-3));
-  z-index: 5;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  pointer-events: none;
+  overflow: hidden;
+  max-height: calc(var(--frame-t, 0) * 150px);
+  padding: 0 var(--sp-3);
+  padding-top: calc(var(--frame-t, 0) * var(--sp-3));
+  padding-bottom: calc(var(--frame-t, 0) * var(--sp-3));
+  border-top: 1px solid color-mix(in srgb, var(--line) calc(var(--frame-t, 0) * 100%), transparent);
 }
 .izpro-mapcheck {
   --rr: clamp(0, calc((var(--frame-t, 0) - 0.46 - var(--ri, 0) * 0.06) / 0.26), 1);
@@ -1294,6 +1312,10 @@
 .izpro-panel {
   display: flex;
   flex-direction: column;
+  /* hug the data: the slot is centred, so a shorter panel sits in the
+     middle of the column rather than leaving a half-empty box */
+  align-self: center;
+  width: 100%;
   min-width: 0;
   border-radius: var(--r-md);
   background: var(--surface);

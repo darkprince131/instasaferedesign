@@ -7,6 +7,8 @@ import "@/components/home2/iz-system.css";
 import "@/components/home2/home2.css";
 import "@/components/home2/izgrid.css";
 import "@/components/izpages/pro/pro.css";
+import "@/components/izpages/pro/quickscan.css";
+import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/izfootergrid.css";
 
 /* SEO-locked: /platform already exists as a canonical entry in

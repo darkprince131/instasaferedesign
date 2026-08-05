@@ -117,34 +117,45 @@ function CodeBody({ panel }: { panel: Extract<Panel, { kind: "code" }> }) {
 
 /* ---------- table ---------- */
 
+type TableRow = Extract<Panel, { kind: "table" }>["rows"][number];
+
+function Row({ r, late, index }: { r: TableRow; late?: boolean; index?: number }) {
+  return (
+    <div
+      className={`izpro-row ${r.lit ? "lit" : ""} ${late ? "izpro-row-late" : ""}`}
+      style={late ? ({ ["--ri" as string]: index } as React.CSSProperties) : undefined}
+    >
+      <span className="izpro-rlabel">{r.label}</span>
+      <span className={`izpro-rstatus t-${r.tone}`}>
+        <i aria-hidden="true" />
+        {r.status}
+      </span>
+      {r.value !== undefined && <span className="izpro-rvalue">{r.value}</span>}
+    </div>
+  );
+}
+
 function TableBody({ panel }: { panel: Extract<Panel, { kind: "table" }> }) {
   const from = panel.revealFrom;
   return (
     <>
       {panel.head && <Head label={panel.head.label} right={panel.head.right} />}
+      {/* Part one's rows sit in normal flow. Part two's live in their
+          own collapsed container so the panel is only ever as tall as
+          the data currently shown — previously all twelve rows held
+          their space from the start and the panel read half-empty. */}
       <div className="izpro-rows">
-        {panel.rows.map((r, i) => {
-          /* Rows past `revealFrom` are part two. They are rendered from
-             the start so the panel never changes height — only their
-             opacity/offset is animated, which keeps this off the layout
-             path entirely. `--ri` is the stagger index within part two. */
-          const late = from !== undefined && i >= from;
-          return (
-            <div
-              key={r.label}
-              className={`izpro-row ${r.lit ? "lit" : ""} ${late ? "izpro-row-late" : ""}`}
-              style={late ? ({ ["--ri" as string]: i - from } as React.CSSProperties) : undefined}
-            >
-              <span className="izpro-rlabel">{r.label}</span>
-              <span className={`izpro-rstatus t-${r.tone}`}>
-                <i aria-hidden="true" />
-                {r.status}
-              </span>
-              {r.value !== undefined && <span className="izpro-rvalue">{r.value}</span>}
-            </div>
-          );
-        })}
+        {panel.rows.slice(0, from ?? panel.rows.length).map((r) => (
+          <Row key={r.label} r={r} />
+        ))}
       </div>
+      {from !== undefined && (
+        <div className="izpro-rows izpro-rows-late">
+          {panel.rows.slice(from).map((r, i) => (
+            <Row key={r.label} r={r} late index={i} />
+          ))}
+        </div>
+      )}
       {panel.total && (
         <div className={`izpro-total t-${panel.total.tone}`}>
           <span>{panel.total.label}</span>

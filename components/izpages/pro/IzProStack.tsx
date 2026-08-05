@@ -95,6 +95,21 @@ const HOLD = 0.55;
 const FRAME_SWITCH_START = 0.16;
 const FRAME_SWITCH_END = 0.42;
 
+/* Two rest points per slide, so the section advances in STEPS rather
+   than as one long uninterrupted glide: one scroll settles on part
+   one, the next settles on part two, the next hands off to the
+   following slide. Without this a single fast flick could cross a
+   whole step and the reader would never see the part-two reveal that
+   explains it.
+     (i + 0.06)/N  — part one at rest, before the frame swap
+     (i + 0.50)/N  — part two resolved, before HOLD hands off
+   Values are fractions of the WHOLE section, which is what
+   ScrollTrigger's snap array expects. */
+const SNAP_POINTS = Array.from({ length: SLIDES.length }, (_, i) => [
+  (i + 0.06) / SLIDES.length,
+  (i + 0.5) / SLIDES.length,
+]).flat();
+
 export function IzProStack() {
   const outerRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -158,6 +173,15 @@ export function IzProStack() {
           end: () => `+=${outer.offsetHeight - sticky.offsetHeight}`,
           scrub: 0.6,
           invalidateOnRefresh: true,
+          /* `delay` matters more than it looks: snapping the instant
+             scrolling stops fights a reader who is still moving. It
+             waits for the scroll to actually settle first. */
+          snap: {
+            snapTo: SNAP_POINTS,
+            duration: { min: 0.2, max: 0.5 },
+            delay: 0.09,
+            ease: "power1.inOut",
+          },
         },
       });
     }, outer);
