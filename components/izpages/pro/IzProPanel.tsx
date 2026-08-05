@@ -19,6 +19,7 @@ import type { Panel } from "./pro.config";
    ============================================================ */
 
 export function IzProPanel({ panel }: { panel: Panel }) {
+  const focus = "focus" in panel ? panel.focus : undefined;
   return (
     <div className="izpro-panel">
       {panel.kind === "code" && <CodeBody panel={panel} />}
@@ -26,7 +27,30 @@ export function IzProPanel({ panel }: { panel: Panel }) {
       {panel.kind === "record" && <RecordBody panel={panel} />}
       {panel.kind === "duo" && <DuoBody panel={panel} />}
       {panel.kind === "map" && <MapBody panel={panel} />}
+      {focus && <FocusFrame label={focus} />}
     </div>
+  );
+}
+
+/* ---------- the focus frame ----------
+   ONE overlay, identical on all four steps: square corner brackets, a
+   hairline accent border and a label tab. It lands with part two of
+   every step, which is what tells the reader "this is the bit that
+   just resolved" — the same job Fingerprint's orange selection
+   rectangle does. Square corners deliberately: the panel is rounded,
+   so a sharp bracket reads as a measurement mark laid ON the panel
+   rather than as part of it.
+
+   Driven entirely by --frame-t, so it costs no JS. */
+function FocusFrame({ label }: { label: string }) {
+  return (
+    <span className="izpro-focus" aria-hidden="true">
+      <i className="izpro-focus-c tl" />
+      <i className="izpro-focus-c tr" />
+      <i className="izpro-focus-c bl" />
+      <i className="izpro-focus-c br" />
+      <span className="izpro-focus-tag">{label}</span>
+    </span>
   );
 }
 
@@ -88,20 +112,32 @@ function CodeBody({ panel }: { panel: Extract<Panel, { kind: "code" }> }) {
 /* ---------- table ---------- */
 
 function TableBody({ panel }: { panel: Extract<Panel, { kind: "table" }> }) {
+  const from = panel.revealFrom;
   return (
     <>
       {panel.head && <Head label={panel.head.label} right={panel.head.right} />}
       <div className="izpro-rows">
-        {panel.rows.map((r) => (
-          <div key={r.label} className={`izpro-row ${r.lit ? "lit" : ""}`}>
-            <span className="izpro-rlabel">{r.label}</span>
-            <span className={`izpro-rstatus t-${r.tone}`}>
-              <i aria-hidden="true" />
-              {r.status}
-            </span>
-            {r.value !== undefined && <span className="izpro-rvalue">{r.value}</span>}
-          </div>
-        ))}
+        {panel.rows.map((r, i) => {
+          /* Rows past `revealFrom` are part two. They are rendered from
+             the start so the panel never changes height — only their
+             opacity/offset is animated, which keeps this off the layout
+             path entirely. `--ri` is the stagger index within part two. */
+          const late = from !== undefined && i >= from;
+          return (
+            <div
+              key={r.label}
+              className={`izpro-row ${r.lit ? "lit" : ""} ${late ? "izpro-row-late" : ""}`}
+              style={late ? ({ ["--ri" as string]: i - from } as React.CSSProperties) : undefined}
+            >
+              <span className="izpro-rlabel">{r.label}</span>
+              <span className={`izpro-rstatus t-${r.tone}`}>
+                <i aria-hidden="true" />
+                {r.status}
+              </span>
+              {r.value !== undefined && <span className="izpro-rvalue">{r.value}</span>}
+            </div>
+          );
+        })}
       </div>
       {panel.total && (
         <div className={`izpro-total t-${panel.total.tone}`}>
@@ -162,17 +198,39 @@ function RecordBody({ panel }: { panel: Extract<Panel, { kind: "record" }> }) {
    A thin orange rule appears at the same rate frame B does: the same
    cue the reference uses when its panel lands on response.json. */
 function DuoBody({ panel }: { panel: Extract<Panel, { kind: "duo" }> }) {
+  const c = panel.cursor;
   return (
     <>
       {panel.head && <Head label={panel.head.label} />}
       <div className="izpro-duo">
-        <span className="izpro-duo-glow" aria-hidden="true" />
         <div className="izpro-duo-frame" data-frame="a">
           <Frame frame={panel.frameA} />
         </div>
         <div className="izpro-duo-frame" data-frame="b">
           <Frame frame={panel.frameB} />
         </div>
+        {c && (
+          /* The pointer's whole path is four numbers in the config and
+             a lerp in CSS against --frame-t: it walks to the tile,
+             clicks, and frame B opens behind it. No JS per frame. */
+          <span
+            className="izpro-ptr"
+            aria-hidden="true"
+            style={
+              {
+                ["--px0" as string]: `${c.fromX}%`,
+                ["--py0" as string]: `${c.fromY}%`,
+                ["--px1" as string]: `${c.toX}%`,
+                ["--py1" as string]: `${c.toY}%`,
+              } as React.CSSProperties
+            }
+          >
+            <svg viewBox="0 0 12 18">
+              <path d="M1 1l10 8-4.6.6L9 15.6l-2 .9-2.6-6L1 13z" />
+            </svg>
+            <i className="izpro-ptr-ring" />
+          </span>
+        )}
       </div>
     </>
   );
@@ -219,15 +277,22 @@ function AppsFrame({ frame }: { frame: Extract<Extract<Panel, { kind: "duo" }>["
   return (
     <div className="izpro-apps">
       <div className="izpro-apps-nav">
-        <span className="izpro-apps-tenant">Veno</span>
+        <span className="izpro-apps-tenant">{frame.greeting ?? "Veno"}</span>
         <span className="izpro-apps-avatar">AJ</span>
       </div>
       <div className="izpro-apps-grid">
         {frame.apps.map((a) => (
-          <span className="izpro-apps-tile" key={a.name}>
-            <span className="izpro-apps-logo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/logos/integrations/${a.logo}.svg`} alt="" loading="lazy" decoding="async" />
+          <span
+            className={a.name === frame.openable ? "izpro-apps-tile izpro-apps-target" : "izpro-apps-tile"}
+            key={a.name}
+          >
+            <span className={a.logo ? "izpro-apps-logo" : "izpro-apps-logo izpro-apps-proto"}>
+              {a.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={`/logos/integrations/${a.logo}.svg`} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span>RDP</span>
+              )}
             </span>
             <span className="izpro-apps-name">{a.name}</span>
           </span>
@@ -291,6 +356,19 @@ function MapBody({ panel }: { panel: Extract<Panel, { kind: "map" }> }) {
           {panel.boundLabel}
         </span>
       </div>
+      {/* PART TWO — the breakdown behind the "25/25". Overlaid rather
+          than appended so the panel keeps one fixed height. */}
+      {panel.checks && (
+        <div className="izpro-mapchecks">
+          {panel.checks.map((c, i) => (
+            <span key={c.label} className="izpro-mapcheck" style={{ ["--ri" as string]: i } as React.CSSProperties}>
+              <ShieldCheck weight="fill" aria-hidden="true" />
+              <b>{c.label}</b>
+              {c.value}
+            </span>
+          ))}
+        </div>
+      )}
     </>
   );
 }

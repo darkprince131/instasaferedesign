@@ -532,10 +532,14 @@
   gap: var(--sp-5);
   will-change: transform, opacity;
 }
+/* The outgoing step blurs and sinks as the incoming one rises over
+   it. Without this the two were legible at the same time and the
+   overlap read as a rendering fault rather than as a hand-off. */
 .izpro-slot[data-state="current"] {
   z-index: 10;
-  opacity: 1;
-  transform: none;
+  opacity: calc(1 - 0.72 * var(--local));
+  filter: blur(calc(var(--local) * 5px));
+  transform: scale(calc(1 - 0.03 * var(--local)));
 }
 .izpro-slot[data-state="next"] {
   z-index: 11;
@@ -567,7 +571,12 @@
 
 /* ---------- floating cards ---------- */
 
+/* Floats are PART TWO's explanation — they exist to annotate what the
+   panel just did, so they must not be on screen while part one is
+   still being read. Each carries --fi and comes in staggered ~60ms
+   apart behind the focus frame. */
 .izpro-float {
+  --fp: clamp(0, calc((var(--frame-t, 0) - 0.5 - var(--fi, 0) * 0.09) / 0.26), 1);
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -576,6 +585,8 @@
   background: var(--surface);
   border: var(--bw) solid var(--line);
   border-radius: var(--r-xs);
+  opacity: var(--fp);
+  transform: translateY(calc((1 - var(--fp)) * 12px));
   box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--tx) 55%, transparent);
   z-index: 3;
 }
@@ -637,24 +648,27 @@
   min-height: 240px;
   isolation: isolate;
 }
-/* the dashed ring that lands the same moment frame B does — same cue
-   the reference gives when its own panel switches to response.json */
-.izpro-duo-glow {
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  border: var(--bw) dashed color-mix(in srgb, var(--accent) 70%, transparent);
-  opacity: var(--frame-t, 0);
-  pointer-events: none;
-}
+/* SEQUENCED, not linear. Two elements crossfading on the same linear
+   ramp both sit near 0.5 in the middle, which reads as washed-out
+   rather than as a change — the "don't linger below 0.2" rule. So A
+   fades out over the first 40% and B only starts at 46%. The small
+   gap is deliberate: with the focus frame landing at the same moment
+   it reads as a cut-and-reveal instead of a dissolve.
+
+   Both use transform + opacity only, so neither touches layout. */
 .izpro-duo-frame[data-frame="a"] {
-  opacity: calc(1 - var(--frame-t, 0));
+  --fa: clamp(0, calc((0.4 - var(--frame-t, 0)) / 0.4), 1);
+  opacity: var(--fa);
+  transform: scale(calc(0.985 + 0.015 * var(--fa)));
+  transform-origin: 50% 45%;
 }
 .izpro-duo-frame[data-frame="b"] {
+  --fb: clamp(0, calc((var(--frame-t, 0) - 0.46) / 0.34), 1);
   position: absolute;
   inset: 0;
-  opacity: var(--frame-t, 0);
+  opacity: var(--fb);
+  transform: translateY(calc((1 - var(--fb)) * 10px)) scale(calc(0.985 + 0.015 * var(--fb)));
+  transform-origin: 50% 45%;
 }
 
 /* ---- login + MFA mock ---- */
@@ -993,6 +1007,146 @@
 .iz[data-theme="dark"] .izprodock-icon img {
   filter: brightness(0) invert(1);
   opacity: 0.9;
+}
+
+
+/* ---------- the focus frame (part two, every step) ----------
+   Square brackets + hairline border + label tab, on the accent. Lands
+   with frame B / the revealed rows, and is the single consistent cue
+   that a step has resolved. Lives above the panel body but below the
+   pointer. */
+.izpro-focus {
+  --ff: clamp(0, calc((var(--frame-t, 0) - 0.44) / 0.3), 1);
+  position: absolute;
+  inset: -1px;
+  z-index: 6;
+  pointer-events: none;
+  opacity: var(--ff);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 62%, transparent);
+  border-radius: var(--r-md);
+}
+.izpro-focus-c {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--accent);
+  /* square, against the panel's rounded corners — reads as a mark laid
+     ON the panel rather than as part of its own outline */
+  border-radius: 0;
+  background: var(--surface);
+}
+.izpro-focus-c.tl { top: -5px; left: -5px; }
+.izpro-focus-c.tr { top: -5px; right: -5px; }
+.izpro-focus-c.bl { bottom: -5px; left: -5px; }
+.izpro-focus-c.br { bottom: -5px; right: -5px; }
+.izpro-focus-tag {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  transform: translateY(-100%);
+  padding: 2px var(--sp-2);
+  background: var(--accent);
+  color: var(--btn-ink);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---------- pointer (step 04) ----------
+   Walks from --px0/--py0 to --px1/--py1 over the first third of the
+   sub-transition, pulses a click ring, then frame B opens behind it. */
+.izpro-ptr {
+  --pt: clamp(0, calc(var(--frame-t, 0) / 0.34), 1);
+  position: absolute;
+  z-index: 7;
+  width: 13px;
+  height: 19px;
+  pointer-events: none;
+  left: calc(var(--px0) + (var(--px1) - var(--px0)) * var(--pt));
+  top: calc(var(--py0) + (var(--py1) - var(--py0)) * var(--pt));
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  /* gone once the app is open — a cursor parked on a running window
+     just looks like a stuck asset */
+  opacity: clamp(0, calc((0.62 - var(--frame-t, 0)) / 0.12), 1);
+}
+.izpro-ptr svg {
+  width: 100%;
+  height: 100%;
+  fill: #fff;
+  stroke: #1b1622;
+  stroke-width: 0.9;
+}
+.izpro-ptr-ring {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  /* one pulse, centred on the click moment (frame-t 0.38) */
+  --ck: clamp(0, calc(1 - abs(var(--frame-t, 0) - 0.38) / 0.07), 1);
+  opacity: var(--ck);
+  transform: scale(calc(0.4 + 0.7 * (1 - var(--ck))));
+}
+/* the tile the pointer is heading for */
+.izpro-apps-target .izpro-apps-logo {
+  --ht: clamp(0, calc((var(--frame-t, 0) - 0.3) / 0.1), 1);
+  border-color: color-mix(in srgb, var(--accent) calc(var(--ht) * 60%), var(--line));
+  box-shadow: 0 0 0 calc(var(--ht) * 3px) color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.izpro-apps-proto span {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: var(--tx-mute);
+}
+
+/* ---------- part-two table rows (step 03) ---------- */
+.izpro-row-late {
+  --rr: clamp(0, calc((var(--frame-t, 0) - 0.44 - var(--ri, 0) * 0.05) / 0.26), 1);
+  opacity: var(--rr);
+  transform: translateY(calc((1 - var(--rr)) * 6px));
+}
+
+/* ---------- part-two posture checks (step 02) ---------- */
+.izpro-mapchecks {
+  position: absolute;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  bottom: calc(var(--sp-10) + var(--sp-3));
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+.izpro-mapcheck {
+  --rr: clamp(0, calc((var(--frame-t, 0) - 0.46 - var(--ri, 0) * 0.06) / 0.26), 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px var(--sp-2);
+  border-radius: var(--r-2xs);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: var(--bw) solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+  opacity: var(--rr);
+  transform: translateX(calc((1 - var(--rr)) * -8px));
+}
+.izpro-mapcheck svg {
+  width: 10px;
+  height: 10px;
+  color: var(--allow);
+  flex: none;
+}
+.izpro-mapcheck b {
+  font-weight: 500;
+  color: var(--tx-dim);
 }
 
 /* ---------- progress rail ---------- */
@@ -1340,13 +1494,25 @@
    mobile shows it directly: frame A is dropped, frame B becomes the
    normal-flow element instead of the absolute overlay it is on
    desktop. */
-.izpro-mobile .izpro-duo-glow,
-.izpro-mobile .izpro-duo-frame[data-frame="a"] {
+.izpro-mobile .izpro-duo-frame[data-frame="a"],
+.izpro-mobile .izpro-ptr,
+.izpro-mobile .izpro-focus {
   display: none;
 }
 .izpro-mobile .izpro-duo-frame[data-frame="b"] {
   position: static;
   opacity: 1;
+  transform: none;
+}
+/* --frame-t is never set on the static list, so every part-two element
+   would sit at its 0 state forever. Force them all visible. */
+.izpro-mobile .izpro-row-late,
+.izpro-mobile .izpro-mapcheck {
+  opacity: 1;
+  transform: none;
+}
+.izpro-mobile .izpro-mapchecks {
+  display: none;
 }
 .izpro-mobile .izprodock {
   margin-top: var(--sp-3);

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { SLIDES, type Slide } from "./pro.config";
 import { IzProPanel } from "./IzProPanel";
@@ -47,11 +49,13 @@ function Floats({ slide }: { slide: Slide }) {
   if (!slide.floats) return null;
   return (
     <>
-      {slide.floats.map((f) => (
+      {slide.floats.map((f, i) => (
         <span
           key={f.id}
           className={`izpro-float ${f.tone ? `t-${f.tone}` : ""}`}
-          style={{ left: `${f.x}%`, top: `${f.y}%`, width: f.w }}
+          /* --fi is the stagger index; the reveal window itself lives
+             in pro.css and is driven by --frame-t */
+          style={{ left: `${f.x}%`, top: `${f.y}%`, width: f.w, ["--fi" as string]: i }}
           aria-hidden="true"
         >
           {f.tag && <i className="izpro-floattag">{f.tag}</i>}
@@ -82,6 +86,8 @@ function num(i: number) {
    the section is entered and never gets a moment of its own; the
    reference holds each card, then swaps. Raise for more reading time,
    lower for a faster hand-off. */
+gsap.registerPlugin(ScrollTrigger);
+
 const HOLD = 0.55;
 /* Window (as a fraction of one slide's dwell) over which a duo
    panel's own frame swap happens. Both fall well inside [0, HOLD] —
@@ -101,32 +107,33 @@ export function IzProStack() {
     if (!outer || !sticky) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
-    let raf = 0;
-    let live = false;
     let lastActive = -1;
 
-    const tick = () => {
-      if (!live) {
-        raf = 0;
-        return;
-      }
-      const r = outer.getBoundingClientRect();
-      const travel = r.height - sticky.offsetHeight;
-      const p = travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
+    /* Driven by ScrollTrigger with `scrub`, NOT by a raw rAF read of
+       getBoundingClientRect. The old version mapped scroll position
+       straight onto the CSS variables, so every transition inherited
+       the scroll input exactly — trackpad and smooth-scroll jitter
+       included, which is what made the fades look cheap. `scrub: 0.6`
+       eases the value toward its target over ~0.6s instead, which is
+       the single biggest smoothness win here.
 
+       GSAP still only writes CSS custom properties; React state
+       changes four times total, when the active index does. Nothing
+       re-renders per frame. */
+    const proxy = { p: 0 };
+
+    const apply = (p: number) => {
       const raw = p * N;
       const idx = Math.min(N - 1, Math.floor(raw));
       const t = Math.min(1, Math.max(0, raw - idx));
       // still for the first HOLD of the slide, then the next rises
       const local = t < HOLD ? 0 : (t - HOLD) / (1 - HOLD);
 
-      /* frame-t drives a duo panel's OWN internal cross-fade (login →
-         portal, portal → watermark desktop) — a second, smaller
-         progress living entirely inside the "still" portion of a
-         single slide's dwell, well before HOLD hands off to the next
-         slide. It has to finish before HOLD or the two transitions
-         would visually collide. Clamped to 0/1 outside its window so
-         it is inert for slides whose panel doesn't read it. */
+      /* frame-t drives a slide's OWN part-one → part-two transition
+         (login → portal, map → posture, gateway → full profile,
+         portal → opened RDP). It lives entirely inside the "still"
+         portion of the dwell, finishing before HOLD hands off to the
+         next slide, so the two transitions can never collide. */
       const frameT = Math.min(1, Math.max(0, (t - FRAME_SWITCH_START) / (FRAME_SWITCH_END - FRAME_SWITCH_START)));
 
       sticky.style.setProperty("--local", local.toFixed(4));
@@ -135,22 +142,25 @@ export function IzProStack() {
         lastActive = idx;
         setActive(idx);
       }
-      raf = requestAnimationFrame(tick);
     };
 
-    const io = new IntersectionObserver(
-      (es) => {
-        live = es.some((e) => e.isIntersecting);
-        if (live && !raf) raf = requestAnimationFrame(tick);
-      },
-      { rootMargin: "20% 0px" }
-    );
-    io.observe(outer);
+    const ctx = gsap.context(() => {
+      gsap.to(proxy, {
+        p: 1,
+        ease: "none",
+        onUpdate: () => apply(proxy.p),
+        scrollTrigger: {
+          trigger: outer,
+          start: "top top",
+          // the exact distance the sticky element can travel
+          end: () => `+=${outer.offsetHeight - sticky.offsetHeight}`,
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+        },
+      });
+    }, outer);
 
-    return () => {
-      io.disconnect();
-      if (raf) cancelAnimationFrame(raf);
-    };
+    return () => ctx.revert();
   }, [N]);
 
   const slide = SLIDES[active];

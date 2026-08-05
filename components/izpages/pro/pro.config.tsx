@@ -39,6 +39,11 @@ export type TablePanel = {
   head?: { label: string; right?: string };
   rows: { label: string; status: string; tone: Tone; value?: string | number; lit?: boolean }[];
   total?: { label: string; value: string; tone: Tone };
+  /** rows from this index on are PART TWO: they stay hidden until the
+      step's own sub-transition runs, then reveal staggered under the
+      focus frame. Omit for a table that shows everything at once. */
+  revealFrom?: number;
+  focus?: string;
 };
 
 export type RecordPanel = {
@@ -59,7 +64,9 @@ export type RecordPanel = {
    can't drift into two different renderings of the same idea. */
 export type DuoFrame =
   | { type: "login"; user: string; methods: string[] }
-  | { type: "apps"; apps: { logo: string; name: string }[] }
+  /** `logo: null` renders a protocol chip instead of a brand mark —
+      RDP/SSH/VNC targets are addresses, not products with a logo */
+  | { type: "apps"; apps: { logo: string | null; name: string }[]; greeting?: string; openable?: string }
   | { type: "watermarkDesktop"; app: string; watermark: string };
 
 export type DuoPanel = {
@@ -67,6 +74,10 @@ export type DuoPanel = {
   head?: { label: string };
   frameA: DuoFrame;
   frameB: DuoFrame;
+  focus?: string;
+  /** step 04: a pointer walks to a target and clicks it before frame B
+      opens. x/y are % of the panel; the travel is scroll-driven. */
+  cursor?: { fromX: number; fromY: number; toX: number; toY: number };
 };
 
 /* ---- map: background map + a verdict card over it ---- */
@@ -76,6 +87,9 @@ export type MapPanel = {
   device: { host: string; score: string };
   location: { city: string; ip: string };
   boundLabel: string;
+  /** PART TWO — the posture breakdown that resolves the "25/25" */
+  checks?: { label: string; value: string }[];
+  focus?: string;
 };
 
 export type Panel = CodePanel | TablePanel | RecordPanel | DuoPanel | MapPanel;
@@ -136,13 +150,15 @@ export const SLIDES: Slide[] = [
     panel: {
       kind: "duo",
       head: { label: "Sign-in" },
+      focus: "Verified · one identity",
       frameA: {
         type: "login",
-        user: "priya.s@veno.co.in",
+        user: "alen.joseph@veno.co.in",
         methods: ["Push", "TOTP", "Hardware key"],
       },
       frameB: {
         type: "apps",
+        greeting: "Hi, Alen",
         apps: [
           { logo: "slack", name: "Slack" },
           { logo: "salesforce", name: "Salesforce" },
@@ -182,6 +198,13 @@ export const SLIDES: Slide[] = [
       device: { host: "WS-FIN-014", score: "25/25" },
       location: { city: "Koramangala, Bengaluru", ip: "10.24.8.101" },
       boundLabel: "Device bound · certificate valid",
+      focus: "Posture resolved",
+      checks: [
+        { label: "Disk encryption", value: "On" },
+        { label: "EDR agent", value: "Present" },
+        { label: "OS patch level", value: "Current" },
+        { label: "Screen lock", value: "5 min" },
+      ],
     },
     body: {
       lead: "25 posture check types across 144 named rules.",
@@ -202,6 +225,10 @@ export const SLIDES: Slide[] = [
     panel: {
       kind: "table",
       head: { label: "Gateway", right: "Live" },
+      /* part one states the posture in four lines; part two expands the
+         full parameter set under the focus frame */
+      revealFrom: 4,
+      focus: "Full gateway profile",
       rows: [
         { label: "Internet exposure", status: "Hidden", tone: "allow" },
         { label: "Server visibility", status: "Blackened", tone: "allow" },
@@ -236,19 +263,27 @@ export const SLIDES: Slide[] = [
     panel: {
       kind: "duo",
       head: { label: "Portal" },
+      focus: "Recorded · watermarked",
+      /* the pointer starts low-left and walks to the RDP tile, which
+         sits in the middle of the top row */
+      cursor: { fromX: 16, fromY: 86, toX: 50, toY: 44 },
       frameA: {
         type: "apps",
+        greeting: "Hi, Alen",
+        openable: "Finance RDP",
         apps: [
           { logo: "servicenow", name: "ServiceNow" },
           { logo: "sap", name: "SAP" },
+          { logo: null, name: "Finance RDP" },
           { logo: "figma", name: "Figma" },
           { logo: "notion", name: "Notion" },
+          { logo: "salesforce", name: "Salesforce" },
         ],
       },
       frameB: {
         type: "watermarkDesktop",
-        app: "Finance Dashboard",
-        watermark: "Priya S · priya.s · 10.24.8.101",
+        app: "Finance RDP — 10.24.8.44",
+        watermark: "Alen Joseph · alen.joseph · 10.24.8.101",
       },
     },
     body: {
