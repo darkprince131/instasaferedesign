@@ -11,6 +11,7 @@ import { IzNav } from "@/components/home2/IzNav";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzTrustBar } from "@/components/home2/IzTrustBar";
+import { IzLogoMarquee } from "@/components/home2/IzLogoMarquee";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzProblemCards } from "@/components/home2/IzProblemCards";
 import { IzTunnelCards } from "@/components/home2/IzTunnelCards";
@@ -143,6 +144,7 @@ export function ZtnaPage() {
         </div>
       </header>
 
+      <IzLogoMarquee />
       <IzTrustBar />
       <IzSideNav items={ANCHORS} />
 

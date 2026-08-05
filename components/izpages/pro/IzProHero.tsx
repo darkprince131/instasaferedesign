@@ -37,30 +37,20 @@ export function IzProHero() {
     if (!stage) return;
     if (!window.matchMedia?.("(hover: hover)").matches) return;
 
-    const cards = [...stage.querySelectorAll<HTMLElement>(".izpro-card")];
+    /* The cards used to light INDIVIDUALLY by pointer proximity, which
+       meant the canvas only ever revealed itself a card at a time and
+       the reader had to sweep the whole hero to see the idea. It is now
+       one section-wide state: entering the stage lights every card
+       together in a short stagger, leaving it puts them back. The class
+       lives on the stage, the stagger is a CSS delay per card, and the
+       pointer handler below only moves the coordinate readout. */
 
     /* No rAF. `pointermove` is already coalesced to at most one event
        per frame, so the handler writes straight to the DOM — which
        also means this can't be killed by rAF being throttled to zero
-       (background tabs, some embedded webviews).
-
-       Card centres are cached as offsets RELATIVE TO THE STAGE, so
-       they only go stale on layout change — a ResizeObserver covers
-       that completely and no scroll listener is needed (scroll events
-       don't fire for every scroll container; house rule). Only the
-       stage's own rect is read per move: one layout read per frame. */
-    let centres: { el: HTMLElement; ox: number; oy: number }[] = [];
-
-    const measure = () => {
-      const s = stage.getBoundingClientRect();
-      centres = cards.map((el) => {
-        const b = el.getBoundingClientRect();
-        return { el, ox: b.left + b.width / 2 - s.left, oy: b.top + b.height / 2 - s.top };
-      });
-    };
-
-    const NEAR_SQ = 260 * 260;
-
+       (background tabs, some embedded webviews). Only the stage's own
+       rect is read per move: one layout read per frame, and no card
+       geometry to keep in sync any more. */
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === "touch") return;
       const r = stage.getBoundingClientRect();
@@ -74,32 +64,25 @@ export function IzProHero() {
           Math.max(0, Math.round(y))
         ).padStart(4, "0")}`;
       }
+    };
 
-      /* The class is only written when it actually changes, so a fast
-         sweep across the canvas doesn't thrash style recalculation. */
-      for (const c of centres) {
-        const dx = x - c.ox;
-        const dy = y - c.oy;
-        const near = dx * dx + dy * dy < NEAR_SQ;
-        if (near !== c.el.classList.contains("near")) c.el.classList.toggle("near", near);
-      }
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      stage.classList.add("lit");
     };
 
     const onLeave = () => {
+      stage.classList.remove("lit");
       stage.style.removeProperty("--mx");
       stage.style.removeProperty("--my");
-      for (const c of cards) c.classList.remove("near");
     };
 
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(stage);
-
+    stage.addEventListener("pointerenter", onEnter);
     stage.addEventListener("pointermove", onMove);
     stage.addEventListener("pointerleave", onLeave);
     stage.addEventListener("pointercancel", onLeave);
     return () => {
-      ro.disconnect();
+      stage.removeEventListener("pointerenter", onEnter);
       stage.removeEventListener("pointermove", onMove);
       stage.removeEventListener("pointerleave", onLeave);
       stage.removeEventListener("pointercancel", onLeave);
@@ -143,12 +126,13 @@ export function IzProHero() {
             <i className="izpro-caret" />
           </span>
 
-          {/* verdict cards on the canvas */}
-          {HERO.cards.map((c) => (
+          {/* Verdict cards on the canvas. `--i` is the stagger index, so
+              the whole set lights as one sweep rather than at once. */}
+          {HERO.cards.map((c, i) => (
             <span
               key={c.id}
-              className={`izpro-card t-${c.tone}`}
-              style={{ left: `${c.x}%`, top: `${c.y}%` }}
+              className="izpro-card"
+              style={{ left: `${c.x}%`, top: `${c.y}%`, ["--i" as string]: i }}
               aria-hidden="true"
             >
               <i className="izpro-cardtag">{c.tag}</i>
@@ -162,9 +146,10 @@ export function IzProHero() {
             <span className="izpro-titletag" aria-hidden="true">
               {HERO.selectionTag}
             </span>
-            <h1>
-              {HERO.title.lead} <mark>{HERO.title.brand}</mark>
-            </h1>
+            {/* deliberately NOT .izpro-eyebrow — that class belongs to the
+                stack's step counter and carries its own layout rules */}
+            <span className="izpro-brandline">{HERO.title.eyebrow}</span>
+            <h1>{HERO.title.main}</h1>
           </div>
 
           <p className="izpro-sub">

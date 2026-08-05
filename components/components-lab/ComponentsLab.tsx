@@ -55,6 +55,8 @@ import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
 import { IzQuestionBand, IzQuietBand } from "@/components/home2/IzQuestionBand";
 import { IzRelatedRail } from "@/components/home2/IzRelatedRail";
 import { IzTrustBar } from "@/components/home2/IzTrustBar";
+import { IzLogoMarquee } from "@/components/home2/IzLogoMarquee";
+import "@/components/home2/izlogomarquee.css";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzProblemCards } from "@/components/home2/IzProblemCards";
 import { IzTunnelCards } from "@/components/home2/IzTunnelCards";
@@ -1268,8 +1270,17 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
               <b>IzTrustBar</b> replaces 00ap IzLogoGrid in the under-hero slot. IzLogoGrid is a wide ecosystem
               lattice built to be a section of its own; used as a trust bar it eats far more vertical space than a
               strip under a hero can justify. This is the compact form of the same claim — proof numbers on one rule,
-              sectors and the review badges on the next, with <b>00ab RatingBar folded in</b>. Wordmarks are text
-              until real logo art lands, so nothing ships as a broken-asset box.
+              sectors and the review badges on the next, with <b>00ab RatingBar folded in</b>. Its wordmark row is
+              sectors, not customers — the customer names now live in <b>IzLogoMarquee</b>.
+              <br />
+              <br />
+              <b>IzLogoMarquee</b> is the real logo art, and it sits directly under the hero on every page. Nineteen
+              brand SVGs in nineteen brand colours would fight the paper palette and the one-orange rule, so they are
+              driven monochrome by filter rather than by editing the art: greyscale on paper, greyscale + invert (i.e.
+              white) on dark. <b>Invert, not a flat silhouette</b> — several of these are knockouts, white type sitting
+              inside a coloured plate, and a silhouette fills the plate solid and swallows the wordmark. Two identical
+              rows translate exactly -50%, so the loop seam never shows; hovering pauses the scroll and lifts every
+              logo to full weight, and reduced motion drops the animation for a static centred wall.
               <br />
               <br />
               <b>IzStatRibbon</b> is the standing replacement for 00q FilterStream in the stat-strip and interstitial
@@ -1286,6 +1297,10 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
               stops a long page flattening. No CTA per column: these are three statements of one problem, not three
               offers.
             </p>
+
+            <Spec label="<b>IzLogoMarquee</b> · under-hero customer strip, real logo art, monochrome per theme">
+              <IzLogoMarquee />
+            </Spec>
 
             <Spec label="<b>IzTrustBar</b> · under-hero proof strip, RatingBar folded in">
               <IzTrustBar />

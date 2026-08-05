@@ -18,9 +18,18 @@
 
 .izpro-stage {
   position: relative;
-  padding: var(--sp-10) var(--sp-8) var(--sp-12);
-  min-height: 460px;
+  /* Height is CAPPED, not just floored. Before this the canvas was
+     ratio-driven and grew with width — 725px at a 1600px viewport,
+     95% of the fold, so nav + hero + stat strip could not coexist on
+     one screen. The reference sits at ~56% of its viewport; clamp()
+     holds us to the same proportion and stops at 545px however wide
+     the window gets. */
+  height: clamp(400px, 34vw, 545px);
+  padding: var(--sp-8) var(--sp-8) var(--sp-10);
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ---------- the cell grid ----------
@@ -159,11 +168,22 @@
   transition: opacity var(--dur) var(--ease), border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
-.izpro-card.near {
+/* One section-wide state, staggered by index. `--i` comes from the
+   component; 34ms apart reads as a sweep across the canvas rather than
+   six things blinking at once. */
+.izpro-card {
+  transition:
+    opacity var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+  transition-delay: calc(var(--i, 0) * 34ms);
+}
+.izpro-stage.lit .izpro-card {
   opacity: 1;
-  border-color: var(--line-strong);
+  border-color: color-mix(in srgb, var(--orange) 46%, var(--line-strong));
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px -12px color-mix(in srgb, var(--tx) 55%, transparent);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, var(--orange) 55%, transparent);
 }
 .izpro-cardtag {
   position: absolute;
@@ -179,11 +199,12 @@
   color: var(--surface);
   white-space: nowrap;
 }
-.izpro-card.t-allow .izpro-cardtag {
-  background: var(--allow);
-}
-.izpro-card.t-deny .izpro-cardtag {
-  background: var(--deny);
+/* Tags carry no per-state colour. Green-for-allow and pink-for-deny
+   spent the page's entire colour budget on decoration above the fold;
+   the tag is ink at rest and takes the one accent only while lit. */
+.izpro-stage.lit .izpro-cardtag {
+  background: var(--orange);
+  color: var(--btn-ink);
 }
 .izpro-cardlabel {
   font-family: var(--mono);
@@ -197,11 +218,8 @@
   font-size: var(--fs-mono);
   color: var(--tx-dim);
 }
-.izpro-card.t-allow .izpro-cardvalue {
-  color: var(--allow);
-}
-.izpro-card.t-deny .izpro-cardvalue {
-  color: var(--deny);
+.izpro-stage.lit .izpro-cardvalue {
+  color: var(--tx);
 }
 
 /* ---------- the headline, as a selected object ---------- */
@@ -230,6 +248,15 @@
   text-transform: uppercase;
   white-space: nowrap;
 }
+.izpro-brandline {
+  display: block;
+  margin-bottom: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
 .izpro-title h1 {
   margin: 0;
   font-family: var(--disp);
@@ -239,11 +266,8 @@
   letter-spacing: var(--ls-hero);
   color: var(--tx);
 }
-.izpro-title mark {
-  display: block;
-  background: none;
-  color: var(--accent);
-}
+/* .izpro-title mark is gone: the headline is a single word now, so
+   there is no lead phrase to differentiate a brand word from. */
 
 .izpro-sub {
   position: relative;
@@ -336,10 +360,14 @@
   overflow: clip;
 }
 
-.izpro-cols {
+/* col 1 text / col 2 console / col 3 supporting copy — matches the
+   reference's three-up layout. Col 2 is widest because a console is
+   the thing being demonstrated; col 1 and col 3 are close in width
+   so the page doesn't read lopsided. */
+.izpro-cols3 {
   display: grid;
-  grid-template-columns: 1fr 1.35fr;
-  gap: clamp(var(--sp-8), 5vw, 80px);
+  grid-template-columns: 0.82fr 1fr 0.82fr;
+  gap: clamp(var(--sp-6), 3.6vw, 56px);
   align-items: center;
   width: 100%;
 }
@@ -375,6 +403,25 @@
 .izpro-eyebrow b {
   font-weight: 400;
   color: var(--accent);
+}
+
+/* the CTA under the left column — every step has one */
+.izpro-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--accent);
+}
+.izpro-cta svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur) var(--ease-out);
+}
+.izpro-cta:hover svg {
+  transform: translateX(4px);
 }
 
 .izpro-h2 {
@@ -458,10 +505,18 @@
 
 /* ---------- right column: the stacked slots ---------- */
 
-.izpro-right {
+.izpro-mid,
+.izpro-right3 {
   position: relative;
-  height: min(74vh, 640px);
+  height: min(64vh, 560px);
   min-width: 0;
+}
+.izpro-right3 {
+  display: flex;
+}
+.izpro-right3 .izpro-slot {
+  justify-content: flex-start;
+  padding-top: clamp(var(--sp-8), 6vh, 64px);
 }
 
 /* The incoming slot carries the HIGHER z-index and rises over the
@@ -564,6 +619,380 @@
 .izpro-floatlabel {
   font-size: var(--fs-3xs);
   color: var(--tx-mute);
+}
+.izpro-floaticon {
+  width: 13px;
+  height: 13px;
+  color: var(--accent);
+  margin-bottom: 1px;
+}
+
+
+/* ============================================================
+   5. DUO — two named frames, cross-fading on --frame-t
+   ============================================================ */
+
+.izpro-duo {
+  position: relative;
+  min-height: 240px;
+  isolation: isolate;
+}
+/* the dashed ring that lands the same moment frame B does — same cue
+   the reference gives when its own panel switches to response.json */
+.izpro-duo-glow {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  border: var(--bw) dashed color-mix(in srgb, var(--accent) 70%, transparent);
+  opacity: var(--frame-t, 0);
+  pointer-events: none;
+}
+.izpro-duo-frame[data-frame="a"] {
+  opacity: calc(1 - var(--frame-t, 0));
+}
+.izpro-duo-frame[data-frame="b"] {
+  position: absolute;
+  inset: 0;
+  opacity: var(--frame-t, 0);
+}
+
+/* ---- login + MFA mock ---- */
+.izpro-login {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+}
+.izpro-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.izpro-login-field span {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izpro-login-field b {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx);
+  padding: 7px 10px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+}
+.izpro-dots {
+  letter-spacing: 3px;
+}
+.izpro-login-mfa {
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: var(--bw) dashed var(--line);
+}
+.izpro-login-mfalabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  margin-bottom: var(--sp-2);
+}
+.izpro-login-mfalabel svg {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+}
+.izpro-login-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.izpro-login-method {
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  border: var(--bw) solid var(--line);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+.izpro-login-method.on {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ---- app portal mock: navbar + grid, deliberately no sidebar ---- */
+.izpro-apps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  height: 100%;
+}
+.izpro-apps-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--sp-3);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izpro-apps-tenant {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-sm);
+  color: var(--tx);
+}
+.izpro-apps-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--btn-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+}
+.izpro-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+.izpro-apps-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.izpro-apps-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: var(--bw) solid var(--line);
+  display: grid;
+  place-items: center;
+}
+.izpro-apps-logo img {
+  width: 19px;
+  height: 19px;
+}
+.izpro-apps-name {
+  font-size: 9.5px;
+  color: var(--tx-mute);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.iz[data-theme="dark"] .izpro-apps-logo img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+/* ---- watermarked desktop mock: recreated locally, not imported ---- */
+.izpro-wmdesk {
+  position: relative;
+  height: 100%;
+  min-height: 240px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: linear-gradient(140deg, #1b1622 0%, #2a2030 55%, #191521 100%);
+}
+.izpro-wmdesk-bloom {
+  position: absolute;
+  width: 62%;
+  aspect-ratio: 1;
+  left: -16%;
+  bottom: -22%;
+  border-radius: 50%;
+  filter: blur(32px);
+  background: radial-gradient(circle, color-mix(in srgb, var(--orange) 42%, transparent), transparent 70%);
+}
+.izpro-wmdesk-win {
+  position: absolute;
+  inset: 12% 9%;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: rgba(28, 24, 34, 0.92);
+  border: 1px solid rgba(243, 241, 239, 0.16);
+  box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.6);
+}
+.izpro-wmdesk-bar {
+  display: block;
+  padding: 6px 9px;
+  font-size: 9px;
+  color: rgba(243, 241, 239, 0.72);
+  background: rgba(243, 241, 239, 0.07);
+  border-bottom: 1px solid rgba(243, 241, 239, 0.1);
+}
+.izpro-wmdesk-body {
+  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.izpro-wmdesk-body .r {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(243, 241, 239, 0.1);
+}
+.izpro-wmdesk-body .r.short {
+  width: 55%;
+}
+.izpro-wmdesk-wm {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  align-content: center;
+  justify-content: center;
+  padding: 10%;
+  transform: rotate(-22deg) scale(1.3);
+  pointer-events: none;
+}
+.izpro-wmdesk-wm span {
+  font-family: var(--mono);
+  font-size: 6.5px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: rgba(243, 241, 239, 0.2);
+}
+
+/* ============================================================
+   6. MAP — device posture over a location
+   ============================================================ */
+
+.izpro-mapcard {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izpro-mapcard-i {
+  display: grid;
+  place-items: center;
+  color: var(--allow);
+}
+.izpro-mapcard-i svg {
+  width: 14px;
+  height: 14px;
+}
+.izpro-mapcard-host {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+}
+.izpro-mapcard-score {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  color: var(--allow);
+}
+.izpro-mapwrap {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+}
+.izpro-mapimg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 46% 42%;
+  filter: saturate(0.65);
+}
+/* the source is a light basemap; inverting keeps it legible on dark
+   instead of a bright rectangle punched into a near-black panel */
+.iz[data-theme="dark"] .izpro-mapimg {
+  filter: saturate(0.4) invert(0.92) hue-rotate(180deg) brightness(0.92);
+}
+.izpro-mappin {
+  position: absolute;
+  left: 46%;
+  top: 42%;
+  transform: translate(-50%, -100%);
+  color: var(--accent);
+}
+.izpro-mappin svg {
+  width: 20px;
+  height: 20px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+.izpro-mapfoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: var(--bw) solid var(--line);
+}
+.izpro-mapfoot-loc,
+.izpro-mapfoot-bound {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+.izpro-mapfoot-loc svg,
+.izpro-mapfoot-bound svg {
+  width: 12px;
+  height: 12px;
+}
+.izpro-mapfoot-bound {
+  margin-left: auto;
+  color: var(--allow);
+}
+
+/* ============================================================
+   7. IDENTITY-PROVIDER DOCK (step 01 only, col 3 — never the console)
+   ============================================================ */
+
+.izprodock {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: var(--sp-4);
+  padding: 8px 10px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  width: fit-content;
+}
+.izprodock-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: var(--bw) solid var(--line);
+  overflow: hidden;
+}
+.izprodock-icon img {
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+}
+.izprodock-mono {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--tx-mute);
+}
+.iz[data-theme="dark"] .izprodock-icon img {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
 }
 
 /* ---------- progress rail ---------- */
@@ -903,6 +1332,24 @@
 .izpro-mobile .izpro-float,
 .izpro-mobile .izpro-rail {
   display: none;
+}
+/* Duo panels have no scroll to drive their frame swap here, and
+   --frame-t is never set on this list at all — it would default to 0
+   and freeze on frame A forever (a login form, on step 01; a bare
+   portal, on step 04). Frame B is the payoff frame in both cases, so
+   mobile shows it directly: frame A is dropped, frame B becomes the
+   normal-flow element instead of the absolute overlay it is on
+   desktop. */
+.izpro-mobile .izpro-duo-glow,
+.izpro-mobile .izpro-duo-frame[data-frame="a"] {
+  display: none;
+}
+.izpro-mobile .izpro-duo-frame[data-frame="b"] {
+  position: static;
+  opacity: 1;
+}
+.izpro-mobile .izprodock {
+  margin-top: var(--sp-3);
 }
 .izpro-mcard .izpro-panel {
   width: 100%;

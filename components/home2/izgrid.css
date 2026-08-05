@@ -450,7 +450,12 @@
   background-image:
     repeating-linear-gradient(to bottom, var(--rail) 0 5px, transparent 5px 11px),
     repeating-linear-gradient(to bottom, var(--rail) 0 5px, transparent 5px 11px);
-  background-size: 1px 100%, 1px 100%;
+  /* --ir-h bounds how far down a rail runs. Default 100% = full block,
+     which is what every existing caller gets. Set it (or put the class
+     on a smaller wrapper) when the rail should STOP against a real
+     horizontal line instead of running past it into open space —
+     a rail that ends nowhere reads as a stray stroke. */
+  background-size: 1px var(--ir-h, 100%), 1px var(--ir-h, 100%);
   background-repeat: no-repeat;
   background-position: var(--ir-a, -100px) 0, var(--ir-b, -100px) 0;
 }

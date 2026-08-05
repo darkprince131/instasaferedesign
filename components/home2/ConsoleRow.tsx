@@ -21,23 +21,44 @@ const IcArrow = (
   </svg>
 );
 
+/** a `term — value` line in the spec grammar used under the body */
+export type ConsoleRowFact = [term: string, value: string];
+
 export interface ConsoleRowProps {
   eyebrow: string;
   title: ReactNode;
-  body: string;
+  /** one string, or several for a multi-paragraph body */
+  body: string | string[];
+  /** optional spec rows under the body — mono term, plain value */
+  facts?: ConsoleRowFact[];
   ctaLabel: string;
   ctaHref?: string;
   reverse?: boolean;
   children?: ReactNode; // an i365 console view (defaults to <DashboardHero/>)
 }
 
-export function ConsoleRow({ eyebrow, title, body, ctaLabel, ctaHref = "#", reverse, children }: ConsoleRowProps): JSX.Element {
+export function ConsoleRow({ eyebrow, title, body, facts, ctaLabel, ctaHref = "#", reverse, children }: ConsoleRowProps): JSX.Element {
+  const paras = Array.isArray(body) ? body : [body];
   return (
     <div className={`cr-row ${reverse ? "reverse" : ""}`}>
       <div className="cr-text">
         <span className="iz-ey">{eyebrow}</span>
         <h2 className="iz-h2">{title}</h2>
-        <p className="cr-lead">{body}</p>
+        {paras.map((p, i) => (
+          <p className="cr-lead" key={i}>
+            {p}
+          </p>
+        ))}
+        {facts && facts.length > 0 && (
+          <dl className="cr-facts">
+            {facts.map(([term, value]) => (
+              <div className="cr-fact" key={term}>
+                <dt>{term}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
         <a href={ctaHref} className="cr-cta">
           {ctaLabel}
           {IcArrow}

@@ -284,55 +284,74 @@
 .izfg-badge {
   display: flex;
   align-items: center;
-  padding: var(--sp-5) var(--sp-6);
-  min-height: 62px;
-  font-family: var(--mono);
-  font-size: var(--fs-mono);
-  letter-spacing: 0.04em;
-  color: var(--tx-dim);
+  justify-content: center;
+  padding: var(--sp-4) var(--sp-5);
+  min-height: 86px;
 }
+/* Each mark carries its own height (--izfg-bh) because the set mixes
+   round seals with flat wordmarks: one shared height would leave the
+   seals tiny and the wordmarks enormous. Optically matched by eye, not
+   by a formula. */
+.izfg-badge img {
+  height: var(--izfg-bh, 34px);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity var(--dur) var(--ease-out), filter var(--dur) var(--ease-out);
+}
+.izfg-badge:hover img { opacity: 1; }
+/* On dark these are certification marks on white or navy artwork, which
+   would glow as bright rectangles in a near-black footer. Greyscale +
+   invert renders them as white marks, matching the customer strip's
+   rule and for the same reason. */
+.iz[data-theme="dark"] .izfg-badge img {
+  filter: grayscale(1) invert(1) contrast(0.9) brightness(1.05);
+  opacity: 0.78;
+}
+.iz[data-theme="dark"] .izfg-badge:hover img { opacity: 1; }
 
-/* ---- link table: one cell per link ---- */
-.izfg-table {
+/* ---- link columns (plain, not a table) ---- */
+.izfg-links {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-8) var(--sp-6);
+  padding: var(--sp-10) 0 var(--sp-8);
   border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
 }
 .izfg-col {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
-.izfg-colhead {
+.izfg-col ul {
+  list-style: none;
+  margin: var(--sp-4) 0 0;
+  padding: 0;
   display: flex;
-  align-items: center;
-  padding: var(--sp-5) var(--sp-6);
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.izfg-colhead {
   font-family: var(--mono);
   font-size: var(--fs-mono-xs);
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
-  color: var(--tx-dim);
-  background: var(--bg-2);
+  color: var(--tx-mute);
 }
 /* `.iz a { color: inherit }` in home2.css is (0,1,1) and outranks a bare
    class, so these link rules have to carry the parent to win the colour. */
 .izfg a.izfg-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  min-height: 52px;
-  padding: var(--sp-3) var(--sp-6);
   font-size: var(--fs-body-sm);
   line-height: var(--lh-tight);
   color: var(--tx-dim);
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    background-color var(--dur-fast) var(--ease-out);
+  transition: color var(--dur-fast) var(--ease-out);
 }
 .izfg a.izfg-link:hover,
 .izfg a.izfg-link:focus-visible {
   color: var(--orange);
-  background: color-mix(in srgb, var(--orange) 6%, transparent);
 }
 .izfg-hiring {
   display: inline-flex;
@@ -352,7 +371,7 @@
 .izfg .izfg-base-link:focus-visible,
 .izcta a.izcta-tertiary:focus-visible {
   outline: 2px solid var(--orange);
-  outline-offset: -2px;
+  outline-offset: 3px;
 }
 
 /* ---- base bar ---- */
@@ -412,7 +431,7 @@
   .izfg-brand {
     min-height: 300px;
   }
-  .izfg-table {
+  .izfg-links {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -424,7 +443,7 @@
   .izfg-proof {
     grid-template-columns: minmax(0, 1fr);
   }
-  .izfg-table {
+  .izfg-links {
     grid-template-columns: minmax(0, 1fr);
   }
   .izfg-base-link {

@@ -10,6 +10,30 @@ import { IzFinalCta } from "./IzFinalCta";
 import { IzFooterGrid } from "./IzFooterGrid";
 import { IzHeroPortal } from "./IzHeroPortal";
 import "./iz-hero-portal.css";
+import { IzLogoMarquee } from "./IzLogoMarquee";
+import "./izlogomarquee.css";
+import { ConsoleRow } from "./ConsoleRow";
+import "./consolerow.css";
+import { IzAppWindow } from "./IzAppWindow";
+import "./izappwindow.css";
+import { IzUserPortal } from "./IzUserPortal";
+import "./izuserportal.css";
+import "./izavatar.css";
+import { IzMfaHub } from "./IzMfaHub";
+/* order matters: the MFA hub runs on the FeatureHub chassis and only
+   ships the deltas, so featurehub.css has to land first */
+import "./featurehub.css";
+import "./izmfahub.css";
+import { IzIntegrationGrid } from "./IzIntegrationGrid";
+import "./izintegrationgrid.css";
+import { IzReviewWall } from "./IzReviewWall";
+import "./izreviewwall.css";
+import { IzControlSurface } from "./IzControlSurface";
+/* order matters: the control surface runs on the 00ac chassis and only
+   ships the deltas, so signalgrid.css has to land first */
+import "./signalgrid.css";
+import "./izcontrolsurface.css";
+import "./izminidesktop.css";
 
 /* ============================================================
    InstaSafe ZTNA — "Balanced" homepage, new design language.
@@ -96,11 +120,10 @@ const COMPARE: Record<string, [string, string, string][]> = {
   ],
 };
 
-const TESTIMONIALS = [
-  { q: "InstaSafe simply stands out in its adaptability to expanding cloud environments. We have secure mobility we previously didn't possess.", name: "Ranjith P.", role: "Head of IT Security, BPM" },
-  { q: "We scaled remote access security from 500 to 65,000 users in five days, with no hardware to rack.", name: "Hariharan S.", role: "Infrastructure Lead, BFSI" },
-  { q: "On-premise deployment was the deciding factor — our data never leaves the private network.", name: "Rishu P.", role: "CISO, Government PSU" },
-];
+/* The three testimonials that used to live here moved into
+   IzReviewWall, which owns every quote on the page now. Two copies of
+   the same testimonial in two files is how a site ends up quoting the
+   same person two different ways. */
 
 /* ---------- icons (inline, currentColor) ---------- */
 const Arrow = () => (
@@ -167,6 +190,9 @@ export function Home2() {
 
       {/* ---------------- HERO ---------------- */}
       <IzHeroPortal theme={theme} />
+
+      {/* ---------------- CUSTOMER LOGOS ---------------- */}
+      <IzLogoMarquee />
 
       {/* ---------------- CAPABILITIES DECK ---------------- */}
       {/* rails: this block is wide and benefits from column edges */}
@@ -241,6 +267,94 @@ export function Home2() {
           </div>
           <div className="iz-reveal">
             <IzAccessFlow />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- ZTNA ---------------- */}
+      {/* No internal rail: a console row is text against a large solid
+          object, so a vertical rail either crosses the copy or hides
+          behind the window. The row's own fact rules carry the structure. */}
+      <section className="iz-section">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <ConsoleRow
+              eyebrow="Zero Trust Network Access"
+              title={<>Access at the IP layer, <em>for the applications a browser can&apos;t reach</em>.</>}
+              body={[
+                "Thick-client ERP front-ends. Legacy client-server systems. Custom TCP and UDP protocols. Engineering and design tools. These never worked properly behind a web proxy, so they stayed on the VPN — and kept the VPN alive.",
+                "InstaSafe ZTNA carries them. The gateway runs drop-all with single packet authorization, so it answers nothing until a verified request arrives. Then it opens one tunnel to one resource.",
+              ]}
+              facts={[
+                ["Layer", "IP (L3/L4)"],
+                ["Gateway", "drop-all + single packet authorization"],
+                ["Tunnel", "per session, per resource"],
+              ]}
+              ctaLabel="Explore ZTNA"
+              ctaHref="/zero-trust-network-access"
+            >
+              <IzAppWindow compact />
+            </ConsoleRow>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- ZTAA ---------------- */}
+      {/* Reversed on purpose: the admin console sat right in the ZTNA
+          row, so putting the end-user portal left makes the change of
+          seat legible before a word is read. */}
+      <section className="iz-section alt">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <ConsoleRow
+              reverse
+              eyebrow="Zero Trust Application Access"
+              title={<>The person signing in gets <em>a page of applications, not a network</em>.</>}
+              body={[
+                "Their group decides what appears. Nothing else is listed, nothing else is reachable, and there is no network to wander around behind the list.",
+                "Same grant model for a SaaS tenant, an internal web app or a database — one login, then only the resources that login is entitled to. Switch person below and watch the entire list change.",
+              ]}
+              facts={[
+                ["Portal", "web · no client needed"],
+                ["Listing", "entitlement-driven, per group"],
+                ["Reach", "only what is listed, nothing beside it"],
+              ]}
+              ctaLabel="Explore ZTAA"
+              ctaHref="/platform"
+            >
+              <IzUserPortal />
+            </ConsoleRow>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- MFA ---------------- */}
+      {/* rail lives inside the component, bounded to the head block */}
+      <section className="iz-section">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <IzMfaHub />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- CONTROL SURFACE ---------------- */}
+      {/* Contextual access + endpoint control, one section. Sits after
+          MFA because it presumes the session exists — it answers what
+          happens once someone is through the door. */}
+      <section className="iz-section alt">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <IzControlSurface />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- SSO ---------------- */}
+      <section className="iz-section">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <IzIntegrationGrid />
           </div>
         </div>
       </section>
@@ -351,16 +465,8 @@ export function Home2() {
               Run by the teams who <em>can&apos;t afford a breach</em>.
             </h2>
           </div>
-          <div className="iz-tst iz-reveal">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="iz-tst-card">
-                <p className="q">&ldquo;{t.q}&rdquo;</p>
-                <div className="by">
-                  <b>{t.name}</b>
-                  {t.role}
-                </div>
-              </div>
-            ))}
+          <div className="iz-reveal iz-block-top">
+            <IzReviewWall />
           </div>
         </div>
       </section>

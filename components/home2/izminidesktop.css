@@ -1,0 +1,346 @@
+/* ============================================================
+   IzMiniDesktop — the fake endpoint. Scoped .izmd.
+
+   Deliberately dark in BOTH page themes. A screen is a lit object;
+   a "paper-coloured desktop" would read as a diagram of a computer
+   rather than as a computer. Everything inside therefore uses its
+   own local palette, not the page's --tx/--bg, and only the frame
+   and the footer speak .iz tokens.
+   ============================================================ */
+
+.izmd {
+  --izmd-ink: #f3f1ef;
+  --izmd-dim: rgba(243, 241, 239, 0.66);
+  --izmd-faint: rgba(243, 241, 239, 0.12);
+  --izmd-glass: rgba(16, 12, 22, 0.72);
+  --izmd-danger: #ff6b7f;
+}
+
+.izmd-screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 24px 56px -22px rgba(0, 0, 0, 0.6), var(--inset);
+  font-size: 10px;
+  color: var(--izmd-ink);
+  isolation: isolate;
+}
+
+/* ---- wallpaper ---- */
+.izmd-wall {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, #1b1622 0%, #2a2030 52%, #191521 100%);
+}
+.izmd-bloom { position: absolute; border-radius: 50%; filter: blur(34px); }
+.izmd-bloom.b1 {
+  width: 58%; aspect-ratio: 1; left: -14%; bottom: -22%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--orange) 42%, transparent), transparent 70%);
+}
+.izmd-bloom.b2 {
+  width: 46%; aspect-ratio: 1; right: -10%; top: -18%;
+  background: radial-gradient(circle, rgba(180, 150, 210, 0.3), transparent 70%);
+}
+.izmd-bloom.b3 {
+  width: 40%; aspect-ratio: 1; left: 40%; top: 26%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--orange) 22%, transparent), transparent 72%);
+}
+.izmd-arc {
+  position: absolute;
+  width: 76%; aspect-ratio: 1; right: -22%; bottom: -34%;
+  border: 1px solid rgba(243, 241, 239, 0.1);
+  border-radius: 50%;
+}
+
+/* ---- desktop icons ---- */
+.izmd-icons {
+  position: absolute; left: 2.5%; top: 4%;
+  display: flex; flex-direction: column; gap: 6px;
+  z-index: 2;
+}
+.izmd-di { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 54px; }
+.izmd-di-i {
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  border-radius: var(--r-xs);
+  background: rgba(243, 241, 239, 0.1);
+  border: 1px solid rgba(243, 241, 239, 0.14);
+  color: var(--izmd-ink);
+}
+.izmd-di-i svg { width: 14px; height: 14px; }
+/* the brand tile is solid white so the mark reads as itself against a
+   dark wallpaper, instead of sitting in the same translucent chip as
+   Notepad and Chrome */
+.izmd-di-i:has(img) { background: #fff; border-color: rgba(255, 255, 255, 0.9); }
+.izmd-di-i img { width: 17px; height: 17px; }
+.izmd-di-l { font-size: 8px; line-height: 1.2; text-align: center; color: var(--izmd-dim); }
+.izmd-di.active .izmd-di-i {
+  border-color: color-mix(in srgb, var(--orange) 62%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 16%, transparent);
+}
+/* the restricted app is struck through, not hidden — a blocked icon a
+   user can still see is the honest picture of application restriction */
+.izmd-di.blocked .izmd-di-i { border-color: var(--izmd-danger); }
+.izmd-di.blocked .izmd-di-i::after {
+  content: ""; position: absolute; width: 26px; height: 1.5px;
+  background: var(--izmd-danger); transform: rotate(-45deg);
+}
+.izmd-di.blocked .izmd-di-i { position: relative; overflow: hidden; }
+
+/* ---- windows ---- */
+.izmd-win {
+  position: absolute;
+  z-index: 4;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: rgba(28, 24, 34, 0.94);
+  border: 1px solid rgba(243, 241, 239, 0.16);
+  box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.7);
+  animation: izmd-win-in 0.26s var(--ease) both;
+}
+@keyframes izmd-win-in { from { opacity: 0; transform: translateY(6px) scale(0.985); } to { opacity: 1; transform: none; } }
+.izmd-notepad { left: 22%; top: 20%; width: 46%; }
+.izmd-chrome { left: 26%; top: 16%; width: 62%; }
+
+.izmd-winbar {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 7px;
+  background: rgba(243, 241, 239, 0.07);
+  border-bottom: 1px solid rgba(243, 241, 239, 0.1);
+  font-size: 8.5px; color: var(--izmd-dim);
+}
+.izmd-winbar > svg { width: 10px; height: 10px; }
+.izmd-winbtns { margin-left: auto; display: flex; gap: 4px; }
+.izmd-winbtns i { width: 6px; height: 6px; border-radius: 50%; background: rgba(243, 241, 239, 0.22); }
+.izmd-winbtns i.x { background: rgba(255, 107, 127, 0.7); }
+
+.izmd-note { padding: 8px 9px; display: flex; flex-direction: column; gap: 3px; }
+.izmd-note p { margin: 0; font-family: var(--mono); font-size: 8px; color: var(--izmd-dim); }
+.izmd-note p.h { color: var(--izmd-ink); }
+.izmd-note p.sel { transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+.izmd-note p.sel.on {
+  background: color-mix(in srgb, var(--orange) 72%, transparent);
+  color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--orange) 72%, transparent);
+}
+
+/* right-click menu */
+.izmd-ctx {
+  position: absolute; left: 40%; top: 62%;
+  z-index: 6;
+  min-width: 74px;
+  padding: 3px;
+  border-radius: var(--r-xs);
+  background: rgba(38, 32, 46, 0.98);
+  border: 1px solid rgba(243, 241, 239, 0.16);
+  box-shadow: 0 12px 26px -10px rgba(0, 0, 0, 0.8);
+  display: flex; flex-direction: column; gap: 1px;
+  animation: izmd-win-in 0.16s var(--ease) both;
+}
+.izmd-ctx-i { padding: 3px 7px; border-radius: 3px; font-size: 8px; color: var(--izmd-dim); }
+.izmd-ctx-i.hot { background: color-mix(in srgb, var(--orange) 78%, transparent); color: #fff; }
+.izmd-ctx-sep { height: 1px; margin: 2px 0; background: rgba(243, 241, 239, 0.12); }
+
+/* chrome */
+.izmd-omni {
+  display: flex; align-items: center; gap: 6px;
+  margin: 6px 7px;
+  padding: 3px 7px;
+  border-radius: var(--r-pill);
+  background: rgba(243, 241, 239, 0.08);
+  font-size: 8px; color: var(--izmd-dim);
+}
+.izmd-omni-acts { margin-left: auto; display: flex; gap: 3px; }
+.izmd-omni-b {
+  width: 15px; height: 15px; display: grid; place-items: center;
+  border-radius: 4px; color: var(--izmd-dim);
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.izmd-omni-b svg { width: 10px; height: 10px; }
+.izmd-omni-b.on { background: rgba(255, 107, 127, 0.22); color: var(--izmd-danger); }
+.izmd-page { padding: 4px 9px 10px; display: flex; flex-direction: column; gap: 5px; }
+.izmd-page .h { margin: 0; font-size: 8.5px; color: var(--izmd-ink); }
+.izmd-page .r { height: 5px; border-radius: 3px; background: rgba(243, 241, 239, 0.1); }
+.izmd-page .r.short { width: 58%; }
+
+/* ---- snip ---- */
+.izmd-snipdim { position: absolute; inset: 0; z-index: 7; background: rgba(10, 8, 14, 0.42); }
+.izmd-sniprect {
+  position: absolute; z-index: 8;
+  left: 30%; top: 30%;
+  width: calc(48% * var(--izmd-p));
+  height: calc(44% * var(--izmd-p));
+  border: 1px solid var(--orange);
+  background: rgba(243, 241, 239, 0.06);
+  box-shadow: 0 0 0 1px rgba(10, 8, 14, 0.4);
+}
+.izmd-flash {
+  position: absolute; inset: 0; z-index: 12;
+  background: #fff; opacity: 0; pointer-events: none;
+  transition: opacity 0.14s var(--ease-linear);
+}
+.izmd-flash.on { opacity: 0.85; }
+
+/* the saved capture: a black frame, which is the whole point */
+.izmd-shot {
+  position: absolute; right: 3%; top: 8%; z-index: 9;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  animation: izmd-win-in 0.3s var(--ease) both;
+}
+.izmd-shot-frame {
+  width: 74px; height: 46px;
+  background: #000;
+  border: 1px solid rgba(243, 241, 239, 0.2);
+  border-radius: 3px;
+}
+.izmd-shot-cap { font-family: var(--mono); font-size: 7.5px; color: var(--izmd-dim); }
+
+/* ---- usb flyout ---- */
+.izmd-fly {
+  position: absolute; right: 3%; bottom: 14%; z-index: 9;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 8px;
+  border-radius: var(--r-xs);
+  background: var(--izmd-glass);
+  border: 1px solid rgba(243, 241, 239, 0.16);
+  font-size: 8px; color: var(--izmd-dim);
+  animation: izmd-win-in 0.2s var(--ease) both;
+}
+.izmd-fly svg { width: 11px; height: 11px; }
+
+/* ---- watermark ---- */
+.izmd-wm {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; flex-wrap: wrap; gap: 14px 22px;
+  align-content: center; justify-content: center;
+  padding: 8%;
+  pointer-events: none;
+  transform: rotate(-22deg) scale(1.35);
+  animation: izmd-wm-in 0.5s var(--ease) both;
+}
+@keyframes izmd-wm-in { from { opacity: 0; } to { opacity: 1; } }
+.izmd-wm span {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: rgba(243, 241, 239, 0.22);
+}
+
+/* ---- taskbar ---- */
+.izmd-taskbar {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 13%;
+  z-index: 11;
+  display: flex; align-items: center;
+  background: var(--izmd-glass);
+  border-top: 1px solid rgba(243, 241, 239, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.izmd-tb-center {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 5px;
+}
+.izmd-tb-btn {
+  width: 19px; height: 19px;
+  display: grid; place-items: center;
+  border-radius: 4px;
+  color: var(--izmd-dim);
+}
+.izmd-tb-btn svg { width: 11px; height: 11px; }
+.izmd-tb-btn.start { color: var(--orange); }
+.izmd-tb-btn.run { background: rgba(243, 241, 239, 0.1); }
+.izmd-tb-btn.hot { background: rgba(255, 107, 127, 0.2); color: var(--izmd-danger); }
+/* pinned agent — white tile with a running dot, always present */
+.izmd-tb-btn.agent {
+  position: relative;
+  background: rgba(243, 241, 239, 0.92);
+  color: #241a2c;
+}
+.izmd-tb-btn.agent::after {
+  content: ""; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%);
+  width: 9px; height: 2px; border-radius: 2px;
+  background: rgba(243, 241, 239, 0.4);
+}
+.izmd-tb-btn.agent img { width: 12px; height: 12px; }
+.izmd-tb-btn.agent.on { color: var(--orange); }
+.izmd-tb-btn.agent.on::after { background: var(--orange); }
+
+.izmd-tray { position: absolute; right: 58px; display: flex; gap: 3px; }
+.izmd-clock {
+  position: absolute; right: 8px;
+  display: flex; flex-direction: column; align-items: flex-end;
+  font-family: var(--mono); line-height: 1.2; color: var(--izmd-dim);
+}
+.izmd-clock b { font-size: 8px; font-weight: 500; color: var(--izmd-ink); }
+.izmd-clock span { font-size: 7px; }
+
+/* ---- toast ---- */
+.izmd-toast {
+  position: absolute; right: 2.5%; bottom: 16%;
+  z-index: 13;
+  max-width: 66%;
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 7px 9px;
+  border-radius: var(--r-xs);
+  background: rgba(24, 19, 30, 0.96);
+  border: 1px solid rgba(243, 241, 239, 0.16);
+  box-shadow: 0 14px 32px -12px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.izmd-toast.on { opacity: 1; transform: none; }
+.izmd-toast-i {
+  flex: none;
+  width: 15px; height: 15px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--allow) 24%, transparent);
+  color: var(--allow);
+}
+.izmd-toast-i svg { width: 9px; height: 9px; }
+.izmd-toast-i.danger { background: rgba(255, 107, 127, 0.2); color: var(--izmd-danger); }
+.izmd-toast-t { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.izmd-toast-t b { font-size: 8.5px; font-weight: 600; color: var(--izmd-ink); line-height: 1.3; }
+.izmd-toast-t span { font-family: var(--mono); font-size: 7.5px; color: var(--izmd-dim); line-height: 1.3; }
+
+/* ---- cursor ---- */
+.izmd-cursor {
+  position: absolute;
+  z-index: 14;
+  width: 12px; height: 18px;
+  pointer-events: none;
+  transition: left 0.5s var(--ease), top 0.5s var(--ease);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+.izmd-cursor svg { width: 100%; height: 100%; fill: #fff; stroke: #1b1622; stroke-width: 0.9; }
+.izmd-cursor::after {
+  content: "";
+  position: absolute; left: -6px; top: -6px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--orange);
+  opacity: 0;
+  transform: scale(0.4);
+}
+.izmd-cursor.click::after { animation: izmd-click 0.34s var(--ease-out); }
+@keyframes izmd-click {
+  from { opacity: 0.9; transform: scale(0.4); }
+  to { opacity: 0; transform: scale(1.15); }
+}
+
+/* ---- reduced motion: no cursor travel, no flash, no loop ---- */
+@media (prefers-reduced-motion: reduce) {
+  .izmd-cursor { transition: none; }
+  .izmd-cursor.click::after { animation: none; }
+  .izmd-win, .izmd-ctx, .izmd-shot, .izmd-fly, .izmd-wm { animation: none; }
+  .izmd-flash { transition: none; }
+  .izmd-flash.on { opacity: 0; }
+  .izmd-toast { transition: none; }
+}

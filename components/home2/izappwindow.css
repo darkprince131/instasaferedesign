@@ -198,8 +198,16 @@
 .iaw-device-wrap { border-bottom: 1px solid var(--line); }
 .iaw-device-wrap:last-child { border-bottom: none; }
 .iaw-device-wrap > .iaw-tr { border-bottom: none; }
-.iaw-posture-detail { max-height: 0; overflow: hidden; transition: max-height var(--dur) var(--ease-out), padding var(--dur) var(--ease-out); padding: 0 14px; background: color-mix(in srgb, var(--orange) 4%, var(--bg-2)); }
-.iaw-posture-detail.open { max-height: 120px; padding: 10px 14px 12px; }
+/* grid-template-rows 0fr→1fr animates to the content's OWN height, so
+   the ease is honest and a longer posture list can't be clipped. The
+   inner wrapper carries overflow:hidden — the row itself must stay a
+   grid track for the technique to work. */
+.iaw-posture-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur) var(--ease-out); background: color-mix(in srgb, var(--orange) 4%, var(--bg-2)); }
+.iaw-posture-detail.open { grid-template-rows: 1fr; }
+/* Padding stays constant — at 0fr the whole track clips to zero,
+   padding included, so there is nothing to toggle and nothing that
+   snaps a frame ahead of the height. */
+.iaw-posture-inner { overflow: hidden; min-height: 0; padding: 10px 14px 12px; }
 .iaw-posture-row { display: flex; align-items: center; gap: 7px; font-size: var(--fs-label); padding: 3px 0; }
 .iaw-posture-row svg { width: 14px; height: 14px; }
 .iaw-posture-row.ok   { color: var(--allow); }
@@ -255,4 +263,34 @@
   .iaw-posture-detail { transition: none; }
   .iaw-app-card, .iaw-policy, .iaw-nav-item, .iaw-tr-click { transition: none; }
   .iaw-toast { animation: none; }
+}
+
+/* ============================================================
+   ROW VARIANT — the size that fits the console slot of a
+   ConsoleRow (≈700px wide) instead of a full-width section.
+   Shorter, narrower sidebar, no titlebar search, tighter tables.
+   Everything else inherits, so the two variants can never drift.
+   ============================================================ */
+.iaw--compact { height: 520px; font-size: var(--fs-label); }
+.iaw--compact .iaw-titlebar { height: 38px; padding: 0 12px; }
+.iaw--compact .iaw-sidebar { width: 152px; }
+.iaw--compact .iaw-brand { padding: 12px 12px 8px; }
+.iaw--compact .iaw-nav-item { padding: 6px 8px; font-size: var(--fs-label); }
+.iaw--compact .iaw-section { padding: var(--sp-4) var(--sp-4) var(--sp-6); }
+.iaw--compact .iaw-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.iaw--compact .iaw-app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.iaw--compact .iaw-policy-grid { grid-template-columns: minmax(0, 1fr); }
+/* Source IP is the first column a narrow window can afford to lose —
+   the log still reads as a log without it. */
+.iaw--compact .iaw-logs-table .iaw-tr { grid-template-columns: 16px 1fr 1fr 76px 62px; }
+.iaw--compact .iaw-logs-table .iaw-tr > :last-child { display: none; }
+.iaw--compact .iaw-users-table .iaw-tr { grid-template-columns: 1.1fr 68px 72px 76px; }
+.iaw--compact .iaw-users-table .iaw-tr > :nth-child(2) { display: none; }
+.iaw--compact .iaw-devices-table .iaw-tr { grid-template-columns: 1.2fr 1fr 96px 54px; }
+.iaw--compact .iaw-devices-table .iaw-tr > :nth-child(3) { display: none; }
+
+@media (max-width: 620px) {
+  .iaw--compact { height: 460px; }
+  .iaw--compact .iaw-sidebar { width: 56px; }
+  .iaw--compact .iaw-nav-item span, .iaw--compact .iaw-brand-name, .iaw--compact .iaw-foot-info { display: none; }
 }

@@ -1,0 +1,160 @@
+/* ============================================================
+   05 · IzMfaHub — DELTAS ONLY.
+
+   The section runs on the 00i FeatureHub chassis (featurehub.css),
+   which must be imported alongside this file. Everything structural
+   — stage, constellation, stack, log panel, group tabs, progress
+   bar, reduced-motion block — comes from there. This file adds the
+   four things MFA needs that FeatureHub didn't:
+     · a per-tab caption above the stage
+     · a fourth stack row (FeatureHub's stack tops out at three)
+     · a logo core instead of the orange lock puck
+     · a two-column ctx → outcome log row, plus its stat footer
+   ============================================================ */
+
+/* ---- head + its single bounded rail ----
+   The rail lives on this full-width wrapper, not on .fh-head (which is
+   capped at 60ch — a percentage rail there would land on the text) and
+   not on the section (where it would run the full height past every
+   horizontal line below). Its bottom edge is the caption's top border. */
+.izmfa-headwrap { padding-bottom: var(--sp-8); }
+
+/* ---- constellation: give hover somewhere to go ----
+   .fh-hub carries a radial mask, and a mask is a clip: the 2px lift and
+   the drop shadow on a hovered tile were being cut off at the grid's own
+   edge. Padding + equal negative margin adds masked breathing room
+   without moving a single tile. */
+.izmfa .fh-hub { padding: 14px; margin: -14px; }
+
+/* ---- per-tab caption, stacked ----
+   `.izmfa-cap` is the STACK: all three captions occupy the same grid
+   cell, so the block is always as tall as the tallest one and a tab
+   change cannot resize the section. `.izmfa-capitem` is the two-column
+   layout each caption used to have on its own. */
+.izmfa-cap {
+  display: grid;
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+}
+.izmfa-capitem {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--sp-10);
+  align-items: start;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease);
+}
+.izmfa-capitem.on { opacity: 1; visibility: visible; }
+
+/* ---- stage, stacked the same way ----
+   FeatureHub's stage is a centring flex box; here it becomes a single
+   grid cell holding all three views. Inactive panels are `visibility:
+   hidden` rather than `display: none` so they keep contributing their
+   height — that is the entire point — while staying out of the tab
+   order and away from the pointer. */
+.izmfa-stage-stack {
+  display: grid;
+  align-items: center;
+}
+.izmfa-panel {
+  grid-area: 1 / 1;
+  width: 100%;
+  min-width: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease);
+}
+.izmfa-panel.on { opacity: 1; visibility: visible; pointer-events: auto; }
+/* the per-view entry animation would now fire on all three at once,
+   and the cross-fade above already does the job */
+.izmfa-panel .fh-view { animation: none; }
+.izmfa-cap-h {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  line-height: var(--lh-tight);
+  color: var(--tx);
+}
+.izmfa-cap-b p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izmfa-cap-b p + p { margin-top: var(--sp-3); }
+
+/* ---- stack: FeatureHub stairsteps three rows, MFA has four ---- */
+.izmfa-stack .fh-srow:nth-child(4) { animation-delay: 0.38s; margin-left: 78px; }
+
+/* ---- constellation core: our mark, so no orange puck behind it ---- */
+.izmfa-mk {
+  background: none !important;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+}
+
+/* ---- decision log: ctx → outcome, not the 5-column audit row ---- */
+.izmfa-log-body {
+  /* FeatureHub fades its log because the stream runs past the panel
+     edge. These are three complete statements — fading the last one
+     would read as a rendering fault, not as "more below". */
+  -webkit-mask: none;
+  mask: none;
+}
+.izmfa-ex {
+  grid-template-columns: 22px minmax(0, 1fr) 20px minmax(0, 1.15fr);
+  padding: var(--sp-4);
+}
+.izmfa-ex:last-child { border-bottom: 0; }
+.izmfa-ex-ctx { font-family: var(--mono); font-size: var(--fs-mono); color: var(--tx-dim); }
+.izmfa-ex-arrow { color: var(--tx-mute); text-align: center; }
+.izmfa-ex-out { font-family: var(--mono); font-size: var(--fs-mono); }
+.izmfa-ex.allow .lic, .izmfa-ex.allow .izmfa-ex-out { color: var(--allow); }
+.izmfa-ex.step .lic, .izmfa-ex.step .izmfa-ex-out { color: var(--orange); }
+.izmfa-ex.deny .lic, .izmfa-ex.deny .izmfa-ex-out { color: var(--deny); }
+
+.izmfa-log-f {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-mute);
+}
+.izmfa-log-f b { color: var(--orange); font-size: var(--fs-mono); font-weight: 500; }
+
+/* ---- progress bar runs for TAB_MS (6s here, 5.5s in FeatureHub) ---- */
+.izmfa-prog { animation-duration: 6s; }
+
+/* ---- responsive ---- */
+/* Below this the head text (capped at 60ch) grows past 63% of the wrap
+   and the rail would land ON the copy. A rail through a paragraph is
+   worse than no rail, so it goes off-canvas — -100px is izgrid.css's
+   own "absent" value. */
+@media (max-width: 1080px) {
+  .izmfa-headwrap { --ir-b: -100px; }
+}
+@media (max-width: 900px) {
+  .izmfa-capitem { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
+  .izmfa-stack .fh-srow:nth-child(4) { margin-left: 0; }
+}
+@media (max-width: 560px) {
+  .izmfa-ex { grid-template-columns: 22px minmax(0, 1fr); gap: var(--sp-2); }
+  .izmfa-ex-arrow { display: none; }
+  .izmfa-ex-out { grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izmfa-capitem, .izmfa-panel { transition: none; }
+}

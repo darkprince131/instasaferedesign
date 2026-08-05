@@ -70,7 +70,23 @@
     linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 55%),
     var(--surface);
 }
-.cap-grid { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 0; }
+/* The stage is the stack; every panel sits in the same cell so the box
+   is always as tall as the tallest one and switching tabs cannot resize
+   the section. Inactive panels stay 'visibility: hidden' rather than
+   'display: none' so they keep contributing height — that is the point —
+   while staying out of the tab order and away from the pointer. */
+.cap-stage { display: grid; }
+.cap-grid {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: 1.02fr 0.98fr;
+  gap: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease);
+}
+.cap-grid.on { opacity: 1; visibility: visible; pointer-events: auto; }
 .cap-left { padding: 30px; border-right: 1px solid var(--line); min-height: 420px; display: flex; align-items: center; }
 .cap-right { padding: 36px 34px; }
 

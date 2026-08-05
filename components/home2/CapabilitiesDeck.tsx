@@ -402,7 +402,8 @@ export function CapabilitiesDeck() {
     };
   }, [active, paused, reduced]);
 
-  const f = FEATURES[active];
+  /* no `FEATURES[active]` lookup — every panel is rendered and the
+     active one is chosen in CSS, so there is nothing to pick here */
   const playing = !paused && !reduced;
 
   return (
@@ -436,47 +437,62 @@ export function CapabilitiesDeck() {
           <CaretRight weight="bold" />
         </button>
 
-        {/* key remounts the stage so visuals + bullets replay on change */}
-        <div className="cap-grid" key={f.id}>
-          <div className="cap-left">
-            <f.Visual />
-          </div>
-          <div className="cap-right" role="tabpanel">
-            <span className="iz-ey">{f.tab[0]}</span>
-            <h3 className="cap-title">{f.title}</h3>
-            <p className="cap-sub">{f.sub}</p>
-            <ul className="cap-bullets">
-              {f.bullets.map(([b, d]) => (
-                <li key={b} className="cap-bullet">
-                  <span className="bi">
-                    <Check weight="bold" />
-                  </span>
-                  <span className="bt">
-                    <b>{b}</b> — {d}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {f.footChips && (
-              <div className="cap-foot-chips">
-                {f.footChips.map((c) => (
-                  <span key={c} className="iz-chip">
-                    {c}
-                  </span>
+        {/* All six panels are mounted and stacked in one grid cell, with
+            only the active one visible. The stage is therefore always as
+            tall as its TALLEST panel, and auto-advancing cannot change
+            the section's height — which was shunting the whole page
+            every seven seconds. It used to be `key={f.id}` on a single
+            panel, which remounted on every change and let the height
+            swing by up to 184px.
+
+            A measured min-height was the alternative and was rejected:
+            the maximum is 692px at 1440, 750px at 1100 and 896px at 820,
+            so it would have needed a magic number per breakpoint and
+            re-measuring every time a bullet was added. This needs
+            neither. The visuals are local SVG scenes, so mounting all
+            six costs nothing worth counting. */}
+        {FEATURES.map((feat, i) => (
+          <div className={i === active ? "cap-grid on" : "cap-grid"} key={feat.id} aria-hidden={i !== active}>
+            <div className="cap-left">
+              <feat.Visual />
+            </div>
+            <div className="cap-right" role="tabpanel">
+              <span className="iz-ey">{feat.tab[0]}</span>
+              <h3 className="cap-title">{feat.title}</h3>
+              <p className="cap-sub">{feat.sub}</p>
+              <ul className="cap-bullets">
+                {feat.bullets.map(([b, d]) => (
+                  <li key={b} className="cap-bullet">
+                    <span className="bi">
+                      <Check weight="bold" />
+                    </span>
+                    <span className="bt">
+                      <b>{b}</b> — {d}
+                    </span>
+                  </li>
                 ))}
+              </ul>
+              {feat.footChips && (
+                <div className="cap-foot-chips">
+                  {feat.footChips.map((c) => (
+                    <span key={c} className="iz-chip">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="cap-cta">
+                <a href={feat.href} className="iz-btn iz-btn-pri iz-btn-sm">
+                  {feat.cta}
+                  <ArrowRight weight="bold" />
+                </a>
+                <a href="/book-a-demo" className="iz-btn iz-btn-ghost iz-btn-sm">
+                  Book a demo
+                </a>
               </div>
-            )}
-            <div className="cap-cta">
-              <a href={f.href} className="iz-btn iz-btn-pri iz-btn-sm">
-                {f.cta}
-                <ArrowRight weight="bold" />
-              </a>
-              <a href="/book-a-demo" className="iz-btn iz-btn-ghost iz-btn-sm">
-                Book a demo
-              </a>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

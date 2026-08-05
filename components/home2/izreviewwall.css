@@ -1,0 +1,223 @@
+/* ============================================================
+   IzReviewWall — G2 review wall. Scoped .izrw; tokens from .iz.
+   ============================================================ */
+
+.izrw {
+  position: relative;
+  isolation: isolate;
+}
+
+/* ---- the drifting wall ---- */
+.izrw-wall {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-3);
+  height: 660px;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 16%, #000 84%, transparent);
+}
+.izrw-col { overflow: hidden; min-width: 0; }
+/* the middle column starts higher so the three read as a wall rather
+   than as a table with three columns of the same rows */
+.izrw-col-up { margin-top: -70px; }
+
+.izrw-track {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  will-change: transform;
+  animation: izrw-scroll calc(var(--izrw-count) * 300 / var(--izrw-speed) * 1s) var(--ease-linear) infinite;
+}
+.izrw-col-up .izrw-track { animation-name: izrw-scroll-up; }
+/* hovering anywhere on the section holds the wall still, so a quote
+   that caught the eye can be finished */
+.izrw:hover .izrw-track { animation-play-state: paused; }
+
+@keyframes izrw-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -50%, 0); }
+}
+@keyframes izrw-scroll-up {
+  from { transform: translate3d(0, -50%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* ---- card ---- */
+.izrw-card {
+  flex: none;
+  margin: 0;
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  /* The wall is scenery for the badge, so it sits back a step. Full
+     contrast on nine drifting cards would fight the one thing the
+     section is actually asking you to look at. */
+  opacity: 0.72;
+  transition: opacity var(--dur) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.izrw:hover .izrw-card { opacity: 1; }
+.izrw-card:hover { border-color: color-mix(in srgb, var(--orange) 38%, var(--line)); }
+
+.izrw-quote {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--tx-dim);
+}
+
+.izrw-by {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
+}
+.izrw-face {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.izrw-face img { width: 100%; height: 100%; object-fit: cover; }
+/* reviewers whose photo we don't have get a monogram in the same
+   chassis — never a broken-image box, never a stock face */
+.izrw-face-mono span {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-label);
+  color: var(--tx-mute);
+}
+.izrw-who { display: flex; flex-direction: column; min-width: 0; }
+.izrw-name { font-size: var(--fs-body-sm); font-weight: 500; color: var(--tx); }
+.izrw-role {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.03em;
+  color: var(--tx-mute);
+  line-height: 1.35;
+}
+
+/* ---- the G2 badge ----
+   Selector is `.iz a.izrw-badge`, not `.izrw-badge`. The badge IS an
+   anchor, and the global `.iz a { color: var(--tx) }` rule (0-1-1)
+   outranks a bare class (0-1-0) — which painted the score in near-black
+   ink on a near-black plate and made it invisible in paper theme. This
+   trap has bitten this codebase before; keep the element qualifier. */
+.iz a.izrw-badge {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: var(--sp-5) var(--sp-6);
+  border-radius: var(--r-lg);
+  /* Always the dark plate, in both page themes: it is a badge, an
+     object sitting on top of the wall, and it has to read as one
+     regardless of what the page underneath is doing. */
+  background: #14131a;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+  color: #f4f3f1;
+  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.iz a.izrw-badge:hover {
+  border-color: color-mix(in srgb, var(--orange) 62%, transparent);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55),
+    0 0 0 1px color-mix(in srgb, var(--orange) 40%, transparent),
+    0 0 40px -8px color-mix(in srgb, var(--orange) 46%, transparent);
+  transform: translate(-50%, -50%) scale(1.02);
+}
+.iz a.izrw-badge:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+
+.izrw-score {
+  color: #f4f3f1;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: clamp(34px, 4vw, 46px);
+  line-height: 1;
+  letter-spacing: var(--ls-h2);
+}
+.izrw-badge-mid { display: flex; flex-direction: column; gap: var(--sp-2); }
+.izrw-stars { display: flex; gap: 3px; }
+.izrw-stars svg { width: 20px; height: 20px; }
+/* Two stacked paths per star: a dim base that is always drawn, and a
+   bright one over it. A half star clips the BRIGHT path to its left
+   half so the dim base still shows on the right — clipping a single
+   path would just delete half the star. */
+.izrw-stars .izrw-s-bg { fill: rgba(244, 243, 241, 0.22); }
+.izrw-stars .izrw-s-fg { fill: #f4f3f1; opacity: 0; }
+.izrw-stars svg.on .izrw-s-fg { opacity: 1; }
+.izrw-stars svg.half .izrw-s-fg { opacity: 1; clip-path: inset(0 50% 0 0); }
+.izrw-count {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: rgba(244, 243, 241, 0.66);
+}
+.izrw-g2 { flex: none; display: grid; place-items: center; }
+.izrw-g2 img { width: 42px; height: 42px; }
+
+/* ---- responsive ----
+   Columns are shed from the OUTSIDE IN. The outer two columns are
+   text-only by construction (see the deal in IzReviewWall.tsx), so
+   every photographed reviewer survives all the way down to the
+   narrowest layout instead of being the first thing dropped. */
+@media (max-width: 1280px) {
+  .izrw-wall { grid-template-columns: repeat(4, minmax(0, 1fr)); height: 620px; }
+  .izrw-col[data-col="4"] { display: none; }
+}
+@media (max-width: 1040px) {
+  .izrw-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); height: 600px; }
+  .izrw-col[data-col="0"] { display: none; }
+  .iz a.izrw-badge { gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); }
+  .izrw-g2 img { width: 34px; height: 34px; }
+}
+@media (max-width: 760px) {
+  .izrw-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); height: 540px; }
+  .izrw-col[data-col="3"] { display: none; }
+  .izrw-stars svg { width: 16px; height: 16px; }
+}
+@media (max-width: 520px) {
+  .izrw-wall { grid-template-columns: minmax(0, 1fr); }
+  .izrw-col[data-col="2"] { display: none; }
+  .iz a.izrw-badge { flex-direction: column; gap: var(--sp-3); text-align: center; }
+}
+
+/* Reduced motion: the wall stops and becomes a plain readable list.
+   The clones are dropped so nothing repeats, the mask is removed so
+   nothing is half-visible, and the badge leaves the middle of the
+   stack rather than covering a card that can no longer scroll away. */
+@media (prefers-reduced-motion: reduce) {
+  .izrw { display: flex; flex-direction: column; gap: var(--sp-6); }
+  .izrw-wall {
+    height: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    order: 2;
+  }
+  .izrw-col { overflow: visible; }
+  .izrw-col-up { margin-top: 0; }
+  .izrw-track { animation: none; }
+  .izrw-clone { display: none; }
+  .izrw-card { opacity: 1; }
+  .izrw-col[data-col] { display: block; }
+  .iz a.izrw-badge {
+    position: static;
+    transform: none;
+    align-self: flex-start;
+    order: 1;
+  }
+  .iz a.izrw-badge:hover { transform: none; }
+}

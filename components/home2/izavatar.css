@@ -1,0 +1,57 @@
+/* ============================================================
+   IzAvatar — the drawn person mark. Scoped .izav; tokens from .iz.
+   Three tints only (accent · ink · mute) so a row of people still
+   reads as one palette.
+   ============================================================ */
+
+.izav {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--izav-size, 36px);
+  height: var(--izav-size, 36px);
+  flex: none;
+  user-select: none;
+}
+
+.izav svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.izav-plate {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+/* the hero doorway, at 1/20 scale and low weight — present, not loud */
+.izav-arch {
+  fill: var(--izav-tint);
+  opacity: 0.18;
+}
+
+.izav-mono {
+  position: relative;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  /* scales with the box so one component serves 24px table rows and
+     72px profile cards without a size prop per call site */
+  font-size: calc(var(--izav-size, 36px) * 0.36);
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--tx);
+}
+
+.izav-accent { --izav-tint: var(--accent); }
+.izav-ink { --izav-tint: var(--tx); }
+.izav-mute { --izav-tint: var(--tx-mute); }
+
+/* the accent person is the default "you" throughout the site, so the
+   plate carries a faint accent wash to mark them as the active identity */
+.izav-accent .izav-plate {
+  fill: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
+  stroke: color-mix(in srgb, var(--accent) 28%, var(--line-strong));
+}

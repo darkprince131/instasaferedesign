@@ -17,6 +17,7 @@ import "@/components/home2/izpanel.css";
 import "@/components/home2/izappwindow.css";
 import "@/components/home2/iznewblocks.css";
 import "@/components/home2/izpagekit.css";
+import "@/components/home2/izlogomarquee.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/iztunnelcards.css";

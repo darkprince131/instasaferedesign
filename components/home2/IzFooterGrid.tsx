@@ -68,13 +68,21 @@ const COLUMNS: Column[] = [
   },
 ];
 
-const RECOGNITION = [
-  "Gartner recognised",
-  "Deloitte Fast 50",
-  "DSCI member",
-  "G2 High Performer",
-  "NIST SP 800-207",
-  "On-prem or cloud",
+/* Certifications and recognition, as the real marks rather than as
+   text. A typed-out "ISO 27001" is a claim; the mark is the thing a
+   security buyer scans a footer for and recognises without reading.
+   Mixed art (flat SVG wordmarks, round seal rasters) is why each one
+   carries its own height — see izfootergrid.css. */
+type Badge = { file: string; alt: string; h: number };
+const RECOGNITION: Badge[] = [
+  { file: "aicpa-soc.webp", alt: "AICPA SOC — Service Organizations", h: 54 },
+  { file: "iso-27001.webp", alt: "ISO 27001:2013 certified company", h: 54 },
+  { file: "gartner.svg", alt: "Gartner", h: 20 },
+  { file: "dsci.png", alt: "DSCI Excellence Awards", h: 56 },
+  { file: "deloitte-fast50.png", alt: "Deloitte Technology Fast 50", h: 46 },
+  { file: "nist.svg", alt: "NIST", h: 17 },
+  { file: "hipaa.webp", alt: "HIPAA", h: 30 },
+  { file: "gdpr.webp", alt: "GDPR ready", h: 34 },
 ];
 
 /* decorative rail — mirrors the measured-drawing rules between blocks */
@@ -125,9 +133,16 @@ export function IzFooterGrid() {
               <b>NIST SP 800-207</b>
               <span className="izfg-stat-sub">the Zero Trust architecture standard</span>
             </div>
-            {RECOGNITION.map((r) => (
-              <div key={r} className="izfg-cell izfg-badge">
-                {r}
+            {RECOGNITION.map((b) => (
+              <div key={b.file} className="izfg-cell izfg-badge">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/logos/compliance/${b.file}`}
+                  alt={b.alt}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ ["--izfg-bh" as string]: `${b.h}px` }}
+                />
               </div>
             ))}
           </div>
@@ -135,17 +150,27 @@ export function IzFooterGrid() {
 
         <Rail />
 
-        {/* ---- link table: one cell per link ---- */}
-        <nav className="izfg-table" aria-label="Footer">
+        {/* ---- link columns ----
+             These used to be bordered cells, one box per link, which
+             turned the navigation into a spreadsheet: every link read
+             as a data point of equal weight and the eye had nowhere to
+             start. Plain stacked lists under a quiet mono heading is
+             the ordinary footer grammar, and it lets the drawn lattice
+             above stay the thing that's drawn. */}
+        <nav className="izfg-links" aria-label="Footer">
           {COLUMNS.map((col) => (
             <div key={col.head} className="izfg-col">
-              <span className="izfg-cell izfg-colhead">{col.head}</span>
-              {col.links.map((l) => (
-                <a key={l.href} href={l.href} className="izfg-cell izfg-link">
-                  {l.label}
-                  {l.badge && <span className="izfg-hiring">{l.badge}</span>}
-                </a>
-              ))}
+              <span className="izfg-colhead">{col.head}</span>
+              <ul>
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <a href={l.href} className="izfg-link">
+                      {l.label}
+                      {l.badge && <span className="izfg-hiring">{l.badge}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </nav>

@@ -8,6 +8,7 @@ import {
   Globe, Database, Terminal, Cloud, Desktop,
   Export, Lock, type Icon,
 } from "@phosphor-icons/react";
+import { IzAvatar, IZ_USER_BY_ID } from "./izUsers";
 
 /* ============================================================
    C-new · InstaSafe App Window — full product experience demo.
@@ -28,12 +29,14 @@ const SECTIONS: NavSection[] = [
 
 /* ---- data ---- */
 interface IUser { name: string; email: string; role: string; status: "Active"|"Inactive"; seen: string; }
+/* The first three are the site-wide cast (see izUsers.tsx); the rest
+   exist only to make the table look like a real tenant. */
 const USERS_INIT: IUser[] = [
-  { name: "Arjun Mehta",   email: "arjun.m@acmecorp.in", role: "Admin",      status: "Active",   seen: "2 min ago" },
-  { name: "Priya Sharma",  email: "priya.s@acmecorp.in", role: "Developer",  status: "Active",   seen: "1h ago"    },
-  { name: "contractor-07", email: "ext-07@vendor.com",   role: "Contractor", status: "Active",   seen: "3h ago"    },
-  { name: "Neha Roy",      email: "neha.r@acmecorp.in",  role: "Analyst",    status: "Inactive", seen: "2d ago"    },
-  { name: "Rohan Das",     email: "rohan.d@acmecorp.in", role: "Developer",  status: "Active",   seen: "5 min ago" },
+  { name: "Alen Joseph",   email: "alen.joseph@veno.co.in", role: "Admin",      status: "Active",   seen: "2 min ago" },
+  { name: "Priya S",       email: "priya.s@veno.co.in",     role: "Developer",  status: "Active",   seen: "1h ago"    },
+  { name: "Olive Ketta",   email: "olive.ketta@veno.co.in", role: "Analyst",    status: "Active",   seen: "3h ago"    },
+  { name: "contractor-07", email: "ext-07@vendor.com",      role: "Contractor", status: "Inactive", seen: "2d ago"    },
+  { name: "Rohan Das",     email: "rohan.d@veno.co.in",     role: "Developer",  status: "Active",   seen: "5 min ago" },
 ];
 
 interface IApp { name: string; type: string; icon: Icon; users: number; status: "Protected"|"Restricted"; }
@@ -48,25 +51,25 @@ const APPS_INIT: IApp[] = [
 
 interface IDevice { host: string; os: string; user: string; score: number; enc: boolean; patch: boolean; av: boolean|null; }
 const DEVICES: IDevice[] = [
-  { host: "MacBook-ARJ-01", os: "macOS 14.5",  user: "Arjun Mehta",   score: 95, enc: true,  patch: true,  av: true  },
-  { host: "WIN-PRY-02",     os: "Windows 11",  user: "Priya Sharma",  score: 88, enc: true,  patch: true,  av: true  },
-  { host: "WIN-CTR-07",     os: "Windows 10",  user: "contractor-07", score: 62, enc: true,  patch: false, av: true  },
-  { host: "iPhone-NR-03",   os: "iOS 17.4",    user: "Neha Roy",      score: 91, enc: true,  patch: true,  av: null  },
-  { host: "MacBook-RD-05",  os: "macOS 14.5",  user: "Rohan Das",     score: 97, enc: true,  patch: true,  av: true  },
+  { host: "DESKTOP-16MTL6M", os: "Windows 11 Pro", user: "Alen Joseph",   score: 95, enc: true,  patch: true,  av: true  },
+  { host: "DESKTOP-7EJKLOP", os: "Windows 11 Pro", user: "Priya S",       score: 88, enc: true,  patch: true,  av: true  },
+  { host: "WIN-CTR-07",      os: "Windows 10",     user: "contractor-07", score: 62, enc: true,  patch: false, av: true  },
+  { host: "MacBook-OK-03",   os: "macOS 14.5",     user: "Olive Ketta",   score: 91, enc: true,  patch: true,  av: null  },
+  { host: "MacBook-RD-05",   os: "macOS 14.5",     user: "Rohan Das",     score: 97, enc: true,  patch: true,  av: true  },
 ];
 
 interface ILog { u: string; a: string; ok: boolean; t: string; ip: string; }
 const LOGS_DATA: ILog[] = [
-  { u: "arjun.m",      a: "billing-portal", ok: true,  t: "09:41:22", ip: "10.0.1.42"   },
+  { u: "alen.joseph",  a: "prod-bastion",   ok: true,  t: "09:41:22", ip: "10.0.1.42"   },
   { u: "build-svc",    a: "code-server",    ok: true,  t: "09:41:18", ip: "10.0.1.88"   },
   { u: "contractor-07",a: "admin-panel",    ok: false, t: "09:41:05", ip: "192.168.3.7"  },
-  { u: "priya.s",      a: "hr-system",      ok: true,  t: "09:40:58", ip: "10.0.1.55"   },
+  { u: "priya.s",      a: "erp-frontend",   ok: true,  t: "09:40:58", ip: "10.0.1.55"   },
   { u: "ops-22",       a: "finance-rdp",    ok: false, t: "09:40:44", ip: "10.0.2.19"   },
   { u: "rohan.d",      a: "code-server",    ok: true,  t: "09:40:31", ip: "10.0.1.73"   },
-  { u: "neha.r",       a: "reports-db",     ok: true,  t: "09:40:12", ip: "10.0.1.61"   },
+  { u: "olive.ketta",  a: "asset-store",    ok: true,  t: "09:40:12", ip: "10.0.1.61"   },
   { u: "contractor-07",a: "billing-portal", ok: false, t: "09:39:55", ip: "192.168.3.7"  },
-  { u: "arjun.m",      a: "hr-system",      ok: true,  t: "09:39:33", ip: "10.0.1.42"   },
-  { u: "priya.s",      a: "code-server",    ok: true,  t: "09:39:01", ip: "10.0.1.55"   },
+  { u: "alen.joseph",  a: "build-farm",     ok: true,  t: "09:39:33", ip: "10.0.1.42"   },
+  { u: "priya.s",      a: "reports-db",     ok: true,  t: "09:39:01", ip: "10.0.1.55"   },
 ];
 
 interface IPolicy { name: string; who: string; apps: string[]; conditions: string[]; status: "Active"|"Draft"; }
@@ -264,13 +267,20 @@ function DevicesSection() {
                 <span className={`iaw-dot ${d.av === null ? "na" : d.av ? "ok" : "deny"}`} title="Antivirus" />
               </span>
             </div>
+            {/* The inner wrapper is load-bearing: the open/close animation is
+                grid-template-rows 0fr→1fr, which needs exactly one child to
+                collapse. It replaces a max-height transition that had to
+                guess a height (120px) and so eased wrong and clipped taller
+                rows. */}
             <div className={`iaw-posture-detail${expanded === d.host ? " open" : ""}`}>
-              <span className={`iaw-posture-row${d.enc ? " ok" : " fail"}`}>{d.enc ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />} Disk encryption</span>
-              <span className={`iaw-posture-row${d.patch ? " ok" : " fail"}`}>{d.patch ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />} OS patches up to date</span>
-              <span className={`iaw-posture-row${d.av === null ? " na" : d.av ? " ok" : " fail"}`}>
-                {d.av === null ? <Warning weight="fill" /> : d.av ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />}
-                {" "}Antivirus{d.av === null ? " (N/A on this platform)" : ""}
-              </span>
+              <div className="iaw-posture-inner">
+                <span className={`iaw-posture-row${d.enc ? " ok" : " fail"}`}>{d.enc ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />} Disk encryption</span>
+                <span className={`iaw-posture-row${d.patch ? " ok" : " fail"}`}>{d.patch ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />} OS patches up to date</span>
+                <span className={`iaw-posture-row${d.av === null ? " na" : d.av ? " ok" : " fail"}`}>
+                  {d.av === null ? <Warning weight="fill" /> : d.av ? <CheckCircle weight="fill" /> : <XCircle weight="fill" />}
+                  {" "}Antivirus{d.av === null ? " (N/A on this platform)" : ""}
+                </span>
+              </div>
             </div>
           </div>
         ))}
@@ -354,7 +364,15 @@ function PoliciesSection() {
 }
 
 /* ======== MAIN WINDOW ======== */
-export function IzAppWindow() {
+
+type AppWindowProps = {
+  /** row variant: shorter, narrower sidebar, no titlebar search — the
+      size that fits the console slot of a ConsoleRow rather than a
+      full-width section of its own. */
+  compact?: boolean;
+};
+
+export function IzAppWindow({ compact }: AppWindowProps = {}) {
   const [active, setActive] = useState("dashboard");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -381,7 +399,7 @@ export function IzAppWindow() {
   }
 
   return (
-    <div className="iaw">
+    <div className={compact ? "iaw iaw--compact" : "iaw"}>
       {/* titlebar */}
       <div className="iaw-titlebar">
         <span className="iaw-dots">
@@ -390,10 +408,12 @@ export function IzAppWindow() {
         <span className="iaw-win-title">
           <Lock weight="fill" />InstaSafe ZTNA
         </span>
-        <span className="iaw-search">
-          <MagnifyingGlass weight="regular" />
-          <input placeholder="Search users, apps, policies…" readOnly />
-        </span>
+        {!compact && (
+          <span className="iaw-search">
+            <MagnifyingGlass weight="regular" />
+            <input placeholder="Search users, apps, policies…" readOnly />
+          </span>
+        )}
         <span className="iaw-win-actions">
           <Gear weight="regular" /><UserCircle weight="fill" />
         </span>
@@ -422,9 +442,11 @@ export function IzAppWindow() {
             ))}
           </ul>
           <div className="iaw-sidebar-foot">
-            <span className="iaw-avatar lg">A</span>
+            {/* same person, same mark, as the end-user portal and the
+                access logs — one cast across the whole site */}
+            <IzAvatar user={IZ_USER_BY_ID.alen} size={28} />
             <span className="iaw-foot-info">
-              <span className="iaw-user-name">Arjun Mehta</span>
+              <span className="iaw-user-name">{IZ_USER_BY_ID.alen.name}</span>
               <span className="iaw-user-role">Admin</span>
             </span>
           </div>

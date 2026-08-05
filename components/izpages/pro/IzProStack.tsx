@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Copy } from "@phosphor-icons/react";
+import { ArrowUpRight } from "@phosphor-icons/react";
 import { SLIDES, type Slide } from "./pro.config";
 import { IzProPanel } from "./IzProPanel";
+import { IzProDock } from "./IzProDock";
 
 /* ============================================================
    IzProStack — the sticky scroll-stack  (lab 00am)
@@ -37,30 +38,10 @@ import { IzProPanel } from "./IzProPanel";
    the mobile list all read SLIDES.length.
    ============================================================ */
 
-function Aside({ slide }: { slide: Slide }) {
-  const a = slide.aside;
-  if (!a) return null;
-  if (a.kind === "command")
-    return (
-      <span className="izpro-cmd">
-        <code>{a.text}</code>
-        <Copy aria-hidden="true" />
-      </span>
-    );
-  if (a.kind === "link")
-    return (
-      <a className="izpro-link" href={a.href}>
-        {a.label}
-        <ArrowUpRight weight="bold" aria-hidden="true" />
-      </a>
-    );
-  return (
-    <figure className="izpro-quote">
-      <blockquote>{a.text}</blockquote>
-      <figcaption>{a.who}</figcaption>
-    </figure>
-  );
-}
+/* `Aside` (command / link / quote) is unused by the current four
+   slides — every step now carries a real `cta` instead — but the
+   type stays in pro.config.tsx for a future slide that wants an
+   inline chip rather than a button. Nothing here reads it. */
 
 function Floats({ slide }: { slide: Slide }) {
   if (!slide.floats) return null;
@@ -76,6 +57,7 @@ function Floats({ slide }: { slide: Slide }) {
           {f.tag && <i className="izpro-floattag">{f.tag}</i>}
           {f.stat ? (
             <>
+              {f.stat.icon && <f.stat.icon weight="regular" className="izpro-floaticon" />}
               <b className="izpro-floatstat">{f.stat.value}</b>
               <span className="izpro-floatlabel">{f.stat.label}</span>
             </>
@@ -101,6 +83,11 @@ function num(i: number) {
    reference holds each card, then swaps. Raise for more reading time,
    lower for a faster hand-off. */
 const HOLD = 0.55;
+/* Window (as a fraction of one slide's dwell) over which a duo
+   panel's own frame swap happens. Both fall well inside [0, HOLD] —
+   see the comment above frameT in tick(). */
+const FRAME_SWITCH_START = 0.16;
+const FRAME_SWITCH_END = 0.42;
 
 export function IzProStack() {
   const outerRef = useRef<HTMLDivElement>(null);
@@ -133,7 +120,17 @@ export function IzProStack() {
       // still for the first HOLD of the slide, then the next rises
       const local = t < HOLD ? 0 : (t - HOLD) / (1 - HOLD);
 
+      /* frame-t drives a duo panel's OWN internal cross-fade (login →
+         portal, portal → watermark desktop) — a second, smaller
+         progress living entirely inside the "still" portion of a
+         single slide's dwell, well before HOLD hands off to the next
+         slide. It has to finish before HOLD or the two transitions
+         would visually collide. Clamped to 0/1 outside its window so
+         it is inert for slides whose panel doesn't read it. */
+      const frameT = Math.min(1, Math.max(0, (t - FRAME_SWITCH_START) / (FRAME_SWITCH_END - FRAME_SWITCH_START)));
+
       sticky.style.setProperty("--local", local.toFixed(4));
+      sticky.style.setProperty("--frame-t", frameT.toFixed(4));
       if (idx !== lastActive) {
         lastActive = idx;
         setActive(idx);
@@ -163,8 +160,8 @@ export function IzProStack() {
       {/* ---------- desktop: the sticky stack ---------- */}
       <div className="izpro-outer" ref={outerRef} style={{ ["--slides" as string]: N } as React.CSSProperties}>
         <div className="izpro-sticky" ref={stickyRef}>
-          <div className="iz-wrap izpro-cols">
-            {/* left column swaps content on the active index only */}
+          <div className="iz-wrap izpro-cols3">
+            {/* col 1: eyebrow, heading, CTA — swaps on the active index only */}
             <div className="izpro-left" key={slide.id}>
               <span className="izpro-eyebrow">
                 <b>
@@ -173,20 +170,39 @@ export function IzProStack() {
                 {slide.eyebrow}
               </span>
               <h2 className="izpro-h2">{slide.title}</h2>
-              <Aside slide={slide} />
+              <a className="izpro-cta" href={slide.cta.href}>
+                {slide.cta.label}
+                <ArrowUpRight weight="bold" aria-hidden="true" />
+              </a>
             </div>
 
-            {/* right column: absolutely stacked slots */}
-            <div className="izpro-right">
+            {/* col 2: the console — absolutely stacked slots, one per
+                slide, sharing the current/next/past/future states */}
+            <div className="izpro-mid">
               {SLIDES.map((s, i) => {
                 const state = i === active ? "current" : i === active + 1 ? "next" : i < active ? "past" : "future";
                 return (
                   <div key={s.id} className="izpro-slot" data-state={state}>
                     <IzProPanel panel={s.panel} />
-                    <Floats slide={s} />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* col 3: supporting copy + the identity dock (step 01
+                only) + the capability floats — stacked the same way
+                as col 2, so it changes in lock-step with the console
+                rather than a beat behind it */}
+            <div className="izpro-right3">
+              {SLIDES.map((s, i) => {
+                const state = i === active ? "current" : i === active + 1 ? "next" : i < active ? "past" : "future";
+                return (
+                  <div key={s.id} className="izpro-slot" data-state={state}>
                     <p className="izpro-body">
                       <b>{s.body.lead}</b> {s.body.rest}
                     </p>
+                    {s.dock && <IzProDock items={s.dock} />}
+                    <Floats slide={s} />
                   </div>
                 );
               })}
@@ -220,7 +236,11 @@ export function IzProStack() {
             <p className="izpro-body">
               <b>{s.body.lead}</b> {s.body.rest}
             </p>
-            <Aside slide={s} />
+            {s.dock && <IzProDock items={s.dock} />}
+            <a className="izpro-cta" href={s.cta.href}>
+              {s.cta.label}
+              <ArrowUpRight weight="bold" aria-hidden="true" />
+            </a>
           </li>
         ))}
       </ol>

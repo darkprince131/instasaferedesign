@@ -1,0 +1,124 @@
+/* ============================================================
+   IzLogoMarquee — customer logo strip, full-bleed, under the hero.
+   Tokens only; see IzLogoMarquee.tsx for the design notes.
+   ============================================================ */
+
+.izlm {
+  position: relative;
+  padding: var(--sp-6) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  overflow: hidden;
+
+  /* how far one lap travels per second, and the width we assume a
+     logo + its gap occupies. Only the speed is felt; the seam is
+     exact regardless (the track always translates exactly -50%). */
+  --izlm-cell: 168;
+  --izlm-scale: 1;
+  --izlm-gap: clamp(40px, 4.6vw, 72px);
+}
+
+.izlm-label {
+  margin: 0 0 var(--sp-5);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+
+/* edge fade — the strip should read as continuous, not as a list
+   that stops at the gutter. */
+.izlm-viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.izlm-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: izlm-scroll calc(var(--izlm-count) * var(--izlm-cell) / var(--izlm-speed) * 1s)
+    var(--ease-linear) infinite;
+}
+
+/* pause on hover so a name can actually be read */
+.izlm:hover .izlm-track,
+.izlm:focus-within .izlm-track {
+  animation-play-state: paused;
+}
+
+.izlm-row {
+  display: flex;
+  align-items: center;
+  gap: var(--izlm-gap);
+  margin: 0;
+  padding: 0 0 0 var(--izlm-gap);
+  list-style: none;
+}
+
+.izlm-item {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+
+.izlm-item img {
+  display: block;
+  height: calc(var(--izlm-h) * var(--izlm-scale));
+  width: auto;
+  max-width: none;
+  filter: var(--izlm-filter);
+  opacity: var(--izlm-opacity);
+  transition: opacity var(--dur) var(--ease-out), filter var(--dur) var(--ease-out);
+}
+
+/* Monochrome treatment. Greyscale-then-invert rather than a flat
+   silhouette, so knockout logos (white type inside a coloured
+   plate) survive both themes. */
+.iz[data-theme="paper"] .izlm {
+  --izlm-filter: grayscale(1) contrast(0.86) brightness(0.72);
+  --izlm-opacity: 0.78;
+}
+.iz[data-theme="dark"] .izlm,
+.iz .iz-inverted .izlm {
+  --izlm-filter: grayscale(1) invert(1) contrast(0.9) brightness(1.05);
+  --izlm-opacity: 0.72;
+}
+
+/* hovering the strip lifts every logo to full weight — the pause
+   and the lift are the same gesture, so it reads as "look here". */
+.izlm:hover .izlm-item img {
+  --izlm-opacity: 1;
+}
+
+@keyframes izlm-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (max-width: 900px) {
+  .izlm { --izlm-scale: 0.82; --izlm-gap: 36px; }
+}
+
+/* Reduced motion: no scroll at all. The clone row is dropped and the
+   real one becomes a centred static wall. */
+@media (prefers-reduced-motion: reduce) {
+  .izlm-viewport {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .izlm-track {
+    animation: none;
+    width: auto;
+  }
+  .izlm-row[aria-hidden="true"] { display: none; }
+  .izlm-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-8) var(--izlm-gap);
+    padding: 0 var(--wrap-gutter);
+  }
+}

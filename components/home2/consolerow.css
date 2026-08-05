@@ -17,6 +17,30 @@
 
 .cr-text .iz-ey { margin-bottom: 14px; }
 .cr-lead { color: var(--tx-dim); font-size: 17px; /* left hardcoded: exact tie between --fs-body(16) and --fs-lead(18) */ line-height: 1.6; max-width: 42ch; margin: var(--sp-4) 0 0; }
+.cr-lead + .cr-lead { margin-top: var(--sp-4); }
+
+/* spec grammar: mono term on a hairline, value beside it. Same
+   vocabulary as IzSpecTable so a row and a spec table read as one
+   system rather than two ways of stating a fact. */
+.cr-facts { margin: var(--sp-6) 0 0; max-width: 42ch; }
+.cr-fact {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--line);
+}
+.cr-fact:last-child { border-bottom: 1px solid var(--line); }
+.cr-fact dt {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.cr-fact dd { margin: 0; font-size: var(--fs-body-sm); color: var(--tx); }
+
 .cr-cta { display: inline-flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-6); font-size: var(--fs-body-sm); font-weight: 500; color: var(--orange); }
 .cr-cta svg { width: 16px; height: 16px; transition: transform var(--dur) var(--ease-out); }
 .cr-cta:hover svg { transform: translateX(4px); }

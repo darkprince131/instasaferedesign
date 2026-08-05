@@ -1,0 +1,202 @@
+/* ============================================================
+   IzControlSurface — DELTAS ONLY.
+
+   Runs on the 00ac control-surface chassis (signalgrid.css), which
+   must be imported alongside this file. The grid, the copy block's
+   grid-area, the tiles, the invisible placeholders and the pager
+   all come from there. This file adds what replacing the JSON
+   console with a live endpoint needs:
+     · the stage that holds the screen
+     · a group tag, because one surface now carries two families
+     · a group cue on the tiles themselves
+   ============================================================ */
+
+/* ---- grid geometry ----
+   00ac's rows are `minmax(96px, 1fr)`, which lets the copy block's own
+   height set the row height. Its console is short, so its tiles land
+   near-square. Ours holds a 16:10 screen, so the same rule stretched
+   every tile into a vertical slab. Fixing the row height decouples the
+   two: tiles keep 00ac's proportion, and the copy gets the room it
+   needs from an EIGHTH row rather than from taller tiles.
+
+   The copy also widens from 5 columns to 6 — that is where the bigger
+   screen comes from, since the screen is aspect-locked to its width. */
+@media (min-width: 1100px) {
+  .izcs .izsg-grid { grid-template-rows: repeat(8, 104px); }
+  .izcs .izsg-copy { grid-area: 2 / 1 / 9 / 7; }
+}
+
+/* ---- the lattice ----
+   Rails are grid items, so they sit in the gutters by construction. The
+   -4.5px offset centres the hairline in the 8px gap (half the gap, plus
+   half the line). Below the desktop breakpoint the grid re-scatters into
+   6 or 4 columns and the lattice would no longer describe anything, so
+   it goes away rather than drawing decorative lines. */
+.izcs-rail { display: none; }
+@media (min-width: 1100px) {
+  .izcs-rail {
+    display: block;
+    z-index: 0;
+    pointer-events: none;
+    min-width: 0;
+  }
+  .izcs-rail.v {
+    grid-column: var(--gc);
+    grid-row: 1 / -1;
+    border-right: 1px dashed var(--rail);
+    margin-right: -4.5px;
+  }
+  .izcs-rail.h {
+    grid-row: var(--gr);
+    grid-column: 1 / -1;
+    border-bottom: 1px dashed var(--rail);
+    margin-bottom: -4.5px;
+  }
+  /* the copy block masks the lattice: it carries the section's own
+     background and sits a layer above, so no line ever crosses the
+     headline, the blurb or the screen */
+  .izcs .izsg-copy {
+    position: relative;
+    z-index: 1;
+    background: var(--bg-2);
+  }
+  .izcs .izsg-tile { position: relative; z-index: 1; }
+}
+
+.izcs-stage {
+  /* 00ac's copy block is `align-items: flex-start`, so a child sizes to
+     its OWN content. The stage's widest content is the blurb, and the
+     blurb changes per control — which silently made the screen a
+     different size for every capability. Stretching pins the stage to
+     the full column, so the screen is the same box no matter which
+     control is selected or how long its sentence is. */
+  align-self: stretch;
+  width: 100%;
+  margin-top: var(--sp-6);
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+}
+
+.izcs-h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+.izcs-name { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.izcs-name > svg { width: 16px; height: 16px; color: var(--orange); flex: none; }
+.izcs-name .nm {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The tag is what makes one section legible as two families. Both
+   sit on the neutral scale rather than taking a colour each — the
+   orange is already spent on the active tile and the CTA. */
+.izcs-tag {
+  flex: none;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izcs-tag.endpoint {
+  border-color: color-mix(in srgb, var(--tx) 22%, var(--line));
+  color: var(--tx-dim);
+}
+
+/* transport: prev · play/pause · next, in that order, one group */
+.izcs-transport { margin-left: auto; }
+.izcs-playbtn { position: relative; }
+.izcs-playbtn::before,
+.izcs-playbtn::after {
+  content: "";
+  position: absolute;
+  top: 22%;
+  bottom: 22%;
+  width: 1px;
+  background: var(--line);
+}
+.izcs-playbtn::before { left: 0; }
+.izcs-playbtn::after { right: 0; }
+
+/* ---- the anti-jump locks ----
+   Every control swaps the name and the blurb, and both were changing
+   the stage's height, so the screen shifted up and down as the loop
+   advanced. Header and blurb are now fixed boxes: the name is a single
+   ellipsised line, the blurb is exactly two lines and clamps. The
+   screen below them therefore never moves. */
+.izcs-h { height: 44px; }
+.izcs-blurb {
+  margin: var(--sp-3) 0 var(--sp-4);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--tx-dim);
+  height: 3em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* ---- the two destinations ----
+   Buttons, not the 00ac text link, because they are the section's exit
+   and the section makes two separate arguments. The first carries the
+   accent; the second is outlined, so they read as a pair with an order
+   rather than as two competing primaries. */
+.izcs-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+}
+.izcs-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--tx);
+  background: var(--surface);
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.izcs-cta svg { width: 14px; height: 14px; transition: transform var(--dur) var(--ease-out); }
+.izcs-cta:hover svg { transform: translate(2px, -2px); }
+.izcs-cta:first-child {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--btn-ink);
+  box-shadow: var(--cta-glow);
+}
+.izcs-cta:first-child:hover { background: color-mix(in srgb, var(--orange) 88%, var(--tx)); }
+.izcs-cta:not(:first-child):hover { border-color: var(--orange); color: var(--orange); }
+.izcs-cta:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+/* Tiles carry a family cue so the scatter is readable as two groups
+   without adding a legend: contextual tiles keep the plain hairline,
+   endpoint tiles get a left edge. Quiet enough that the grid still
+   reads as one surface. */
+.izcs .izsg-tile[data-group="endpoint"] { border-left-width: 2px; }
+.izcs .izsg-tile[data-group="endpoint"]:not(.on) { border-left-color: var(--line-strong); }
+
+@media (max-width: 900px) {
+  .izcs-stage { padding: var(--sp-3); }
+  .izcs-blurb { min-height: 0; }
+}

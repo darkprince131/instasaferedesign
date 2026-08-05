@@ -1,0 +1,170 @@
+/* ============================================================
+   IzIntegrationGrid — SSO section. Scoped .izig; tokens from .iz.
+   ============================================================ */
+
+.izig {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.izig-copy .iz-ey { margin-bottom: var(--sp-3); }
+.izig-body {
+  margin: var(--sp-4) 0 0;
+  max-width: 48ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.izig-facts { list-style: none; margin: var(--sp-6) 0 0; padding: 0; max-width: 48ch; }
+.izig-facts li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: baseline;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izig-facts li:last-child { border-bottom: 1px solid var(--line); }
+.izig-facts b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: 1;
+  color: var(--orange);
+}
+
+.izig-cta {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  margin-top: var(--sp-6);
+  font-size: var(--fs-body-sm); font-weight: 500;
+  color: var(--orange);
+}
+.izig-cta svg { width: 16px; height: 16px; transition: transform var(--dur) var(--ease-out); }
+.izig-cta:hover svg { transform: translateX(4px); }
+
+/* ---- the wall ---- */
+.izig-wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-3);
+  height: 560px;
+  min-width: 0;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+}
+.izig-col { overflow: hidden; min-width: 0; }
+/* middle column starts half a card lower so the three read as a wall,
+   not as a table with three columns of the same rows */
+.izig-col-up { margin-top: -46px; }
+
+.izig-track {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  will-change: transform;
+  animation: izig-scroll calc(var(--izig-count) * 118 / var(--izig-speed) * 1s) var(--ease-linear) infinite;
+}
+.izig-col-up .izig-track { animation-name: izig-scroll-up; }
+.izig-wall:hover .izig-track { animation-play-state: paused; }
+
+@keyframes izig-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -50%, 0); }
+}
+@keyframes izig-scroll-up {
+  from { transform: translate3d(0, -50%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* ---- card ---- */
+.izig-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  flex: none;
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.izig-card:hover { border-color: color-mix(in srgb, var(--orange) 42%, var(--line)); }
+
+.izig-logo {
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  margin-bottom: var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+.izig-logo img { max-width: 21px; max-height: 21px; width: auto; height: auto; }
+/* fallback plate for a brand whose art hasn't landed — a monogram in
+   the same chassis, never a broken-image box */
+.izig-logo-mono span {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-mute);
+}
+
+.izig-name {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-sm);
+  color: var(--tx);
+  line-height: 1.25;
+}
+.izig-group {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.04em;
+  color: var(--tx-mute);
+  line-height: 1.3;
+}
+
+/* Real brand colour on paper; white on dark. `brightness(0) invert(1)`
+   is the right call HERE (unlike the customer strip) because these are
+   clean marks on transparent, not knockouts inside coloured plates. */
+.iz[data-theme="dark"] .izig-logo img,
+.iz .iz-inverted .izig-logo img {
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+/* ---- responsive ---- */
+@media (max-width: 1040px) {
+  .izig { gap: 40px; }
+  .izig-wall { height: 500px; }
+}
+@media (max-width: 940px) {
+  .izig { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+  .izig-wall { height: 440px; }
+}
+@media (max-width: 620px) {
+  .izig-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); height: 400px; }
+  .izig-wall > :last-child { display: none; }
+}
+
+/* Reduced motion: stop the drift and let the wall be a static, fully
+   readable list — the clone copies are dropped so nothing repeats. */
+@media (prefers-reduced-motion: reduce) {
+  .izig-wall {
+    height: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .izig-col { overflow: visible; }
+  .izig-col-up { margin-top: 0; }
+  .izig-track { animation: none; }
+  .izig-clone { display: none; }
+  .izig-cta:hover svg { transform: none; }
+}
