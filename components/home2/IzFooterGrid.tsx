@@ -73,6 +73,21 @@ const COLUMNS: Column[] = [
    security buyer scans a footer for and recognises without reading.
    Mixed art (flat SVG wordmarks, round seal rasters) is why each one
    carries its own height — see izfootergrid.css. */
+/* G2 award badges. Six arrived as base64 PNGs wrapped in an SVG
+   (5.6 MB across seven files); they were extracted and re-encoded to
+   240px-tall WebP, which is 65 KB for the set. Only
+   easiest-to-do-business-with is a true vector and stayed .svg —
+   hence filenames carry their own extension here. */
+const G2_AWARDS: { file: string; alt: string }[] = [
+  { file: "high-performer.webp", alt: "G2 High Performer" },
+  { file: "users-love-us.webp", alt: "G2 Users Love Us" },
+  { file: "best-support.webp", alt: "G2 Best Support" },
+  { file: "easiest-setup.webp", alt: "G2 Easiest Setup" },
+  { file: "easiest-to-do-business-with.svg", alt: "G2 Easiest To Do Business With" },
+  { file: "momentum-leader.webp", alt: "G2 Momentum Leader" },
+  { file: "most-likely-to-recommend.webp", alt: "G2 Users Most Likely To Recommend" },
+];
+
 type Badge = { file: string; alt: string; h: number };
 const RECOGNITION: Badge[] = [
   { file: "aicpa-soc.webp", alt: "AICPA SOC — Service Organizations", h: 54 },
@@ -118,6 +133,18 @@ export function IzFooterGrid() {
                 Access that verifies every time. Apps stay invisible to everyone who
                 hasn&apos;t been checked.
               </p>
+              {/* G2 awards, in a row under the tagline and above the
+                  shield field. These keep their real colour in BOTH
+                  themes — a G2 badge is an award, and a decolourised
+                  award reads as a screenshot of one. */}
+              <ul className="izfg-g2" aria-label="G2 awards">
+                {G2_AWARDS.map((g) => (
+                  <li key={g.file}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`/logos/g2badges/${g.file}`} alt={g.alt} loading="lazy" decoding="async" />
+                  </li>
+                ))}
+              </ul>
             </div>
             <IzShieldField className="izfg-field" height={188} />
           </div>

@@ -235,6 +235,38 @@
   font-size: var(--fs-body-sm);
   line-height: var(--lh-body);
 }
+/* G2 awards — under the tagline, over the shield field.
+   Four across then three, both rows centred: a 7-item flex-wrap left
+   to itself breaks 4 + 3 with the second row ragged left, which reads
+   as a wrapping accident rather than as a set. Explicit 4-column grid
+   with the last three centred across it makes the pyramid deliberate. */
+.izfg-g2 {
+  /* Twelve columns is the trick: row one is 4 items x 3 columns, row
+     two is 3 items x 4 columns. Both rows therefore span the full
+     width and centre against each other exactly, with no magic
+     offsets to re-tune if a badge is ever added or dropped. */
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  justify-items: center;
+  align-items: end;
+  gap: var(--sp-4) var(--sp-3);
+  margin: var(--sp-8) 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 560px;
+}
+.izfg-g2 > :nth-child(-n + 4) { grid-column: span 3; }
+.izfg-g2 > :nth-child(n + 5) { grid-column: span 4; }
+.izfg-g2 img {
+  height: 96px;
+  width: auto;
+  display: block;
+}
+/* Deliberately NOT filtered on dark, unlike the compliance marks
+   below. Those are certification artwork on white plates that would
+   glow; these are awards whose red/orange IS the recognition, and
+   greyscaling them would read as "we used to have these". */
+
 .izfg-field {
   position: absolute;
   left: 0;

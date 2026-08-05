@@ -44,7 +44,16 @@ export type TablePanel = {
       focus frame. Omit for a table that shows everything at once. */
   revealFrom?: number;
   focus?: string;
+  focusTarget?: FocusTarget;
 };
+
+/** What the orange overlay actually frames. It was covering the whole
+    panel on every step, which made it read as a border rather than as
+    a spotlight on the thing that just resolved.
+      panel  — the full panel including its head row
+      body   — the panel content below the head
+      params — a specific sub-region the panel nominates */
+export type FocusTarget = "panel" | "body" | "params";
 
 export type RecordPanel = {
   kind: "record";
@@ -75,6 +84,7 @@ export type DuoPanel = {
   frameA: DuoFrame;
   frameB: DuoFrame;
   focus?: string;
+  focusTarget?: FocusTarget;
   /** step 04: a pointer walks to a target and clicks it before frame B
       opens. x/y are % of the panel; the travel is scroll-driven. */
   cursor?: { fromX: number; fromY: number; toX: number; toY: number };
@@ -90,6 +100,7 @@ export type MapPanel = {
   /** PART TWO — the posture breakdown that resolves the "25/25" */
   checks?: { label: string; value: string }[];
   focus?: string;
+  focusTarget?: FocusTarget;
 };
 
 export type Panel = CodePanel | TablePanel | RecordPanel | DuoPanel | MapPanel;
@@ -123,7 +134,10 @@ export type Aside =
   | { kind: "quote"; text: string; who: string };
 
 /** the identity-provider dock — step 01 only, rendered in the third
-    column, never inside the console (see IzProDock) */
+    column, never inside the console (see IzProDock).
+    `logo` is a FILENAME WITH EXTENSION under /logos/integrations,
+    because these five are a mix of svg and webp; null falls back to a
+    monogram plate. */
 export type DockItem = { logo: string | null; name: string };
 
 export type Slide = {
@@ -137,6 +151,9 @@ export type Slide = {
   body: { lead: string; rest: string };
   /** CTA under the left column — every step gets one */
   cta: { label: string; href: string };
+  /* Floats sit in the LOWER half of column three (y >= 52). The
+     paragraph and the dock own the top of that column, and floats
+     placed near y:10 landed straight on the copy. */
   floats?: Float[];
   dock?: DockItem[];
 };
@@ -151,6 +168,7 @@ export const SLIDES: Slide[] = [
       kind: "duo",
       head: { label: "Sign-in" },
       focus: "Verified · one identity",
+      focusTarget: "body",
       frameA: {
         type: "login",
         user: "alen.joseph@veno.co.in",
@@ -175,15 +193,15 @@ export const SLIDES: Slide[] = [
     },
     cta: { label: "Explore identity", href: "/platform/iam" },
     dock: [
-      { logo: null, name: "Active Directory" },
-      { logo: null, name: "LDAP" },
-      { logo: "azure", name: "Azure AD" },
-      { logo: "google-workspace", name: "Google Workspace" },
-      { logo: "microsoft-365", name: "Microsoft 365" },
+      { logo: "active-directory.svg", name: "Active Directory" },
+      { logo: "openldap.webp", name: "OpenLDAP" },
+      { logo: "azure.svg", name: "Azure AD" },
+      { logo: "google-workspace.svg", name: "Google Workspace" },
+      { logo: "microsoft-365.svg", name: "Microsoft 365" },
     ],
     floats: [
-      { id: "profiles", stat: { value: "8", label: "auth profiles" }, x: 6, y: 10 },
-      { id: "mfa", stat: { value: "6", label: "MFA methods" }, x: 8, y: 78, w: 150 },
+      { id: "profiles", stat: { value: "8", label: "auth profiles" }, x: 4, y: 54 },
+      { id: "mfa", stat: { value: "6", label: "MFA methods" }, x: 44, y: 76, w: 150 },
     ],
   },
 
@@ -199,6 +217,7 @@ export const SLIDES: Slide[] = [
       location: { city: "Koramangala, Bengaluru", ip: "10.24.8.101" },
       boundLabel: "Device bound · certificate valid",
       focus: "Posture resolved",
+      focusTarget: "params",
       checks: [
         { label: "Disk encryption", value: "On" },
         { label: "EDR agent", value: "Present" },
@@ -212,8 +231,8 @@ export const SLIDES: Slide[] = [
     },
     cta: { label: "Explore device posture", href: "/zero-trust-features/device-posture-check" },
     floats: [
-      { id: "checks", stat: { value: "144", label: "named rules" }, x: 68, y: 10, w: 148 },
-      { id: "combos", stat: { value: "1,500+", label: "OS/device combos" }, x: 6, y: 80, w: 172 },
+      { id: "checks", stat: { value: "144", label: "named rules" }, x: 6, y: 52, w: 148 },
+      { id: "combos", stat: { value: "1,500+", label: "OS/device combos" }, x: 40, y: 74, w: 172 },
     ],
   },
 
@@ -229,6 +248,7 @@ export const SLIDES: Slide[] = [
          full parameter set under the focus frame */
       revealFrom: 4,
       focus: "Full gateway profile",
+      focusTarget: "panel",
       rows: [
         { label: "Internet exposure", status: "Hidden", tone: "allow" },
         { label: "Server visibility", status: "Blackened", tone: "allow" },
@@ -250,8 +270,8 @@ export const SLIDES: Slide[] = [
     },
     cta: { label: "Explore ZTNA", href: "/zero-trust-network-access" },
     floats: [
-      { id: "policies", stat: { value: "21", label: "access policies" }, x: 70, y: 8, w: 156 },
-      { id: "layer", tag: "Layer 3", title: "IP-level tunnels", body: "Not app proxies", x: 68, y: 78, w: 168 },
+      { id: "policies", stat: { value: "21", label: "access policies" }, x: 4, y: 56, w: 156 },
+      { id: "layer", tag: "Layer 3", title: "IP-level tunnels", body: "Not app proxies", x: 46, y: 78, w: 168 },
     ],
   },
 
@@ -264,6 +284,7 @@ export const SLIDES: Slide[] = [
       kind: "duo",
       head: { label: "Portal" },
       focus: "Recorded · watermarked",
+      focusTarget: "body",
       /* the pointer starts low-left and walks to the RDP tile, which
          sits in the middle of the top row */
       cursor: { fromX: 16, fromY: 86, toX: 50, toY: 44 },
@@ -292,8 +313,8 @@ export const SLIDES: Slide[] = [
     },
     cta: { label: "Explore ZTAA", href: "/zero-trust-application-access" },
     floats: [
-      { id: "apptypes", stat: { value: "7", label: "app types" }, x: 6, y: 10 },
-      { id: "watermark", tag: "Recorded", title: "Watermarked · clipboard controlled", x: 8, y: 78, w: 188 },
+      { id: "apptypes", stat: { value: "7", label: "app types" }, x: 6, y: 54 },
+      { id: "watermark", tag: "Recorded", title: "Watermarked · clipboard controlled", x: 38, y: 76, w: 188 },
     ],
   },
 ];
@@ -325,14 +346,29 @@ export const HERO = {
     { id: "c5", tag: "Verified", label: "Tunnel", value: "Per session", x: 33, y: 76 },
     { id: "c6", tag: "Unverified", label: "Gateway", value: "Drop all", x: 3, y: 64 },
   ],
-  /** cells to shade in the canvas grid, as [col,row] 1-indexed.
-      Purely texture — add or remove freely. */
+  /* Each row gets its OWN column template, so run lengths vary down
+     the canvas instead of repeating one 12-across lattice. Narrow
+     bands read like an eyebrow row, wide ones like a headline row,
+     and two matching rows in a run give the eye somewhere to rest.
+     Values are grid-template-columns strings — any valid track list
+     works, so a row can be re-cut without touching the component. */
+  rows: [
+    "1.4fr 1fr 1fr 2.2fr 1fr 1.6fr",
+    "1fr 2.6fr 1fr 1fr 1.2fr",
+    "2fr 1fr 1.5fr 1fr 1fr 1.3fr 1fr",
+    "1fr 1.2fr 3fr 1.1fr",
+    "1.6fr 1fr 1fr 1.4fr 1fr 2fr",
+    "1fr 1.2fr 3fr 1.1fr",
+    "2.4fr 1fr 1.3fr 1fr 1.8fr",
+    "1fr 1.9fr 1fr 1.2fr 1fr 1.5fr",
+  ],
+  /** cells to shade, as [col,row] 1-indexed against the row templates
+      above. Purely texture — add or remove freely. */
   shaded: [
-    [1, 1], [10, 1], [3, 2], [7, 2], [12, 2],
-    [1, 3], [5, 4], [11, 4], [2, 5], [8, 5],
-    [4, 6], [12, 6], [6, 7], [9, 7], [1, 8], [11, 8],
+    [1, 1], [5, 1], [2, 2], [4, 3], [7, 3],
+    [3, 4], [2, 5], [6, 5], [1, 6], [4, 6],
+    [3, 7], [5, 7], [2, 8], [6, 8],
   ] as [number, number][],
-  grid: { cols: 12, rows: 8 },
 };
 
 /* ---------- the stat marquee under the hero ---------- */

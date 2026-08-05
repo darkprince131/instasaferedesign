@@ -89,20 +89,23 @@ export function IzProHero() {
     };
   }, []);
 
-  const { cols, rows } = HERO.grid;
   const shaded = new Set(HERO.shaded.map(([c, r]) => `${c}:${r}`));
 
   return (
     <header className="izpro-hero">
       <div className="iz-wrap">
         <div className="izpro-stage" ref={stageRef}>
-          {/* the canvas grid — real cells, shaded from config */}
-          <div className="izpro-grid" aria-hidden="true" style={{ ["--cols" as string]: cols } as React.CSSProperties}>
-            {Array.from({ length: cols * rows }, (_, i) => {
-              const c = (i % cols) + 1;
-              const r = Math.floor(i / cols) + 1;
-              return <span key={i} className={shaded.has(`${c}:${r}`) ? "izpro-cell on" : "izpro-cell"} />;
-            })}
+          {/* The canvas grid. Every row carries its own track list from
+              HERO.rows, so run lengths vary down the canvas instead of
+              repeating one uniform lattice. */}
+          <div className="izpro-grid" aria-hidden="true">
+            {HERO.rows.map((tpl, ri) => (
+              <span className="izpro-gridrow" key={ri} style={{ ["--tpl" as string]: tpl } as React.CSSProperties}>
+                {tpl.trim().split(/\s+/).map((_, ci) => (
+                  <span key={ci} className={shaded.has(`${ci + 1}:${ri + 1}`) ? "izpro-cell on" : "izpro-cell"} />
+                ))}
+              </span>
+            ))}
           </div>
 
           {/* selection chrome around the whole stage */}

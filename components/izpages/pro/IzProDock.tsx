@@ -37,7 +37,7 @@ function DockIcon({ mouseX, item, reduced }: { mouseX: ReturnType<typeof useMoti
     <motion.span ref={ref} style={{ width: size, height: size }} className="izprodock-icon" title={item.name}>
       {item.logo ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={`/logos/integrations/${item.logo}.svg`} alt={item.name} loading="lazy" decoding="async" />
+        <img src={`/logos/integrations/${item.logo}`} alt={item.name} loading="lazy" decoding="async" />
       ) : (
         <span className="izprodock-mono" aria-label={item.name}>
           {initials(item.name)}

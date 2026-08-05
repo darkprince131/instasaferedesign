@@ -20,14 +20,20 @@ import type { Panel } from "./pro.config";
 
 export function IzProPanel({ panel }: { panel: Panel }) {
   const focus = "focus" in panel ? panel.focus : undefined;
+  const target = ("focusTarget" in panel ? panel.focusTarget : undefined) ?? "panel";
+  /* The overlay is positioned by its TARGET, not by the panel: for
+     `panel` it is a child of the panel box, for `body` and `params` it
+     is a child of that sub-region. So it renders here only for the
+     whole-panel case; the other two are emitted inside their own
+     bodies below. */
   return (
-    <div className="izpro-panel">
+    <div className={`izpro-panel izpro-ft-${target}`}>
       {panel.kind === "code" && <CodeBody panel={panel} />}
       {panel.kind === "table" && <TableBody panel={panel} />}
       {panel.kind === "record" && <RecordBody panel={panel} />}
       {panel.kind === "duo" && <DuoBody panel={panel} />}
       {panel.kind === "map" && <MapBody panel={panel} />}
-      {focus && <FocusFrame label={focus} />}
+      {focus && target === "panel" && <FocusFrame label={focus} />}
     </div>
   );
 }
@@ -209,6 +215,7 @@ function DuoBody({ panel }: { panel: Extract<Panel, { kind: "duo" }> }) {
         <div className="izpro-duo-frame" data-frame="b">
           <Frame frame={panel.frameB} />
         </div>
+        {panel.focus && (panel.focusTarget ?? "panel") === "body" && <FocusFrame label={panel.focus} />}
         {c && (
           /* The pointer's whole path is four numbers in the config and
              a lerp in CSS against --frame-t: it walks to the tile,
@@ -367,6 +374,7 @@ function MapBody({ panel }: { panel: Extract<Panel, { kind: "map" }> }) {
               {c.value}
             </span>
           ))}
+          {panel.focus && (panel.focusTarget ?? "panel") === "params" && <FocusFrame label={panel.focus} />}
         </div>
       )}
     </>

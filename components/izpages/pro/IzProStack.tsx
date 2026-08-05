@@ -137,7 +137,9 @@ export function IzProStack() {
       const frameT = Math.min(1, Math.max(0, (t - FRAME_SWITCH_START) / (FRAME_SWITCH_END - FRAME_SWITCH_START)));
 
       sticky.style.setProperty("--local", local.toFixed(4));
-      sticky.style.setProperty("--frame-t", frameT.toFixed(4));
+      /* written as --frame-t-LIVE; pro.css hands it to the current slot
+         only, so a slot rising into view still renders part one */
+      sticky.style.setProperty("--frame-t-live", frameT.toFixed(4));
       if (idx !== lastActive) {
         lastActive = idx;
         setActive(idx);
