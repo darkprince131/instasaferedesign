@@ -25,6 +25,7 @@ import { IzMfaHub } from "./IzMfaHub";
 import "./featurehub.css";
 import "./izmfahub.css";
 import { IzIntegrationGrid } from "./IzIntegrationGrid";
+import { IzLogoGrid } from "@/components/izpages/pro/IzLogoGrid";
 import "./izintegrationgrid.css";
 import { IzReviewWall } from "./IzReviewWall";
 import "./izreviewwall.css";
@@ -349,6 +350,16 @@ export function Home2() {
           </div>
         </div>
       </section>
+
+      {/* ---------------- INTEGRATIONS ---------------- */}
+      {/* The stack it plugs into — identity, endpoint, cloud. Placed
+          before the SSO wall on purpose: this answers "does it fit what
+          we run", the wall answers "which apps does it sign us into".
+          IzLogoGrid owns its own <section> and rails, so it is dropped
+          in bare rather than wrapped like the rows above it. */}
+      <div className="iz-reveal">
+        <IzLogoGrid />
+      </div>
 
       {/* ---------------- SSO ---------------- */}
       <section className="iz-section">

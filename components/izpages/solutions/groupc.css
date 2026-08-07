@@ -1,0 +1,631 @@
+/* ============================================================
+   Group C — "reaching something awkward".
+   Runs on the 00ah idea (accordion + a visual that belongs to the
+   OPEN tab) with a third column for the spec readout.
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+.izgc {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+  /* one shadow recipe for every raised piece in the diagram — offset +
+     blur, so things sit ABOVE the plate instead of glowing on it */
+  --izgc-sh: 0 10px 24px -14px rgba(24, 18, 10, 0.35), 0 2px 6px -3px rgba(24, 18, 10, 0.14);
+}
+
+/* ---------- head ---------- */
+
+.izgc-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr);
+  gap: clamp(var(--sp-6), 4vw, var(--sp-10));
+  align-items: start;
+  margin-bottom: var(--sp-10);
+}
+.izgc-kicker {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--sp-4);
+}
+.izgc-title {
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izgc-title mark { background: none; color: var(--tx); }
+/* The sub sits against a rule rather than under the headline — it is a
+   second voice, not a continuation of the first. */
+.izgc-sub {
+  margin: 0;
+  padding-left: clamp(var(--sp-5), 3vw, var(--sp-8));
+  border-left: var(--bw) solid var(--line);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  align-self: center;
+}
+
+/* ---------- body: accordion | visual | specs ---------- */
+
+.izgc-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1.9fr) minmax(0, 0.86fr);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+/* ---------- accordion ---------- */
+
+.izgc-acc {
+  display: flex;
+  flex-direction: column;
+  border-right: var(--bw) solid var(--line);
+  min-width: 0;
+}
+.izgc-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-5);
+  border: 0;
+  border-bottom: var(--bw) solid var(--line);
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.izgc-item:last-child { border-bottom: 0; }
+.izgc-item:hover { background: var(--surface-2); }
+.izgc-item:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+/* The open row is marked by a full-height edge, not a tint — the tint is
+   the hover state and the two must not read the same. */
+.izgc-item.on::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+.izgc-item.on { background: var(--bg); }
+
+.izgc-ico {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-sm);
+  border: var(--bw) solid var(--line);
+  background: var(--surface);
+  color: var(--tx-dim);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.izgc-ico svg { width: 19px; height: 19px; }
+.izgc-item.on .izgc-ico {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.izgc-txt { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+.izgc-txt b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-body);
+  letter-spacing: -0.01em;
+  color: var(--tx);
+  transition: color var(--dur) var(--ease);
+}
+.izgc-item.on .izgc-txt b { color: var(--accent); }
+/* Collapsed by a 0fr→1fr grid row. The BLOCK padding has to ride the
+   same transition: a 0fr track zeroes the content box but not the
+   padding, and `overflow` clips to the padding box — leave a static
+   padding here and every closed row leaks a strip of its first line. */
+.izgc-desc {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur) var(--ease), padding-top var(--dur) var(--ease);
+  padding-top: 0;
+}
+.izgc-item.on .izgc-desc { grid-template-rows: 1fr; padding-top: var(--sp-2); }
+.izgc-desc > span {
+  overflow: hidden;
+  min-height: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  color: var(--tx-mute);
+}
+.izgc-caret {
+  width: 15px;
+  height: 15px;
+  color: var(--tx-mute);
+  margin-top: 10px;
+  transition: transform var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izgc-item.on .izgc-caret { color: var(--accent); transform: translateX(2px); }
+
+/* ---------- the visual ---------- */
+
+.izgc-vis {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-6);
+  border-right: var(--bw) solid var(--line);
+  background: var(--bg);
+  min-width: 0;
+}
+.izgc-vis-h { display: flex; align-items: flex-start; gap: var(--sp-4); }
+.izgc-vis-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-md);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  color: var(--accent);
+}
+.izgc-vis-ico svg { width: 23px; height: 23px; }
+.izgc-vis-h h3 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izgc-vis-h p {
+  margin: var(--sp-2) 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the diagram ----------
+   GEOMETRY CONTRACT: the box is aspect-locked to the wires' 640x470
+   viewBox, so the % positions below and the line endpoints in
+   `Wires` are the same coordinate space. Every number here is
+   <viewBox coord> / 640 or / 470. Move a wire, move its card. */
+.izgc-dia-wrap { flex: 1; display: grid; align-items: center; padding: var(--sp-4) 0; }
+.izgc-dia {
+  position: relative;
+  aspect-ratio: 640 / 470;
+  container-type: inline-size;
+}
+.izgc-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+/* Flowchart-grade routes: 2px, round caps, a dash long enough to read
+   as a drawn line rather than stitching. The old 1.3px / 4-4 hairlines
+   are what made the connections look stray. */
+.izgc-wires .w {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 62%, transparent);
+  stroke-width: 2;
+  stroke-dasharray: 7 6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+/* the verification taps are a different kind of line: a check, not a
+   route, so they read grey rather than accent */
+.izgc-wires .v { stroke: color-mix(in srgb, var(--tx) 30%, transparent); stroke-width: 1.7; }
+.izgc-wires .t { stroke: color-mix(in srgb, var(--accent) 72%, transparent); }
+
+.izgc-dia > span,
+.izgc-dia > div { position: absolute; }
+
+.izgc-actor {
+  left: 6%;
+  top: 49.8%;
+  width: 17%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.3cqw;
+  padding: 2.4cqw 1.2cqw;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--izgc-sh);
+  text-align: center;
+}
+/* the drawn person — all font/icon sizes in this diagram carry a px
+   floor via max(): the same artwork serves a ~550px desktop pane and a
+   ~340px phone pane, and bare cqw text is 6px at the small end */
+.izgc-avatar { width: max(9cqw, 40px); height: max(9cqw, 40px); }
+.izgc-actor b { font-size: max(1.9cqw, 9.5px); font-weight: 500; line-height: 1.3; color: var(--tx); }
+
+/* concentric rings — the same motif the hero's platter uses */
+.izgc-gw {
+  left: 47.2%;
+  top: 49.8%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 20cqw;
+  height: 20cqw;
+}
+.izgc-gw > i {
+  position: absolute;
+  border-radius: 50%;
+  border: var(--bw) solid color-mix(in srgb, var(--tx) 12%, transparent);
+}
+.izgc-gw > i:nth-child(1) { inset: 0; }
+.izgc-gw > i:nth-child(2) { inset: 18%; }
+.izgc-gw > i:nth-child(3) { inset: 36%; border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+/* The core is a lit disc carrying the REAL brand mark, not a CSS
+   approximation of it. Theme-follows: light disc + colour mark on
+   paper, dark disc + white mark on dark (LogoMark picks its variant
+   from the nearest theme). */
+.izgc-gw-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: max(8.6cqw, 40px);
+  height: max(8.6cqw, 40px);
+  border-radius: 50%;
+  background: radial-gradient(120% 120% at 34% 22%, color-mix(in srgb, var(--surface) 86%, #fff), var(--surface) 72%);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 34%, var(--line));
+  box-shadow: var(--izgc-sh);
+}
+/* LogoMark writes width/height as an INLINE style from its `size`
+   prop, so beating it needs !important — same gotcha as the hero. */
+.izgc-gw-core > span { width: 62% !important; height: 62% !important; }
+.izgc-gw-core img { width: 100%; height: 100%; object-fit: contain; }
+/* below the Device Checked chip — between ring and chip it sat ON the
+   tap line's route and forced the tap to float short of the circle */
+.izgc-gw b {
+  position: absolute;
+  top: 130%;
+  width: 30cqw;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: max(1.9cqw, 9.5px);
+  line-height: 1.3;
+  color: var(--accent);
+  text-align: center;
+}
+
+.izgc-chip {
+  left: 47.2%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9cqw;
+  padding: 1cqw 1.6cqw;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  white-space: nowrap;
+  font-size: max(1.8cqw, 9.5px);
+  color: var(--tx);
+  box-shadow: var(--izgc-sh);
+}
+.izgc-chip svg { width: max(2.2cqw, 12px); height: max(2.2cqw, 12px); color: var(--allow); }
+/* Both chips sit ON their tap lines, which run from the ring's own
+   circumference (see GC in the component) — chip, tap and ring touch. */
+.izgc-chip--id { top: 28.1%; }
+.izgc-chip--dev { top: 67.5%; }
+
+.izgc-stack {
+  left: 65.3%;
+  top: 15.7%;
+  width: 31.6%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2cqw;
+  padding: 1.6cqw;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.izgc-stack-h {
+  font-size: max(1.75cqw, 9px);
+  color: var(--tx-dim);
+  padding-bottom: 0.4cqw;
+}
+.izgc-node {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+  padding: 1.3cqw;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--izgc-sh);
+}
+/* the icon sits on its own tinted plate — the move that makes the
+   reference's resource cards read as product UI rather than a list */
+.izgc-node-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: max(4.6cqw, 24px);
+  height: max(4.6cqw, 24px);
+  border-radius: var(--r-xs);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 26%, var(--line));
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  color: var(--accent);
+}
+.izgc-node-ic svg { width: 58%; height: 58%; }
+.izgc-node b { font-size: max(1.75cqw, 9.5px); font-weight: 500; line-height: 1.3; color: var(--tx); }
+
+.izgc-tunnel {
+  /* the icon's centre lands on the tunnel's bottom run (404/470), the
+     label hangs below the line */
+  left: 47.8%;
+  top: 86%;
+  transform: translate(-50%, -2cqw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8cqw;
+  font-size: max(1.8cqw, 9.5px);
+  color: var(--tx-dim);
+  white-space: nowrap;
+  text-align: center;
+}
+.izgc-tunnel i {
+  display: grid;
+  place-items: center;
+  width: 4cqw;
+  height: 4cqw;
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 50%, var(--line));
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  color: var(--accent);
+  /* it sits ON the tunnel path, so it needs to mask it */
+  box-shadow: 0 0 0 0.5cqw var(--bg), var(--izgc-sh);
+}
+.izgc-tunnel i svg { width: max(2.2cqw, 12px); height: max(2.2cqw, 12px); }
+
+/* ============================================================
+   Tab-change choreography. The wrap is keyed on the case id, so a
+   tab switch REMOUNTS everything below: the wires re-draw
+   (useDrawIn), and the pieces fade in on a stagger — actor first,
+   then the gateway, then the checks, then the stack populates row
+   by row. Opacity only on the positioned pieces: their transforms
+   ARE their coordinates, so a rise animation would move them off
+   their wire endpoints mid-flight. The stack's rows have no
+   positioning transform and get the rise.
+   ============================================================ */
+@keyframes izgc-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes izgc-rise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
+
+.izgc-dia > * { opacity: 0; animation: izgc-fade 460ms var(--ease) forwards; }
+.izgc-dia > .izgc-wires { opacity: 1; animation: none; } /* the draw-in owns it */
+.izgc-actor { animation-delay: 40ms; }
+.izgc-gw { animation-delay: 150ms; }
+.izgc-stack { animation-delay: 220ms; }
+.izgc-chip--id { animation-delay: 300ms; }
+.izgc-chip--dev { animation-delay: 340ms; }
+.izgc-tunnel { animation-delay: 420ms; }
+.izgc-node {
+  opacity: 0;
+  animation: izgc-rise 420ms var(--ease) forwards;
+  animation-delay: calc(300ms + var(--i, 0) * 80ms);
+}
+
+.izgc-fact {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: var(--sp-4) var(--sp-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izgc-fact svg { flex: none; width: 18px; height: 18px; color: var(--accent); }
+
+/* ---------- spec readout ---------- */
+
+/* The readout. The accent hairline down its left edge is the
+   reference's own device for "this column is the live data" — kept at
+   2px and inset so it reads as an instrument line, not a card border. */
+.izgc-specs {
+  position: relative;
+  margin: 0;
+  padding: var(--sp-6) var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.izgc-specs::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--sp-6);
+  bottom: var(--sp-6);
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 25%, transparent));
+}
+/* keyed remount per tab: rows repopulate top-to-bottom, the reference
+   video's move — dim column, then values return in order */
+.izgc-spec {
+  opacity: 0;
+  animation: izgc-rise 430ms var(--ease) forwards;
+  animation-delay: calc(60ms + var(--i, 0) * 70ms);
+}
+.izgc-spec {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-4) 0;
+  border-bottom: var(--bw) solid var(--line);
+}
+.izgc-spec:last-child { border-bottom: 0; }
+.izgc-spec-ic { display: grid; place-items: center; width: 26px; height: 26px; color: var(--tx-dim); }
+.izgc-spec-ic svg { width: 20px; height: 20px; }
+.izgc-spec dt {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+}
+.izgc-spec dd {
+  margin: 4px 0 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.45;
+  color: var(--tx);
+}
+.izgc-spec dd.t-accent { color: var(--accent); }
+.izgc-spec dd.t-ok { color: var(--allow); }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+/* The spec column is the first thing to go: it is a readout ABOUT the
+   diagram, and a readout with no diagram beside it is a table. */
+@media (max-width: 1180px) {
+  .izgc-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
+  .izgc-specs {
+    grid-column: 1 / -1;
+    border-top: var(--bw) solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--sp-6);
+  }
+  .izgc-vis { border-right: 0; }
+}
+
+/* 00ah's own rule, and the reason it works: below 900 the visual is
+   REMOVED, not squeezed. Every description is already rendered in the
+   accordion, so nothing is lost with it. */
+@media (max-width: 900px) {
+  .izgc-head { grid-template-columns: minmax(0, 1fr); }
+  .izgc-sub { padding-left: 0; border-left: 0; }
+  .izgc-body { grid-template-columns: minmax(0, 1fr); }
+  .izgc-acc { border-right: 0; }
+
+  /* no third column on phones, either variant: a readout about a
+     diagram is a table once the diagram cannot sit beside it */
+  .izgc-specs { display: none; }
+
+  /* variant "none" — 00ah's rule: the copy carries the section */
+  .izgc--mnone .izgc-vis { display: none; }
+
+  /* variant "static" — the diagram stays, below the accordion, with
+     every animation stripped. It also stops being the landscape plate:
+     a 640x470 composition crushed into ~340px collides card-on-card,
+     so the same pieces RESTACK as a vertical flow — actor, checks,
+     gateway, resources, tunnel — and the wires go with the geometry
+     they described. */
+  .izgc--mstatic .izgc-vis {
+    display: flex;
+    border-right: 0;
+    border-top: var(--bw) solid var(--line);
+    padding: var(--sp-5);
+  }
+  .izgc--mstatic .izgc-vis-h { display: none; } /* duplicates the open row */
+  .izgc--mstatic .izgc-dia > *,
+  .izgc--mstatic .izgc-node,
+  .izgc--mstatic .izgc-spec { animation: none; opacity: 1; }
+
+  .izgc--mstatic .izgc-dia {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .izgc--mstatic .izgc-wires { display: none; }
+  .izgc--mstatic .izgc-dia > span,
+  .izgc--mstatic .izgc-dia > div {
+    position: static;
+    transform: none;
+  }
+  /* DOM order is wire-anchored (checks before the actor); the flow
+     order is narrative: person, identity, gateway, device, resources */
+  .izgc--mstatic .izgc-actor { order: -1; }
+
+  .izgc--mstatic .izgc-actor {
+    width: auto;
+    flex-direction: row;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-5);
+    text-align: left;
+  }
+  .izgc--mstatic .izgc-avatar { width: 40px; height: 40px; }
+  .izgc--mstatic .izgc-actor b,
+  .izgc--mstatic .izgc-node b,
+  .izgc--mstatic .izgc-stack-h,
+  .izgc--mstatic .izgc-chip,
+  .izgc--mstatic .izgc-tunnel { font-size: var(--fs-sm); }
+  .izgc--mstatic .izgc-chip { padding: 6px 12px; }
+  .izgc--mstatic .izgc-chip svg { width: 13px; height: 13px; }
+
+  /* `> .izgc-gw` — must at least match the static override's
+     specificity (.izgc--mstatic .izgc-dia > span), or the rings lose
+     their containing block and inflate to the whole diagram */
+  .izgc--mstatic .izgc-dia > .izgc-gw {
+    position: relative;
+    /* relative keeps honouring the plate-coordinate left/top — zero
+       them or the rings sit 47% off-centre */
+    left: auto;
+    top: auto;
+    width: 118px;
+    height: 118px;
+    /* room for the absolutely-hung caption (top: 130%) */
+    margin-bottom: 64px;
+  }
+  .izgc--mstatic .izgc-gw-core { width: 48px; height: 48px; }
+  .izgc--mstatic .izgc-gw b { font-size: var(--fs-sm); width: 180px; }
+
+  .izgc--mstatic .izgc-stack { width: 100%; gap: var(--sp-2); padding: var(--sp-4); }
+  .izgc--mstatic .izgc-node { gap: var(--sp-3); padding: var(--sp-3); }
+  .izgc--mstatic .izgc-node-ic { width: 30px; height: 30px; }
+
+  .izgc--mstatic .izgc-tunnel {
+    flex-direction: row;
+    gap: var(--sp-2);
+    white-space: normal;
+    margin-top: var(--sp-2);
+  }
+  .izgc--mstatic .izgc-tunnel i {
+    width: 26px;
+    height: 26px;
+    box-shadow: var(--izgc-sh); /* no wire behind it to mask here */
+  }
+  .izgc--mstatic .izgc-tunnel i svg { width: 13px; height: 13px; }
+  /* the rows stop being a picker and become the content — so every
+     description is open, which is the whole reason it stays in the DOM */
+  .izgc-item.on::before { display: none; }
+  .izgc-caret { display: none; }
+  .izgc-item { grid-template-columns: auto minmax(0, 1fr); cursor: default; }
+  .izgc-desc,
+  .izgc-item.on .izgc-desc { grid-template-rows: 1fr; padding-top: var(--sp-2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izgc-item,
+  .izgc-ico,
+  .izgc-caret,
+  .izgc-desc,
+  .izgc-txt b { transition: none; }
+  .izgc-dia > *,
+  .izgc-node,
+  .izgc-spec { animation: none; opacity: 1; }
+}

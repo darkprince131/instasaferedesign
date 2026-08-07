@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, Fingerprint } from "@phosphor-icons/react";
+import { Fragment } from "react";
+import { ArrowRight, PlugsConnected } from "@phosphor-icons/react";
 
 /* ============================================================
    IzLogoGrid — TIER 2 SECTION  (lab 00ap)
@@ -15,37 +16,84 @@ import { ArrowRight, Fingerprint } from "@phosphor-icons/react";
    into the grid rather than under it. That single interruption is
    what stops the right-hand side being decorative.
 
-   Everything is data below. Move a logo by changing its [col,row];
-   change the grid by changing GRID. Nothing else needs touching.
+   Everything is data below. Every item carries BOTH a desktop
+   coordinate (`lg`) and a phone one (`sm`) — the phone grid is 3
+   columns, not 5, so an item placed only for the wide grid would
+   land in the wrong cell rather than reflowing sensibly. `sm: null`
+   means "not shown on a phone". Cells are always explicitly placed;
+   auto-flow steps around occupied coordinates and pushes the
+   backing cells into implicit rows (it ran to 7 rows instead of 4).
 
-   ⚠️ Wordmarks render as TEXT, not artwork — deliberate, so nothing
-   ships as a broken asset box while real partner logos are still
-   outstanding. When they arrive, give an ITEMS entry a `src` and
-   render it in the logo branch below.
+   Logos are real artwork now, sized by `max-height` AND `max-width`
+   with `object-fit: contain`, because the set deliberately mixes
+   square marks (Entra, Intune, CrowdStrike, Kubernetes) with wide
+   ones (Cloudflare, AWS, Google Workspace). Constraining only the
+   height makes the wide ones three times the optical weight of the
+   square ones — the defect this component used to have when the
+   logos were text.
    ============================================================ */
 
-const GRID = { cols: 4, rows: 4 };
+const GRID = { cols: 5, rows: 5 };
+const GRID_SM = { cols: 3, rows: 4 };
 
-type Item =
-  | { kind: "logo"; label: string; col: number; row: number }
-  | { kind: "copy"; col: number; row: number; span: number };
+/** Row that the full-width copy strip occupies, per breakpoint. */
+const STRIP_ROW = 3;
+const STRIP_ROW_SM = 3;
 
-const ITEMS: Item[] = [
-  { kind: "logo", label: "Microsoft Entra ID", col: 1, row: 1 },
-  { kind: "logo", label: "Okta", col: 4, row: 1 },
-  { kind: "logo", label: "Google Workspace", col: 3, row: 2 },
-  { kind: "copy", col: 1, row: 3, span: 4 },
-  { kind: "logo", label: "Active Directory", col: 1, row: 4 },
-  { kind: "logo", label: "AWS", col: 4, row: 4 },
+type Logo = {
+  /** file in /public/logos/integrations */
+  file: string;
+  /** alt text — these are third-party marks, so they get real names */
+  label: string;
+  lg: [col: number, row: number];
+  sm: [col: number, row: number] | null;
+  /** Columns to span. A one-cell box caps a logo on WIDTH, and for a
+      wordmark that is 8:1 the height that falls out is unreadable —
+      Google Workspace measured 68x9px in a single phone cell. Wide
+      marks get a second column to spread into instead of being
+      shrunk to a sliver. Square marks never need it. */
+  span?: number;
+  spanSm?: number;
+};
+
+/* Chosen for recognition AND for being on-message: an access product
+   is judged on whether it speaks to your identity provider, your
+   endpoint agent and the clouds you actually run. The rest of the
+   catalogue lives on the integrations page behind the CTA.
+
+   Deliberately weighted to identity / endpoint / infrastructure and
+   NOT to SaaS: `IzIntegrationGrid` further down the homepage is
+   already a wall of ~40 SaaS apps, so a second SaaS wall here would
+   say the same thing twice. Google Workspace is the only overlap,
+   and it earns its place as an identity provider rather than as an
+   app. */
+const LOGOS: Logo[] = [
+  // identity + endpoint — what decides whether a session happens at all
+  { file: "microsoft-entra-id", label: "Microsoft Entra ID", lg: [1, 1], sm: [1, 1] },
+  { file: "microsoft-intune", label: "Microsoft Intune", lg: [3, 1], sm: [2, 1] },
+  { file: "crowdstrike", label: "CrowdStrike", lg: [5, 1], sm: [3, 1] },
+  { file: "google-workspace", label: "Google Workspace", lg: [2, 2], sm: [1, 2], span: 2, spanSm: 2 },
+  { file: "onelogin", label: "OneLogin", lg: [5, 2], sm: null },
+  // strip sits on row 3
+  // the estate those decisions are enforced across
+  { file: "aws", label: "Amazon Web Services", lg: [1, 4], sm: [3, 2] },
+  { file: "kubernetes", label: "Kubernetes", lg: [3, 4], sm: [1, 4] },
+  { file: "azure", label: "Microsoft Azure", lg: [5, 4], sm: [3, 4] },
+  { file: "terraform", label: "Terraform", lg: [2, 5], sm: null },
+  { file: "cloudflare", label: "Cloudflare", lg: [4, 5], sm: [2, 4] },
 ];
 
-const COPY = { lead: "Works with the directory you already run —", accent: "no migration", tail: "and no second source of truth." };
+const COPY = {
+  lead: "SAML, OIDC and RADIUS underneath —",
+  accent: "so anything not on this list",
+  tail: "still connects.",
+};
 
 export function IzLogoGrid({
-  kicker = "Identity you already own",
-  title = ["Allow.", "Verify.", "Scope.", "Block."] as string[],
-  sub = "Decide what each person reaches, on every request, using the identities and groups your directory already holds.",
-  cta = { label: "Start a trial", href: "/free-trial" },
+  kicker = "Integrations",
+  title = ["Works with the tools", "you already run."] as string[],
+  sub = "Identity, device posture, cloud and SaaS. InstaSafe sits in front of what you have rather than asking you to replace it — one place to decide access, no second source of truth.",
+  cta = { label: "See all integrations", href: "/solutions" },
 }: {
   kicker?: string;
   title?: string[];
@@ -54,22 +102,41 @@ export function IzLogoGrid({
 }) {
   return (
     <section className="izlg iz-railed">
-      <div className="iz-wrap izlg-cols">
-        {/* ---------- left ---------- */}
+      <div
+        className="iz-wrap izlg-cols"
+        style={
+          {
+            ["--cols" as string]: GRID.cols,
+            ["--rows" as string]: GRID.rows,
+            ["--cols-sm" as string]: GRID_SM.cols,
+            ["--rows-sm" as string]: GRID_SM.rows,
+          } as React.CSSProperties
+        }
+      >
+        {/* ---------- left ----------
+            On a phone `.izlg-left` becomes `display: contents` so these
+            children are grid items in their own right — that is what
+            lets the CTA carry an `order` and sit BELOW the logo grid
+            while the copy stays above it. */}
         <div className="izlg-left">
           <span className="izlg-kicker">
-            <Fingerprint aria-hidden="true" />
+            <PlugsConnected aria-hidden="true" />
             {kicker}
             <i aria-hidden="true">_</i>
           </span>
 
-          {/* Last word takes the accent — the sequence ends on the
-              one verb that is the product's whole point. */}
+          {/* Last chunk takes the accent. The separating space is a
+              SIBLING of the spans, not a child: each span is
+              `white-space: nowrap` so a space inside it is unbreakable,
+              and with no text node between them the line had no break
+              opportunity at all — the headline ran straight out of the
+              column and under the logo grid. */}
           <h2 className="izlg-title">
             {title.map((w, i) => (
-              <span key={w} className={i === title.length - 1 ? "on" : undefined}>
-                {w}{" "}
-              </span>
+              <Fragment key={w}>
+                <span className={i === title.length - 1 ? "on" : undefined}>{w}</span>
+                {i < title.length - 1 ? " " : null}
+              </Fragment>
             ))}
           </h2>
 
@@ -81,44 +148,60 @@ export function IzLogoGrid({
           </a>
         </div>
 
-        {/* ---------- right ---------- */}
-        <div
-          className="izlg-grid"
-          style={{ ["--cols" as string]: GRID.cols, ["--rows" as string]: GRID.rows } as React.CSSProperties}
-        >
-          {/* The lattice. Every cell is EXPLICITLY placed rather than
-              auto-flowed: auto-placement steps around the items that
-              already occupy coordinates, so the backing cells get
-              pushed into implicit rows and the grid grows past its
-              declared height (it ran to 7 rows instead of 4). */}
+        {/* ---------- right: the lattice ---------- */}
+        <div className="izlg-grid">
+          {/* Backing cells, explicitly placed. Two sets: the wide grid
+              draws cols x rows, the phone grid draws its own smaller
+              count, and each hides at the other breakpoint. One set
+              cannot serve both — a 5x5 lattice has 25 cells and the
+              phone lattice needs 12, so the surplus would pile up in
+              implicit rows below the logos. */}
           {Array.from({ length: GRID.cols * GRID.rows }, (_, i) => (
             <span
               key={`c${i}`}
-              className="izlg-cell"
+              className="izlg-cell izlg-lg"
               aria-hidden="true"
               style={{ gridColumn: (i % GRID.cols) + 1, gridRow: Math.floor(i / GRID.cols) + 1 }}
             />
           ))}
+          {Array.from({ length: GRID_SM.cols * GRID_SM.rows }, (_, i) => (
+            <span
+              key={`s${i}`}
+              className="izlg-cell izlg-sm"
+              aria-hidden="true"
+              style={{ gridColumn: (i % GRID_SM.cols) + 1, gridRow: Math.floor(i / GRID_SM.cols) + 1 }}
+            />
+          ))}
 
-          {ITEMS.map((it) =>
-            it.kind === "logo" ? (
-              <span
-                key={it.label}
-                className="izlg-logo"
-                style={{ gridColumn: it.col, gridRow: it.row }}
-              >
-                {it.label}
-              </span>
-            ) : (
-              <p
-                key={`copy-${it.row}`}
-                className="izlg-strip"
-                style={{ gridColumn: `${it.col} / span ${it.span}`, gridRow: it.row }}
-              >
-                {COPY.lead} <mark>{COPY.accent}</mark> {COPY.tail}
-              </p>
-            )
-          )}
+          {LOGOS.map((l) => (
+            <span
+              key={l.file}
+              className={`izlg-logo${l.sm ? "" : " izlg-x-sm"}`}
+              style={
+                {
+                  ["--gc" as string]: `${l.lg[0]} / span ${l.span ?? 1}`,
+                  ["--gr" as string]: l.lg[1],
+                  ["--gc-sm" as string]: `${l.sm?.[0] ?? 1} / span ${l.spanSm ?? 1}`,
+                  ["--gr-sm" as string]: l.sm?.[1] ?? 1,
+                } as React.CSSProperties
+              }
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`/logos/integrations/${l.file}.svg`} alt={l.label} loading="lazy" decoding="async" />
+            </span>
+          ))}
+
+          <p
+            className="izlg-strip"
+            style={
+              {
+                ["--gr" as string]: STRIP_ROW,
+                ["--gr-sm" as string]: STRIP_ROW_SM,
+              } as React.CSSProperties
+            }
+          >
+            {COPY.lead} <mark>{COPY.accent}</mark> {COPY.tail}
+          </p>
         </div>
       </div>
     </section>

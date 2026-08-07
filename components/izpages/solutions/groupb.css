@@ -1,0 +1,163 @@
+/* ============================================================
+   Group B — "giving someone access", on the 00au answer-strip idiom.
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+.izgb {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg-2);
+}
+
+.izgb-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+  gap: clamp(var(--sp-8), 5vw, var(--sp-12));
+  align-items: start;
+}
+
+.izgb-copy { min-width: 0; }
+
+.izgb-kicker {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--sp-4);
+}
+
+.izgb-lead {
+  max-width: 20ch;
+  margin: 0 0 var(--sp-8);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izgb-lead em { font-style: normal; font-weight: inherit; color: var(--accent); }
+
+/* ---------- the five ---------- */
+
+.izgb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: var(--bw) solid var(--line);
+}
+.izgb-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-5);
+  padding: var(--sp-6) 0;
+  border-bottom: var(--bw) solid var(--line);
+}
+.izgb-n {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+  padding-top: 3px;
+}
+.izgb-rowbody { min-width: 0; }
+.izgb-rowbody h3 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izgb-rowbody p {
+  margin: var(--sp-3) 0 0;
+  max-width: 62ch;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* 00au's number strip, one per row. Mono because it IS a measurement,
+   not because the section wants to look technical. */
+.izgb-fact {
+  display: inline-block;
+  margin-top: var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--accent);
+}
+
+/* ---------- proof slot ---------- */
+
+.izgb-slot { position: sticky; top: 96px; min-width: 0; }
+
+/* Deliberately reads as an empty frame with a brief in it, not as a
+   finished graphic — nobody should mistake this for shipped artwork. */
+.izgb-art {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  aspect-ratio: 4 / 5;
+  padding: var(--sp-6);
+  justify-content: flex-end;
+  border: var(--bw) dashed color-mix(in srgb, var(--tx) 26%, transparent);
+  border-radius: var(--r-lg);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 11px,
+      color-mix(in srgb, var(--tx) 4%, transparent) 11px 12px
+    ),
+    var(--surface);
+}
+.izgb-art-ic {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--r-sm);
+  border: var(--bw) solid var(--line);
+  background: var(--bg);
+  color: var(--tx-mute);
+}
+.izgb-art-ic svg { width: 21px; height: 21px; }
+.izgb-art figcaption { display: flex; flex-direction: column; gap: var(--sp-2); }
+.izgb-art b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izgb-art span {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-mute);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 1000px) {
+  .izgb-cols { grid-template-columns: minmax(0, 1fr); }
+  /* the slot leads on a phone: it is the section's one image, and
+     stuck to the top of a single column it would follow 5 rows of
+     copy and arrive after the argument is over */
+  .izgb-slot { position: static; order: -1; max-width: 420px; }
+  .izgb-lead { max-width: none; }
+}
+
+@media (max-width: 620px) {
+  .izgb-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+  .izgb-n { padding-top: 0; }
+  .izgb-art { aspect-ratio: 4 / 3; padding: var(--sp-5); }
+}

@@ -84,11 +84,27 @@ export function useDrawIn<T extends SVGSVGElement | HTMLElement>({
       });
     };
 
+    let settleTimer: number | undefined;
     const run = () => {
       shapes.forEach((s, i) => {
         s.style.transition = `stroke-dashoffset ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${i * stagger}ms`;
         s.style.strokeDashoffset = "0";
       });
+      /* Once every shape has finished, hand the stroke BACK to the
+         stylesheet. The draw needs dasharray = pathLength inline, but
+         leaving it there permanently overrides whatever dash pattern
+         the CSS declares — a dashed route drew in and then sat there
+         solid forever. Solid-stroked art sees no change (its CSS has
+         no dasharray, so clearing is a no-op). `repeat` re-arms from
+         scratch, so the cleanup does not fight it. */
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        shapes.forEach((s) => {
+          s.style.transition = "";
+          s.style.strokeDasharray = "";
+          s.style.strokeDashoffset = "";
+        });
+      }, (shapes.length - 1) * stagger + duration + 60);
     };
 
     if (reduced) {
@@ -131,6 +147,7 @@ export function useDrawIn<T extends SVGSVGElement | HTMLElement>({
     return () => {
       io.disconnect();
       window.clearTimeout(failsafe);
+      window.clearTimeout(settleTimer);
     };
   }, [stagger, duration, threshold, repeat]);
 

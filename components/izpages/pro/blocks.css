@@ -62,6 +62,12 @@
    "Allow. Verify. Scope. Block." must never break mid-word. */
 .izlg-title {
   margin: 0;
+  /* `.izlg-left` is `align-items: flex-start`, so its children size to
+     fit-content — which for a headline of nowrap spans is max-content.
+     Without this cap the title grows past the column and slides under
+     the logo grid instead of wrapping between spans. It never showed
+     while the title was four one-word spans. */
+  max-width: 100%;
   font-family: var(--disp);
   font-weight: var(--fw-disp);
   font-size: var(--fs-h2);
@@ -126,23 +132,50 @@
   border-right: var(--bw) solid var(--line);
   border-bottom: var(--bw) solid var(--line);
 }
+/* Only the wide lattice is drawn here; the phone one is switched on in
+   the responsive block below. */
+.izlg-sm { display: none; }
 /* The last row's bottom border lands on exactly the same pixel as
    `.izlg-cols`'s own, so they overlap rather than double — no
    special case needed, and none is possible anyway since
    `:nth-child()` cannot read a custom property. */
 
 .izlg-logo {
+  grid-column: var(--gc);
+  grid-row: var(--gr);
   display: grid;
   place-items: center;
-  padding: var(--sp-3);
-  font-size: var(--fs-body-sm);
-  color: var(--tx-dim);
-  text-align: center;
-  overflow-wrap: anywhere;
+  padding: var(--sp-4);
   z-index: 1;
+}
+/* Both axes are capped, so a 3:1 wordmark and a 1:1 mark land in the
+   same optical size band instead of the wordmark being three times the
+   weight. `contain` keeps every ratio honest inside that box. */
+.izlg-logo img {
+  max-width: 100%;
+  max-height: 34px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition: opacity var(--dur) var(--ease);
+}
+
+/* Brand colour is the point of an integration grid, so these are NOT
+   greyscaled. On the dark theme that leaves the marks carrying dark ink
+   — the AWS and Google wordmarks in particular — unreadable against a
+   near-black cell, so on dark only, each logo gets a light plate to sit
+   on. Colour stays correct; contrast stops depending on the artwork. */
+.iz[data-theme="dark"] .izlg-logo img {
+  padding: 6px 10px;
+  border-radius: var(--r-xs);
+  background: color-mix(in srgb, #fff 92%, transparent);
+  box-sizing: content-box;
 }
 
 .izlg-strip {
+  grid-column: 1 / -1;
+  grid-row: var(--gr);
   display: grid;
   align-items: center;
   margin: 0;
@@ -279,32 +312,53 @@
   .izlg-cols {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Reading order on a phone is copy, then the logos, then the exit.
+     `.izlg-left` goes `display: contents` so its children become grid
+     items of `.izlg-cols` and can be ordered independently — otherwise
+     the CTA is trapped inside the copy block, above the grid it is the
+     conclusion to. The flex column's gap goes with it, so the spacing
+     it provided is restated as margins. */
   .izlg-left {
-    padding: var(--sp-8) 0;
+    display: contents;
   }
+  .izlg-kicker,
+  .izlg-title,
+  .izlg-sub,
+  .izlg-cta {
+    grid-column: 1;
+  }
+  .izlg-kicker { margin-top: var(--sp-8); }
+  .izlg-title { margin-top: var(--sp-4); }
+  .izlg-sub { margin-top: var(--sp-4); max-width: none; }
+  .izlg-grid { order: 1; margin-top: var(--sp-6); }
+  .izlg-cta {
+    order: 2;
+    justify-self: start;
+    margin: var(--sp-6) 0 var(--sp-8);
+  }
+
   .izlg-grid {
-    border-left: 0;
+    border-left: var(--bw) solid var(--line);
     border-top: var(--bw) solid var(--line);
-    /* two columns keep each wordmark on one line; four would force
-       every one of them to wrap or ellipse */
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: minmax(72px, auto);
+    /* the phone lattice: its own column count and its own coordinates,
+       so the arrangement stays deliberate instead of reflowing into
+       whatever order the DOM happens to be in */
+    grid-template-columns: repeat(var(--cols-sm, 3), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--rows-sm, 4), minmax(76px, 1fr));
   }
-  /* placed coordinates are meaningless once the lattice is 2 wide —
-     let everything flow, and let the copy strip span the full width */
-  .izlg-grid > * {
-    grid-column: auto !important;
-    grid-row: auto !important;
-  }
-  .izlg-cell {
-    display: none;
-  }
+  .izlg-lg { display: none; }
+  .izlg-sm { display: block; }
   .izlg-logo {
-    border-right: var(--bw) solid var(--line);
-    border-bottom: var(--bw) solid var(--line);
+    grid-column: var(--gc-sm);
+    grid-row: var(--gr-sm);
+    padding: var(--sp-3);
   }
+  .izlg-logo img { max-height: 26px; }
+  /* logos with no phone slot — the grid is 3 wide, not 5, and a forced
+     fit would cost the arrangement its gaps */
+  .izlg-x-sm { display: none; }
   .izlg-strip {
-    grid-column: 1 / -1 !important;
+    grid-row: var(--gr-sm);
     padding: var(--sp-4) var(--sp-5);
     font-size: var(--fs-body-sm);
   }

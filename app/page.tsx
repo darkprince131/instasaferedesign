@@ -4,6 +4,7 @@ import "@/components/home2/home2.css";
 import "@/components/home2/capabilities.css";
 import "@/components/home2/withwithout.css";
 import "@/components/home2/izgrid.css";
+import "@/components/izpages/pro/blocks.css";
 import "@/components/home2/izfootergrid.css";
 import { izFontVars } from "@/lib/iz-fonts";
 import type { Metadata } from "next";
