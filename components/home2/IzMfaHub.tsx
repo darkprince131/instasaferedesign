@@ -205,16 +205,83 @@ const TABS: TabDef[] = [
 const N = TABS.length;
 const VIEWS = [WhereView, MethodsView, TriggerView];
 
+/* The head block is identical in both forms, so it is written once. */
+function Head() {
+  return (
+    <div className="izmfa-headwrap iz-irail" style={{ ["--ir-b" as string]: "63%" }}>
+      <div className="fh-head">
+        <span className="iz-ey">Multi-factor authentication</span>
+        <h2 className="iz-h2">
+          MFA that reaches the login, <em>not just the app</em>.
+        </h2>
+        <p className="fh-lead">
+          Most MFA stops at the browser. Yours probably does. The gaps are where attackers actually go: the desktop
+          login, the network gear, the VPN concentrator you haven&apos;t retired yet.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function IzMfaHub() {
   const [tab, setTab] = useState(1);
   const [paused, setPaused] = useState(false);
+  const [mobile, setMobile] = useState(false);
+
+  /* The tab form is a desktop composition: the stage sits ABOVE the tabs
+     that drive it. Stacked into one column that inverts — you scroll past
+     the visual to reach the control, tap, and the thing you changed is now
+     off-screen behind you. Autoplay makes it worse: the section rewrites
+     itself while you are reading it, which reads as a glitch rather than
+     as a feature. So below 900px the same three topics become three plain
+     cards instead, each carrying its own visual, copy and link. */
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const sync = () => setMobile(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
 
   useEffect(() => {
-    if (paused) return;
+    if (mobile || paused) return;
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = setTimeout(() => setTab((t) => (t + 1) % N), TAB_MS);
     return () => clearTimeout(id);
-  }, [tab, paused]);
+  }, [tab, paused, mobile]);
+
+  if (mobile) {
+    return (
+      <div className="fh izmfa izmfa--cards">
+        <Head />
+        <div className="izmfa-cards">
+          {TABS.map((t, i) => {
+            const V = VIEWS[i];
+            return (
+              <article className="izmfa-card" key={t.title}>
+                <div className="izmfa-card-vis">
+                  <V />
+                </div>
+                <span className="izmfa-card-ey">
+                  <t.icon weight="fill" aria-hidden="true" />
+                  {t.title}
+                </span>
+                <h3 className="izmfa-cap-h">{t.headline}</h3>
+                <div className="izmfa-cap-b">
+                  {t.body.map((p, j) => (
+                    <p key={j}>{p}</p>
+                  ))}
+                </div>
+                <a href="/multifactor-authentication" className="learn">
+                  Explore MFA {Arrow}
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   /* No `active`/`View` lookup any more — every panel is mounted and the
      active one is chosen in CSS, so there is nothing to pick here. */
@@ -227,18 +294,7 @@ export function IzMfaHub() {
           There is deliberately no left rail: the headline column starts
           at the wrap edge, so a rail there would either sit on the text
           or duplicate the page's own outer rail. */}
-      <div className="izmfa-headwrap iz-irail" style={{ ["--ir-b" as string]: "63%" }}>
-        <div className="fh-head">
-          <span className="iz-ey">Multi-factor authentication</span>
-          <h2 className="iz-h2">
-            MFA that reaches the login, <em>not just the app</em>.
-          </h2>
-          <p className="fh-lead">
-            Most MFA stops at the browser. Yours probably does. The gaps are where attackers actually go: the desktop
-            login, the network gear, the VPN concentrator you haven&apos;t retired yet.
-          </p>
-        </div>
-      </div>
+      <Head />
 
       {/* All three captions and all three stage views are rendered and
           stacked in one cell, with only the active one visible. The

@@ -200,3 +200,54 @@
   .izcs-stage { padding: var(--sp-3); }
   .izcs-blurb { min-height: 0; }
 }
+
+/* ---- phone: screen and tiles adjacent, exits last ----
+   At this width the grid is a flat 4-column flow and the copy block is a
+   single full-width item, so the two CTAs sat between the screen and the
+   tiles that drive it — you had to scroll past the section's exit to
+   reach its controls. The copy block goes `display: contents` so its
+   children become grid items in their own right, which lets the CTAs
+   carry an `order` that puts them after the tiles. The flex column's
+   gap goes with it, so the spacing it was providing is restated as
+   margins on the children.
+   Nothing here applies above 699px: there the copy is a real box again,
+   with its own background, z-index and grid-area. */
+@media (max-width: 699px) {
+  .izcs .izsg-copy { display: contents; }
+  .izcs .izsg-kicker,
+  .izcs .izsg-title,
+  .izcs .izsg-sub,
+  .izcs .izcs-stage,
+  .izcs .izcs-ctas { grid-column: 1 / -1; }
+  .izcs .izsg-kicker { justify-self: start; }
+  .izcs .izsg-title { margin-top: var(--sp-2); }
+  .izcs .izsg-sub { margin-bottom: var(--sp-2); }
+  .izcs .izcs-stage { margin-top: var(--sp-4); margin-bottom: var(--sp-5); }
+
+  /* The stage header runs out of room: icon + name + family tag +
+     transport need ~370px and the panel is 308px, so the name — the one
+     thing the header exists to say — was the part that ellipsised
+     ("Device p…"). The tag drops to its own line, which gives the name
+     ~190px, enough for the longest label ("Application restriction").
+     The anti-jump lock survives: row one is fixed-height content and row
+     two is always exactly one line of a two-value tag, so the screen
+     below still never moves between controls. */
+  /* NB: the tag is a child of `.izcs-name`, not of `.izcs-h` — so the
+     wrap has to happen on the name, and the tag's 100% basis is 100% of
+     the name column (the transport keeps its own place beside it). */
+  .izcs .izcs-h { height: auto; align-items: flex-start; padding-bottom: var(--sp-3); }
+  .izcs .izcs-name { flex: 1 1 auto; flex-wrap: wrap; row-gap: 6px; }
+  .izcs .izcs-name .nm { flex: 1 1 auto; }
+  /* On its own line the pill spans the whole column and starts reading as
+     a text field. Stripped back to bare mono caps it is the project's
+     usual quiet-label idiom, and it stops competing with the name. */
+  .izcs .izcs-tag { flex: 0 0 100%; border: 0; padding: 0; border-radius: 0; }
+
+  /* tiles keep their document order (0) and sort by the phone order the
+     data carries; the CTAs sit past all of them */
+  .izcs .izsg-tile { order: var(--sm-order, 0); }
+  .izcs .izcs-ctas { order: 99; margin-top: var(--sp-5); }
+  /* two full-width exits — side by side they were 74% of the row each
+     and wrapped anyway */
+  .izcs .izcs-cta { flex: 1 0 100%; justify-content: center; }
+}

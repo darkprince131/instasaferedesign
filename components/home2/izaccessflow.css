@@ -306,12 +306,18 @@
 }
 
 @media (max-width: 900px) {
-  /* the map stops being readable — same six parts as a vertical list */
+  /* The map stops being readable, so the same seven parts become a pair
+     grid: the two things that decide (MFA · Controller) share a row, the
+     person and the gate they reach share a row, and anything carrying a
+     logo set gets the full width so the logos are not squeezed.
+     Cells are placed explicitly — auto-flow pushes the wide ones into
+     implicit rows the moment a node is added or reordered. */
   .izf-plate {
     aspect-ratio: auto;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--sp-3);
+    align-items: stretch;
   }
   .izf-wires { display: none; }
   .izf-node {
@@ -322,14 +328,40 @@
     white-space: normal;
     padding: var(--sp-4);
     gap: var(--sp-3);
+    min-width: 0;
   }
+  .izf-mfa        { grid-column: 1; grid-row: 1; }
+  .izf-controller { grid-column: 2; grid-row: 1; }
+  .izf-identity   { grid-column: 1 / -1; grid-row: 2; }
+  .izf-user       { grid-column: 1; grid-row: 3; }
+  .izf-gateway    { grid-column: 2; grid-row: 3; }
+  .izf-cloud      { grid-column: 1 / -1; grid-row: 4; }
+  .izf-saas       { grid-column: 1 / -1; grid-row: 5; }
+
   .izf-node b { font-size: var(--fs-body); }
   .izf-stack { gap: var(--sp-3); }
-  .izf-logos img { height: 20px; max-width: 72px; }
-  .izf-logos.big { grid-template-columns: repeat(4, 1fr); }
-  .izf-logos.big img { height: 26px; max-width: 88px; }
-  .izf-rail { grid-template-columns: repeat(2, 1fr); }
+  /* Two rows beats one squeezed row: every logo keeps its own width and
+     nothing runs past the node's border. */
+  .izf-logos,
+  .izf-logos.big { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-4); }
+  .izf-logos img,
+  .izf-logos.big img { height: 24px; max-width: 100%; justify-self: start; }
+
+  /* Tabs: 2x2. The labels are the point of the control, so the chip and
+     the padding give way to them — at 4-up the row could not show
+     "Authenticate" without clipping it. */
+  .izf-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .izf-seg {
+    gap: var(--sp-2);
+    padding: var(--sp-3);
+    min-width: 0;
+  }
+  .izf-seg:nth-child(2),
+  .izf-seg:nth-child(3) { border-bottom: 1px solid var(--line); }
   .izf-seg:nth-child(3) { border-right: 0; }
+  .izf-seg-ic { width: 24px; height: 24px; }
+  .izf-seg-ic svg { width: 13px; height: 13px; }
+  .izf-seg-l { font-size: 13px; min-width: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

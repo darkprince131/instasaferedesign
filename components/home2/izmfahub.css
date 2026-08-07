@@ -137,6 +137,102 @@
 /* ---- progress bar runs for TAB_MS (6s here, 5.5s in FeatureHub) ---- */
 .izmfa-prog { animation-duration: 6s; }
 
+/* ============================================================
+   CARD FORM (<=900px) — see the note in IzMfaHub.tsx.
+   Three self-contained cards, each: visual, then copy, then link.
+   No tabs, no autoplay, nothing off-screen to reach for.
+   ============================================================ */
+.izmfa-cards {
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: var(--sp-6);
+}
+.izmfa-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.izmfa-card-vis {
+  width: 100%;
+  min-width: 0;
+}
+/* The stage views were built to sit in a 452px centred stage; in a card
+   they simply take the width they are given. */
+.izmfa-card-vis .fh-view { width: 100%; }
+.izmfa-card-vis .fh-stack { max-width: none; }
+/* Every entry animation in here is a TAB-SWITCH reveal — it exists to
+   introduce a view that just replaced another one. All three views are on
+   screen at once now, so those animations have nothing to announce, and
+   `.fh-srow` in particular starts at `opacity: 0` with a `forwards` fill,
+   which is content one suppressed animation away from being invisible. */
+.izmfa-card-vis .fh-view,
+.izmfa-card-vis .fh-srow,
+.izmfa-card-vis .fh-lrow { animation: none; opacity: 1; }
+/* The surface rows are a single wide flex line — icon, then a wrapper
+   holding the name and its sub-line, then the stat and pill pushed right
+   by `margin-left: auto`. `.sn`/`.ss` are inline spans inside that
+   wrapper, so at card width they reflow into one ragged column a word at
+   a time and the stat block is shoved off the right edge. Rebuilt here as
+   a two-column grid: icon beside a stack of name, sub, and the stat pair.
+   The stairstep indent goes too — a wide-canvas flourish that only eats
+   the left edge at this size. */
+.izmfa-card-vis .fh-srow {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+  margin-left: 0;
+  padding: var(--sp-4);
+}
+.izmfa-card-vis .fh-srow > span:nth-child(2) { display: flex; flex-direction: column; }
+/* Same inline-span shape in the constellation core: `.ht` and `.hs` are
+   inline, so "InstaSafe" and "assigned per group" run together and break
+   mid-phrase. (The `margin-top` the chassis puts on `.hs` is a no-op on an
+   inline box — the stacking was always the intent.) Corrected here rather
+   than in featurehub.css so the wide-canvas FeatureHub layout is not
+   changed sight-unseen. */
+.izmfa-card-vis .fh-hero > span:last-child { display: flex; flex-direction: column; }
+.izmfa-card-vis .fh-srow .sgrow {
+  grid-column: 2;
+  margin-left: 0;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* "Evaluating context" and the combinations chip cannot share a 300px
+   line, so they stop trying to and the chip drops under the label. */
+.izmfa-card-vis .fh-log-h { flex-wrap: wrap; gap: var(--sp-2); }
+.izmfa-card-vis .fh-log-h .exp { margin-left: 0; }
+
+.izmfa-card-ey {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izmfa-card-ey svg { width: 15px; height: 15px; color: var(--orange); }
+
+/* Matches `.fh-group.on .learn` — this is the same link, just no longer
+   dependent on which tab happens to be selected. */
+.izmfa-card .learn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--orange);
+}
+.izmfa-card .learn svg { width: 15px; height: 15px; }
+
 /* ---- responsive ---- */
 /* Below this the head text (capped at 60ch) grows past 63% of the wrap
    and the rail would land ON the copy. A rail through a paragraph is

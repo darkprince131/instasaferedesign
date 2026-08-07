@@ -257,9 +257,17 @@
 }
 .izfg-g2 > :nth-child(-n + 4) { grid-column: span 3; }
 .izfg-g2 > :nth-child(n + 5) { grid-column: span 4; }
+/* Sized off the row, not off a fixed number. The badges are ~0.89 wide
+   for their height, so a flat 96px made them 86px across while a phone
+   row-one cell is only ~58px — seven awards overlapping each other, which
+   reads as a rendering fault rather than as a shelf. `max-width` plus
+   `object-fit` is the belt-and-braces: even if a future badge has a wider
+   aspect it letterboxes inside its cell instead of spilling over. */
 .izfg-g2 img {
-  height: 96px;
+  height: clamp(52px, 15vw, 96px);
   width: auto;
+  max-width: 100%;
+  object-fit: contain;
   display: block;
 }
 /* Deliberately NOT filtered on dark, unlike the compliance marks

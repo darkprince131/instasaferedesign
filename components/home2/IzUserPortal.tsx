@@ -78,7 +78,11 @@ export function IzUserPortal() {
               <li key={id}>
                 <span className={i === 0 ? "iup-nav on" : "iup-nav"}>
                   <I weight={i === 0 ? "fill" : "regular"} />
-                  {label}
+                  {/* The label needs its own element: below 620px the
+                      sidebar collapses to a 52px icon rail and the CSS
+                      hides `.iup-nav span`. As a bare text node it stayed
+                      visible and spilled straight out of the rail. */}
+                  <span>{label}</span>
                 </span>
               </li>
             ))}

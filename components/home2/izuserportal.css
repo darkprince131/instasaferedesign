@@ -224,8 +224,22 @@
   .iup-sidebar { width: 52px; }
   .iup-tenant, .iup-nav span, .iup-me-text { display: none; }
   .iup-nav { justify-content: center; padding: 6px; }
+  .iup-me { justify-content: center; margin: 0; padding: var(--sp-2) 0; }
   .iup-app-grid { grid-template-columns: minmax(0, 1fr); }
   .iup-strip { grid-template-columns: minmax(0, 1fr); }
+
+  /* The titlebar is a fixed 38px, so a wrapping title breaks it — at this
+     width "InstaSafe Access Portal" needs 158px and only had 158 minus the
+     gap. Tighten the row and hold the title on one line. */
+  .iup-titlebar { gap: var(--sp-2); padding: 0 10px; }
+  .iup-win-title { font-size: var(--fs-label); min-width: 0; white-space: nowrap; }
+  .iup-session { font-size: var(--fs-micro); padding: 3px 7px; flex: none; }
+
+  /* "granted by group · …" is the argument of this whole console, so it
+     keeps its place — it just stops fighting the title for the same line
+     and sits under it instead of wrapping into a three-line column. */
+  .iup-sec-h { flex-wrap: wrap; }
+  .iup-sec-note { margin-left: 0; flex: 1 0 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

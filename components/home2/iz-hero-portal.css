@@ -497,8 +497,12 @@
     left: var(--p-copy-l);
     width: calc(var(--p-copy-r) - var(--p-copy-l));
     right: auto;
-    top: 72%;
-    bottom: auto;
+    /* Same anchor as the check panel below. There is only room for one of
+       them on a phone, so they take turns rather than stack: the checks
+       run, then hand the floor to the verdict. Parking the verdict at a
+       separate `top: 72%` collided with the panel on short viewports. */
+    top: auto;
+    bottom: 5%;
     transform: none;
     justify-content: center;
     white-space: normal;
@@ -527,6 +531,16 @@
     border-radius: var(--r-md);
     background: color-mix(in srgb, var(--surface) 74%, transparent);
     overflow: visible;
+    transition: opacity 300ms var(--ease-out);
+  }
+  /* Handover: once the run resolves the panel clears out and the verdict
+     takes its place. `visibility` (not `display`) so the fade can play and
+     so the IntersectionObserver that started the run keeps a real box.
+     Tapping the verdict re-runs, which brings the panel straight back. */
+  .iz-hero2[data-phase="granted"] .ihp-console,
+  .iz-hero2[data-phase="denied"] .ihp-console {
+    opacity: 0;
+    visibility: hidden;
   }
   .ihp-console .ps-steps2 { gap: 4px; }
   .ihp-console .ps-step2 {

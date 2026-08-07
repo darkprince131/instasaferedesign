@@ -204,10 +204,23 @@
    grid track for the technique to work. */
 .iaw-posture-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur) var(--ease-out); background: color-mix(in srgb, var(--orange) 4%, var(--bg-2)); }
 .iaw-posture-detail.open { grid-template-rows: 1fr; }
-/* Padding stays constant — at 0fr the whole track clips to zero,
-   padding included, so there is nothing to toggle and nothing that
-   snaps a frame ahead of the height. */
-.iaw-posture-inner { overflow: hidden; min-height: 0; padding: 10px 14px 12px; }
+/* No BLOCK padding here, and nothing animated on this element.
+   A 0fr track zeroes the item's CONTENT box only — its padding survives,
+   and `overflow` clips to the padding box, so block padding on this
+   element left every CLOSED row showing a 22px tinted strip with the top
+   slice of "Disk encryption" in it. The vertical space therefore lives on
+   the rows as margins: they are ordinary in-flow content, so the track
+   collapses them along with everything else and `grid-template-rows`
+   stays the only thing transitioning. (`overflow: hidden` makes this a
+   BFC, so those margins cannot collapse back out through the edge.)
+   Inline padding is safe to keep — it never affects height. */
+.iaw-posture-inner {
+  overflow: hidden;
+  min-height: 0;
+  padding: 0 14px;
+}
+.iaw-posture-inner > .iaw-posture-row:first-child { margin-top: 10px; }
+.iaw-posture-inner > .iaw-posture-row:last-child { margin-bottom: 12px; }
 .iaw-posture-row { display: flex; align-items: center; gap: 7px; font-size: var(--fs-label); padding: 3px 0; }
 .iaw-posture-row svg { width: 14px; height: 14px; }
 .iaw-posture-row.ok   { color: var(--allow); }
@@ -293,4 +306,39 @@
   .iaw--compact { height: 460px; }
   .iaw--compact .iaw-sidebar { width: 56px; }
   .iaw--compact .iaw-nav-item span, .iaw--compact .iaw-brand-name, .iaw--compact .iaw-foot-info { display: none; }
+
+  /* ---- phone tables ----
+     Measured at a 390px viewport: the content pane is 272px, a table row
+     238px. The compact column sets need 299px (devices) and 319px (logs),
+     and the users row's `1.1fr` name track collapses to literally 0 —
+     `.iaw-table` has overflow:hidden, so all of that arrives as text
+     sliced off at the table's edge rather than as a scrollbar.
+     So the tracks go minmax(0,…) and each table keeps only the columns
+     that still say something at this width. Nothing that is dropped is
+     the only place its information appears: OS and posture dots are both
+     in the tap-to-expand device detail, and the log's user/time/source-IP
+     are all in the full-width variant of this same window. */
+  .iaw--compact .iaw-section { padding: var(--sp-3) var(--sp-3) var(--sp-5); }
+  .iaw--compact .iaw-tr { gap: var(--sp-2); padding: 9px 10px; }
+
+  /* users: Name · Status */
+  .iaw--compact .iaw-users-table .iaw-tr { grid-template-columns: minmax(0, 1fr) auto; }
+  .iaw--compact .iaw-users-table .iaw-tr > :nth-child(3) { display: none; }
+
+  /* devices: Hostname · Health */
+  .iaw--compact .iaw-devices-table .iaw-tr { grid-template-columns: minmax(0, 1fr) auto; }
+  .iaw--compact .iaw-devices-table .iaw-tr > :nth-child(2),
+  .iaw--compact .iaw-devices-table .iaw-tr > :nth-child(5) { display: none; }
+  /* hostnames are one unbreakable token; without this the track floors at
+     the full string and pushes the pill out again */
+  .iaw--compact .iaw-devices-table .iaw-tr > :first-child { overflow-wrap: anywhere; }
+
+  /* logs: icon · Application · Status */
+  .iaw--compact .iaw-logs-table .iaw-tr { grid-template-columns: 16px minmax(0, 1fr) auto; }
+  .iaw--compact .iaw-logs-table .iaw-tr > :nth-child(2),
+  .iaw--compact .iaw-logs-table .iaw-tr > :nth-child(5) { display: none; }
+
+  /* app cards: the users count and the status pill cannot share a 115px
+     line, so they stop trying to */
+  .iaw--compact .iaw-app-foot { flex-direction: column; align-items: flex-start; gap: 5px; }
 }

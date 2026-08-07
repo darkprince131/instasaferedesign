@@ -163,11 +163,15 @@
 /* Capped below --fs-h2 on purpose: the copy block shares its rows with
    the tiles, so a 44px head pushes every tile from landscape to
    portrait. Theirs sits at 36px for the same reason. */
+/* `--fs-h2`, the same token `.iz-h2` uses, NOT a private clamp. This is a
+   section heading and it sits in the same scroll as every other one — the
+   old clamp(26,2.6vw,36) ran a step small at every width and read as a
+   sub-head next to its neighbours. */
 .izsg-title {
   margin: 0;
   font-family: var(--disp);
   font-weight: var(--fw-disp);
-  font-size: clamp(26px, 2.6vw, 36px);
+  font-size: var(--fs-h2);
   line-height: var(--lh-h2);
   letter-spacing: var(--ls-h2);
   color: var(--tx);
@@ -549,9 +553,9 @@
   .izsg-x-sm {
     display: none;
   }
-  .izsg-title {
-    font-size: var(--fs-h3);
-  }
+  /* No font-size override here. `--fs-h2` already bottoms out at 30px,
+     which is what every other section heading on the page is at this
+     width — dropping this one to `--fs-h3` made it read as a sub-head. */
 }
 
 /* ---------- 8. reduced motion ---------- */
