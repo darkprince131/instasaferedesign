@@ -9,6 +9,8 @@ import "@/components/home2/izgrid.css";
 import "@/components/izpages/solutions/solutions.css";
 import "@/components/izpages/solutions/groupb.css";
 import "@/components/izpages/solutions/groupc.css";
+import "@/components/izpages/pro/outcomes.css";
+import "@/components/izpages/solutions/threeoutcomes.css";
 import "@/components/home2/izfootergrid.css";
 
 /* SEO-locked: /solutions already exists as a canonical entry in

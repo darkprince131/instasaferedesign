@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import type { Icon } from "@phosphor-icons/react";
 
 /* ============================================================
@@ -42,12 +42,19 @@ import type { Icon } from "@phosphor-icons/react";
 
 export type Outcome = { Icon: Icon; title: string; body: string };
 
+/* An illustration takes exactly one prop. That single contract is why
+   the visual layer can be swapped per page without touching copy —
+   see docs/three-outcomes-rule.md. */
+export type IllustrationProps = { highlightIndex: number | null };
+
 export function IzOutcomes({
   tag,
   title,
   sub,
   outcomes,
   visual,
+  artifact: Artifact,
+  accentFrom = 0,
   side = "left",
   inverted = false,
 }: {
@@ -57,7 +64,15 @@ export function IzOutcomes({
   title: string[];
   sub: string;
   outcomes: Outcome[];
-  visual: ReactNode;
+  /** a plain node — use this when the visual takes no highlight */
+  visual?: ReactNode;
+  /** OR an illustration component, which gets the hover link wired to
+   *  it. Pass one or the other, not both. */
+  artifact?: ComponentType<IllustrationProps>;
+  /** index of the first heading line that takes the accent glow.
+   *  0 (the default) keeps every line accented, which is what the
+   *  existing sections already do — do not change that default. */
+  accentFrom?: number;
   /** which side the visual sits on — ALTERNATE THIS down a page */
   side?: "left" | "right";
   /** off by default so the section follows the page theme; pass true
@@ -66,6 +81,18 @@ export function IzOutcomes({
 }) {
   const ref = useRef<HTMLElement>(null);
   const [seen, setSeen] = useState(false);
+  const [hover, setHover] = useState<number | null>(null);
+  const [fine, setFine] = useState(false);
+
+  /* The hover link is desktop-only: a touch device has no hover-out,
+     so an emphasised state would simply stick. */
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const sync = () => setFine(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
@@ -99,16 +126,22 @@ export function IzOutcomes({
     <section
       ref={ref}
       className={`izo izo--${side} ${inverted ? "iz-inverted" : ""} ${seen ? "in" : ""}`}
+      style={{ ["--n" as string]: outcomes.length } as React.CSSProperties}
+      data-hl={fine && hover !== null ? hover : undefined}
     >
       <div className="iz-wrap">
         <div className="izo-top">
-          <div className="izo-visual">{visual}</div>
+          <div className="izo-visual">
+            {Artifact ? <Artifact highlightIndex={fine ? hover : null} /> : visual}
+          </div>
 
           <div className="izo-copy">
             {tag && <span className="izo-tag">{tag}</span>}
             <h2 className="izo-title">
-              {title.map((line) => (
-                <span key={line}>{line}</span>
+              {title.map((line, i) => (
+                <span key={line} className={i < accentFrom ? "is-plain" : undefined}>
+                  {line}
+                </span>
               ))}
             </h2>
             <p className="izo-sub">{sub}</p>
@@ -120,17 +153,26 @@ export function IzOutcomes({
           <span className="izo-drop" />
           <span className="izo-rule" />
           <span className="izo-feeds">
-            {outcomes.map((o) => (
-              <i key={o.title} />
+            {outcomes.map((o, i) => (
+              <i key={o.title} style={{ ["--i" as string]: i } as React.CSSProperties} />
             ))}
           </span>
         </div>
 
         <div className="izo-outcomes">
           {outcomes.map((o, i) => (
-            <div key={o.title} className="izo-outcome" style={{ ["--i" as string]: i } as React.CSSProperties}>
-              <span className="izo-ico" aria-hidden="true">
-                <o.Icon />
+            <div
+              key={o.title}
+              className="izo-outcome"
+              style={{ ["--i" as string]: i } as React.CSSProperties}
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover(null)}
+            >
+              <span className="izo-mark" aria-hidden="true">
+                <i className="izo-num">{String(i + 1).padStart(2, "0")}</i>
+                <span className="izo-ico">
+                  <o.Icon />
+                </span>
               </span>
               <h3>{o.title}</h3>
               <p>{o.body}</p>

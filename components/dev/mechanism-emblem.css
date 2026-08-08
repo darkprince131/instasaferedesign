@@ -1,0 +1,128 @@
+/* ============================================================
+   MechanismEmblem tokens + motion.
+
+   Dark mode: the HIGHLIGHT draws the object (light catching the
+   edge of a groove cut into dark metal). Light mode: the SHADOW
+   draws it (grooves as occlusion in pale metal). Same geometry,
+   the engrave token flips sides of the metal value and the
+   edge-weight tokens (--emblem-hl / --emblem-sh) invert.
+   ============================================================ */
+
+.mech-emblem {
+  --beat: 1.2s;
+  --emblem-bg: transparent;
+  --emblem-metal: #2a2c2f;
+  --emblem-engrave: #6e7379; /* lighter than metal */
+  --emblem-highlight: #c8cdd2;
+  --emblem-shadow: #0a0b0c;
+  --emblem-accent: #ff5c1a;
+  --emblem-sweep: rgba(255, 255, 255, 0.07);
+  --emblem-recess: 0.42; /* gear-train recess occlusion strength */
+  --emblem-hl: 0.55; /* edge-highlight weight */
+  --emblem-sh: 0.3; /* edge-shadow weight */
+  display: block;
+  background: var(--emblem-bg);
+}
+
+[data-theme="light"] .mech-emblem,
+[data-theme="paper"] .mech-emblem,
+.mech-emblem[data-theme="light"] {
+  --emblem-metal: #d6d8da;
+  --emblem-engrave: #8a9096; /* darker than metal */
+  --emblem-highlight: #ffffff;
+  --emblem-shadow: rgba(0, 0, 0, 0.22);
+  --emblem-accent: #d9430a; /* holds contrast on light ground */
+  --emblem-sweep: rgba(0, 0, 0, 0.05);
+  --emblem-recess: 0.55;
+  --emblem-hl: 0.3;
+  --emblem-sh: 0.7;
+}
+
+/* Rotating parts are authored around 0,0 inside a translated parent.
+   transform-origin 0 0 is a plain length offset — reference-box
+   independent — so rotation happens about the local origin in every
+   browser. No percentages anywhere. */
+.mech-emblem .me-rot {
+  transform-origin: 0 0;
+}
+
+.mech-emblem .me-balance {
+  animation: me-balance var(--beat) ease-in-out infinite;
+}
+.mech-emblem .me-pallet {
+  animation: me-pallet var(--beat) ease-in-out infinite;
+}
+/* 15 teeth × 24° = one revolution per 7.5 beats; steps(15) advances
+   exactly one tooth per half-beat and HOLDS between — the detail that
+   makes it read as an escapement, not a spinner. The -beat/4 delay
+   lands each tooth-drop on the balance's neutral crossing. */
+.mech-emblem .me-escape {
+  animation: me-escape calc(var(--beat) * 7.5) steps(15, end) infinite;
+  animation-delay: calc(var(--beat) / -4);
+}
+.mech-emblem .me-sweep {
+  animation: me-sweep 14s linear infinite;
+}
+
+.mech-emblem[data-paused="true"] .me-balance,
+.mech-emblem[data-paused="true"] .me-pallet,
+.mech-emblem[data-paused="true"] .me-escape,
+.mech-emblem[data-paused="true"] .me-sweep {
+  animation-play-state: paused;
+}
+
+@keyframes me-balance {
+  0% {
+    transform: rotate(-135deg);
+  }
+  50% {
+    transform: rotate(135deg);
+  }
+  100% {
+    transform: rotate(-135deg);
+  }
+}
+
+/* Pallet holds, then flips quickly around the balance's neutral
+   crossings at 25% and 75% of the beat. */
+@keyframes me-pallet {
+  0%,
+  20% {
+    transform: rotate(-7deg);
+  }
+  30%,
+  70% {
+    transform: rotate(7deg);
+  }
+  80%,
+  100% {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes me-escape {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes me-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Composed rest frame: balance neutral (its unanimated pose), escape
+   at tooth 0, sweep parked upper-left by the static rotate(-45) on
+   its parent group. */
+@media (prefers-reduced-motion: reduce) {
+  .mech-emblem * {
+    animation: none !important;
+  }
+}

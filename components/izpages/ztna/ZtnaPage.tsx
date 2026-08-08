@@ -21,6 +21,7 @@ import { IzSpecTable } from "@/components/home2/IzSpecTable";
 import { IzRelatedRail } from "@/components/home2/IzRelatedRail";
 import { IzSideNav } from "@/components/home2/IzSideNav";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
+import { ZtnaArchitecture } from "@/components/izoutcomes/artifacts/ZtnaArchitecture";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
 import { useEffect, useState } from "react";
@@ -414,11 +415,17 @@ export function ZtnaPage() {
 
       {/* ---------------- THREE OUTCOMES ---------------- */}
       <div id="outcomes">
+        {/* Built from the ZTNA reference. Three outcomes, always — the
+            reference's first column ("Contained by design") is the same
+            claim the heading already makes, so it is not repeated as a
+            fourth column. */}
         <IzOutcomes
           side="left"
-          title={["Contained", "by design"]}
-          sub="A flagged session is re-verified and cleared, and nothing else in the estate is touched — because nothing else was ever reachable from it."
-          visual={<OutcomesOrbit />}
+          tag="ZTNA architecture"
+          title={["Access,", "not access", "to everything."]}
+          accentFrom={2}
+          sub="InstaSafe ZTNA creates secure, per-session tunnels to the apps you choose. Nothing is exposed. Nothing is reachable by default."
+          artifact={ZtnaArchitecture}
           outcomes={[
             { Icon: ShieldCheck, title: "Breach containment by architecture", body: "No lateral surface to cross. One session compromised is one session lost." },
             { Icon: Broadcast, title: "Zero internet footprint", body: "Blackened servers cannot be scanned or fingerprinted ahead of patch day." },

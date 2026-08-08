@@ -8,6 +8,8 @@
  * catch-all using these records until it gets a bespoke build.
  */
 
+import { NEW_IA } from "./site-ia";
+
 export type PageKind =
   | "platform"
   | "solution"
@@ -661,6 +663,10 @@ export const SCAFFOLD_PAGES: PageDef[] = [
   ...resource,
   ...company,
   ...legal,
+  /* The content-review IA (lib/site-ia.ts) comes LAST on purpose: PAGES
+     de-dupes first-wins, so a new-IA path that collides with a live
+     SEO-locked URL above keeps the live entry. */
+  ...NEW_IA,
 ];
 
 // De-dupe by path (industry array intentionally re-adds the hub; keep first).

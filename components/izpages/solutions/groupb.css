@@ -1,23 +1,37 @@
 /* ============================================================
-   Group B — "giving someone access", on the 00au answer-strip idiom.
+   groupb.css — Solutions · "different populations, same enforcement".
    All values are iz-system.css tokens.
+
+   THE RULE FOR EDITING THIS FILE: the plate's skeleton must never
+   move between scenarios. Node boxes are fixed-width and the check
+   list reserves its tallest height, so switching scenario changes
+   colour, icon and chips — never geometry. The moment the plate
+   reflows, the section stops saying "same enforcement" and starts
+   saying "five different architectures".
    ============================================================ */
 
 .izgb {
   position: relative;
   padding: var(--sp-section) 0;
-  background: var(--bg-2);
+  background: var(--bg);
+  --izgb-sh: 0 8px 20px -14px rgba(24, 18, 10, 0.34), 0 1px 3px -1px rgba(24, 18, 10, 0.1);
+  /* the site nav is sticky at top:0 and 66px tall — the plate has to
+     clear it once it pins */
+  --izgb-navh: 66px;
+  /* THE RESERVED ROW HEIGHT. Privileged Access adds two more check
+     rows, which grew the gate to 143px while the node boxes stayed at
+     132 — the plate changed height between steps, which is precisely
+     the reflow this section must not have. Both boxes now reserve the
+     tallest state. Raise this if a scenario ever gains a fifth check. */
+  --izgb-rowh: 150px;
 }
 
-.izgb-cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
-  gap: clamp(var(--sp-8), 5vw, var(--sp-12));
-  align-items: start;
+/* ---------- head ---------- */
+
+.izgb-head {
+  max-width: 46ch;
+  margin-bottom: clamp(var(--sp-10), 6vw, 72px);
 }
-
-.izgb-copy { min-width: 0; }
-
 .izgb-kicker {
   display: block;
   font-family: var(--mono);
@@ -27,10 +41,8 @@
   color: var(--accent);
   margin-bottom: var(--sp-4);
 }
-
 .izgb-lead {
-  max-width: 20ch;
-  margin: 0 0 var(--sp-8);
+  margin: 0;
   font-family: var(--disp);
   font-weight: var(--fw-disp);
   font-size: var(--fs-h2);
@@ -38,126 +50,454 @@
   letter-spacing: var(--ls-h2);
   color: var(--tx);
 }
-.izgb-lead em { font-style: normal; font-weight: inherit; color: var(--accent); }
+.izgb-lead em {
+  font-style: normal;
+  color: var(--accent);
+}
 
-/* ---------- the five ---------- */
+/* ---------- the two columns ---------- */
 
-.izgb-list {
-  list-style: none;
+.izgb-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  gap: clamp(var(--sp-8), 5vw, 72px);
+  align-items: start;
+}
+
+/* ============================================================
+   LEFT — the plate that stays
+   ============================================================ */
+
+/* A FULL-HEIGHT STICKY FRAME, not a sticky plate.
+   Pinning the plate itself to a fixed offset left it sitting high
+   while the paragraph describing it was centred in the viewport — the
+   two halves of the same thought, visibly unpaired. Sticking a
+   100vh box and centring the plate inside it puts the plate on the
+   viewport's centre line, where the active step's text already is. */
+.izgb-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  align-content: center;
+  min-width: 0;
+}
+
+.izgb-plate {
+  position: relative;
+  padding: var(--sp-8) var(--sp-6) var(--sp-6);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--izgb-sh);
+}
+
+.izgb-plate-tag {
+  position: absolute;
+  top: 0;
+  left: var(--sp-6);
+  transform: translateY(-50%);
+  padding: 2px var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-2xs);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+
+/* ---------- the flow: who → gate → app ---------- */
+
+.izgb-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1.25fr) 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 0;
+}
+
+.izgb-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  /* every box in the row reserves the TALLEST state any scenario
+     reaches, so switching scenario never changes the geometry */
+  min-height: var(--izgb-rowh);
+  justify-content: center;
+  padding: var(--sp-4) var(--sp-2);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  text-align: center;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.izgb-ic {
+  display: inline-flex;
+  color: var(--tx-dim);
+  transition: color var(--dur) var(--ease);
+  /* keyed on the label in the TSX, so a swapped icon fades in rather
+     than popping — the "minimal change" has to be legible as a change */
+  animation: izgb-swap var(--dur-slow) var(--ease-out);
+}
+.izgb-ic svg {
+  width: 30px;
+  height: 30px;
+}
+
+.izgb-node-label {
+  /* the node column is narrow at phone widths and these labels are
+     two words — without the cap they size to content and run past the
+     card edge instead of wrapping */
+  max-width: 100%;
+  overflow-wrap: break-word;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--tx);
+}
+
+/* the location chip — its own swap animation, because in Hybrid it is
+   the ONLY thing moving and the eye has to catch it */
+.izgb-where {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  animation: izgb-swap var(--dur-slow) var(--ease-out);
+}
+.izgb-where svg {
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes izgb-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- the gate: the part that never changes ---------- */
+
+.izgb-gate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  /* matches the node height so the row never reflows; the extra
+     privileged checks grow INTO reserved space */
+  min-height: var(--izgb-rowh);
+  justify-content: center;
+  padding: var(--sp-4);
+  border: var(--bw-thick) solid var(--accent);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--izgb-sh);
+}
+.izgb-gate-brand {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+}
+.izgb-checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
   margin: 0;
   padding: 0;
-  border-top: var(--bw) solid var(--line);
+  list-style: none;
 }
-.izgb-row {
+.izgb-checks li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-2xs);
+  line-height: 1.3;
+  color: var(--tx-dim);
+  animation: izgb-swap var(--dur-slow) var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+.izgb-checks svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  color: var(--accent);
+}
+
+/* ---------- wires ---------- */
+
+.izgb-wire {
+  position: relative;
+  display: block;
+  height: 0;
+  border-top: var(--bw) solid var(--line-strong);
+}
+/* the square port nubs, same doctrine as the consolidation diagram */
+.izgb-wire i {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  background: var(--line-strong);
+}
+.izgb-wire i:first-child {
+  left: -2.5px;
+}
+.izgb-wire i:last-child {
+  right: -2.5px;
+}
+/* the tunnel only exists once the decision is made, so it is accent */
+.izgb-wire--tunnel {
+  border-top-color: var(--accent);
+}
+.izgb-wire--tunnel i {
+  background: var(--accent);
+}
+
+/* ---------- chips: where most of the per-scenario change lands ---------- */
+
+.izgb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  /* reserved so a one-chip scenario doesn't shrink the plate */
+  min-height: 30px;
+  margin: var(--sp-6) 0 0;
+  padding: var(--sp-4) 0 0;
+  border-top: var(--bw) dashed var(--line);
+  list-style: none;
+}
+.izgb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 3px var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.03em;
+  color: var(--tx-dim);
+  animation: izgb-swap var(--dur-slow) var(--ease-out);
+}
+.izgb-chip svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+.izgb-chip.is-accent {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+}
+/* `off` = the requirement that is NOT there. Struck through and
+   dimmed, because an absence has to be shown to be read as one —
+   simply omitting the chip would say nothing at all. */
+.izgb-chip.is-off {
+  color: var(--tx-mute);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.75;
+}
+
+/* ---------- focus: which node the scenario is about ----------
+   Colour and weight only — never size, never position. */
+
+.izgb-plate[data-focus="who"] .izgb-node--who,
+.izgb-plate[data-focus="app"] .izgb-node--app {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.izgb-plate[data-focus="who"] .izgb-node--who .izgb-ic,
+.izgb-plate[data-focus="app"] .izgb-node--app .izgb-ic {
+  color: var(--accent);
+}
+.izgb-plate[data-focus="where"] .izgb-where {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+.izgb-plate[data-focus="gate"] .izgb-gate {
+  box-shadow: var(--izgb-sh), 0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* ============================================================
+   RIGHT — the readings that scroll past
+   ============================================================ */
+
+.izgb-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.izgb-step {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--sp-5);
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: var(--sp-4);
+  /* the scroll distance each scenario gets. Tall enough that a step
+     owns the middle of the viewport on its own, which is what makes
+     the active-band detection unambiguous. */
+  min-height: 72vh;
+  align-content: center;
   padding: var(--sp-6) 0;
-  border-bottom: var(--bw) solid var(--line);
+  /* inactive steps recede rather than disappear — the reader can see
+     what is coming, which is what makes it feel like one story */
+  opacity: 0.42;
+  transition: opacity var(--dur-slow) var(--ease);
 }
+.izgb-step.is-active {
+  opacity: 1;
+}
+/* The last step keeps full height on purpose. Shortening it released
+   the sticky plate while BYOD was still the thing being read, so the
+   visual slid away mid-sentence. */
+.izgb-step:last-child {
+  padding-bottom: var(--sp-12);
+}
+
 .izgb-n {
   font-family: var(--mono);
-  font-size: var(--fs-mono);
+  font-size: var(--fs-sm);
   letter-spacing: var(--ls-mono);
-  color: var(--tx-mute);
-  padding-top: 3px;
+  color: var(--accent);
+  padding-top: 4px;
 }
-.izgb-rowbody { min-width: 0; }
-.izgb-rowbody h3 {
+.izgb-stepbody h3 {
   margin: 0;
   font-family: var(--disp);
   font-weight: var(--fw-disp);
   font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
   letter-spacing: var(--ls-h3);
   color: var(--tx);
 }
-.izgb-rowbody p {
+.izgb-stepbody p {
   margin: var(--sp-3) 0 0;
-  max-width: 62ch;
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   color: var(--tx-dim);
 }
-
-/* 00au's number strip, one per row. Mono because it IS a measurement,
-   not because the section wants to look technical. */
 .izgb-fact {
   display: inline-block;
   margin-top: var(--sp-4);
-  padding: var(--sp-2) var(--sp-4);
-  border: var(--bw) solid color-mix(in srgb, var(--accent) 30%, var(--line));
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  padding: 4px var(--sp-3);
+  border: var(--bw) dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: var(--r-2xs);
   font-family: var(--mono);
-  font-size: var(--fs-mono);
-  letter-spacing: var(--ls-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.03em;
   color: var(--accent);
 }
 
-/* ---------- proof slot ---------- */
-
-.izgb-slot { position: sticky; top: 96px; min-width: 0; }
-
-/* Deliberately reads as an empty frame with a brief in it, not as a
-   finished graphic — nobody should mistake this for shipped artwork. */
-.izgb-art {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-  aspect-ratio: 4 / 5;
-  padding: var(--sp-6);
-  justify-content: flex-end;
-  border: var(--bw) dashed color-mix(in srgb, var(--tx) 26%, transparent);
-  border-radius: var(--r-lg);
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0 11px,
-      color-mix(in srgb, var(--tx) 4%, transparent) 11px 12px
-    ),
-    var(--surface);
-}
-.izgb-art-ic {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: var(--r-sm);
-  border: var(--bw) solid var(--line);
-  background: var(--bg);
-  color: var(--tx-mute);
-}
-.izgb-art-ic svg { width: 21px; height: 21px; }
-.izgb-art figcaption { display: flex; flex-direction: column; gap: var(--sp-2); }
-.izgb-art b {
-  font-family: var(--mono);
-  font-size: var(--fs-mono);
-  letter-spacing: var(--ls-mono);
-  text-transform: uppercase;
-  color: var(--tx-dim);
-}
-.izgb-art span {
-  font-size: var(--fs-body-sm);
-  line-height: var(--lh-body);
-  color: var(--tx-mute);
-}
-
 /* ============================================================
-   Responsive
+   RESPONSIVE
    ============================================================ */
 
 @media (max-width: 1000px) {
-  .izgb-cols { grid-template-columns: minmax(0, 1fr); }
-  /* the slot leads on a phone: it is the section's one image, and
-     stuck to the top of a single column it would follow 5 rows of
-     copy and arrive after the argument is over */
-  .izgb-slot { position: static; order: -1; max-width: 420px; }
-  .izgb-lead { max-width: none; }
+  .izgb-cols {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  /* The plate stays sticky on phones — it is the whole point of the
+     section, and dropping it would leave five paragraphs with no
+     visual argument at all. It just pins to the top of the viewport
+     instead of a third of the way down, and gives back its padding. */
+  .izgb-stage {
+    top: var(--izgb-navh);
+    height: auto;
+    z-index: 2;
+    padding: var(--sp-4) 0;
+    background: var(--bg);
+  }
+  .izgb-plate {
+    padding: var(--sp-6) var(--sp-4) var(--sp-4);
+  }
+  .izgb {
+    /* measured, not guessed: the four-check Privileged gate reaches
+       178px at this width once the labels wrap */
+    --izgb-rowh: 180px;
+  }
+  .izgb-node,
+  .izgb-gate {
+    min-height: var(--izgb-rowh);
+  }
+  .izgb-ic svg {
+    width: 24px;
+    height: 24px;
+  }
+  .izgb-flow {
+    grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1.2fr) 16px minmax(0, 1fr);
+  }
+  /* Push each step's content clear of the pinned plate. The height
+     comes from a ResizeObserver in the component, so it stays correct
+     when the plate changes size. */
+  .izgb-step {
+    align-content: start;
+    min-height: 62vh;
+    padding-top: calc(var(--izgb-stageh, 300px) + var(--sp-5));
+  }
+  /* Stacked and height-reserved: on a narrow plate two chips wrap to a
+     second row and one does not, which would change the plate's height
+     between steps — the one thing this section must never do. */
+  .izgb-chips {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 70px;
+  }
 }
 
 @media (max-width: 620px) {
-  .izgb-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
-  .izgb-n { padding-top: 0; }
-  .izgb-art { aspect-ratio: 4 / 3; padding: var(--sp-5); }
+  .izgb-plate-tag {
+    font-size: var(--fs-micro);
+  }
+  .izgb-node-label,
+  .izgb-gate-brand {
+    font-size: var(--fs-micro);
+  }
+  .izgb-checks li,
+  .izgb-chip,
+  .izgb-where {
+    font-size: var(--fs-micro);
+  }
+  .izgb-node {
+    padding: var(--sp-3) 4px;
+  }
+  .izgb-step {
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: var(--sp-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No swap animations and no auto-rotation (the timer is disabled in
+     the component too). Sticky is not motion, so the plate keeps
+     working — the reader still gets one visual, changed by scroll. */
+  .izgb-ic,
+  .izgb-where,
+  .izgb-chip,
+  .izgb-checks li {
+    animation: none;
+  }
+  .izgb-step {
+    transition: none;
+    opacity: 1;
+  }
 }

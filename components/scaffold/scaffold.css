@@ -1,0 +1,254 @@
+/* ============================================================
+   scaffold.css — the shared page base every not-yet-bespoke SEO
+   route renders with. All values from iz-system.css.
+
+   Everything here caps its measure and lets long strings wrap. The
+   registry holds 51 records written by different hands, so headlines
+   and point titles vary wildly in length — anything sized to content
+   here WILL eventually overflow on some page nobody looked at.
+   ============================================================ */
+
+.izsc-hero {
+  position: relative;
+  padding: clamp(96px, 12vw, 156px) 0 var(--sp-section);
+  background: var(--bg);
+}
+
+.izsc-herowrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.izsc-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  /* the registry has some long eyebrows — let it wrap rather than
+     stretch the chip past the wrap */
+  max-width: 100%;
+  text-wrap: balance;
+}
+.izsc-eyebrow svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: var(--accent);
+}
+
+.izsc-h1 {
+  /* `align-items: flex-start` sizes children to fit-content, so without
+     the cap a long h1 grows to max-content and runs past the wrap */
+  max-width: 22ch;
+  margin: var(--sp-6) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: clamp(38px, 4.4vw, 60px);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--tx);
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.izsc-hl {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.izsc-sub {
+  max-width: 58ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+.izsc-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: clamp(var(--sp-8), 4vw, var(--sp-10));
+}
+
+.izsc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-6);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--tx);
+  text-decoration: none;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+.izsc-btn svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+.izsc-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.izsc-btn--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--btn-ink);
+  box-shadow: var(--cta-glow);
+}
+.izsc-btn--primary:hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--accent) 88%, var(--tx));
+}
+
+/* ---------- capability grid ---------- */
+
+.izsc-points {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg-2);
+}
+
+.izsc-head {
+  max-width: 46ch;
+  margin-bottom: clamp(var(--sp-10), 5vw, 64px);
+}
+.izsc-kicker {
+  display: block;
+  margin-bottom: var(--sp-4);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.izsc-h2 {
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  text-wrap: balance;
+}
+.izsc-h2 em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.izsc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(var(--sp-8), 4vw, 56px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* not cards — icon, title, copy on the section's own surface */
+.izsc-point {
+  min-width: 0;
+}
+.izsc-point-ic {
+  display: block;
+  margin-bottom: var(--sp-4);
+  color: var(--accent);
+}
+.izsc-point-ic svg {
+  width: 22px;
+  height: 22px;
+}
+.izsc-point h3 {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.izsc-point p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ---------- closing CTA ---------- */
+
+.izsc-close {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+.izsc-closewrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 62ch;
+  min-width: 0;
+}
+.izsc-closewrap .izsc-h2 {
+  max-width: 20ch;
+}
+.izsc-closewrap .izsc-sub {
+  margin-top: var(--sp-4);
+}
+.izsc-closewrap .izsc-btn {
+  margin-top: clamp(var(--sp-6), 3vw, var(--sp-8));
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .izsc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .izsc-h1 {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .izsc-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-8);
+  }
+  .izsc-cta {
+    width: 100%;
+  }
+  .izsc-btn {
+    justify-content: center;
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izsc-btn {
+    transition: none;
+  }
+  .izsc-btn:hover {
+    transform: none;
+  }
+}

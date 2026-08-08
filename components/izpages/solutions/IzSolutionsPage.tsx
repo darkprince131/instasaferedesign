@@ -7,6 +7,8 @@ import { izFontVars } from "@/lib/iz-fonts";
 import { IzSolutionsHero } from "./IzSolutionsHero";
 import { IzGroupB } from "./IzGroupB";
 import { IzGroupC } from "./IzGroupC";
+import { IzThreeOutcomes } from "./IzThreeOutcomes";
+import { IzThreeOutcomesStacked } from "./IzThreeOutcomesStacked";
 
 /* ============================================================
    /solutions — page shell.
@@ -42,6 +44,10 @@ export function IzSolutionsPage() {
       <IzSolutionsHero />
       <IzGroupB />
       <IzGroupC />
+      {/* Two candidate layouts for the outcomes section, both live
+          while the choice is being made. One gets deleted. */}
+      <IzThreeOutcomes />
+      <IzThreeOutcomesStacked />
       <IzFooterGrid />
     </div>
   );

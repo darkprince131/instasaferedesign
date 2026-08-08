@@ -1,0 +1,1011 @@
+/* ============================================================
+   illustrations.css — the shared vocabulary every outcomes
+   illustration paints with. All values from iz-system.css.
+
+   Illustrations reference these classes and NEVER raw colours, and
+   never var()/calc() inside an SVG presentation attribute — that is
+   unreliable across browsers, so all of it lives here as real CSS.
+
+   Scoped to `.iz-art`, which is the class every illustration's root
+   <svg> carries. The shell that hosts them is IzOutcomes (lab 00ar)
+   — see docs/three-outcomes-rule.md.
+   ============================================================ */
+
+.iz-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- shared ---------- */
+
+.iz-art .a-plate {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.iz-art .a-line {
+  stroke: var(--line);
+  stroke-width: 1;
+  fill: none;
+}
+.iz-art .a-text {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+.iz-art .a-ink {
+  fill: var(--tx);
+}
+.iz-art .a-mute {
+  fill: var(--tx-mute);
+}
+.iz-art .a-accent {
+  fill: var(--accent);
+}
+.iz-art .a-deny {
+  fill: var(--deny);
+}
+.iz-art .a-strike {
+  stroke: var(--deny);
+  stroke-width: 1.5;
+}
+
+/* ---------- T2 rings ---------- */
+
+.iz-art .a-orbit {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 6;
+}
+.iz-art .a-chip {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.iz-art .a-core {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--surface));
+}
+.iz-art .a-core-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+/* ---------- T4 boundary ---------- */
+
+.iz-art .a-boundary {
+  fill: none;
+  stroke: var(--tx);
+  stroke-width: 1.5;
+}
+.iz-art .a-dot-in {
+  fill: var(--accent);
+}
+.iz-art .a-dot-out {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.iz-art .a-x {
+  stroke: var(--tx-mute);
+  stroke-width: 1;
+  fill: none;
+}
+.iz-art .a-gate {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+/* ---------- T9 stamp ---------- */
+
+.iz-art .a-seal {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art .a-seal-inner {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+.iz-art .a-check {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- ZTNA architecture ----------
+
+   Allow and deny use the semantic tokens, never a hardcoded green or
+   red, so both flip correctly between paper and dark.
+
+   This illustration is wider than the others (720 units against 640)
+   and dense with labels, so it renders at roughly 0.77 scale in the
+   visual column — 13px viewBox type came out at 10px on screen, below
+   readable for "Establish tunnel" and "Internal apps". Type and stroke
+   are sized in viewBox units to land near 12px actual. Check the
+   EFFECTIVE size on screen, not the number in this file. */
+
+.iz-art--ztna .a-text {
+  font-size: 16px;
+}
+.iz-art--ztna .z-glyph {
+  stroke-width: 1.6;
+}
+/* panel headers and list rows stay smaller than the primary labels —
+   at 16px they overran the 156-wide panels */
+.iz-art--ztna .z-panel-label {
+  font-size: 12px;
+}
+.iz-art--ztna .z-row-label {
+  /* the mono advance is ~9.7 units at 14px, not the 8.4 I estimated —
+     "Internal apps" still overran its panel by 2. Measure, don't guess. */
+  font-size: 13px;
+}
+
+.iz-art .z-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .z-gate {
+  stroke: var(--line-strong);
+}
+.iz-art .z-gate-back {
+  fill: var(--surface-2);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.iz-art .z-mark {
+  fill: var(--accent);
+}
+.iz-art .z-mark-tick {
+  fill: none;
+  stroke: var(--btn-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .z-dash-neutral {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 5;
+}
+.iz-art .z-arrow {
+  fill: var(--line-strong);
+  stroke: none;
+}
+.iz-art .z-dash-allow {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+.iz-art .z-dash-deny {
+  fill: none;
+  stroke: var(--deny);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+/* restricted is the third answer, and it is the accent rather than a
+   fourth hue — contained access is a policy choice, not a warning */
+.iz-art .z-dash-warn {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+.iz-art .z-ok-ring {
+  fill: var(--allow-bg);
+  stroke: var(--allow);
+  stroke-width: 1.2;
+}
+.iz-art .z-ok-tick {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .z-dot-ok {
+  fill: var(--allow);
+}
+.iz-art .z-lock-chip {
+  fill: var(--allow-bg);
+  stroke: var(--allow);
+  stroke-width: 1.2;
+}
+.iz-art .z-lock-glyph .z-glyph {
+  stroke: var(--allow);
+}
+.iz-art .z-no-ring {
+  fill: var(--deny-bg);
+  stroke: var(--deny);
+  stroke-width: 1.2;
+}
+.iz-art .z-no-x {
+  fill: none;
+  stroke: var(--deny);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.iz-art .z-blocked {
+  stroke: color-mix(in srgb, var(--deny) 38%, transparent);
+}
+
+/* ---------- IAM directory ----------
+   Renders at ~0.77 scale in the visual column, so the sizes here are
+   viewBox units chosen to land near 11–13px actual. Check the
+   EFFECTIVE size on screen, not the number in this file. */
+
+.iz-art--iam .a-text {
+  font-size: 16px;
+}
+.iz-art--iam .iam-label {
+  font-size: 15px;
+}
+.iz-art--iam .iam-title {
+  font-size: 16px;
+}
+.iz-art--iam .iam-src {
+  font-size: 15px;
+}
+/* source-tile labels only — at 15px "Directory" and "Workspace" left
+   3 units of padding inside a 96-unit tile and read as breaking out */
+.iz-art--iam .iam-tile {
+  font-size: 13px;
+}
+.iz-art--iam .iam-row {
+  font-size: 16px;
+}
+/* the strapline sits on the circle's widest chord and at 13px its ink
+   ran to within 20 units of the ring — 11px gives it air */
+.iz-art--iam .iam-strap {
+  font-size: 13px;
+}
+.iz-art .iam-orbit {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 30%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+}
+.iz-art .iam-core {
+  fill: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+.iz-art .iam-core-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art .iam-chip {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+  stroke-width: 1;
+}
+/* a revoked row recedes — the estate is still listed, it just no
+   longer resolves */
+.iz-art .iam-ok {
+  fill: var(--allow);
+}
+.iz-art .iam-no {
+  fill: var(--deny);
+}
+/* the tag straddles the strip's top edge, so it needs the section's
+   own background behind it, not the plate fill */
+.iz-art .iam-strip-tag {
+  fill: var(--bg);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+/* the estate at the end of the strip is what the action reached — it
+   recedes because those sessions are now closed */
+.iz-art .iam-strip-logo {
+  opacity: 0.45;
+}
+.iz-art .iam-row-off {
+  stroke: color-mix(in srgb, var(--deny) 34%, transparent);
+}
+
+/* ---------- Endpoint controls: refused inside the session ---------- */
+
+.iz-art--ec .a-text {
+  font-size: 16px;
+}
+.iz-art--ec .ec-label {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+.iz-art--ec .ec-row {
+  /* 14, not 15 — "Screenshot" and "USB access" met the refusal badge */
+  font-size: 14px;
+}
+.iz-art--ec .ec-sub {
+  font-size: 13px;
+}
+.iz-art--ec .ec-tiny {
+  font-size: 11px;
+}
+.iz-art--ec .ec-figure {
+  font-size: 26px;
+}
+.iz-art--ec .ec-panel-title {
+  font-size: 16px;
+}
+.iz-art--ec .ec-conf-text {
+  font-size: 15px;
+  letter-spacing: 0.08em;
+}
+
+.iz-art .ec-no {
+  fill: var(--deny);
+}
+.iz-art .ec-ok {
+  fill: var(--allow);
+}
+.iz-art .ec-warn {
+  fill: var(--accent);
+}
+/* an armed control is outlined in the deny colour — it is standing
+   ready to refuse, not currently failing */
+.iz-art .ec-ctrl {
+  stroke: color-mix(in srgb, var(--deny) 42%, transparent);
+}
+.iz-art .ec-app {
+  stroke: var(--line-strong);
+}
+.iz-art .ec-chrome-dot {
+  fill: var(--line-strong);
+}
+.iz-art .ec-tab,
+.iz-art .ec-url,
+.iz-art .ec-btn {
+  fill: var(--bg-2);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.iz-art .ec-spark {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* the drop target is dashed because it is an invitation the session
+   refuses — the refusal is the point, not the affordance */
+.iz-art .ec-drop {
+  fill: color-mix(in srgb, var(--deny) 6%, transparent);
+  stroke: color-mix(in srgb, var(--deny) 45%, transparent);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+.iz-art .ec-conf {
+  fill: color-mix(in srgb, var(--deny) 7%, transparent);
+  stroke: color-mix(in srgb, var(--deny) 40%, transparent);
+  stroke-width: 1;
+}
+.iz-art .ec-sev-high {
+  fill: var(--deny-bg);
+  stroke: color-mix(in srgb, var(--deny) 45%, transparent);
+  stroke-width: 1;
+}
+.iz-art .ec-sev-med {
+  fill: color-mix(in srgb, var(--accent) 10%, transparent);
+  stroke: color-mix(in srgb, var(--accent) 45%, transparent);
+  stroke-width: 1;
+}
+
+/* ---------- Device posture: signals in, three answers out ---------- */
+
+.iz-art--dp .a-text {
+  font-size: 16px;
+}
+.iz-art--dp .dp-label {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+.iz-art--dp .dp-row {
+  font-size: 15px;
+}
+/* signal-tile heads only — "OS & System" and "Applications" overran the
+   160-unit tile at 15px */
+.iz-art--dp .dp-sig {
+  font-size: 13px;
+}
+.iz-art--dp .dp-sub,
+.iz-art--dp .dp-tag {
+  font-size: 12px;
+}
+.iz-art--dp .dp-branch-row {
+  font-size: 13px;
+}
+.iz-art--dp .dp-device {
+  font-size: 17px;
+}
+.iz-art--dp .dp-score {
+  font-size: 17px;
+}
+.iz-art--dp .dp-score-label {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.iz-art .dp-card {
+  stroke: var(--line-strong);
+}
+.iz-art .dp-ok {
+  fill: var(--allow);
+}
+.iz-art .dp-healthy {
+  fill: var(--allow-bg);
+  stroke: color-mix(in srgb, var(--allow) 50%, transparent);
+  stroke-width: 1;
+}
+.iz-art .dp-bar-bed {
+  fill: var(--line);
+}
+.iz-art .dp-bar {
+  fill: var(--allow);
+}
+/* the three answers, each with its own badge */
+.iz-art .dp-badge-ok {
+  fill: var(--allow-bg);
+  stroke: var(--allow);
+  stroke-width: 1.5;
+}
+.iz-art .dp-badge-warn {
+  fill: color-mix(in srgb, var(--accent) 12%, transparent);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art .dp-badge-no {
+  fill: var(--deny-bg);
+  stroke: var(--deny);
+  stroke-width: 1.5;
+}
+.iz-art .dp-mark-ok {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .dp-mark-warn {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.iz-art .dp-mark-no {
+  fill: none;
+  stroke: var(--deny);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.iz-art .dp-dot-ok {
+  fill: var(--allow);
+}
+.iz-art .dp-dot-warn {
+  fill: var(--accent);
+}
+.iz-art .dp-dot-no {
+  fill: var(--deny);
+}
+
+/* ---------- MFA: every entry point, one engine, sized friction ----------
+   Row labels run 14px because "Privileged Access" and "Authenticator
+   App" both measure ~145 units against 200/210-wide panels; at 16px
+   they broke out of their own plates. */
+
+.iz-art--mfa .a-text {
+  font-size: 16px;
+}
+.iz-art--mfa .mfa-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+.iz-art--mfa .mfa-row {
+  font-size: 16px;
+}
+.iz-art--mfa .mfa-title {
+  font-size: 19px;
+  letter-spacing: 0.08em;
+}
+.iz-art--mfa .mfa-strap {
+  font-size: 12px;
+}
+
+.iz-art .mfa-orbit {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 40%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 3 7;
+}
+.iz-art .mfa-core {
+  fill: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+.iz-art .mfa-core-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+/* a port is where a signal actually meets the engine, so it reads as
+   a fitting rather than a decorative bead */
+.iz-art .mfa-port {
+  fill: var(--accent);
+}
+.iz-art .mfa-ok {
+  fill: var(--allow);
+}
+.iz-art .mfa-no {
+  fill: var(--deny);
+}
+.iz-art .mfa-dot-no {
+  fill: var(--deny);
+}
+.iz-art .mfa-ring-ok {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 1.6;
+}
+.iz-art .mfa-ring-no {
+  fill: none;
+  stroke: var(--deny);
+  stroke-width: 1.6;
+}
+
+/* ---------- SSO: sprawl, one credential, every session ---------- */
+
+.iz-art--sso .a-text {
+  font-size: 16px;
+}
+.iz-art--sso .sso-head {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+}
+.iz-art--sso .sso-sub,
+.iz-art--sso .sso-field-text,
+.iz-art--sso .sso-row {
+  font-size: 14px;
+}
+.iz-art--sso .sso-title {
+  font-size: 17px;
+  letter-spacing: 0.08em;
+}
+.iz-art--sso .sso-dots {
+  font-size: 12px;
+}
+.iz-art--sso .sso-log,
+.iz-art--sso .sso-log-head {
+  font-size: 12px;
+}
+.iz-art--sso .sso-btn-text {
+  font-size: 15px;
+}
+
+/* the sprawl panel is deliberately flatter than the card it feeds —
+   the before state should not compete with the mechanism */
+.iz-art .sso-before {
+  fill: var(--surface-2);
+}
+.iz-art .sso-pw {
+  fill: var(--bg-2);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+/* every app on its own credential, drawn as a tangle rather than a
+   routed path — this is the one place in the system where a line is
+   allowed to look messy, because mess is the argument */
+.iz-art .sso-tangle {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.iz-art .sso-gate {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+}
+.iz-art .sso-card {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art .sso-mark {
+  fill: var(--accent);
+}
+.iz-art .sso-mark + g .z-glyph {
+  stroke: var(--btn-ink);
+}
+.iz-art .sso-field {
+  fill: var(--bg-2);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.iz-art .sso-btn {
+  fill: var(--accent);
+}
+.iz-art .sso-btn-text {
+  fill: var(--btn-ink);
+}
+.iz-art .sso-ok {
+  fill: var(--allow);
+}
+
+/* ---------- ZTAA identity plane ----------
+   Wires are ACCENT: nothing is granted or refused on this plane, so
+   allow-green is reserved for the per-app session LEDs. */
+
+.iz-art .z-dash-accent {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+.iz-art .zt-avatar {
+  fill: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+.iz-art .zt-badge {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.iz-art .zt-badge-text {
+  fill: var(--tx);
+}
+.iz-art .zt-orbit {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 45%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+}
+.iz-art .zt-hub {
+  fill: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+}
+.iz-art .zt-hub-glyph .z-glyph {
+  stroke: var(--accent);
+}
+.iz-art .zt-ok {
+  fill: var(--allow);
+}
+.iz-art--ztaa .a-text {
+  font-size: 16px;
+}
+.iz-art--ztaa .zt-sm {
+  font-size: 13px;
+}
+.iz-art--ztaa .zt-xs {
+  font-size: 11px;
+}
+/* brand colour on paper, white on dark — the same treatment the live
+   homepage integration grid uses, and the GitHub/AWS marks are
+   near-black source files that vanish on dark tiles without it */
+.iz[data-theme="dark"] .iz-art image,
+.iz .iz-inverted .iz-art image {
+  filter: brightness(0) invert(1);
+}
+
+/* ============================================================
+   THE OUTLINE DRAW-IN
+
+   Illustrations scale PROPORTIONALLY (fixed viewBox, default
+   preserveAspectRatio), which is what makes pathLength="1" +
+   stroke-dasharray:1 a valid normalised draw.
+
+   ⚠️ Never add vector-effect="non-scaling-stroke" to an illustration.
+   It moves dashing into rendered space, so dasharray:1 becomes literal
+   1px dashes and every stroke renders dotted. Already shipped once.
+
+   Anything that carries its OWN dash pattern (the ZTNA connectors, the
+   dotted orbits) cannot also dash-draw — those fade instead.
+   ============================================================ */
+
+.iz-art [data-draw] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* internal rules belong to the item, so they draw in phase 1 */
+  transition: stroke-dashoffset 520ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+}
+.izo.in .iz-art [data-draw] {
+  stroke-dashoffset: 0;
+}
+
+.iz-art .a-orbit[data-draw] {
+  stroke-dashoffset: 0;
+  stroke-dasharray: 3 6;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out) 200ms;
+}
+.izo.in .iz-art .a-orbit[data-draw] {
+  opacity: 1;
+}
+
+/* PHASE 1 — every item appears. Nothing connects yet.
+
+   The two phases used to overlap (items from 220ms, connectors from
+   340ms), so the picture assembled and wired itself at the same time
+   and read as noise. Now every plate, label, logo and glyph is fully
+   in by 560ms, and the first connector does not start until 620ms.
+   Assemble, then connect — always. */
+/* Everything that is not a connector. Written as an exclusion rather
+   than a list, because the list kept going stale: tick marks, X marks,
+   the SSO tangle and plain rules were all paths nobody had added, so
+   they snapped in at full opacity while the rest of the picture faded.
+   Any new path is covered by default now. */
+.iz-art text,
+.iz-art rect,
+.iz-art circle,
+.iz-art image,
+.iz-art line,
+.iz-art polyline,
+.iz-art path:not([class*="z-dash"]) {
+  opacity: 0;
+  transition: opacity 480ms var(--ease-out) 80ms;
+}
+.izo.in .iz-art text,
+.izo.in .iz-art rect,
+.izo.in .iz-art circle,
+.izo.in .iz-art image,
+.izo.in .iz-art line,
+.izo.in .iz-art polyline,
+.izo.in .iz-art path:not([class*="z-dash"]) {
+  opacity: 1;
+}
+
+/* ============================================================
+   THE HOVER LINK — desktop only, and only ever emphasis.
+   Hovering an outcome column brightens the matching part of the
+   illustration and drops the rest back. It never REVEALS anything:
+   the neutral state already shows everything.
+   ============================================================ */
+
+@media (hover: hover) and (pointer: fine) {
+  .iz-art > * {
+    transition: opacity var(--dur) var(--ease);
+  }
+  .izo.in[data-hl] .iz-art > * {
+    opacity: 0.32;
+  }
+  .izo.in[data-hl] .iz-art > [data-on] {
+    opacity: 1;
+  }
+}
+
+
+/* ============================================================
+   DEPTH — shadow on paper, shine on dark.
+
+   The flat pass read as "no effort": every plate sat on the surface
+   at the same z. Paper lifts the plates with soft drop-shadows; dark
+   does what the reference does and lets the semantic colours GLOW.
+   Both are filters on the SVG nodes, so they follow the theme tokens
+   with no second set of geometry. `.iz-inverted` is the always-dark
+   band, so it takes the dark treatment too.
+   ============================================================ */
+
+.iz[data-theme="paper"] .iz-art .a-plate,
+.iz[data-theme="paper"] .iz-art .a-chip,
+.iz[data-theme="paper"] .iz-art .a-gate {
+  filter: drop-shadow(0 6px 14px rgba(24, 18, 10, 0.1)) drop-shadow(0 1px 2px rgba(24, 18, 10, 0.07));
+}
+
+.iz[data-theme="dark"] .iz-art .z-dash-allow,
+.iz .iz-inverted .iz-art .z-dash-allow,
+.iz[data-theme="dark"] .iz-art .z-ok-ring,
+.iz .iz-inverted .iz-art .z-ok-ring,
+.iz[data-theme="dark"] .iz-art .z-ok-tick,
+.iz .iz-inverted .iz-art .z-ok-tick,
+.iz[data-theme="dark"] .iz-art .z-dot-ok,
+.iz .iz-inverted .iz-art .z-dot-ok,
+.iz[data-theme="dark"] .iz-art .z-lock-chip,
+.iz .iz-inverted .iz-art .z-lock-chip {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--allow) 65%, transparent));
+}
+.iz[data-theme="dark"] .iz-art .z-dash-deny,
+.iz .iz-inverted .iz-art .z-dash-deny,
+.iz[data-theme="dark"] .iz-art .z-no-ring,
+.iz .iz-inverted .iz-art .z-no-ring,
+.iz[data-theme="dark"] .iz-art .z-no-x,
+.iz .iz-inverted .iz-art .z-no-x,
+.iz[data-theme="dark"] .iz-art .a-strike,
+.iz .iz-inverted .iz-art .a-strike {
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--deny) 60%, transparent));
+}
+.iz[data-theme="dark"] .iz-art .z-mark,
+.iz .iz-inverted .iz-art .z-mark,
+.iz[data-theme="dark"] .iz-art .a-core-ring,
+.iz .iz-inverted .iz-art .a-core-ring,
+.iz[data-theme="dark"] .iz-art .a-seal,
+.iz .iz-inverted .iz-art .a-seal,
+.iz[data-theme="dark"] .iz-art .a-gate,
+.iz .iz-inverted .iz-art .a-gate,
+.iz[data-theme="dark"] .iz-art .a-dot-in,
+.iz .iz-inverted .iz-art .a-dot-in,
+.iz[data-theme="dark"] .iz-art .a-accent,
+.iz .iz-inverted .iz-art .a-accent,
+.iz[data-theme="dark"] .iz-art .z-dash-accent,
+.iz .iz-inverted .iz-art .z-dash-accent,
+.iz[data-theme="dark"] .iz-art .zt-hub,
+.iz .iz-inverted .iz-art .zt-hub,
+.iz[data-theme="dark"] .iz-art .iam-core-ring,
+.iz .iz-inverted .iz-art .iam-core-ring,
+.iz[data-theme="dark"] .iz-art .iam-chip,
+.iz .iz-inverted .iz-art .iam-chip,
+.iz[data-theme="dark"] .iz-art .sso-card,
+.iz .iz-inverted .iz-art .sso-card,
+.iz[data-theme="dark"] .iz-art .sso-gate,
+.iz .iz-inverted .iz-art .sso-gate,
+.iz[data-theme="dark"] .iz-art .sso-btn,
+.iz .iz-inverted .iz-art .sso-btn,
+.iz[data-theme="dark"] .iz-art .mfa-core-ring,
+.iz .iz-inverted .iz-art .mfa-core-ring,
+.iz[data-theme="dark"] .iz-art .mfa-port,
+.iz .iz-inverted .iz-art .mfa-port,
+.iz[data-theme="dark"] .iz-art .dp-badge-warn,
+.iz .iz-inverted .iz-art .dp-badge-warn,
+.iz[data-theme="dark"] .iz-art .dp-dot-warn,
+.iz .iz-inverted .iz-art .dp-dot-warn,
+.iz[data-theme="dark"] .iz-art .ec-spark,
+.iz .iz-inverted .iz-art .ec-spark {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 55%, transparent));
+}
+
+/* a soft accent bloom pooled behind the illustration on dark — the
+   reference's cards float in a lit region, not on flat black */
+.izo-visual:has(.iz-art) {
+  position: relative;
+}
+.iz[data-theme="dark"] .izo-visual:has(.iz-art)::before,
+.iz .iz-inverted .izo-visual:has(.iz-art)::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(
+    50% 44% at 48% 46%,
+    color-mix(in srgb, var(--accent) 8%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+/* ============================================================
+   THE CONNECT — lines arrive in order, join up, and STOP.
+
+   The earlier version looped forever. A permanently travelling dash
+   is a screensaver: it pulls the eye back every few seconds and never
+   resolves, so the reader never gets to finish reading the section.
+
+   This is a one-shot. Plates and labels fade in, then each connector
+   segment appears in authored order — user → gate → the two endings
+   for ZTNA, directory → hub → estate for ZTAA — travelling three dash
+   periods as it lands. `forwards` holds the final frame. Nothing
+   moves afterwards.
+
+   `--seg` is set per path in the illustration and is the ONLY thing
+   controlling order, so re-sequencing is a number change, not a
+   rewrite.
+   ============================================================ */
+
+@keyframes iz-art-connect {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 27; /* 3 × the 4+5 dash period */
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes iz-art-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.iz-art .z-dash-allow,
+.iz-art .z-dash-deny,
+.iz-art .z-dash-warn,
+.iz-art .z-dash-accent,
+.iz-art .z-dash-neutral,
+.iz-art .zt-badge-g {
+  opacity: 0;
+}
+.izo.in .iz-art .z-dash-allow,
+.izo.in .iz-art .z-dash-deny,
+.izo.in .iz-art .z-dash-warn,
+.izo.in .iz-art .z-dash-accent,
+.izo.in .iz-art .z-dash-neutral {
+  animation: iz-art-connect 620ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  /* PHASE 2 — starts only after every item has landed (560ms).
+     60ms stagger, not 120: the IAM plane has 18 segments and at 120
+     the sequence ran past 3s, which is a wait rather than a reveal. */
+  animation-delay: calc(620ms + var(--seg, 0) * 60ms);
+}
+/* the ZTAA status badges land with the segment that reaches them */
+.izo.in .iz-art .zt-badge-g {
+  animation: iz-art-arrive 460ms var(--ease-out) forwards;
+  animation-delay: calc(700ms + var(--seg, 0) * 60ms);
+}
+
+/* ============================================================
+   MOBILE IS STATIC — final frame, everything lit, nothing hidden.
+   Same under reduced motion.
+   ============================================================ */
+
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  /* MIRROR THE LIVE SELECTORS EXACTLY.
+     `:not([class*="z-dash"])` lifts the phase-1 rule to (0,2,1) and the
+     `.izo.in` restore to (0,3,1); a bare `.iz-art path` here is (0,1,1)
+     and loses to both, which hid every glyph, tick and X on phones.
+     Fourth time this file has been bitten by specificity — when you add
+     a selector above, add its twin here. */
+  .iz-art [data-draw],
+  .iz-art text,
+  .iz-art rect,
+  .iz-art circle,
+  .iz-art image,
+  .iz-art line,
+  .iz-art polyline,
+  .iz-art path,
+  .iz-art path:not([class*="z-dash"]),
+  .izo.in .iz-art path:not([class*="z-dash"]),
+  .izo.in .iz-art text,
+  .izo.in .iz-art rect,
+  .izo.in .iz-art circle,
+  .izo.in .iz-art image,
+  .izo.in .iz-art line,
+  .izo.in .iz-art polyline,
+  .iz-art > * {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transition: none;
+    animation: none;
+  }
+  .iz-art .a-orbit[data-draw] {
+    stroke-dasharray: 3 6;
+  }
+  /* the reveal writes opacity:0 at .iz-art .z-dash-*[data-draw]
+     specificity, which beats the blanket [data-draw] reset above — the
+     wires were invisible on phones until this matched it */
+  /* connectors are hidden by a class rule, not [data-draw] — this has
+     to match that specificity or the wires vanish on phones */
+  .iz-art .a-orbit[data-draw],
+  .iz-art .z-dash-allow,
+  .iz-art .z-dash-deny,
+  .iz-art .z-dash-warn,
+  .iz-art .z-dash-accent,
+  .iz-art .z-dash-neutral,
+  .iz-art .zt-badge-g {
+    opacity: 1;
+  }
+  /* the flow/pulse rules are written at .izo.in specificity, which
+     BEATS the blanket reset above — without this matching-specificity
+     kill, the dashes kept marching on phones and under reduced motion */
+  .izo.in .iz-art .z-dash-allow,
+  .izo.in .iz-art .z-dash-deny,
+  .izo.in .iz-art .z-dash-warn,
+  .izo.in .iz-art .z-dash-accent,
+  .izo.in .iz-art .z-dash-neutral,
+  .izo.in .iz-art .zt-badge-g,
+  .izo.in .iz-art .z-dot-ok {
+    animation: none;
+    opacity: 1;
+  }
+}

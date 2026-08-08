@@ -9,6 +9,7 @@
    ============================================================ */
 
 .izo {
+  --izo-gap: clamp(var(--sp-8), 4vw, 64px);
   position: relative;
   padding: var(--sp-section) 0;
   background: var(--bg);
@@ -19,12 +20,21 @@
 
 .izo-top {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: clamp(var(--sp-8), 5vw, 80px);
+  /* the illustration gets the larger share — it carries the argument */
+  grid-template-columns: 2fr 1fr;
+  gap: var(--izo-gap);
   align-items: center;
 }
 /* The mirror. Consecutive sections MUST alternate or the page reads
-   as the same slab repeated. */
+   as the same slab repeated.
+
+   `order` moves the ITEMS but not the TRACK SIZES, so the template has
+   to be mirrored too. Without this a right-side section handed the
+   illustration the 1fr column and the copy the 1.55fr one — the
+   illustration came out 429px against 690px on a left-side section. */
+.izo--right .izo-top {
+  grid-template-columns: 1fr 2fr;
+}
 .izo--right .izo-visual {
   order: 2;
 }
@@ -33,7 +43,33 @@
 }
 
 .izo-visual {
+  position: relative;
   min-width: 0;
+}
+/* Corner registration ticks. The reference frames its diagram like a
+   drawing sheet rather than floating it on the page; two L-shaped
+   corners imply the frame without drawing a box around everything,
+   which would just be another nested container. */
+.izo-visual::before,
+.izo-visual::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: var(--bw) solid var(--line-strong);
+  pointer-events: none;
+}
+.izo-visual::before {
+  top: -14px;
+  left: -14px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.izo-visual::after {
+  right: -14px;
+  bottom: -14px;
+  border-left: 0;
+  border-top: 0;
 }
 
 .izo-copy {
@@ -72,12 +108,24 @@
   flex-direction: column;
   font-family: var(--disp);
   font-weight: var(--fw-disp);
-  font-size: clamp(40px, 6.4vw, 88px);
-  line-height: 0.94;
-  letter-spacing: -0.03em;
+  /* Down from clamp(40px, 6.4vw, 88px). At 88px the headline was the
+     loudest thing on the page and forced the copy column wide, which
+     squeezed the illustration — the illustration is the argument here,
+     the headline only names it. */
+  font-size: clamp(30px, 3.4vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.025em;
   text-transform: uppercase;
   color: var(--accent);
   text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Default is every line accented — that is what the existing sections
+   do. `accentFrom` marks earlier lines plain so a heading can land its
+   glow on the last line only, as the ZTNA reference does. */
+.izo-title .is-plain {
+  color: var(--tx);
+  text-shadow: none;
 }
 
 .izo-sub {
@@ -104,10 +152,16 @@
 }
 
 /* the vertical drop, under the visual's side */
+/* The drop falls from the CENTRE OF THE ILLUSTRATION, derived from the
+   same track maths as .izo-top: with 2fr/1fr and a gap G, the visual
+   track is 2(100% - G)/3 wide, so its centre is (100% - G)/3. A fixed
+   26% was left over from the old 1.05fr split and no longer landed
+   under the picture at all — the connector has to visibly leave the
+   thing it is connecting. */
 .izo-drop {
   position: absolute;
   top: 0;
-  left: 26%;
+  left: calc((100% - var(--izo-gap)) / 3);
   width: 0;
   height: 40px;
   border-left: var(--bw) solid var(--line-strong);
@@ -116,8 +170,8 @@
   transition: transform 420ms var(--ease-out);
 }
 .izo--right .izo-drop {
-  left: auto;
-  right: 26%;
+  left: calc(2 * (100% - var(--izo-gap)) / 3 + var(--izo-gap));
+  right: auto;
 }
 
 /* the rule — THE CENTRE-OUT DRAW.
@@ -144,8 +198,8 @@
   right: 0;
   height: 32px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(var(--sp-6), 4vw, 64px);
+  grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+  gap: clamp(var(--sp-6), 3vw, 48px);
 }
 .izo-feeds i {
   justify-self: start;
@@ -166,14 +220,10 @@
 .izo.in .izo-feeds i {
   transform: scaleY(1);
 }
-.izo.in .izo-feeds i:nth-child(1) {
-  transition-delay: 900ms;
-}
-.izo.in .izo-feeds i:nth-child(2) {
-  transition-delay: 960ms;
-}
-.izo.in .izo-feeds i:nth-child(3) {
-  transition-delay: 1020ms;
+/* delay comes off --i rather than nth-child, so the fourth column
+   animates instead of silently snapping in */
+.izo.in .izo-feeds i {
+  transition-delay: calc(900ms + var(--i, 0) * 60ms);
 }
 
 /* ---------- the three outcomes ----------
@@ -182,8 +232,9 @@
 
 .izo-outcomes {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(var(--sp-6), 4vw, 64px);
+  /* --n comes from the component; the ZTNA section runs four columns */
+  grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+  gap: clamp(var(--sp-6), 3vw, 48px);
 }
 
 .izo-outcome {
@@ -198,10 +249,28 @@
   transform: none;
 }
 
+/* Numeral + icon on one baseline. The numeral is the elevation the
+   IAM reference asks for: it gives the row a ledger reading order that
+   an icon alone never provides, and it is the same 01/02/03 grammar as
+   IzSpecTable. Tabular figures so the three never sit at different
+   widths. */
+.izo-mark {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.izo-num {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-mono);
+  color: var(--accent);
+}
 .izo-ico {
   display: block;
-  margin-bottom: var(--sp-4);
-  color: var(--tx);
+  color: var(--tx-dim);
 }
 .izo-ico svg {
   width: 22px;
@@ -230,7 +299,13 @@
    ============================================================ */
 
 @media (max-width: 900px) {
-  .izo-top {
+  /* `.izo--right .izo-top` is (0,2,0) and beats a bare `.izo-top`
+     (0,1,0) even inside this query — without naming it here the
+     right-side sections kept the two-column split and the
+     illustration collapsed to 96px on a phone. Third time this
+     specificity trap has bitten in this file; name both selectors. */
+  .izo-top,
+  .izo--right .izo-top {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--sp-8);
   }

@@ -1,0 +1,744 @@
+/* ============================================================
+   threeoutcomes.css — Solutions · "Three outcomes that matter".
+   All values are iz-system.css tokens.
+
+   The one thing to preserve while editing: GREY IN, ACCENT OUT.
+   Wires and nubs above the hub are neutral (four legacy answers);
+   the hub and everything below it are accent (paths InstaSafe now
+   decides). Painting the top row orange makes it a brand pattern
+   and deletes the argument.
+   ============================================================ */
+
+.izto {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+  /* the plate marks sit deliberately outside the diagram column, so at
+     widths between the deco breakpoint and a full gutter they pushed
+     the page 4px wider. `clip` trims them at the section edge without
+     creating a scroll container the way `hidden` would. */
+  overflow-x: clip;
+  /* one raised-piece recipe for the whole diagram — offset + blur, so
+     nodes sit ABOVE the plate rather than glowing on it */
+  --izto-sh: 0 8px 20px -14px rgba(24, 18, 10, 0.34), 0 1px 3px -1px rgba(24, 18, 10, 0.1);
+  --izto-gut: 7px;
+}
+
+.izto-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.3fr);
+  gap: clamp(var(--sp-8), 5vw, 72px);
+  align-items: start;
+}
+
+/* ============================================================
+   LEFT — the claim
+   ============================================================ */
+
+.izto-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.izto-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izto-tag i {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+
+.izto-title {
+  max-width: 100%;
+  margin: var(--sp-6) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.izto-title em {
+  font-style: normal;
+}
+/* the full stop is the accent's only job in the headline */
+.izto-title b {
+  font-weight: inherit;
+  color: var(--accent);
+}
+
+.izto-sub {
+  max-width: 42ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the three ---------- */
+
+.izto-list {
+  width: 100%;
+  margin: clamp(var(--sp-8), 4vw, var(--sp-12)) 0 0;
+  padding: 0;
+  list-style: none;
+  /* the rule behind the numbers: three outcomes on one spine, not
+     three unrelated bullets */
+  border-left: var(--bw) dashed var(--line);
+}
+.izto-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: var(--sp-4);
+  padding: 0 0 var(--sp-8) var(--sp-5);
+}
+.izto-row:last-child {
+  padding-bottom: 0;
+}
+.izto-n {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--accent);
+  /* optical align with the 15px cap-height of the title beside it */
+  padding-top: 2px;
+}
+.izto-rowbody h3 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izto-rowbody p {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the stamp ---------- */
+
+.izto-stamp {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin: clamp(var(--sp-8), 4vw, var(--sp-10)) 0 0;
+  padding: var(--sp-5) var(--sp-6);
+  border: var(--bw) solid var(--line);
+  border-left: var(--bw-thick) solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-body);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izto-stamp-ic {
+  display: inline-flex;
+  flex: none;
+  color: var(--tx-dim);
+}
+.izto-stamp-ic svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ============================================================
+   RIGHT — the diagram
+   ============================================================ */
+
+.izto-diagram {
+  position: relative;
+  min-width: 0;
+}
+
+/* ---------- node rows ----------
+   ZERO GAP on purpose. The gutter is per-slot padding, so column
+   centres land on exact percentages (12.5/37.5/62.5/87.5 and
+   16.67/50/83.33) and the wire layer can address them directly. A
+   `gap` here makes centre positions depend on container width and
+   every wire drifts off its port. */
+.izto-sources,
+.izto-resources {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.izto-sources {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.izto-resources {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.izto-slot {
+  min-width: 0;
+  padding-inline: var(--izto-gut);
+}
+
+.izto-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  height: 100%;
+  padding: var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--izto-sh);
+}
+.izto-ic {
+  display: inline-flex;
+  color: var(--tx-dim);
+}
+.izto-ic svg {
+  width: 22px;
+  height: 22px;
+}
+.izto-label {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--tx);
+}
+.izto-addr {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+
+/* the machined dot cluster — a plate marking, kept faint enough that
+   it never competes with the label */
+.izto-dots {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  width: 20px;
+  height: 14px;
+  background-image: radial-gradient(currentColor 1px, transparent 1.1px);
+  background-size: 5px 5px;
+  color: var(--ghost);
+  opacity: 0.9;
+}
+
+/* ---------- wire bands ---------- */
+
+.izto-wire {
+  position: relative;
+  width: 100%;
+}
+.izto-wire svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-width: 1;
+}
+.izto-wire path {
+  /* the band is stretched horizontally (preserveAspectRatio="none"),
+     so without this a 1px hairline fattens with the viewport */
+  vector-effect: non-scaling-stroke;
+}
+/* The reveal is a CLIP WIPE, not a stroke-dash draw.
+   `non-scaling-stroke` moves dashing into rendered space, so a
+   dasharray of 1 — with pathLength="1" meant to normalise it — comes
+   out as literal 1px dashes instead of one full-length segment. The
+   first pass shipped exactly that: every wire a dotted line. A wipe
+   needs no length maths and survives the stretch untouched. */
+.izto-wire svg {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 700ms var(--ease-out);
+}
+.izto-diagram.is-lit .izto-wire svg {
+  clip-path: inset(0);
+}
+/* GREY IN — blended off --tx rather than --line-strong, which is
+   rgba(255,255,255,0.13) on dark and disappears at hairline width */
+.izto-wire--in path {
+  stroke: color-mix(in srgb, var(--tx) 32%, transparent);
+}
+/* ACCENT OUT */
+.izto-wire--out path {
+  stroke: var(--accent);
+}
+/* the outbound band wipes only after the inbound wires have landed, so
+   the read is "four arrive, one decides, three are served" */
+.izto-wire--out svg {
+  transition-delay: 520ms;
+}
+
+.izto-nubs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+}
+.izto-nubs--t {
+  top: 0;
+}
+.izto-nubs--b {
+  bottom: 0;
+}
+.izto-nubs i {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  background: color-mix(in srgb, var(--tx) 42%, transparent);
+}
+.izto-wire--in .izto-nubs--b i,
+.izto-wire--out .izto-nubs i {
+  background: var(--accent);
+}
+.izto-nubs i {
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out) 420ms;
+}
+.izto-diagram.is-lit .izto-nubs i {
+  opacity: 1;
+}
+
+/* ---------- the hub ---------- */
+
+.izto-hub {
+  position: relative;
+  z-index: 1;
+  width: 52%;
+  margin-inline: auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-5);
+  border: var(--bw-thick) solid var(--accent);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--izto-sh);
+  text-align: center;
+}
+.izto-hub-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  border: var(--bw-thick) solid var(--accent);
+  border-radius: var(--r-2xs);
+  background: var(--surface);
+  color: var(--accent);
+}
+.izto-hub-badge svg {
+  width: 18px;
+  height: 18px;
+}
+.izto-hub-brand {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izto-hub-name {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: var(--fs-h3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.izto-hub-verbs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-4) 0 0;
+  border-top: var(--bw) solid var(--line);
+  list-style: none;
+}
+.izto-hub-verbs li {
+  position: relative;
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+.izto-hub-verbs li + li::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--sp-4) / -2);
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  transform: translate(-50%, -50%);
+  border-radius: var(--r-pill);
+  background: var(--accent);
+}
+
+/* ---------- the audit trail ---------- */
+
+.izto-trail {
+  position: relative;
+  z-index: 1;
+  margin: clamp(var(--sp-8), 4vw, var(--sp-10)) 0 0;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--izto-sh);
+  overflow: hidden;
+}
+.izto-trail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: var(--bw) solid var(--line);
+  background: var(--surface-2);
+}
+.izto-trail-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx);
+}
+.izto-trail-title i {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+.izto-trail-export {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izto-trail-export svg {
+  width: 13px;
+  height: 13px;
+}
+
+.izto-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* fixed + minmax(0) on the wrapper is what stops a long cell from
+     forcing the whole section wider than its column */
+  table-layout: fixed;
+}
+.izto-table th,
+.izto-table td {
+  padding: var(--sp-3) var(--sp-2);
+  text-align: left;
+  font-size: var(--fs-label);
+  line-height: 1.4;
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izto-table th {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  border-bottom: var(--bw) solid var(--line);
+}
+.izto-table tbody tr + tr td {
+  border-top: var(--bw) solid var(--line);
+}
+.izto-table td:nth-child(4) {
+  color: var(--tx);
+}
+.izto-mono {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0;
+}
+.izto-act {
+  color: var(--tx) !important;
+}
+
+.izto-res {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.izto-res svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+/* the word carries the meaning; the glyph alone is a colour-only
+   signal and fails for anyone who can't separate the two hues */
+.izto-res em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.izto-res.is-ok {
+  color: var(--allow);
+}
+.izto-res.is-no {
+  color: var(--deny);
+}
+
+/* ---------- ambient plate marks ---------- */
+
+.izto-deco {
+  position: absolute;
+  background-image: radial-gradient(currentColor 1px, transparent 1.1px);
+  background-size: 9px 9px;
+  color: var(--ghost);
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* the pair flanks the hub — plate markings either side of the part
+   that matters, not scatter. Anything lower collided with the table. */
+.izto-deco--a {
+  top: 178px;
+  left: -52px;
+  width: 74px;
+  height: 64px;
+}
+.izto-deco--b {
+  top: 178px;
+  right: -56px;
+  width: 74px;
+  height: 64px;
+}
+.izto-cross {
+  position: absolute;
+  top: 300px;
+  right: -30px;
+}
+.izto-geo {
+  position: absolute;
+  right: 0;
+  bottom: -34px;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  line-height: 1.7;
+  text-align: right;
+  color: var(--tx-mute);
+}
+
+/* ---------- reveal ---------- */
+
+.izto-row,
+.izto-card,
+.izto-hub,
+.izto-trail {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * var(--stagger));
+}
+.izto-hub {
+  transition-delay: 340ms;
+}
+.izto-trail {
+  transition-delay: 700ms;
+}
+.izto-resources .izto-card {
+  transition-delay: 620ms;
+}
+/* The copy list belongs to the section; everything else belongs to the
+   diagram, which owns its own `is-lit` so it reveals correctly inside
+   either candidate layout. */
+.izto.in .izto-row,
+.izto-diagram.is-lit .izto-card,
+.izto-diagram.is-lit .izto-hub,
+.izto-diagram.is-lit .izto-trail {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1100px) {
+  .izto-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .izto-sub {
+    max-width: 60ch;
+  }
+  .izto-hub {
+    width: 62%;
+  }
+  .izto-cross,
+  .izto-deco {
+    display: none;
+  }
+  .izto-geo {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .izto {
+    --izto-gut: 4px;
+  }
+  .izto-hub {
+    width: 100%;
+  }
+  /* Below this width the four source cards are narrower than their own
+     labels and the fan-in reads as noise. The rows stay — they are the
+     content — but the routing collapses to a single spine, which is
+     the same sentence at a size that can carry it. */
+  .izto-sources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-3) 0;
+  }
+  .izto-resources {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-3);
+  }
+  .izto-wire {
+    height: 44px !important;
+  }
+  .izto-wire svg,
+  .izto-nubs {
+    display: none;
+  }
+  .izto-wire::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    /* stronger than the desktop wires: this single spine is carrying
+       the whole routing argument once the fan-in is gone */
+    border-left: var(--bw) solid color-mix(in srgb, var(--tx) 55%, transparent);
+  }
+  .izto-wire--out::before {
+    border-color: var(--accent);
+  }
+
+  /* the table is the one thing that cannot usefully shrink — let it
+     scroll inside its own frame rather than squeezing six columns */
+  .izto-trail {
+    overflow-x: auto;
+  }
+  .izto-table {
+    table-layout: auto;
+    min-width: 620px;
+  }
+  .izto-row {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: var(--sp-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izto-row,
+  .izto-card,
+  .izto-hub,
+  .izto-trail,
+  .izto-wire svg,
+  .izto-nubs i {
+    transition: none;
+  }
+  /* the diagram must still be PRESENT, just not drawn */
+  .izto-wire svg {
+    clip-path: none;
+  }
+  .izto-nubs i {
+    opacity: 1;
+  }
+  .izto-row,
+  .izto-card,
+  .izto-hub,
+  .izto-trail {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+/* ============================================================
+   The diagram inside the IzOutcomes layout (candidate B)
+
+   There it shares a row with the copy instead of owning a full
+   column, so it lands in roughly two-thirds the width. Its own
+   responsive rules key off VIEWPORT width and so never fire here —
+   these give back the space instead.
+   ============================================================ */
+
+.izo-visual .izto-diagram {
+  --izto-gut: 5px;
+}
+.izo-visual .izto-card {
+  padding: var(--sp-3);
+  gap: var(--sp-2);
+}
+.izo-visual .izto-ic svg {
+  width: 18px;
+  height: 18px;
+}
+.izo-visual .izto-label {
+  font-size: var(--fs-2xs);
+}
+.izo-visual .izto-dots {
+  display: none;
+}
+.izo-visual .izto-hub {
+  width: 64%;
+  padding: var(--sp-6) var(--sp-4) var(--sp-4);
+}
+.izo-visual .izto-hub-name {
+  font-size: var(--fs-lead);
+}
+.izo-visual .izto-hub-verbs {
+  gap: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-sm);
+}
+.izo-visual .izto-hub-verbs li {
+  font-size: var(--fs-body-sm);
+}
+.izo-visual .izto-hub-verbs li + li::before {
+  left: calc(var(--sp-3) / -2);
+}
