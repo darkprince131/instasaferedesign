@@ -1,19 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, ClipboardText, MagnifyingGlass } from "@phosphor-icons/react";
 import { IzNav } from "@/components/home2/IzNav";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
+import { BookCard } from "@/components/home2/BookCard";
 import { izFontVars } from "@/lib/iz-fonts";
 import {
   BROCHURES,
   PRODUCT_VIDEOS,
   TOPICS,
   WEBINARS,
+  brochureHref,
   type Brochure,
   type VideoItem,
 } from "@/lib/resource-center";
-import { IzBrochureCard } from "./IzBrochureCard";
+import { DocPlate } from "./BookCoverArt";
 import { IzVideoCard } from "./IzVideoCard";
 import { IzVideoLightbox } from "./IzVideoLightbox";
 
@@ -25,26 +27,40 @@ import { IzVideoLightbox } from "./IzVideoLightbox";
    you page through. Search and the topic chips are plain array filters
    over that constant.
 
-   Structure mirrors the old WordPress page's three sections —
-   brochures, webinars, product videos — because those are the
-   distinctions a visitor actually makes ("give me the PDF" vs "give me
-   the 40-minute session" vs "give me the 3-minute demo"). The type tabs
-   let them collapse to one; the topic chips only apply to documents,
-   because tagging 15 videos into six topics would leave most chips
-   holding one item.
+   ---------------------------------------------------------------
+   SUBNAV, NOT TABS.
+
+   The page has exactly three sections — product brochures, webinars,
+   product videos — and a sticky subnav that jumps between them. It
+   used to be a four-way tab filter ("Everything" plus the three), and
+   the difference matters: tabs HIDE two thirds of the library behind a
+   click, and the whole argument of this page is that the library is
+   large and open. The subnav keeps every section mounted, scrolls to
+   the one you picked, and highlights whichever one you are currently
+   reading. Search still filters all three at once, because a person
+   searching "MFA" wants the whitepaper AND the demo video.
+
+   ---------------------------------------------------------------
+   CARD SHAPES.
+
+   Brochures are the 00e book-in-pocket card (`variant="headline"`) —
+   a PDF is a document, and a document on a shelf reads faster than a
+   document in a table row. The cover plate is drawn per topic, so the
+   picture tells you what kind of document it is before the title does.
+   Videos keep the 16:9 poster card: a real thumbnail exists for those,
+   and pretending a video is a book would be a lie about what opens.
 
    Theme boilerplate matches IzBlogPage / ScaffoldPage exactly,
    including the shared `is-theme` storage key.
    ============================================================ */
 
 type Theme = "dark" | "paper";
-type Tab = "all" | "docs" | "webinars" | "videos";
+type SectionKey = "brochures" | "webinars" | "videos";
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: "all", label: "Everything" },
-  { key: "docs", label: "Documents" },
-  { key: "webinars", label: "Webinars" },
-  { key: "videos", label: "Product videos" },
+const SUBNAV: { key: SectionKey; label: string; count: number }[] = [
+  { key: "brochures", label: "Product Brochures", count: BROCHURES.length },
+  { key: "webinars", label: "Webinars", count: WEBINARS.length },
+  { key: "videos", label: "Product Videos", count: PRODUCT_VIDEOS.length },
 ];
 
 /* Carried over from the scaffold entry this route replaced (lib/site.ts,
@@ -57,6 +73,12 @@ const ELSEWHERE = [
     p: "Zero trust, ZTNA, MFA and identity — product thinking, threat analysis and migration playbooks from the team.",
     href: "/resources/blog",
     cta: "Read the blog",
+  },
+  {
+    h: "Newsroom",
+    p: "Bylines, interviews and the coverage InstaSafe has picked up across the Indian and global tech press.",
+    href: "/instasafe-newsroom",
+    cta: "See the coverage",
   },
   {
     h: "Events & Meetups",
@@ -96,10 +118,10 @@ export function IzResourceCenter() {
     } catch {}
   };
 
-  const [tab, setTab] = useState<Tab>("all");
   const [topic, setTopic] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [playing, setPlaying] = useState<VideoItem | null>(null);
+  const [active, setActive] = useState<SectionKey>("brochures");
 
   const docs: Brochure[] = useMemo(
     () =>
@@ -109,30 +131,45 @@ export function IzResourceCenter() {
     [topic, q]
   );
 
-  const webinars = useMemo(
-    () => WEBINARS.filter((v) => matches(q, v.title, v.blurb)),
-    [q]
-  );
-  const videos = useMemo(
-    () => PRODUCT_VIDEOS.filter((v) => matches(q, v.title, v.blurb)),
-    [q]
-  );
+  const webinars = useMemo(() => WEBINARS.filter((v) => matches(q, v.title, v.blurb)), [q]);
+  const videos = useMemo(() => PRODUCT_VIDEOS.filter((v) => matches(q, v.title, v.blurb)), [q]);
 
-  const showDocs = tab === "all" || tab === "docs";
-  const showWebinars = tab === "all" || tab === "webinars";
-  const showVideos = tab === "all" || tab === "videos";
+  const total = docs.length + webinars.length + videos.length;
 
-  const total =
-    (showDocs ? docs.length : 0) +
-    (showWebinars ? webinars.length : 0) +
-    (showVideos ? videos.length : 0);
+  /* Scrollspy. The rootMargin pulls the detection line down past the
+     sticky nav + subnav (66px + ~54px) so a section counts as "active"
+     when its heading clears the chrome, not when its top edge touches
+     the viewport — otherwise the highlight flips one section early. */
+  const secRefs = useRef<Record<SectionKey, HTMLElement | null>>({
+    brochures: null,
+    webinars: null,
+    videos: null,
+  });
 
-  const counts: Record<Tab, number> = {
-    all: BROCHURES.length + WEBINARS.length + PRODUCT_VIDEOS.length,
-    docs: BROCHURES.length,
-    webinars: WEBINARS.length,
-    videos: PRODUCT_VIDEOS.length,
-  };
+  useEffect(() => {
+    const els = (Object.keys(secRefs.current) as SectionKey[])
+      .map((k) => [k, secRefs.current[k]] as const)
+      .filter((pair): pair is readonly [SectionKey, HTMLElement] => pair[1] !== null);
+    if (els.length === 0) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        /* Topmost visible section wins — with three tall sections more
+           than one is on screen constantly. */
+        const top = visible.reduce((a, b) =>
+          a.boundingClientRect.top <= b.boundingClientRect.top ? a : b
+        );
+        const hit = els.find(([, el]) => el === top.target);
+        if (hit) setActive(hit[0]);
+      },
+      { rootMargin: "-124px 0px -55% 0px", threshold: 0 }
+    );
+
+    els.forEach(([, el]) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
 
   return (
     <div className={`iz ${izFontVars}`} data-theme={theme} data-system="orange">
@@ -156,39 +193,27 @@ export function IzResourceCenter() {
         </div>
       </section>
 
+      {/* ---------- subnav (the three sections) ---------- */}
+      <nav className="izrc-subnav" aria-label="Resource sections">
+        <div className="iz-wrap izrc-subnav-in">
+          {SUBNAV.map((s) => (
+            <a
+              key={s.key}
+              href={`#${s.key}`}
+              className="izrc-subitem"
+              aria-current={active === s.key ? "true" : undefined}
+            >
+              {s.label}
+              <i>{s.count}</i>
+            </a>
+          ))}
+        </div>
+      </nav>
+
       {/* ---------- controls ---------- */}
       <section className="izrc-body iz-railed">
         <div className="iz-wrap">
           <div className="izrc-controls">
-            <div className="izrc-tabs" role="group" aria-label="Filter by resource type">
-              {TABS.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  className="izrc-tab"
-                  aria-pressed={tab === t.key}
-                  onClick={() => setTab(t.key)}
-                >
-                  {t.label}
-                  <i>{counts[t.key]}</i>
-                </button>
-              ))}
-            </div>
-
-            <label className="izrc-search">
-              <MagnifyingGlass weight="bold" aria-hidden="true" />
-              <input
-                type="search"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search resources"
-                aria-label="Search resources"
-              />
-            </label>
-          </div>
-
-          {/* Topic chips are document-only — see the note at the top. */}
-          {showDocs && (
             <div className="izrc-chips" role="group" aria-label="Filter documents by topic">
               <button
                 type="button"
@@ -212,11 +237,23 @@ export function IzResourceCenter() {
                 </button>
               ))}
             </div>
-          )}
+
+            <label className="izrc-search">
+              <MagnifyingGlass weight="bold" aria-hidden="true" />
+              <input
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search resources"
+                aria-label="Search resources"
+              />
+            </label>
+          </div>
 
           <p className="izrc-count" aria-live="polite">
             {total} {total === 1 ? "resource" : "resources"}
             {q ? ` matching “${q}”` : ""}
+            {topic ? ` · documents filtered to ${topic}` : ""}
           </p>
 
           {total === 0 && (
@@ -225,56 +262,99 @@ export function IzResourceCenter() {
             </p>
           )}
 
-          {/* ---------- documents ---------- */}
-          {showDocs && docs.length > 0 && (
-            <section className="izrc-sec" aria-labelledby="izrc-h-docs">
-              <header className="izrc-sechead">
-                <h2 id="izrc-h-docs" className="izrc-h2">
-                  Brochures &amp; Whitepapers
-                </h2>
-                <p className="izrc-secnote">Datasheets, comparisons and technical whitepapers — PDF.</p>
-              </header>
-              <ul className="izrc-grid">
+          {/* ---------- product brochures ---------- */}
+          <section
+            className="izrc-sec"
+            id="brochures"
+            aria-labelledby="izrc-h-docs"
+            ref={(el) => {
+              secRefs.current.brochures = el;
+            }}
+          >
+            <header className="izrc-sechead">
+              <h2 id="izrc-h-docs" className="izrc-h2">
+                Product Brochures
+              </h2>
+              <p className="izrc-secnote">
+                Datasheets, comparison sheets and technical whitepapers — PDF, no gate.
+              </p>
+            </header>
+            {docs.length > 0 ? (
+              <ul className="izbk-grid">
                 {docs.map((b) => (
-                  <IzBrochureCard key={b.id} item={b} />
+                  <li key={b.id} className="izbk-item">
+                    <BookCard
+                      variant="headline"
+                      external
+                      href={brochureHref(b)}
+                      chapter={b.topic}
+                      title={b.title}
+                      subLabel={b.pages ? `PDF · ~${b.pages} pp` : "PDF"}
+                      coverArt={<DocPlate topic={b.topic} />}
+                      author="InstaSafe"
+                      year="↓"
+                      ctaLabel="Download the PDF"
+                    />
+                  </li>
                 ))}
               </ul>
-            </section>
-          )}
+            ) : (
+              <p className="izrc-empty">No documents match that filter.</p>
+            )}
+          </section>
 
           {/* ---------- webinars ---------- */}
-          {showWebinars && webinars.length > 0 && (
-            <section className="izrc-sec" aria-labelledby="izrc-h-web">
-              <header className="izrc-sechead">
-                <h2 id="izrc-h-web" className="izrc-h2">
-                  Webinars
-                </h2>
-                <p className="izrc-secnote">Full recorded sessions. They play here, not on YouTube.</p>
-              </header>
+          <section
+            className="izrc-sec"
+            id="webinars"
+            aria-labelledby="izrc-h-web"
+            ref={(el) => {
+              secRefs.current.webinars = el;
+            }}
+          >
+            <header className="izrc-sechead">
+              <h2 id="izrc-h-web" className="izrc-h2">
+                Webinars
+              </h2>
+              <p className="izrc-secnote">Full recorded sessions. They play here, not on YouTube.</p>
+            </header>
+            {webinars.length > 0 ? (
               <ul className="izrc-grid izrc-grid--vid">
                 {webinars.map((v) => (
                   <IzVideoCard key={v.id} item={v} kind="Webinar" onOpen={setPlaying} />
                 ))}
               </ul>
-            </section>
-          )}
+            ) : (
+              <p className="izrc-empty">No webinars match that search.</p>
+            )}
+          </section>
 
           {/* ---------- product videos ---------- */}
-          {showVideos && videos.length > 0 && (
-            <section className="izrc-sec" aria-labelledby="izrc-h-vid">
-              <header className="izrc-sechead">
-                <h2 id="izrc-h-vid" className="izrc-h2">
-                  Product Videos
-                </h2>
-                <p className="izrc-secnote">Short feature explainers and the full product demo.</p>
-              </header>
+          <section
+            className="izrc-sec"
+            id="videos"
+            aria-labelledby="izrc-h-vid"
+            ref={(el) => {
+              secRefs.current.videos = el;
+            }}
+          >
+            <header className="izrc-sechead">
+              <h2 id="izrc-h-vid" className="izrc-h2">
+                Product Videos
+              </h2>
+              <p className="izrc-secnote">Short feature explainers and the full product demo.</p>
+            </header>
+            {videos.length > 0 ? (
               <ul className="izrc-grid izrc-grid--vid">
                 {videos.map((v) => (
                   <IzVideoCard key={v.id} item={v} kind="Product video" onOpen={setPlaying} />
                 ))}
               </ul>
-            </section>
-          )}
+            ) : (
+              <p className="izrc-empty">No product videos match that search.</p>
+            )}
+          </section>
+
           {/* ---------- elsewhere ---------- */}
           <section className="izrc-sec" aria-labelledby="izrc-h-else">
             <header className="izrc-sechead">

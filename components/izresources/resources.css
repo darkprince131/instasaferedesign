@@ -154,6 +154,69 @@
    the field is short enough to clear by hand. */
 .izrc-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
 
+/* ---------- subnav (the three sections) ----------
+   Sticky under the 66px nav. It is navigation, not a filter: the
+   sections it points at are all mounted, all of the time. The active
+   item is driven by a scrollspy in IzResourceCenter, so the state
+   reflects what you are reading rather than what you last clicked. */
+
+.izrc-subnav {
+  position: sticky;
+  top: 66px; /* .iz-nav height, home2.css */
+  z-index: 40;
+  background: var(--headerbg);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.izrc-subnav-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--sp-6);
+  min-width: 0;
+}
+
+.izrc-subitem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; /* sit the underline on the container's rule */
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+.izrc-subitem i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+}
+/* `.iz a` sets a colour with enough weight to beat a bare class, so
+   both states are stated on this selector rather than inherited. */
+.izrc-subnav .izrc-subitem:hover { color: var(--tx); }
+.izrc-subnav .izrc-subitem:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.izrc-subnav .izrc-subitem[aria-current="true"] {
+  color: var(--tx);
+  font-weight: 500;
+  border-bottom-color: var(--accent);
+}
+.izrc-subitem[aria-current="true"] i { color: var(--accent); }
+
+/* Anchor jumps must clear the nav AND the subnav (66 + ~53), plus a
+   little air so the heading is not welded to the sticky rule. */
+.izrc-sec[id] { scroll-margin-top: 136px; }
+
 /* ---------- topic chips ---------- */
 
 .izrc-chips {
@@ -424,6 +487,52 @@
 .izrc-card--doc:hover .izrc-go svg { transform: translateY(2px); }
 .izrc-card--vid:hover .izrc-go svg { transform: translateX(2px); }
 
+/* ---------- book grid (00e book-in-pocket) ----------
+   Used by the brochure section here and by the whole of
+   /instasafe-newsroom, which is why it lives in the shared sheet.
+
+   Why a book grid and not the hairline lattice the video cards use:
+   a BookCard already carries its own edge (paper shadow + pocket lip)
+   and lifts 26px on hover. Dropping it into a shared-border lattice
+   would fight both — the lift would clip against the cell and two
+   borders would meet at every corner. Books get air instead. */
+
+.izbk-grid {
+  list-style: none;
+  margin: var(--sp-8) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: var(--sp-6);
+  justify-items: center;
+}
+
+/* BookCard ships as a bare <figure>; inside a <ul> it needs a list
+   item around it, and that item must not introduce a second box. */
+.izbk-item {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* bookcard.css puts the caption on --tx-mute and the spine label and
+   foot on a 50%-alpha ink, which measure below AA. In the lab those
+   are decorative demo strings; here they carry the publication name,
+   the page count and the host, so all three go to --tx-dim. */
+.izbk-grid .bc-caption,
+.iz[data-theme="paper"] .izbk-grid .bc-sub,
+.iz[data-theme="paper"] .izbk-grid .bc-foot,
+.iz[data-theme="dark"] .izbk-grid .bc-sub,
+.iz[data-theme="dark"] .izbk-grid .bc-foot { color: var(--tx-dim); }
+
+/* Long publication names and page counts must not push the spine
+   label past the book's edge. */
+.izbk-grid .bc-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ---------- elsewhere ---------- */
 
 /* Same lattice as .izrc-grid, but three fixed columns that collapse to
@@ -590,6 +699,23 @@
   .izrc-chip { flex: 0 0 auto; }
 
   .izrc-lb { padding: var(--sp-4); }
+
+  /* The book is a fixed 290px; below that it has to shrink with the
+     viewport or it drags the document's horizontal scroll with it. */
+  .izbk-grid { grid-template-columns: minmax(0, 1fr); }
+  .izbk-grid .bc-figure,
+  .izbk-grid .bc-book { width: 100%; max-width: 290px; }
+
+  /* The subnav is three items; on a phone it scrolls sideways rather
+     than wrapping into a two-line bar under the sticky nav. */
+  .izrc-subnav-in {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: var(--sp-5);
+  }
+  .izrc-subnav-in::-webkit-scrollbar { display: none; }
+  .izrc-subitem { flex: 0 0 auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,68 @@
+/* ============================================================
+   newsroom.css — the bits only /instasafe-newsroom needs.
+
+   The page borrows resources.css wholesale for its hero, its search
+   field, its chips, its count line AND its book grid (.izbk-*),
+   because it IS the same kind of page and two visually different
+   filter rows on two sibling index pages would be the actual mistake.
+   ============================================================ */
+
+/* ---------- coverage strip (publication wall) ---------- */
+
+.izns-wall {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  margin: var(--sp-8) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.izns-wall li {
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  background: var(--surface);
+}
+
+/* ---------- press contact ---------- */
+
+.izns-contact {
+  margin-top: var(--sp-section);
+  padding: clamp(var(--sp-8), 4vw, var(--sp-12));
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.izns-contact h2 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+
+.izns-contact p {
+  margin: var(--sp-4) 0 0;
+  max-width: 62ch;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* `.iz a` sets its own colour with enough weight to win here, so the
+   link colour is stated on the anchor itself rather than inherited. */
+.izns-contact a.izns-mail {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: var(--bw) solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.izns-contact a.izns-mail:hover { border-bottom-color: var(--accent); }

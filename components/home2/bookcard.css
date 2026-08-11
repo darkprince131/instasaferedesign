@@ -59,7 +59,45 @@
 .bc-sub { padding: 0 var(--sp-5); margin-top: 10px; font-family: var(--mono); font-size: 8.5px; /* left hardcoded: below --fs-micro(9px), deliberate book-spine micro-label */ font-weight: 500; letter-spacing: var(--ls-mono); text-transform: uppercase; }
 
 .bc-cover { padding: var(--sp-3) var(--sp-5) 0; }
-.bc-cover img { width: 100%; height: auto; display: block; border-radius: var(--r-xs); }
+.bc-cover img,
+.bc-cover svg { width: 100%; height: auto; display: block; border-radius: var(--r-xs); }
+
+/* ---- "headline" variant ----------------------------------
+   Same book, different title shape. Line 1 drops to a mono
+   kicker and line 2 becomes a real headline one size down, so
+   a title written by someone else (a masthead, a filed PDF
+   name) can be printed as written instead of paraphrased to
+   fit two display lines. The clamp is what keeps a grid of
+   these level — headlines in the wild run 4 words or 14.
+   ---------------------------------------------------------- */
+/* Taller floor than the base book: a clamped 4-line headline plus the
+   kicker runs to 355px, and a single card 5px out of line makes the
+   whole row's pocket lip look crooked. */
+.bc-book--headline { min-height: 366px; }
+
+.bc-book--headline .bc-head { padding: var(--sp-6) var(--sp-5) var(--sp-5); }
+
+.bc-book--headline .bc-title span:first-child {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: none;
+  margin-bottom: var(--sp-3);
+}
+
+.bc-book--headline .bc-title span:last-child {
+  font-size: var(--fs-lead);
+  line-height: 1.28;
+  letter-spacing: var(--ls-h3);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
 
 .bc-foot {
   display: flex; align-items: center; justify-content: space-between;

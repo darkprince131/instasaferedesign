@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { ChatFaq } from "@/components/home2/ChatFaq";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
-import { IzLogoMarquee } from "@/components/home2/IzLogoMarquee";
 import { IzNav } from "@/components/home2/IzNav";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
 
 import { WhyCompare, WhyProof } from "./WhyScenes";
+import { WhyReasons } from "./WhyReasons";
 
 /* ============================================================
    /why-instasafe-zero-trust — SEO-locked live URL, promoted from the
@@ -104,7 +104,8 @@ export function WhyPage() {
         </div>
       </header>
 
-      <IzLogoMarquee />
+      {/* ---------------- THE FOUR REASONS ---------------- */}
+      <WhyReasons />
 
       {/* ---------------- FAQ ---------------- */}
       <section className="why-sec" id="faq">

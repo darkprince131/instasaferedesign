@@ -6,6 +6,7 @@ import { IzResourceCenter } from "@/components/izresources/IzResourceCenter";
 import "@/components/home2/iz-system.css";
 import "@/components/home2/home2.css";
 import "@/components/home2/izgrid.css";
+import "@/components/home2/bookcard.css";
 import "@/components/izresources/resources.css";
 import "@/components/home2/izfootergrid.css";
 

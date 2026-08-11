@@ -1,6 +1,6 @@
 "use client";
 
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 
 /* ============================================================
    Resource "Book" card — built like Cofounder's books.
@@ -9,21 +9,35 @@ import type { JSX } from "react";
    shadow + embossed text. A subtle frosted pocket lip hugs
    the foot; hover lifts the book up out of it.
 
-   Swap `cover` with any image URL (or a /public path).
-   Keep titles SHORT — two short lines: chapter + name.
+   Swap `cover` with any image URL (or a /public path), or pass
+   `coverArt` with an inline SVG instead — raster covers cannot
+   follow the theme, drawn ones can, which is why the resource
+   center and the newsroom both use `coverArt`.
+
+   Two title shapes:
+     · "chapter"  (default) — two short display lines, the
+       original book face. Keep both lines SHORT.
+     · "headline" — a mono kicker over a real headline set a
+       size down, for cards whose title is written elsewhere
+       (a press headline, a document's own filed title) and
+       must not be paraphrased to fit.
    ============================================================ */
 
 export interface BookCardProps {
-  chapter: string; // line 1, e.g. "Chapter 1"
-  title: string; // line 2 (short), e.g. "How To Start"
+  chapter: string; // line 1, e.g. "Chapter 1" — the kicker in "headline"
+  title: string; // line 2, e.g. "How To Start"
   emphasis?: string; // optional word in `title` rendered in accent
   subLabel: string; // mono line under divider, e.g. "Chapter I"
-  cover: string; // ← image URL you can change in the code
+  cover?: string; // image URL — ignored when `coverArt` is given
+  coverArt?: ReactNode; // inline, theme-aware cover (wins over `cover`)
   alt?: string;
   author: string; // footer left, e.g. "by Cofounder"
   year: string; // footer right, e.g. "2026"
   ctaLabel: string; // caption, e.g. "Read this chapter (I)"
   href?: string;
+  variant?: "chapter" | "headline";
+  /** Set on external destinations. Adds target + rel. */
+  external?: boolean;
 }
 
 function titleWithEmphasis(title: string, word?: string): JSX.Element {
@@ -39,13 +53,33 @@ function titleWithEmphasis(title: string, word?: string): JSX.Element {
   );
 }
 
-export function BookCard({ chapter, title, emphasis, subLabel, cover, alt, author, year, ctaLabel, href = "#" }: BookCardProps) {
+export function BookCard({
+  chapter,
+  title,
+  emphasis,
+  subLabel,
+  cover,
+  coverArt,
+  alt,
+  author,
+  year,
+  ctaLabel,
+  href = "#",
+  variant = "chapter",
+  external = false,
+}: BookCardProps) {
   return (
     <figure className="bc-figure">
-      <a className="bc-link" href={href} draggable={false} aria-label={`${chapter}: ${title}`}>
+      <a
+        className="bc-link"
+        href={href}
+        draggable={false}
+        aria-label={`${chapter}: ${title}`}
+        {...(external ? { target: "_blank", rel: "noopener" } : null)}
+      >
         <div className="bc-stage">
           <div className="bc-lift">
-            <div className="bc-book">
+            <div className={`bc-book${variant === "headline" ? " bc-book--headline" : ""}`}>
               <span className="bc-spine" aria-hidden="true" />
               <div className="bc-content">
                 <div className="bc-head">
@@ -57,7 +91,10 @@ export function BookCard({ chapter, title, emphasis, subLabel, cover, alt, autho
                 <div className="bc-divider" />
                 <div className="bc-sub">{subLabel}</div>
                 <div className="bc-cover">
-                  <img src={cover} alt={alt ?? `${chapter} — ${title}`} loading="lazy" />
+                  {coverArt ?? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={cover} alt={alt ?? `${chapter} — ${title}`} loading="lazy" />
+                  )}
                 </div>
                 <div className="bc-foot">
                   <span>{author}</span>

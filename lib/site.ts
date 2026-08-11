@@ -568,15 +568,10 @@ const company: PageDef[] = [
     highlight: ["Zero", "Trust."],
     sub: "Reseller, referral, MSSP and technology-alliance tracks — with MDF support, a partner portal and dedicated enablement. Gartner projects 60% of enterprises will phase out VPNs within five years.",
   }),
-  P({
-    path: "/instasafe-newsroom",
-    kind: "company",
-    eyebrow: "Newsroom",
-    title: "Newsroom — Press & Coverage",
-    h1: "InstaSafe in the News.",
-    highlight: ["the", "News."],
-    sub: "Press coverage, announcements and the awards feed from across the InstaSafe story.",
-  }),
+  /* /instasafe-newsroom is BESPOKE — app/instasafe-newsroom, backed by
+     lib/newsroom.ts. Its registry entry was removed when that route
+     landed; leaving it here would put the path in generateStaticParams
+     as well and collide. Same arrangement as /resource-center above. */
   P({
     path: "/awards",
     kind: "company",
