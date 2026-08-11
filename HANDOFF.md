@@ -1,82 +1,232 @@
-# InstaSafe Website — Build Handoff (v5)
+# Session handoff — outcomes illustrations, laptop, access engine
 
-Read this first, then `MEMORY.md` index at
-`C:\Users\Darkprince131\.claude\projects\C--Instasafe-Webdesign\memory\`.
-
-**Supersedes v4.** v4 covered the fingerprint/firecrawl/hihobbes audit and components 00ac–00al. This session (still same day, 2026-07-26) added 00am–00ar — the full `/products/fingerprint-pro/` page recreation, two hover-animation sections, a tab-switch workhorse, two light blocks, a converge/events pair, and the sazabi outcomes skeleton. v4's content below is condensed, not dropped — read v4 in git history if full v3-era detail (SSO pilot, brand assets, consent, SEO) is needed.
-
----
-
-## ⚠️ READ THIS FIRST — user flagged quality this session
-
-End of session, user said plainly: **"results are not being in their best."** Not tied to one component — a pattern read after ~13 build rounds. See memory `feedback_quality_below_bar.md` for the full note. Short version: nearly every component this arc shipped with at least one real defect I only found via automated `getComputedStyle` checks, not by looking, and the user caught several more from screenshots after I'd called things done. The checks are good at catching wiring bugs; they say nothing about taste, spacing feel, or whether a composition actually resembles its reference. **Next session: slow down, do fewer components more carefully, get visual confirmation before declaring a round finished — don't treat a clean build + DOM assertions as equivalent to "looks right."**
+Branch `outcomes-illustrations`, pushed to `origin` at commit `647f61e`. Everything
+below is committed. Start a new chat by reading this file plus
+`docs/three-outcomes-rule.md`.
 
 ---
 
-## ⚠️ Repo state
-- Git repo, `main`, remote `github.com/darkprince131/instasaferedesign`. **Still one commit** (`c87eb9d`). 74+ files uncommitted. No safety net — ask before any commit.
-- Build: `npx tsc --noEmit -p tsconfig.json` then `npm run build` → **89 static pages**.
-- Dev: Claude Preview `preview_start` name `dev`, not Bash.
-- **The dev server died mid-session once** and `tsc` then failed against a corrupt generated `.next/dev/types/routes.d.ts` (server writing it while build read it) — not a code fault. Fix: stop the dev server, `rm -rf .next`, rebuild clean.
-- **Preview pane limits, confirmed repeatedly:** no compositing — screenshots fail, `window.scrollTo` no-ops, CSS transition/animation clocks are **frozen** (never advance, never fire `transitionend`/`animationend`). Verify motion/hover/autoplay structurally — class applied, computed style at each state, dispatched synthetic `PointerEvent`s, or inject a `<style>` disabling `transition`/`animation` to read the end-state instantly. This structural-only verification is very likely *part of why* the quality flag above happened — it proves wiring, not appearance.
+## Review surfaces
+
+All are `robots: noindex`. Run `npm run dev` and open:
+
+| Route | What it shows |
+| --- | --- |
+| `/dev/outcomes` | Every artifact in the registry, both themes, all four highlight states |
+| `/dev/answers` | The three answer-strip explainers, both themes |
+| `/dev/laptop` | ExplodedLaptop, scroll-scrubbed |
+| `/dev/engine` | IzAccessEngine (homepage capability deck), both themes |
+| `/dev/three-outcomes` | The generic three-outcomes section |
+
+Live pages that carry this session's work: `/vpn-alternative` (bespoke, whole page),
+`/zero-trust-network-access` (AnswerZtna in the answer strip), `/` (IzAccessEngine).
 
 ---
 
-## Docs to read before touching component work
+## What shipped
 
-1. **`docs/research/fingerprint-audit-and-ideation.md`** — DOM audit of fingerprint.com/firecrawl.dev/hihobbes.com + 20 ideation specs (§C.1–C.20). Cite section numbers in code comments when building from it.
-2. **`docs/research/build-checklist.md`** — master checklist, every brief line, status per item, **27 rounds** of follow-up as of this writing. Read the latest round first, then its open-questions section at the bottom before assuming what's next.
+### 1. Three-outcomes artifacts
 
-Both are living docs — append rounds, don't rewrite history.
+`components/izoutcomes/artifacts/` — ten new artifacts, registered in `index.ts`:
+
+`VpnAccessPlane`, `RemoteAccessPlane`, `VendorPass`, `ByodBoundary`,
+`CloudAccessLayer`, `DevopsEnclosure`, `PrivilegedSessionRecord`, `VoipSession`,
+`HybridStack`, `MigrationTimeline`.
+
+Contract is exactly `{ highlightIndex: 0 | 1 | 2 | null }`. Nothing else crosses the
+boundary.
+
+Reveal is one-shot and never loops: phase one fades the items in under 560ms, phase
+two draws the `z-dash-*` connectors on a `--seg` stagger, `animation-fill-mode:
+forwards`.
+
+Pages pass the artifact as a **component reference**, not a slug — see
+`components/izpages/vpn/VpnPage.tsx:350`. The `ARTIFACTS` slug map in `index.ts`
+exists so `/dev/outcomes` can enumerate them; it is not the wiring path.
+
+### 2. Two glyph vocabularies — both are valid, don't unify them
+
+- `DrawnGlyphs.tsx` — 29 hand-drawn marks on a 24×24 box. The wrapper divides
+  `strokeWidth` by the scale factor so the 1.4 stroke survives any size. This is the
+  house style for artifacts.
+- `ArtIcon.tsx` — Phosphor icons nested as sub-SVGs with `fill: currentColor`. Sizes
+  are `IC = { row: 18, tile: 24, node: 30, hero: 38 }`. **Only `CloudAccessLayer`
+  uses this**, because that one artifact's icons were specifically called out.
+
+The user's ruling, verbatim in effect: hand-drawn is kept deliberately because it
+brings variety. Do not migrate the hand-drawn artifacts to Phosphor. This mistake was
+already made once and reverted.
+
+### 3. Answer-strip explainers
+
+`components/izanswer/` — `AnswerZtna`, `AnswerIam`, `AnswerSso`, wrapped by
+`IzAnswerArt` (intersection-observer reveal). `IzAnswerStrip` gained a slot variant:
+
+```ts
+| { kind: "art"; art: ComponentType }
+```
+
+These sit as the second visual on a page, right after the hero, so they carry more
+weight than a normal illustration.
+
+### 4. ExplodedLaptop
+
+`components/iz-fx/` — `ExplodedLaptop.tsx`, `explodedlaptop.css`,
+`laptop-geometry.ts`.
+
+Geometry is **generated, not authored**. It was ported verbatim out of the approved
+Python generator (`gen_laptop_new.py`, OPEN + mono variant) by
+`scratchpad/port_laptop.py`. Do not hand-edit `laptop-geometry.ts` and do not
+simplify any component — the user was explicit that the SVG is the approved visual
+target and the generator is the source of truth for all geometry.
+
+Scrubbing: one rAF scroll listener writes a single `--progress` custom property. Every
+piece of choreography is CSS `calc()`/`clamp()` on transform and opacity only. No JS
+per-element animation.
+
+The hinge fold is a CSS trig matrix with an `@supports` fallback:
+
+```css
+.xl-screen .xl-screen-pivot {
+  --pe: calc(var(--p) * (2 - var(--p)));
+  --ang: calc(var(--pe) * 90deg);
+  transform: translate(var(--stx), var(--sty))
+    matrix(0.866, 0.42, calc(-0.866 * cos(var(--ang))),
+           calc(0.42 * cos(var(--ang)) - sin(var(--ang))), 0, 0);
+}
+```
+
+Each layer wraps in **two** nodes: an outer wrapper carrying the scrub `translateY`,
+and an inner `<g>` carrying the generator's own matrix. Collapsing them makes the CSS
+transform clobber the attribute matrix and the laptop falls apart.
+
+### 5. IzAccessEngine (00c1)
+
+`components/home2/IzAccessEngine.tsx` + `izaccessengine.css`. Replaces
+CapabilitiesDeck on the homepage. Six controls across three columns
+(`THE PROBLEM_` / `ACCESS ENGINE_` / `THE PROOF_`) over one shared engine core.
+Horizontal nav on desktop, vertical on mobile, third column dropped on mobile.
+
+The panel is keyed on `active.id` so switching remounts the subtree and the
+`izae-rise` / `izae-fade` stagger replays. Remove the key and the animation only ever
+plays once.
+
+### 6. No vanity numbers — site-wide sweep
+
+Binding rule, saved to memory as `feedback_no_vanity_numbers.md`. **Nowhere on the
+site** may show customer counts, device counts, or pricing. Removed strings included
+"72% of companies leaving the VPN", "500,000 devices protected", "150+ companies trust
+us", "$2 per person, per month".
+
+Stat bands now carry product facts instead: `25 device checks / 144 named policy
+rules / 202 event types / 0 ports answering a scan`.
+
+Files swept: `Home2.tsx`, `IzTrustBar`, `IzLogoMarquee`, `FeatureSplit`, `IzFinalCta`,
+`IzFooterGrid`, `IzProofGrid`, `SplitShowcase`, `ScaffoldPage`, `SsoOrange`,
+`sections/{Hero,FinalCTA,StatBar,ComparisonTable}`, `v2/{FinalV2,StatsV2}`,
+`v3/{HeroV3,sso/SsoHero}`, `app/page.tsx` meta, both SSO page metas, `lib/site.ts`,
+`lib/site-ia.ts`.
+
+Verified clean by reading rendered HTML on `/`, `/about-us`, `/case-studies`,
+`/instasafe-zero-trust-pricing`, `/zero-trust-network-access`, `/industries/banking`.
+
+### 7. Blog
+
+`/resources/blog` off the Ghost Content API — `lib/ghost.ts`,
+`components/izblog/`. 330 posts, no custom excerpts in Ghost, `reading_time` requires
+requesting `html`, canonical concedes to Ghost.
 
 ---
 
-## THE THREE-TIER COMPONENT LIBRARY (apply to everything)
+## Traps that cost time this session — read before debugging
 
-1. **VISUALS** — live *inside* a section (consoles, mocks, chips, rails). `components/home2/Iz*.tsx` or `components/izpages/pro/Iz*.tsx`.
-2. **SECTIONS** — assembled blocks a page drops in. Composes tier-1 + tier-3.
-3. **BACKDROPS** — what a section *sits on*. `components/home2/iz-backdrops.css`.
+**CSS specificity, hit five separate times.** Whenever you add a static or mobile
+override, count the selector against the live rule it must beat. Cases that bit:
 
-Catalogue every new component in memory `project_built_components.md`, register in `ComponentsLab.tsx` + CSS import in `app/components/page.tsx`.
+- `illustrations.css` hides every `.iz-art` and only `.izo.in` restores it, so answer
+  artifacts rendered blank until `.izans-art.in .iz-art` (0,3,1) was added.
+- All answer labels rendered at 18px because `.iz-art.iz-ans .a-text` (0,3,0) beat
+  `.iz-ans .an-sm` (0,2,0).
+- A blanket mobile animation kill at (0,3,0) lost to the live `.izans-art.in` at
+  (0,4,0); the fix was a twin at matching specificity, not `!important`.
+- `.izae-head` margin collapsed to 0 because the element also carries `.iz-wrap`
+  whose `margin: 0 auto` is equal specificity and won on import order. Fixed with
+  `.izae .izae-head`.
+- `LogoMark` sets width/height inline, so resizing it genuinely needs `!important`.
+  This one is not a mistake, it recurs.
 
----
+**An undefined `var()` in a `fill` attribute renders BLACK.** `--xl-fill2` was
+undefined and killed the entire paper theme. Define every custom property per theme.
 
-## Components built this session (00am–00ar) — full detail in memory `project_built_components.md`
+**Label dropping must be a container query, not a media query.** Keying to viewport
+stripped labels off a 690px-wide artifact on a narrow desktop. Use
+`container-type: inline-size` on the artifact and `@container (max-width: 430px)`.
 
-All in `components/izpages/pro/`, registered at `/components#<id>`.
+**Browser pane returns a flat black capture.** The DOM is fine —
+`elementFromPoint` returns real content. The cause is stale viewport emulation after
+the page height changes a lot (14k → 40k px). Fix: `resize_window {preset: "desktop"}`
+to force a re-sync, then re-apply the custom size. Also, scrolling needs an
+iterative correct-and-retry loop because reflow moves the target between the
+measurement and the scroll.
 
-| id | Component | What it is |
-|---|---|---|
-| 00am | `IzProHero` + `IzProStack` + `IzProPanel` + `pro.config.tsx` | Full `/products/fingerprint-pro/` recreation. Hero = design-tool canvas conceit (selection rect, coordinate readout, proximity-lit cards), verified 0 img/svg/canvas/video, matching theirs. Stack = sticky scroll-stack, incoming slot has higher z-index and rises over outgoing (never leaves first) — `HOLD=0.55` constant added after finding slide 1 got zero dwell time otherwise. Mobile: stack **removed**, static list instead. All content is data in `pro.config.tsx` — one object per slide. |
-| 00an | `IzUseCaseGrid` + `IzAgentCards` + `IzMocks` (5 mock sub-components) + `useHoverIndex.ts` | Hover-animation sections. Each mock has one specialty (resolution / escalation / repetition-that-never-resolves / progress-to-verdict / inspection). **Motion contract: animations declared INSIDE `.is-live`, never outside it paused** — so hover-out removes them and the next hover replays from zero instead of resuming stuck. `useHoverIndex.ts` exists because React's `onPointerEnter`/`onPointerLeave` don't bubble and got this wrong **four times** before being fixed once, centrally. |
-| 00ao | `IzTabSwitch` | Copy+CTA left, 3 tabs, swapping panel right — fingerprint's use-case-page workhorse. Two variants (`console` permanently dark via `.iz-inverted`, `resource` theme-aware) are ONE component; which parts swap falls out of the data. ⚠️ **Resource variant has invented author names (Priya Menon, Arjun Rao, Evelyn Chea) that need replacing or reducing to role-only before ship** — flagged, not yet fixed. |
-| 00ap | `IzLogoGrid` + `IzTestimonial` | Ecosystem lattice (coordinates-as-data, same engine as IzSignalGrid) + customer quote with the mark behind/clipped as texture. ⚠️ Both carry placeholder content (text wordmarks not artwork; quote attributed by role+org only, no invented name — the one placeholder rule followed correctly). |
-| 00aq | `IzConverge` + `IzEventsHero` | Chip-marquee converging on the InstaSafe mark into a static SVG circuit (reuses FilterStream's exact marquee mechanism, all rows one direction). Events hero: calendar backdrop, card-then-grid-then-events entrance order (deliberately backwards from the obvious one). |
-| 00ar | `IzOutcomes` | The sazabi.com section skeleton — glow headline, flowchart connector that **draws outward from centre** (verified `transform-origin` at exact midpoint), 3 non-card outcomes. `side` prop must alternate down a page. Reusable — visual is a slot. |
+**All `/dev/*` routes 404 while `/` serves fine** means a poisoned `.next` cache from
+two dev servers colliding. `rm -rf .next` and restart.
 
-### Recurring bugs fixed this session — all now in memory as standing rules, check before writing new CSS/animation code
-1. **React's `onPointerEnter`/`onPointerLeave` don't bubble** — always use native listeners (`useHoverIndex.ts` pattern), never React's synthesized versions.
-2. **Hover animations must be declared INSIDE `.is-live`**, never `paused` outside it — or hover-out freezes the element instead of resetting it.
-3. **The spacing scale has NO `--sp-7`, `--sp-9`, `--sp-11`** (valid: 1 2 3 4 5 6 8 10 12) — an invalid `var()` silently computes the whole declaration to `0`, not to an earlier fallback. Shipped as 5 components with zero padding before caught. Warning now lives at the token definition in `iz-system.css`.
-4. **Dashed rails need `--rail-inset`** — `.iz-railed .iz-wrap` padding, fixed once centrally in `izgrid.css` after being patched per-component three times.
-5. **Grid cells must be explicitly positioned**, never left to auto-flow around already-placed items — auto-placement pushed backing cells into implicit rows twice (IzLogoGrid 4→7 rows).
-6. **IO-gated reveals need a ~2.5s failsafe timeout** — armed/pre-animation states are often invisible by design, so a missed observer must not leave content permanently broken.
-
----
-
-## Illustrations — still deferred, PNG placeholders in use
-Two hand-vectorized SVGs were deleted (user: "turned out bad"). Pipeline (`Illustration.tsx`/`ThemedImage.tsx`) intact, no assets wired. Hero demos borrow existing `.webp` diagrams as placeholders. **The 89-illustration catalogue is a separate, later job — don't start unasked.**
-
----
-
-## Open items / next steps
-1. **Read the quality flag above and change approach before building more components.**
-2. Fix `IzTabSwitch` resource-variant invented author names (round 10 finding, unaddressed).
-3. Continue closing `build-checklist.md` — check its open-questions section for what the user actually wants next; don't assume.
-4. None of 00ac–00ar are wired into a real page yet — all live only in `/components` lab.
-5. v3/v4 carryovers still open: SSO page sign-off, SEO fixes verification, Figma paused (don't resume unasked), one `[LEGAL REVIEW]` marker in consent center, 74+ uncommitted files.
+**Mono advance for text-fit maths** is ≈ 0.69 × font-size for house artifacts and
+≈ 0.92 × for the answer family. These differ; using the wrong one overflows plates.
 
 ---
 
-## Session-standing rules (memory, all active)
-Model split Fable/Opus-Sonnet, avoid generic-AI look, homepage plain language, WCAG-by-default, docs as `.docx`, illustrations user-supplied (catalogue deferred), interaction-placement doctrine, sitemap SEO-locked, product name "InstaSafe ZTNA" never "i365", three-tier component library, draw-in scoped to component artwork not the catalogue, `.iz-inverted` always-dark-for-now, **+ new: quality-below-bar flag — verify visually, not just structurally.**
+## Artifact verification method
+
+Run all four in the browser pane on every new artifact, before declaring it done:
+
+1. Pairwise bounding-box overlap on every `<text>` node — must be zero.
+2. Plate padding ≥ 4 user units on all sides.
+3. Mark collision — no glyph bbox intersects another.
+4. viewBox bounds — nothing renders outside.
+
+Computed-style checks alone are not enough. Get a screenshot and look at it. This was
+an explicit correction earlier in the project (`feedback_quality_below_bar.md`).
+
+---
+
+## Open items
+
+- **Eight artifacts have no page yet.** `RemoteAccessPlane`, `VendorPass`,
+  `ByodBoundary`, `CloudAccessLayer`, `DevopsEnclosure`, `PrivilegedSessionRecord`,
+  `VoipSession`, `HybridStack` all exist and are reviewed at `/dev/outcomes`, but only
+  `VpnAccessPlane` is wired into a real page. The bespoke pages
+  (`/secure-remote-access`, `/third-party-access`, `/byod`,
+  `/secure-cloud-applications`, and the devops/PAM/VoIP/hybrid equivalents) are
+  the next build.
+- **`AnswerIam` and `AnswerSso` are not live.** Their pages are still on the v3
+  template and need migrating to `.iz` before the explainers can be dropped in.
+  Only `AnswerZtna` is placed.
+- **Duplicate VPN URL.** `lib/site-ia.ts:254` still registers
+  `/solutions/vpn-alternative` while the bespoke build lives at `/vpn-alternative`
+  (`lib/site.ts:188` carries a note about the promotion, `app/sitemap.ts:19` lists
+  the bespoke path). Decide on a redirect or remove the stale entry.
+- **ExplodedLaptop mobile.** Deferred at the user's instruction — "do not worry about
+  mobile view currently". Labels will need a treatment at narrow widths.
+- **Pricing page.** With pricing figures banned site-wide,
+  `/instasafe-zero-trust-pricing` and its nav entry need a decision: repurpose or
+  remove.
+
+---
+
+## Rules that bind future work
+
+- `docs/three-outcomes-rule.md` — one artifact per section; it depicts the noun the
+  three outcomes share; never repeat an artifact type inside a cluster. Seven of the
+  twelve types carry no connecting lines, and those are preferred, because lines are
+  what make every section read as the same flowchart.
+- No customer counts, device counts, or pricing anywhere on the site.
+- Everything comes from `iz-system.css` tokens — `--sp-*`, `--fs-*`, `--accent`,
+  `--tx`, `--tx-dim`, `--tx-mute`, `--line`, `--surface`, `--allow`, `--deny`. No raw
+  values.
+- Heavy interactives at fold 2 or below, never in the hero. One signature interaction
+  per page. Always a static fallback. Never a gate.
+- Build to WCAG 2.2 AA by default. Note that `--tx-mute` fails AA on body text.
+- The site must not read as AI-generated: Geist, relaxed tracking, generous spacing,
+  light-first.
