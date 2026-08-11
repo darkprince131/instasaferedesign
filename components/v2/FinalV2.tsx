@@ -27,7 +27,7 @@ export function FinalV2() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mx-auto mt-7 max-w-xl text-lg text-[var(--text-secondary)]"
         >
-          Join 150+ enterprises across banking, government and logistics that made the switch.
+          Join the banking, government and logistics teams that made the switch.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}

@@ -1,0 +1,681 @@
+/* ============================================================
+   izaccessengine.css — 00c1 · IzAccessEngine (the homepage deck).
+
+   Runs on Group C's chassis: a switcher, then three columns that
+   each answer a different question. All values are iz-system.css
+   tokens.
+   ============================================================ */
+
+.izae {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+  /* one shadow recipe for every raised piece — offset + blur, so
+     things sit ABOVE the plate instead of glowing on it */
+  --izae-sh: 0 10px 24px -14px rgba(24, 18, 10, 0.35), 0 2px 6px -3px rgba(24, 18, 10, 0.14);
+}
+
+/* ---------- head ---------- */
+
+/* `.izae .izae-head`, not `.izae-head`: the element also carries
+   `.iz-wrap`, whose `margin: 0 auto` is the same (0,1,0) weight and
+   won on import order — the margin-bottom computed to 0 and the sub
+   sat directly on the switcher's top edge. */
+.izae .izae-head {
+  text-align: center;
+  margin-bottom: var(--sp-12);
+}
+.izae-kicker {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  margin-bottom: var(--sp-4);
+}
+.izae-title {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  text-wrap: balance;
+}
+.izae-title mark {
+  background: none;
+  color: var(--accent);
+}
+.izae-sub {
+  max-width: 60ch;
+  margin: var(--sp-4) auto 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the switcher ----------
+   Horizontal on desktop: six controls read as one row of a system.
+   Equal tracks, because ranking them by width would say one matters
+   more than another. */
+
+.izae-tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--surface);
+  overflow: hidden;
+}
+.izae-tab {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 2px var(--sp-2);
+  align-items: center;
+  /* sp-3 inline, not sp-4: at six equal tracks on a 1144 wrap each tab
+     is 190px, and the wider gutter left "Replace your VPN" 2px short of
+     its line — the title wrapped and the row went ragged. */
+  padding: var(--sp-4) var(--sp-3);
+  border: 0;
+  border-right: var(--bw) solid var(--line);
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+.izae-tab:last-child { border-right: 0; }
+.izae-tab:hover { background: var(--surface-2); }
+.izae-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+
+/* the open control is marked by an edge, not a tint — the tint is
+   the hover state and the two must not read the same */
+.izae-tab.on {
+  background: var(--bg);
+  box-shadow: inset 0 3px 0 0 var(--accent);
+}
+
+.izae-tab-ic {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--tx-dim);
+  transition: color var(--dur) var(--ease);
+}
+.izae-tab-ic svg { width: 24px; height: 24px; }
+.izae-tab.on .izae-tab-ic { color: var(--accent); }
+.izae-tab-t {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.izae-tab-t b {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--tx);
+  transition: color var(--dur) var(--ease);
+}
+.izae-tab.on .izae-tab-t b { color: var(--accent); }
+.izae-tab-t em {
+  display: flex;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+/* the control's number rides the sub line rather than taking a column
+   of its own — the icon column is only 26px wide and the two fought
+   over it */
+.izae-tab-t em s {
+  text-decoration: none;
+  color: var(--tx-mute);
+  transition: color var(--dur) var(--ease);
+}
+.izae-tab.on .izae-tab-t em s { color: var(--accent); }
+
+/* ---------- the body: problem | engine | proof ---------- */
+
+.izae-body {
+  display: grid;
+  /* the engine takes 56% — the flanking cards need ~190px each before
+     their labels stop wrapping, and at 1.85fr every row broke to two
+     lines */
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 2.15fr) minmax(0, 0.85fr);
+  border: var(--bw) solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+.izae-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-8) var(--sp-6);
+  min-width: 0;
+}
+.izae-col--engine {
+  border-inline: var(--bw) solid var(--line);
+  background: var(--bg);
+}
+.izae-col-h {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ---------- left: the problem ---------- */
+
+.izae-h3 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izae-h3 mark {
+  background: none;
+  color: var(--accent);
+}
+.izae-lede {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izae-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sp-3);
+}
+.izae-points li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izae-points svg {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  color: var(--accent);
+}
+.izae-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  align-self: flex-start;
+  margin-top: auto;
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--btn-ink);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease);
+}
+.izae-cta:hover { background: color-mix(in srgb, var(--accent) 88%, var(--tx)); }
+.izae-cta svg { width: 14px; height: 14px; transition: transform var(--dur) var(--ease); }
+.izae-cta:hover svg { transform: translateX(3px); }
+
+/* ---------- middle: the engine ---------- */
+
+.izae-engine {
+  display: grid;
+  gap: var(--sp-5);
+  container-type: inline-size;
+}
+
+/* the checks that run before anything opens */
+.izae-checks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-5);
+  padding-bottom: var(--sp-4);
+  border-bottom: var(--bw) dashed var(--line);
+}
+.izae-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-mono-xs);
+}
+.izae-check svg { width: 16px; height: 16px; color: var(--tx-dim); }
+.izae-check b {
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izae-check em {
+  font-family: var(--mono);
+  font-style: normal;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--allow);
+}
+
+/* input card · core · output card */
+.izae-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) auto minmax(0, 0.82fr);
+  gap: var(--sp-4);
+  align-items: center;
+}
+.izae-card {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--izae-sh);
+  min-width: 0;
+}
+.izae-card-h {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.izae-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--sp-2);
+  align-items: center;
+  padding: var(--sp-2) 0;
+  border-top: var(--bw) solid var(--line);
+}
+.izae-row i {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: var(--tx-dim);
+}
+.izae-row i svg { width: 17px; height: 17px; }
+.izae-row b {
+  display: grid;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx);
+  min-width: 0;
+}
+.izae-row b span {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+}
+.izae-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--tx-mute);
+}
+.izae-dot.t-ok { background: var(--allow); }
+.izae-dot.t-accent { background: var(--accent); }
+
+/* THE CORE — the one object every control shares. Rings are
+   concentric and sized off the container, so the whole thing scales
+   as a single object instead of the type drifting off the geometry. */
+.izae-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* the core is the SUBJECT of this column, not a node in it — at
+     25cqw it sat smaller than the cards flanking it and the section
+     read as three lists */
+  width: 30cqw;
+  height: 30cqw;
+  min-width: 165px;
+  min-height: 165px;
+  /* the core's caption is absolutely positioned under it, so it does
+     not occupy grid space — without this reserve it printed straight
+     through the verdict line below */
+  margin-bottom: 42px;
+}
+.izae-ring {
+  position: absolute;
+  border-radius: var(--r-pill);
+  border: var(--bw) solid var(--line-strong);
+}
+.izae-ring--1 { inset: 22%; }
+.izae-ring--2 { inset: 11%; border-style: dashed; border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.izae-ring--3 { inset: 0; border-color: var(--line); }
+.izae-core-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46%;
+  height: 46%;
+  border-radius: var(--r-pill);
+  border: var(--bw-thick) solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: var(--surface);
+  box-shadow: var(--izae-sh);
+}
+/* LogoMark writes width/height as an INLINE style from its `size`
+   prop, so beating it needs !important — the same gotcha Group C and
+   the hero both hit. */
+.izae-core-face > span {
+  display: grid !important;
+  place-items: center;
+  width: 62% !important;
+  height: 62% !important;
+}
+.izae-core-face :is(img, svg) { width: 100%; height: 100%; object-fit: contain; }
+.izae-core b {
+  position: absolute;
+  top: calc(100% + var(--sp-2));
+  display: grid;
+  gap: 2px;
+  text-align: center;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--tx);
+  white-space: nowrap;
+}
+.izae-core b span {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+
+.izae-verdict {
+  display: grid;
+  gap: var(--sp-2);
+  justify-items: center;
+  padding-top: var(--sp-6);
+  text-align: center;
+}
+.izae-verdict b {
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--allow);
+}
+.izae-verdict span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-4);
+}
+.izae-verdict em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+/* the separator dot between the three words */
+.izae-verdict em + em::before {
+  content: "•";
+  margin-right: var(--sp-4);
+  color: var(--accent);
+}
+
+/* ---------- right: the proof ---------- */
+
+.izae-proof {
+  margin: 0;
+  display: grid;
+}
+.izae-pf {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+  padding: var(--sp-4) 0;
+  border-bottom: var(--bw) solid var(--line);
+}
+.izae-pf:first-child { padding-top: 0; }
+.izae-pf:last-child { border-bottom: 0; }
+.izae-pf-ic {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--tx-dim);
+}
+.izae-pf-ic svg { width: 21px; height: 21px; }
+.izae-pf dt {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx);
+  margin-bottom: 4px;
+}
+.izae-pf dd {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izae-proof-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-top: auto;
+  /* sp-3/fs-sm: the proof column is ~245px at 1280 and "See ZTNA
+     architecture" broke to two lines at the wider padding */
+  padding: var(--sp-3);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  text-align: center;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease);
+}
+.izae-proof-cta:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.izae-proof-cta svg { width: 14px; height: 14px; transition: transform var(--dur) var(--ease); }
+.izae-proof-cta:hover svg { transform: translateX(3px); }
+
+/* ---------- the standing claims ---------- */
+
+.izae-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: var(--sp-6);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+.izae-pillar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+  border-right: var(--bw) solid var(--line);
+}
+.izae-pillar:last-child { border-right: 0; }
+.izae-pillar-ic {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  color: var(--accent);
+}
+.izae-pillar-ic svg { width: 22px; height: 22px; }
+.izae-pillar b {
+  display: block;
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--tx);
+}
+.izae-pillar span {
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   THE APPEARING ANIMATION — Group C's, verbatim.
+
+   The panel is keyed on the open control, so switching remounts it
+   and every list repopulates top-to-bottom on a stagger rather than
+   hard-swapping. One-shot: `forwards` holds the final frame, nothing
+   loops.
+   ============================================================ */
+
+@keyframes izae-rise {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes izae-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.izae-points li,
+.izae-pf,
+.izae-card .izae-row {
+  opacity: 0;
+  animation: izae-rise 430ms var(--ease) forwards;
+  animation-delay: calc(90ms + var(--i, 0) * 70ms);
+}
+.izae-h3,
+.izae-lede,
+.izae-cta,
+.izae-checks,
+.izae-card,
+.izae-core,
+.izae-verdict,
+.izae-proof-cta {
+  opacity: 0;
+  animation: izae-fade 460ms var(--ease) forwards;
+}
+.izae-h3 { animation-delay: 40ms; }
+.izae-lede { animation-delay: 90ms; }
+.izae-cta { animation-delay: 420ms; }
+.izae-checks { animation-delay: 120ms; }
+.izae-card--in { animation-delay: 180ms; }
+.izae-core { animation-delay: 60ms; }
+.izae-card--out { animation-delay: 260ms; }
+.izae-verdict { animation-delay: 360ms; }
+.izae-proof-cta { animation-delay: 480ms; }
+
+/* ---------- responsive ---------- */
+
+/* the proof column goes under the other two before it goes away —
+   a scannable list survives a narrower measure, unlike the engine */
+@media (max-width: 1180px) {
+  .izae-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); }
+  .izae-col--engine { border-right: 0; }
+  .izae-col--proof {
+    grid-column: 1 / -1;
+    border-top: var(--bw) solid var(--line);
+  }
+  .izae-proof {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--sp-8);
+  }
+  .izae-pf:nth-child(2) { padding-top: 0; }
+  .izae-proof-cta { align-self: flex-start; }
+  .izae-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .izae-tab:nth-child(3n) { border-right: 0; }
+  .izae-tab:nth-child(-n + 3) { border-bottom: var(--bw) solid var(--line); }
+  .izae-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .izae-pillar:nth-child(2n) { border-right: 0; }
+  .izae-pillar:nth-child(-n + 2) { border-bottom: var(--bw) solid var(--line); }
+}
+
+/* ---------- phones: the switcher becomes an accordion ----------
+   Group C's rule. The tab list stops being a row and becomes stacked
+   headers; the open control's panel follows it in the flow, and the
+   proof column drops — a proof list about a diagram is a table once
+   the diagram cannot sit beside it. */
+@media (max-width: 860px) {
+  .izae-tabs {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--r-lg);
+    border-bottom: 0;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+  }
+  .izae-tab {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto;
+    border-right: 0;
+    border-bottom: var(--bw) solid var(--line);
+  }
+  .izae-tab:last-child { border-bottom: 0; }
+  .izae-tab-ic { grid-column: 1; grid-row: 1; }
+  .izae-tab-t { grid-column: 2; grid-row: 1; }
+  /* the open row's edge moves to the left, where a stacked list
+     reads its state */
+  .izae-tab.on { box-shadow: inset 3px 0 0 0 var(--accent); }
+
+  .izae-body {
+    grid-template-columns: minmax(0, 1fr);
+    border-top: var(--bw) solid var(--line);
+  }
+  .izae-col { padding: var(--sp-6) var(--sp-5); }
+  /* Phones keep the LEFT column only. The engine is a three-part
+     diagram: restacked into one narrow column it stops being a
+     picture of anything, and the proof list is a table about a
+     diagram that is no longer there. The problem column already
+     carries the whole argument in words. */
+  .izae-col--engine,
+  .izae-col--proof { display: none; }
+
+  .izae-pillars { grid-template-columns: minmax(0, 1fr); }
+  .izae-pillar { border-right: 0; border-bottom: var(--bw) solid var(--line); }
+  .izae-pillar:last-child { border-bottom: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izae-tab,
+  .izae-tab-ic,
+  .izae-tab-t b,
+  .izae-cta svg,
+  .izae-proof-cta svg { transition: none; }
+  .izae-points li,
+  .izae-pf,
+  .izae-card .izae-row,
+  .izae-h3,
+  .izae-lede,
+  .izae-cta,
+  .izae-checks,
+  .izae-card,
+  .izae-core,
+  .izae-verdict,
+  .izae-proof-cta {
+    animation: none;
+    opacity: 1;
+  }
+}

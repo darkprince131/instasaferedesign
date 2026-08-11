@@ -16,6 +16,7 @@ const BESPOKE = [
   "/platform",
   "/platform/iam",
   "/solutions",
+  "/vpn-alternative",
 ];
 
 const PRIORITY: Record<string, number> = {

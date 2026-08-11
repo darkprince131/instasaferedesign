@@ -11,6 +11,16 @@ import { SsoLogin } from "./SsoLogin";
 import { MfaEngine } from "./MfaEngine";
 import { DevicePosture } from "./DevicePosture";
 import { EndpointControls } from "./EndpointControls";
+import { MigrationTimeline } from "./MigrationTimeline";
+import { VpnAccessPlane } from "./VpnAccessPlane";
+import { RemoteAccessPlane } from "./RemoteAccessPlane";
+import { VendorPass } from "./VendorPass";
+import { ByodBoundary } from "./ByodBoundary";
+import { CloudAccessLayer } from "./CloudAccessLayer";
+import { DevopsEnclosure } from "./DevopsEnclosure";
+import { PrivilegedSessionRecord } from "./PrivilegedSessionRecord";
+import { VoipSession } from "./VoipSession";
+import { HybridStack } from "./HybridStack";
 
 /* The artifact registry.
 
@@ -28,6 +38,16 @@ export const ARTIFACTS = {
   "concentric-rings": ConcentricRings, // T2 · many inputs → one decision
   "boundary-plate": BoundaryPlate, // T4 · containment, blast radius
   "stamp-record": StampRecord, // T9 · proof, attribution, audit
+  "migration-timeline": MigrationTimeline, // T7 · time-bound access, migration
+  "vpn-access-plane": VpnAccessPlane, // per-page · routes to named apps, network absent
+  "remote-access-plane": RemoteAccessPlane, // per-page · three places, one door, one log
+  "vendor-pass": VendorPass, // T7 per-page · a grant that expires on its own
+  "byod-boundary": ByodBoundary, // T10 per-page · one device, two territories
+  "devops-enclosure": DevopsEnclosure, // per-page · the toolchain inside the envelope
+  "privileged-session-record": PrivilegedSessionRecord, // T11 per-page · the session as evidence
+  "voip-session": VoipSession, // T8 per-page · the call, and what it costs
+  "hybrid-stack": HybridStack, // per-page · one stack, not two
+  "cloud-access-layer": CloudAccessLayer, // per-page · one stratum under every cloud
   "ztna-architecture": ZtnaArchitecture, // per-page · the fork: granted vs unreachable
   "ztaa-identity": ZtaaIdentity, // per-page · one record feeding every session
   "iam-directory": IamDirectory, // per-page · sources converge, estate follows

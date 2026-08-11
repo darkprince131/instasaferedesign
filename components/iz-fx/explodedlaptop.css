@@ -1,0 +1,276 @@
+/* ============================================================
+   explodedlaptop.css — <ExplodedLaptop /> (see ExplodedLaptop.tsx).
+
+   ONE input: --progress (0→1), written by the component's single
+   rAF scroll listener. Every animated element derives a local --p
+   from its phase window [--a, --b] and moves on TRANSFORM AND
+   OPACITY ONLY. No layout properties, no SVG filters, no libraries.
+
+   The generic pattern (from the build brief):
+     --p: clamp(0, calc((--progress - a) / (b - a)), 1)
+   Windows live in the component's manifests, not here.
+   ============================================================ */
+
+/* ---------- tokens ----------
+   Brief-pinned palette: bone linework on dark (the reference), ink
+   on drafting paper in light. Values are the brief's, not guesses;
+   only the plate fill borrows the page background, because upper
+   layers must occlude lower ones through the collapse. */
+
+.xl-root {
+  --progress: 0;
+  --xl-line: #b9ae9c;
+  --xl-line-dim: rgba(185, 174, 156, 0.35);
+  --xl-grid: rgba(185, 174, 156, 0.05);
+  --xl-text: #b9ae9c;
+  --xl-accent: #ff5c1a;
+  --xl-fill: var(--bg, #0a0b0d);
+  /* the generator's DIMFILL2 wash — an UNDEFINED var() in a fill
+     attribute renders BLACK, which is how every washed plate went
+     ink-slab on paper before this line existed */
+  --xl-fill2: rgba(185, 174, 156, 0.09);
+}
+.iz[data-theme="paper"] .xl-root {
+  --xl-line: #4a4640;
+  --xl-line-dim: rgba(74, 70, 64, 0.4);
+  --xl-grid: rgba(74, 70, 64, 0.06);
+  --xl-text: #4a4640;
+  --xl-accent: #d9430a;
+  --xl-fill2: rgba(74, 70, 64, 0.07);
+}
+
+/* ---------- the pin ---------- */
+
+.xl-sec {
+  position: relative;
+  height: var(--pin, 300vh);
+}
+.xl-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.xl {
+  display: block;
+  width: min(100%, 1640px);
+  height: auto;
+  max-height: 94vh;
+}
+/* the static figure — reduced-motion state, OG/print state */
+.xl-static {
+  --progress: 1;
+}
+
+/* ---------- linework ---------- */
+
+.xl-plate {
+  fill: var(--xl-fill);
+  stroke: var(--xl-line);
+  stroke-width: 1;
+}
+.xl-ln {
+  fill: none;
+  stroke: var(--xl-line);
+  stroke-width: 1;
+}
+.xl-ln-dim {
+  fill: none;
+  stroke: var(--xl-line-dim);
+  stroke-width: 1;
+}
+/* keycaps: hairline, filled with the page ground so the well reads
+   as depth rather than as a second grid */
+.xl-key {
+  fill: var(--xl-fill);
+  stroke: var(--xl-line-dim);
+  stroke-width: 1;
+}
+/* the dashed assembly guides hanging off every screw */
+.xl-guide {
+  fill: none;
+  stroke: var(--xl-line-dim);
+  stroke-width: 1;
+  stroke-dasharray: 3 6;
+}
+/* ---------- the shared phase variable ---------- */
+
+.xl-layer,
+.xl-callout,
+.xl-stack,
+.xl-stamp {
+  --p: clamp(0, calc((var(--progress, 0) - var(--a)) / (var(--b) - var(--a))), 1);
+}
+
+/* ---------- phase 2 · explosion ----------
+   Parts are authored EXPLODED and translate back by -dy as progress
+   falls. Ease-out: fast separation, gentle settle — a mechanical
+   release, not a float. */
+
+.xl-layer {
+  --pe: calc(var(--p) * (2 - var(--p)));
+  transform: translateY(calc((1 - var(--pe)) * var(--dy) * -1px));
+  will-change: transform;
+}
+/* Internal parts live UNDER the deck when assembled. The collapse is
+   translateY-only, so instead of an impossible z-reorder they fade
+   over the last sixth of their window — assembled, the machine is
+   deck + display + base rim, exactly like the video's frame 0. */
+.xl-internal {
+  opacity: clamp(0, calc(var(--p) * 6), 1);
+}
+/* ---------- the opening ----------
+   The screen pivots about the hinge (the iso u-axis through its
+   origin). Projected, the fold is one matrix whose two varying cells
+   are cos/sin of the angle:
+     θ=0    → matrix(0.866 0.42 -0.866 0.42)  — flat: the closed lid,
+              centred exactly on the deck by the generator's translate
+     θ=90°  → matrix(0.866 0.42 0 -1)         — the approved standing
+              screen
+   Same --p machinery as everything else; ease-out so the lid swings
+   fast and settles like a real hinge. */
+
+.xl-screen .xl-screen-pivot {
+  --pe: calc(var(--p) * (2 - var(--p)));
+  --ang: calc(var(--pe) * 90deg);
+  transform: translate(var(--stx), var(--sty))
+    matrix(0.866, 0.42, calc(-0.866 * cos(var(--ang))), calc(0.42 * cos(var(--ang)) - sin(var(--ang))), 0, 0);
+  will-change: transform;
+}
+/* a browser without CSS trig gets the laptop already open — the
+   approved figure, never a broken fold */
+@supports not (width: calc(1px * cos(0deg))) {
+  .xl-screen .xl-screen-pivot {
+    transform: translate(var(--stx), var(--sty)) matrix(0.866, 0.42, 0, -1, 0, 0);
+  }
+}
+
+/* the whole assembly grows 0.82 → 1 across the same window */
+.xl-stack {
+  --a: 0.1;
+  --b: 0.55;
+  --pe: calc(var(--p) * (2 - var(--p)));
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  transform: scale(calc(0.82 + 0.18 * var(--pe)));
+}
+
+/* ---------- phase 3 · interrogation ----------
+   Per callout, three sub-beats inside one window: the leader draws
+   (linear — it is being drawn), the box and text fade, the check
+   ticks in at the end. */
+
+.xl-leader {
+  fill: none;
+  stroke: var(--xl-line-dim);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: clamp(0, calc(1 - var(--p) * 1.6), 1);
+}
+.xl-anchor {
+  fill: var(--xl-line-dim);
+  opacity: clamp(0, calc(var(--p) * 2), 1);
+}
+.xl-box {
+  opacity: clamp(0, calc((var(--p) - 0.45) / 0.35), 1);
+}
+.xl-boxln {
+  fill: none;
+  stroke: var(--xl-line);
+  stroke-width: 1;
+}
+.iz[data-theme="paper"] .xl-boxln {
+  fill: rgba(74, 70, 64, 0.04);
+}
+.xl-label {
+  font-family: var(--mono, ui-monospace, monospace);
+  /* 24, not 20: the generator's sheet is 1520 tall, so the rendered
+     scale dropped — box widths in the component are cut for this
+     advance (~14.9/ch). Change them together or not at all. */
+  font-size: 24px;
+  letter-spacing: 0.06em;
+  fill: var(--xl-text);
+}
+.xl-check {
+  fill: none;
+  stroke: var(--xl-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: clamp(0, calc(1 - (var(--p) - 0.78) / 0.22), 1);
+}
+
+/* ---------- phase 4 · verdict ----------
+   Scale 1.6 → 1, ease-in to the slam; opacity arrives fast and
+   stops hard. A decision, not a fade. */
+
+.xl-stamp {
+  opacity: clamp(0, calc(var(--p) * 3), 1);
+}
+.xl-stamp-inner {
+  --pe2: calc(var(--p) * var(--p));
+  transform-box: view-box;
+  transform: scale(calc(1.6 - 0.6 * var(--pe2)));
+  will-change: transform;
+}
+.xl-stamp-ring {
+  fill: none;
+  stroke: var(--xl-accent);
+  stroke-width: 2.5;
+}
+/* the generator's sizes: 12.5px on an r80 arc ("SECURITY VERIFIED"
+   is 17ch — anything bigger overflows the semicircle) */
+.xl-stamp-arc {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 12.5px;
+  letter-spacing: 3px;
+  fill: var(--xl-accent);
+}
+.xl-stamp-word {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  fill: var(--xl-accent);
+}
+
+/* ---------- mobile ----------
+   The two label columns stop fitting beside the stack: keep the
+   eight checks that matter, give them a size step up, and shorten
+   the pin — the explosion is the star on a phone. */
+
+@media (max-width: 767px) {
+  .xl-sec {
+    height: min(var(--pin, 300vh), 200vh);
+  }
+  .xl-callout:not(.xl-min) {
+    display: none;
+  }
+  /* No size bump. Box widths and check positions are cut for the
+     20px advance, and every bump tried (27, then 22) ran the long
+     labels into their own checkmarks. A genuinely larger mobile
+     type needs a second row manifest, not a font-size override —
+     flagged as the component's known follow-up. */
+}
+
+/* ---------- reduced motion ----------
+   No pin, no scrub: the fully-exploded, fully-labelled, stamped
+   figure, rendered as an intentional static diagram. The !important
+   outranks the inline --progress the scroll listener writes. */
+
+@media (prefers-reduced-motion: reduce) {
+  .xl-sec {
+    height: auto;
+  }
+  .xl-pin {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+  .xl-root {
+    --progress: 1 !important;
+  }
+}

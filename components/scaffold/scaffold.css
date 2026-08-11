@@ -193,6 +193,93 @@
   text-wrap: pretty;
 }
 
+/* ---------- hub tiles ----------
+   Rendered only by records carrying `tiles` (see PageDef). Unlike the
+   capability grid above, these ARE cards: each one is a destination, so
+   it needs an edge a pointer can aim at. Sits on --bg so it separates
+   from the --bg-2 capability band directly above it. */
+
+.izsc-tiles {
+  position: relative;
+  padding: var(--sp-section) 0;
+  background: var(--bg);
+}
+
+.izsc-tilegrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-grid);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.izsc-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--pad-panel);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.izsc-tile:hover { border-color: var(--line-strong); }
+.izsc-tile h3 {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  overflow-wrap: break-word;
+}
+.izsc-tile p {
+  margin: 0 0 var(--sp-6);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* links pinned to the bottom so a pair of tiles with uneven copy still
+   line their actions up */
+.izsc-tile-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-6);
+  margin-top: auto;
+}
+.izsc-tile-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+.izsc-tile-cta svg { width: 14px; height: 14px; transition: transform var(--dur-fast) var(--ease); }
+.izsc-tile-cta:hover svg { transform: translateX(2px); }
+.izsc-tile-alt {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  text-decoration: none;
+  border-bottom: var(--bw) solid var(--line-strong);
+  padding-bottom: 1px;
+}
+.izsc-tile-alt:hover { color: var(--tx); }
+
+@media (prefers-reduced-motion: reduce) {
+  .izsc-tile-cta:hover svg { transform: none; }
+}
+
 /* ---------- closing CTA ---------- */
 
 .izsc-close {
@@ -234,6 +321,9 @@
   .izsc-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--sp-8);
+  }
+  .izsc-tilegrid {
+    grid-template-columns: minmax(0, 1fr);
   }
   .izsc-cta {
     width: 100%;

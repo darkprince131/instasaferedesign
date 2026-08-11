@@ -150,7 +150,7 @@ export function SsoOrange() {
             </h1>
             <p className="iz-lead">
               One set of credentials, one dashboard, every provisioned application — with MFA and device checks built
-              into that single login. From $1 per user per month.
+              into that single login.
             </p>
             <div className="iz-hero-cta">
               <Magnetic>
@@ -345,7 +345,7 @@ export function SsoOrange() {
         <div className="iz-wrap iz-reveal">
           <h2>Give your team one door.</h2>
           <p className="iz-lead izsso-final-sub">
-            SSO from $1/user/month, with MFA and device trust layered in at the login. See it on your own apps in 30
+            SSO with MFA and device trust layered in at the login. See it on your own apps in 30
             minutes.
           </p>
           <div className="iz-hero-cta">

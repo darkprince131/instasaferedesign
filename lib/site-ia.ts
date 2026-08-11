@@ -264,7 +264,7 @@ export const NEW_IA: PageDef[] = [
     eyebrow: "Industries",
     title: "Zero Trust for Banking & Financial Services",
     h1: "Banking & Financial Services",
-    sub: "RBI-aligned access control — MFA everywhere, vendor session recording, geofenced admin access, complete audit trails. 500,000+ endpoints secured.",
+    sub: "RBI-aligned access control — MFA everywhere, vendor session recording, geofenced admin access, complete audit trails.",
   }),
   P({
     path: "/industries/bpo",
@@ -422,9 +422,9 @@ export const NEW_IA: PageDef[] = [
     path: "/customers",
     kind: "company",
     eyebrow: "Company",
-    title: "InstaSafe Customers | 500,000+ Endpoints, 5 Continents",
+    title: "InstaSafe Customers | Zero Trust in Regulated Sectors",
     h1: "Customers",
-    sub: "150+ enterprises and 100+ Fortune 2000 companies run access through InstaSafe. Their words, their numbers.",
+    sub: "Banks, government bodies and BPM providers run access through InstaSafe. Their words, in their own case studies.",
   }),
   P({
     path: "/pricing",

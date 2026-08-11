@@ -263,12 +263,12 @@ export function FeatureSplit({
         </h2>
         <p className="fx-lead">
           {lead ??
-            "Identity, device, location and session — over 100 checks behind every access decision, from $2/user/month."}
+            "Identity, device, location and session — every access decision is checked against all four, every time."}
         </p>
         {cta && (
           <div className="fx-cta">
             <a href="/instasafe-zero-trust-pricing" className="iz-btn iz-btn-pri iz-btn-sm">Book a demo</a>
-            <span className="fx-stat">150+ enterprises · 500,000 endpoints</span>
+            <span className="fx-stat">25 device checks · 144 named policy rules</span>
           </div>
         )}
 

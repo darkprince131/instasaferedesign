@@ -22,6 +22,7 @@ import { IzRelatedRail } from "@/components/home2/IzRelatedRail";
 import { IzSideNav } from "@/components/home2/IzSideNav";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { ZtnaArchitecture } from "@/components/izoutcomes/artifacts/ZtnaArchitecture";
+import { AnswerZtna } from "@/components/izanswer/AnswerZtna";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
 import { useEffect, useState } from "react";
@@ -183,21 +184,11 @@ export function ZtnaPage() {
               "A VPN extends the network out to the user. Once connected, the user's device is effectively on the corporate network, able to see and probe far more than the one application they needed. That's why a single stolen VPN credential so often becomes a full network breach: the attacker inherits the network, then moves laterally.",
               "ZTNA inverts this. The network is never extended anywhere. Instead, after the user and device are verified, a narrow encrypted tunnel opens from that device to that one resource. The user gets their application; they get nothing else. There is no network to move laterally across, because from the user's side, no network is visible.",
             ]}
-            slot={{
-              kind: "terminal",
-              title: "priya@laptop · acme-bank",
-              badge: "Session recorded",
-              lines: [
-                { cmd: "connect erp-core.acme.internal" },
-                { out: "identity: priya@acme.co · device: bound, cert valid" },
-                { out: "posture: 25/25 checks pass · patch level ok" },
-                { out: "tunnel open · 1 resource · ttl 8h", tone: "ok" },
-                { cmd: "nmap -sS 10.20.0.0/16" },
-                { out: "0 hosts up · 0 ports answered", tone: "no" },
-                { cmd: "connect payments-admin.acme.internal" },
-                { out: "denied by policy: role not in payments-admin", tone: "no" },
-              ],
-            }}
+            /* The explainer picture replaces the terminal transcript
+               here: this is the second visual on the page, so it has to
+               teach the architecture rather than show one more console.
+               The number strip below it is unchanged. */
+            slot={{ kind: "art", art: AnswerZtna }}
             stats={[
               { n: "1", label: "resource reachable" },
               { n: "0", label: "network visible" },

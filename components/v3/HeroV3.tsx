@@ -7,7 +7,7 @@ import { ArrowRight, LockKey, PlayCircle } from "@phosphor-icons/react";
 
 const proof = [
   { k: "500K+", v: "endpoints" },
-  { k: "150+", v: "enterprises" },
+  { k: "25", v: "device checks" },
   { k: "NIST", v: "800-207" },
 ];
 

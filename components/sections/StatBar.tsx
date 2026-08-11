@@ -4,10 +4,10 @@ import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { Reveal } from "@/components/ui/Reveal";
 
 const stats = [
-  { end: 500000, suffix: "+", label: "Endpoints Secured" },
-  { end: 150, suffix: "+", label: "Businesses" },
-  { end: 100, suffix: "+", label: "Fortune 2000 Clients" },
-  { end: 2, prefix: "$", suffix: "", label: "/user/month — Starting price" },
+  { end: 25, suffix: "", label: "Device check types" },
+  { end: 144, suffix: "", label: "Named policy rules" },
+  { end: 202, suffix: "", label: "Event log types" },
+  { end: 6, suffix: "", label: "MFA methods" },
 ];
 
 export function StatBar() {
@@ -17,7 +17,7 @@ export function StatBar() {
         {stats.map((s, i) => (
           <Reveal key={s.label} delay={i * 0.1} className="text-center">
             <div className="grad-text text-4xl font-bold tracking-tight sm:text-5xl">
-              <AnimatedCounter end={s.end} prefix={s.prefix} suffix={s.suffix} />
+              <AnimatedCounter end={s.end} suffix={s.suffix} />
             </div>
             <div className="mt-2 text-sm text-[var(--text-secondary)]">{s.label}</div>
           </Reveal>

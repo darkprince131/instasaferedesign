@@ -21,7 +21,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Single Sign-On (SSO) — InstaSafe ZTNA",
   description:
-    "One login, every app, zero password fatigue. SAML 2.0, OAuth and OpenID SSO with desktop SSO, directory sync and device authentication — from $1/user/month.",
+    "One login, every app, zero password fatigue. SAML 2.0, OAuth and OpenID SSO with desktop SSO, directory sync and device authentication.",
   alternates: { canonical: "/zero-trust-features/single-sign-on" },
 };
 

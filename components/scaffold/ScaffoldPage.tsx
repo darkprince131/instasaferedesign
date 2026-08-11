@@ -81,8 +81,8 @@ function fallbackPoints(kind: PageKind): { h: string; p: string }[] {
       ];
     case "company":
       return [
-        { h: "150+ enterprises", p: "Across BFSI, government, logistics and IT/ITES." },
-        { h: "500,000 endpoints", p: "Secured in production across five continents." },
+        { h: "BFSI to government", p: "Built for regulated sectors: banking, government, logistics and IT/ITES." },
+        { h: "Privacy by architecture", p: "Split plane — your traffic goes device to app and never transits us." },
         { h: "Gartner-recognised", p: "Representative Vendor in the ZTNA category." },
       ];
     default:
@@ -188,6 +188,50 @@ export function ScaffoldPage({ page }: { page: PageDef }) {
           </ul>
         </div>
       </section>
+
+      {/* ---------- hub tiles ----------
+          Only hub-shaped records carry `tiles`; everything else skips
+          this section entirely. Destinations here are often off-site
+          (meetups, external programmes), so each tile states where it
+          goes rather than implying another page of this site. */}
+      {page.tiles?.length ? (
+        <section className="izsc-tiles iz-railed">
+          <div className="iz-wrap">
+            <div className="izsc-head">
+              <span className="izsc-kicker">Also here</span>
+              <h2 className="izsc-h2">
+                More from <em>Resources.</em>
+              </h2>
+            </div>
+            <ul className="izsc-tilegrid">
+              {page.tiles.map((t) => {
+                const external = t.href.startsWith("http");
+                return (
+                  <li className="izsc-tile" key={t.href}>
+                    <h3>{t.h}</h3>
+                    <p>{t.p}</p>
+                    <span className="izsc-tile-links">
+                      <a className="izsc-tile-cta" href={t.href}>
+                        {t.cta}
+                        {external ? (
+                          <ArrowUpRight weight="bold" aria-hidden="true" />
+                        ) : (
+                          <ArrowRight weight="bold" aria-hidden="true" />
+                        )}
+                      </a>
+                      {t.altHref && t.altLabel && (
+                        <a className="izsc-tile-alt" href={t.altHref}>
+                          {t.altLabel}
+                        </a>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       {/* ---------- closing CTA ---------- */}
       <section className="izsc-close iz-railed">

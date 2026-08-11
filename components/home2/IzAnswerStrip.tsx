@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import { IzJson } from "./IzPanel";
+import { IzAnswerArt } from "@/components/izanswer/IzAnswerArt";
 
 /* ============================================================
    00au · IzAnswerStrip — replaces the 1–4 paragraph "Plain answer"
@@ -32,7 +33,12 @@ export type Slot =
   | { kind: "terminal"; title: string; badge?: string; lines: TermLine[] }
   | { kind: "json"; title: string; src: string }
   | { kind: "grant-deny"; grantHead: string; denyHead: string; grant: string[]; deny: string[] }
-  | { kind: "posture"; head: string; rows: { label: string; ok: boolean; detail?: string }[] };
+  | { kind: "posture"; head: string; rows: { label: string; ok: boolean; detail?: string }[] }
+  /* An explainer illustration — the "what is X?" picture. Unlike the
+     typed proof slots above it carries no refusal of its own, because
+     the illustration contains one: see components/izanswer/. Pass the
+     component, not an element, so the strip owns the reveal wrapper. */
+  | { kind: "art"; art: ComponentType };
 
 export type Point = { title: string; body: string };
 
@@ -87,6 +93,14 @@ function Expander({ long }: { long: string[] }) {
 }
 
 function ProofSlot({ slot }: { slot: Slot }) {
+  if (slot.kind === "art") {
+    const Art = slot.art;
+    return (
+      <IzAnswerArt>
+        <Art />
+      </IzAnswerArt>
+    );
+  }
   if (slot.kind === "terminal") {
     return (
       <div className="izans-term">
@@ -315,7 +329,9 @@ export function IzAnswerStrip({
       <div className="izans-slot">
         <div className="izans-sticky">
           {slot && <ProofSlot slot={slot} />}
-          {slot?.kind === "terminal" && stats && stats.length > 0 && (
+          {/* the number strip belongs to any slot that PROVED something
+              above it — the terminal and the explainer both do */}
+          {(slot?.kind === "terminal" || slot?.kind === "art") && stats && stats.length > 0 && (
             <div className="izans-stats">
               {stats.map((s) => (
                 <div key={s.label} className="izans-stat">

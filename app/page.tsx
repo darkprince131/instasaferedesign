@@ -12,7 +12,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "InstaSafe ZTNA — Stop Juggling Security Tools. Start Controlling Access.",
   description:
-    "InstaSafe ZTNA replaces your VPN, unifies identity and MFA, secures databases and servers, records privileged sessions and protects every endpoint — from one console. From $2/user/month.",
+    "InstaSafe ZTNA replaces your VPN, unifies identity and MFA, secures databases and servers, records privileged sessions and protects every endpoint — from one console.",
   alternates: { canonical: "/" },
 };
 

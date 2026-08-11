@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CapabilitiesDeck } from "./CapabilitiesDeck";
+import { IzAccessEngine } from "./IzAccessEngine";
 import { IzAccessFlow } from "./IzAccessFlow";
 import "./izaccessflow.css";
 import { useSectionReveals, useParallax } from "./useIzMotion";
@@ -117,7 +117,7 @@ const COMPARE: Record<string, [string, string, string][]> = {
     ["What it runs on", "A hardware box", "The cloud — nothing to rack"],
     ["Works on Mac, Linux, iPhone", "no", "yes"],
     ["Safe access to databases", "no", "yes"],
-    ["Price", "Old-style, pricey", "$2 per person / month"],
+    ["Adding capacity", "Buy another box", "A configuration change"],
   ],
 };
 
@@ -197,22 +197,9 @@ export function Home2() {
 
       {/* ---------------- CAPABILITIES DECK ---------------- */}
       {/* rails: this block is wide and benefits from column edges */}
-      <section className="iz-section iz-irail" style={{ ["--ir-a" as string]: "38%" }}>
-        <div className="iz-wrap">
-          <div className="iz-reveal iz-headblock">
-            <span className="iz-ey">Everything it does</span>
-            <h2 className="iz-h2">
-              The whole thing, <em>in a two-minute tour</em>.
-            </h2>
-            <p className="iz-lead" style={{ maxWidth: "54ch" }}>
-              No slides to sit through. Click through each part — every one shows you, live, exactly what it does.
-            </p>
-          </div>
-          <div className="iz-reveal">
-            <CapabilitiesDeck />
-          </div>
-        </div>
-      </section>
+      {/* The deck carries its own head — a second headblock above it
+          would title the same thing twice. */}
+      <IzAccessEngine />
 
       {/* ---------------- PLATFORM ROWS ---------------- */}
       {/* no rails — the rows already draw their own horizontals */}
@@ -239,10 +226,14 @@ export function Home2() {
           <div className="iz-reveal iz-block-top">
             <div className="iz-statband">
               {[
-                { n: <CountUp to={72} suffix="%" />, l: "of companies leaving the VPN" },
-                { n: <CountUp to={500000} />, l: "devices protected" },
-                { n: <CountUp to={150} suffix="+" />, l: "companies trust us" },
-                { n: <>$2</>, l: "per person, per month" },
+                /* Platform facts, not customer or price facts: these are
+                   things the product DOES, and every one is checkable in
+                   the console. Counts of customers, devices and money are
+                   deliberately absent site-wide. */
+                { n: <CountUp to={25} />, l: "device checks before a tunnel opens" },
+                { n: <CountUp to={144} />, l: "named policy rules" },
+                { n: <CountUp to={202} />, l: "event types logged" },
+                { n: <>0</>, l: "ports answering a scan" },
               ].map((s, i) => (
                 <div key={i} className="iz-statcell">
                   <div className="iz-statnum">{s.n}</div>

@@ -21,11 +21,15 @@ import { RatingBar } from "./RatingBar";
 
 export type TrustStat = { n: string; label: string };
 
+/* Capability, not customer count. The site does not publish how many
+   customers, devices or rupees are behind it — these four are things
+   the platform does, and they are the same numbers the spec tables
+   quote. */
 const STATS: TrustStat[] = [
-  { n: "500,000+", label: "endpoints secured" },
-  { n: "150+", label: "enterprises" },
-  { n: "100+", label: "Fortune 2000 clients" },
-  { n: "5", label: "continents" },
+  { n: "25", label: "device check types" },
+  { n: "144", label: "named policy rules" },
+  { n: "202", label: "event log types" },
+  { n: "6", label: "MFA methods" },
 ];
 
 const LOGOS = ["Banking · BFSI", "Manufacturing", "Government · PSU", "IT · ITES", "Healthcare"];

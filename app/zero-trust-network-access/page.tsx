@@ -21,6 +21,7 @@ import "@/components/home2/izlogomarquee.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/izoutcomes/illustrations.css";
+import "@/components/izanswer/answers.css";
 import "@/components/home2/iztunnelcards.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/ztna/ztna.css";

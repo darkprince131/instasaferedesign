@@ -10,7 +10,7 @@ const trustItems = [
   { Icon: Trophy, label: "Gartner recognized" },
   { Icon: Star, label: "Deloitte Fast 50 India" },
   { Icon: Star, label: "G2 High Performer" },
-  { Icon: Buildings, label: "150+ enterprises" },
+  { Icon: Buildings, label: "Built for regulated sectors" },
   { Icon: Devices, label: "500K+ endpoints" },
   { Icon: ShieldCheck, label: "NIST 800-207 aligned" },
 ];

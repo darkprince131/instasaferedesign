@@ -132,12 +132,15 @@ export function ComparisonTable() {
                     </td>
                   </tr>
                 ))}
+                {/* The price row is gone: the site does not publish
+                    per-user pricing. Scaling is the comparison that
+                    actually separates the two architectures. */}
                 <tr>
-                  <td className="p-4 font-medium">Starting Price</td>
+                  <td className="p-4 font-medium">Adding capacity</td>
                   <td className="bg-[var(--accent-blue)]/[0.04] p-4 text-center font-bold text-[var(--accent-green)]">
-                    $2/user/mo
+                    A configuration change
                   </td>
-                  <td className="p-4 text-center text-[var(--text-secondary)]">{comp.price}</td>
+                  <td className="p-4 text-center text-[var(--text-secondary)]">Hardware purchase</td>
                 </tr>
               </tbody>
             </table>

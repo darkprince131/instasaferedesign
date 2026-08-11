@@ -22,6 +22,16 @@ import { BoundaryPlate } from "@/components/izoutcomes/artifacts/BoundaryPlate";
 import { ConcentricRings } from "@/components/izoutcomes/artifacts/ConcentricRings";
 import { LedgerPlate } from "@/components/izoutcomes/artifacts/LedgerPlate";
 import { StampRecord } from "@/components/izoutcomes/artifacts/StampRecord";
+import { MigrationTimeline } from "@/components/izoutcomes/artifacts/MigrationTimeline";
+import { VpnAccessPlane } from "@/components/izoutcomes/artifacts/VpnAccessPlane";
+import { RemoteAccessPlane } from "@/components/izoutcomes/artifacts/RemoteAccessPlane";
+import { VendorPass } from "@/components/izoutcomes/artifacts/VendorPass";
+import { ByodBoundary } from "@/components/izoutcomes/artifacts/ByodBoundary";
+import { CloudAccessLayer } from "@/components/izoutcomes/artifacts/CloudAccessLayer";
+import { DevopsEnclosure } from "@/components/izoutcomes/artifacts/DevopsEnclosure";
+import { PrivilegedSessionRecord } from "@/components/izoutcomes/artifacts/PrivilegedSessionRecord";
+import { VoipSession } from "@/components/izoutcomes/artifacts/VoipSession";
+import { HybridStack } from "@/components/izoutcomes/artifacts/HybridStack";
 import { IamDirectory } from "@/components/izoutcomes/artifacts/IamDirectory";
 import { DevicePosture } from "@/components/izoutcomes/artifacts/DevicePosture";
 import { EndpointControls } from "@/components/izoutcomes/artifacts/EndpointControls";
@@ -204,6 +214,149 @@ const SAMPLES = [
       { Icon: SealCheck, title: "Attribute every session", body: "A person, not a shared credential, sits behind each privileged action." },
       { Icon: ShieldCheck, title: "Record the reason", body: "The verdict is stored with the context that produced it." },
       { Icon: ArrowsOutCardinal, title: "Export without work", body: "Access review becomes a query in a format your SIEM already reads." },
+    ],
+  },
+  {
+    key: "vpn-plane",
+    side: "right" as const,
+    tag: "The access plane",
+    title: ["The network goes.", "The access", "stays."],
+    accentFrom: 2,
+    sub: "InstaSafe ZTNA removes the network from the equation. Users connect straight to the applications they are entitled to — and to nothing else.",
+    artifact: VpnAccessPlane,
+    outcomes: [
+      { Icon: ShieldCheck, title: "A breach that stops", body: "A compromised session is one session — architecture, not detection." },
+      { Icon: Crosshair, title: "Faster, and invisible", body: "Direct connections beat backhaul; blackened gateways beat scanners." },
+      { Icon: ArrowsOutCardinal, title: "Scales like software", body: "From 200 to 20,000 users without a purchase order for boxes." },
+    ],
+  },
+  {
+    key: "remote-access",
+    side: "left" as const,
+    tag: "Secure remote access",
+    title: ["Access from anywhere.", "Trust is", "everywhere."],
+    accentFrom: 2,
+    sub: "Same verification, same policy, same experience — whether you are at HQ, at home, or halfway around the world.",
+    artifact: RemoteAccessPlane,
+    outcomes: [
+      { Icon: ShieldCheck, title: "One model, no weak channel", body: "The vendor path is as governed as the employee path." },
+      { Icon: Crosshair, title: "Location stops mattering", body: "Same verification at HQ, home, hotel, or anywhere." },
+      { Icon: SealCheck, title: "The audit trail is complete", body: "Every access mode logs to one place." },
+    ],
+  },
+  {
+    key: "voip",
+    side: "left" as const,
+    tag: "Secure VoIP",
+    title: ["Clear calls.", "Closed network.", "Zero compromise."],
+    accentFrom: 2,
+    sub: "InstaSafe secures voice at the session layer, so calls stay clear, private and off the public internet.",
+    artifact: VoipSession,
+    outcomes: [
+      { Icon: Gauge, title: "Call quality survives security", body: "Low latency, low jitter and zero drops — crystal clear conversations." },
+      { Icon: Broadcast, title: "Telephony leaves the internet", body: "No public IPs and no open ports — voice travels only in a secure tunnel." },
+      { Icon: UsersThree, title: "Seats onboard like any user", body: "No special setup and no VPN headaches for remote agents or BPO seats." },
+    ],
+  },
+  {
+    key: "hybrid",
+    side: "right" as const,
+    tag: "Hybrid work",
+    title: ["One access.", "Experience.", "Anywhere."],
+    accentFrom: 2,
+    sub: "The same secure, high-performance access to applications no matter where people work from.",
+    artifact: HybridStack,
+    outcomes: [
+      { Icon: ShieldCheck, title: "Location stops deciding security", body: "Zero trust access from anywhere, context-based and always verified." },
+      { Icon: SquaresFour, title: "One access stack, not two", body: "One platform and one policy engine — lower cost, less complexity." },
+      { Icon: Gauge, title: "Home equals the desk", body: "Fast, reliable and secure every time, in every location." },
+    ],
+  },
+  {
+    key: "devops",
+    side: "left" as const,
+    tag: "DevOps security",
+    title: ["Secure your toolchain.", "Not your", "workflow."],
+    accentFrom: 1,
+    sub: "InstaSafe hides the DevOps toolchain from the internet, enforces least privilege, and records every privileged session.",
+    artifact: DevopsEnclosure,
+    outcomes: [
+      { Icon: Broadcast, title: "The toolchain vanishes", body: "No inbound ports and no exposed services — only Zero Trust access." },
+      { Icon: LockKey, title: "Least privilege, same workflow", body: "Granular, just-in-time, approved and time-bound access." },
+      { Icon: ListChecks, title: "Logged and replayable", body: "Complete session capture, SIEM-ready and audit-proof." },
+    ],
+  },
+  {
+    key: "pam",
+    side: "right" as const,
+    tag: "Privileged access",
+    title: ["Privileged access.", "Zero trust.", "Full accountability."],
+    accentFrom: 2,
+    sub: "Zero internet exposure, least-privilege access, and every session recorded for complete auditability.",
+    artifact: PrivilegedSessionRecord,
+    outcomes: [
+      { Icon: Crosshair, title: "Evidence, not mystery", body: "Every command, click and action is recorded and replayable." },
+      { Icon: ShieldCheck, title: "Admin planes stay private", body: "No public exposure and no inbound ports on the systems that matter most." },
+      { Icon: SealCheck, title: "Audit findings close", body: "Complete session records, exportable, with replay attached." },
+    ],
+  },
+  {
+    key: "cloud-access",
+    side: "right" as const,
+    tag: "Secure cloud access",
+    title: ["One access layer.", "Every cloud.", "Same security."],
+    accentFrom: 1,
+    sub: "Consistent access control across every cloud and SaaS — without opening new doors.",
+    artifact: CloudAccessLayer,
+    outcomes: [
+      { Icon: ShieldCheck, title: "Same lock, every door", body: "One access layer enforces the same identity and policy everywhere." },
+      { Icon: ArrowsClockwise, title: "Migration without regression", body: "Move to any cloud or SaaS and your posture stays consistent." },
+      { Icon: ListChecks, title: "One report, everywhere", body: "All access events from every environment land in one unified audit trail." },
+    ],
+  },
+  {
+    key: "byod",
+    side: "left" as const,
+    tag: "BYOD",
+    title: ["Your device.", "Our boundaries.", "Both respected."],
+    accentFrom: 2,
+    sub: "Zero trust access without compromising user privacy or device ownership.",
+    artifact: ByodBoundary,
+    outcomes: [
+      { Icon: ShieldCheck, title: "A governed channel", body: "Access is secure, visible and controlled — even on personal devices." },
+      { Icon: LockKey, title: "Privacy fight avoided", body: "No corporate agent, and no visibility outside the secure session." },
+      { Icon: UserMinus, title: "Offboarding is clean", body: "Nothing was stored, so nothing needs wiping." },
+    ],
+  },
+  {
+    key: "vendor-pass",
+    side: "right" as const,
+    tag: "Third-party access",
+    title: ["Grant access.", "Not permanent", "access."],
+    accentFrom: 1,
+    sub: "Give vendors exactly what they need, for exactly as long as they need it.",
+    artifact: VendorPass,
+    outcomes: [
+      { Icon: SealCheck, title: "Attribution by default", body: "Named individuals, named sessions, replayable actions — shared-credential ambiguity ends." },
+      { Icon: Prohibit, title: "No orphaned access", body: "Expiry is a property of the grant, not a memory test for IT." },
+      { Icon: SquaresFour, title: "Onboard in minutes", body: "A new vendor is a user, a group and tiles — no laptops shipped, no agent rollout." },
+    ],
+  },
+  {
+    /* T7, built for /vpn-alternative's migration section and kept for
+       /third-party-access, where the same timeline runs to an expiry
+       rather than to a cutover. */
+    key: "migration",
+    side: "left" as const,
+    tag: "Staged cutover",
+    title: ["The VPN goes.", "In stages."],
+    accentFrom: 1,
+    sub: "Run both, move team by team, decommission per team. The rollback path stays intact throughout.",
+    artifact: MigrationTimeline,
+    outcomes: [
+      { Icon: Crosshair, title: "One app at a time", body: "The pilot group moves first and reaches exactly what it was granted." },
+      { Icon: ShieldCheck, title: "No backhaul left", body: "Sessions run device to application once the concentrator is out of the path." },
+      { Icon: ArrowsOutCardinal, title: "Capacity is config", body: "The last stage retires hardware instead of ordering more of it." },
     ],
   },
 ];

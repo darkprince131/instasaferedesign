@@ -204,7 +204,7 @@ export function SplitShowcase() {
               <a className="spl-btn ghost" href="/zero-trust-network-access">See how it works <ArrowRight weight="bold" /></a>
             </div>
             <div className="spl-trust">
-              <span className="spl-trust-lbl">Trusted by 150+ enterprises</span>
+              <span className="spl-trust-lbl">Trusted across BFSI, government and IT</span>
               <div className="spl-logos">
                 {["#0EA5E9,#2563EB","#22C55E,#0F766E","#F59E0B,#EA580C","#8B5CF6,#4F46E5"].map((g,i) => (
                   <span key={i} className="spl-logo" style={{ background: `linear-gradient(135deg,${g})` }} />

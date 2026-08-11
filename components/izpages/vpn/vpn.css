@@ -1,0 +1,183 @@
+/* ============================================================
+   vpn.css — /vpn-alternative
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+/* ---------- page rhythm ---------- */
+.izv-sec { padding: var(--sp-section) 0; }
+.izv-sec--tight { padding: var(--sp-12) 0 var(--sp-10); }
+.izv-sec--alt { background: var(--bg-2); border-block: var(--bw) solid var(--line); }
+
+.izv-head { max-width: 62ch; margin-bottom: var(--sp-10); }
+.izv-head .izv-ey {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.izv-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+  color: var(--tx);
+}
+.izv-head h2 em { font-style: normal; color: var(--accent); }
+.izv-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   00 · HERO — copy only.
+
+   The page's picture is the access plane in the outcomes section;
+   the hero carries the claim and the four properties behind it. Two
+   columns so the headline is not fighting a 46ch paragraph for the
+   same optical line.
+   ============================================================ */
+
+.izvh {
+  position: relative;
+  padding: var(--sp-section) 0 var(--sp-12);
+  background: var(--bg);
+}
+
+.izvh-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: clamp(var(--sp-6), 4vw, var(--sp-12));
+  align-items: end;
+}
+
+.izvh-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-6);
+  min-width: 0;
+}
+
+.izvh-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-xs);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izvh-chip i { font-style: normal; color: var(--accent); }
+.izvh-chip b { font-weight: 400; color: var(--accent); }
+
+.izvh-h1 {
+  /* `.izvh-copy` is align-items: flex-start, so children size to
+     fit-content — without the cap a long headline grows to
+     max-content and runs under the column beside it. */
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--tx);
+}
+.izvh-h1 em { font-style: normal; font-weight: inherit; color: var(--accent); }
+
+.izvh-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  min-width: 0;
+  padding-bottom: var(--sp-1);
+}
+
+.izvh-sub {
+  max-width: 46ch;
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* the four structural claims — a ruled list, not chips: they are
+   properties of the architecture, not features to shop through */
+.izvh-proof {
+  width: 100%;
+  max-width: 42ch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--bw) solid var(--line);
+}
+.izvh-proof li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: var(--bw) solid var(--line);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.izvh-proof svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--allow);
+}
+
+.izvh-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.izvh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  border: var(--bw) solid transparent;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izvh-btn svg { width: 14px; height: 14px; transition: transform var(--dur) var(--ease); }
+.izvh-btn:hover svg { transform: translateX(3px); }
+.izvh-btn-pri {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--btn-ink);
+}
+.izvh-btn-pri:hover { background: color-mix(in srgb, var(--accent) 88%, var(--tx)); }
+.izvh-btn-ghost {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+.izvh-btn-ghost:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.izvh-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .izvh-cols { grid-template-columns: minmax(0, 1fr); }
+  .izvh-copy,
+  .izvh-side { max-width: 62ch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izvh-btn svg { transition: none; }
+}

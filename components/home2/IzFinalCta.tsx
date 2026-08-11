@@ -57,8 +57,9 @@ export function IzFinalCta({ reveal = true }: { reveal?: boolean } = {}) {
           </h2>
 
           <p className="izcta-sub">
-            150+ enterprises and 500,000+ endpoints already run on it. From $2 per
-            user per month, and the prices are published.
+            Runs alongside the VPN you have, app by app, until there is
+            nothing left to switch off. Nothing to rack, no network to
+            re-architect.
           </p>
 
           <div className="izcta-actions">

@@ -697,6 +697,525 @@
   filter: brightness(0) invert(1);
 }
 
+/* ---------- Secure remote access plane ----------
+   viewBox is 1010 wide, so it renders near 0.68 scale in the visual
+   column — 16px viewBox type lands near 11px actual, matching the IAM
+   and device-posture planes. Check the EFFECTIVE size on screen, not
+   the number in this file. */
+
+.iz-art--sra .a-text {
+  font-size: 16px;
+}
+.iz-art--sra .sr-sm {
+  font-size: 13px;
+}
+
+
+/* ---------- the drawn glyph set ----------
+   The other half of the icon vocabulary (see DrawnGlyphs.tsx). Stroke
+   width is set per glyph in the markup because the group is scaled;
+   only colour lives here. */
+
+.iz-art .a-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .a-glyph--mute {
+  stroke: var(--tx-mute);
+}
+.iz-art .a-glyph--accent {
+  stroke: var(--accent);
+}
+.iz-art .a-glyph--allow {
+  stroke: var(--allow);
+}
+.iz-art .a-glyph--deny {
+  stroke: var(--deny);
+}
+.iz[data-theme="dark"] .iz-art .a-glyph--accent,
+.iz .iz-inverted .iz-art .a-glyph--accent {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 40%, transparent));
+}
+
+/* ============================================================
+   THE ICON LAYER — one family, one stroke, tokenised tones.
+
+   Phosphor glyphs nest as sub-SVGs with `fill: currentColor`, so the
+   ONLY thing set here is `color`. Never a fill attribute in the
+   markup: that is how an illustration ends up with a hue that does
+   not follow the theme.
+
+   Sizes live in ArtIcon's IC scale, not here.
+   ============================================================ */
+
+.iz-art .a-ic {
+  overflow: visible;
+}
+.iz-art .a-ic--ink {
+  color: var(--tx);
+}
+.iz-art .a-ic--dim {
+  color: var(--tx-dim);
+}
+.iz-art .a-ic--mute {
+  color: var(--tx-mute);
+}
+.iz-art .a-ic--accent {
+  color: var(--accent);
+}
+.iz-art .a-ic--allow {
+  color: var(--allow);
+}
+.iz-art .a-ic--deny {
+  color: var(--deny);
+}
+/* dark lifts the accent glyphs the way it lifts every other accent
+   mark in this file — the reference's icons glow, they do not sit flat */
+.iz[data-theme="dark"] .iz-art .a-ic--accent,
+.iz .iz-inverted .iz-art .a-ic--accent {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+
+/* ---------- Secure VoIP session ----------
+   The meters are the only numbers in the family that a reader is meant
+   to READ rather than register, so they get their own size step. */
+
+.iz-art--voip .a-text {
+  font-size: 16px;
+}
+.iz-art--voip .vo-sm {
+  font-size: 13px;
+}
+.iz-art--voip .vo-big {
+  font-size: 30px;
+}
+.iz-art--voip .vo-unit {
+  font-size: 15px;
+  fill: var(--tx-mute);
+}
+
+.iz-art .vo-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .vo-glyph--accent {
+  stroke: var(--accent);
+}
+.iz-art .vo-face {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.iz-art .vo-hub {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+/* the two voices: accent, because the payload is the point */
+.iz-art .vo-wave {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 70%, transparent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.iz-art .vo-node-on {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art .a-allow {
+  fill: var(--allow);
+}
+
+/* ---------- Hybrid work stack ----------
+   Slabs, not cards: a stack is one object seen edge-on, so the fills
+   step DOWN the column rather than all sitting at the same value. */
+
+.iz-art--hyb .a-text {
+  font-size: 16px;
+}
+.iz-art--hyb .hy-sm {
+  font-size: 13px;
+}
+
+.iz-art .hy-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .hy-glyph--accent {
+  stroke: var(--accent);
+}
+.iz-art .hy-slab {
+  fill: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  stroke: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
+  stroke-width: 1.2;
+}
+/* the second stack, drawn as absence: outline only, dashed, muted */
+.iz-art .hy-ghost {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+/* ---------- DevOps enclosure ----------
+   viewBox 1010 wide → ~0.68 scale in the visual column. Glyphs here
+   are DRAWN rather than taken from the icon set: the family carries
+   both, and the variety is deliberate. One stroke weight throughout,
+   which is what keeps hand-drawn from reading as ragged. */
+
+.iz-art--dev .a-text {
+  font-size: 16px;
+}
+.iz-art--dev .dv-sm {
+  font-size: 13px;
+}
+
+.iz-art .dv-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .dv-glyph--accent {
+  stroke: var(--accent);
+}
+
+/* THE ENVELOPE. Dashed, because it is a policy boundary rather than a
+   wall, and tinted so the region reads as a place rather than a box. */
+.iz-art .dv-env {
+  fill: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+  stroke-width: 1.4;
+  stroke-dasharray: 6 6;
+}
+/* the single opening */
+.iz-art .dv-gate {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art .dv-arrow {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.iz-art .dv-head {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .dv-siem {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+  stroke-width: 1;
+}
+
+/* ---------- Privileged session record ----------
+   The transcript is the smallest type in the family (11px in a 1010
+   viewBox ≈ 7.5px on screen) ON PURPOSE: it is texture that proves a
+   record exists, and the timeline beside it is what gets read. Do not
+   scale it up — it would fight the timeline for the same job. */
+
+.iz-art--pam .a-text {
+  font-size: 16px;
+}
+.iz-art--pam .pa-sm {
+  font-size: 13px;
+}
+.iz-art--pam .pa-xs {
+  font-size: 11px;
+}
+
+.iz-art .pa-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .pa-glyph--accent {
+  stroke: var(--accent);
+}
+
+/* window chrome takes SEMANTIC tokens, never a borrowed traffic light */
+.iz-art .pa-dot-1 {
+  fill: color-mix(in srgb, var(--deny) 70%, transparent);
+}
+.iz-art .pa-dot-2 {
+  fill: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.iz-art .pa-dot-3 {
+  fill: color-mix(in srgb, var(--allow) 70%, transparent);
+}
+.iz-art .pa-rec {
+  fill: var(--deny);
+}
+.iz-art .pa-caret {
+  fill: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.iz-art .pa-dot-cmd {
+  fill: var(--accent);
+}
+.iz-art .pa-node {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.iz-art .pa-node-on {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+/* ---------- Secure cloud access layer ----------
+   viewBox 1010 wide → ~0.68 scale in the visual column, so 16px lands
+   near 11px actual. Check the EFFECTIVE size on screen. */
+
+.iz-art--scl .a-text {
+  font-size: 16px;
+}
+.iz-art--scl .scl-sm {
+  font-size: 13px;
+}
+
+/* THE LAYER. The only tinted plate in the picture: everything above
+   and below it is drawn on the page's own ground, so the stratum
+   reads as the one thing that is always in the path. */
+.iz-art .scl-layer {
+  fill: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+}
+/* where an environment lands on it */
+.iz-art .scl-port {
+  fill: var(--accent);
+}
+/* the folded corner that makes the panel a sheet */
+.iz-art .scl-fold {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+/* ---------- BYOD boundary ----------
+   viewBox 1010 wide → ~0.68 scale in the visual column, so 16px lands
+   near 11px actual. Check the EFFECTIVE size on screen. */
+
+.iz-art--byd .a-text {
+  font-size: 16px;
+}
+.iz-art--byd .byd-sm {
+  font-size: 13px;
+}
+
+/* the machine: a bezel and a deck, so the screen reads as a device
+   someone owns rather than as another panel */
+.iz-art .byd-bezel {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.iz-art .byd-deck {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.iz-art .byd-hinge {
+  stroke: var(--line-strong);
+  stroke-width: 3;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* THE ARGUMENT. Dashed because it is a policy line, not a wall — and
+   unbroken from top to bottom because it has no gate in it. */
+.iz-art .byd-edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 40%, transparent);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 7;
+}
+
+
+.iz-art .byd-lock {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+}
+
+/* window chrome. The three dots take SEMANTIC tokens rather than a
+   borrowed macOS red/amber/green — this file never introduces a hue
+   of its own. */
+.iz-art .byd-dot-1 {
+  fill: color-mix(in srgb, var(--deny) 70%, transparent);
+}
+.iz-art .byd-dot-2 {
+  fill: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.iz-art .byd-dot-3 {
+  fill: color-mix(in srgb, var(--allow) 70%, transparent);
+}
+
+/* ---------- Third-party vendor pass ----------
+   viewBox 1010 wide → ~0.68 scale in the visual column, so 16px lands
+   near 11px actual. Check the EFFECTIVE size on screen. */
+
+.iz-art--tpa .a-text {
+  font-size: 16px;
+}
+.iz-art--tpa .tp-name {
+  font-size: 19px;
+}
+.iz-art--tpa .tp-sm {
+  font-size: 13px;
+}
+.iz-art--tpa .tp-xs {
+  font-size: 12px;
+}
+/* the two numbers the pass exists to state */
+.iz-art--tpa .tp-big {
+  font-size: 34px;
+}
+
+/* the clock: a full track with the REMAINING arc drawn over it, so
+   the picture shrinks as the grant runs out rather than filling up */
+.iz-art .tp-track {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 8;
+}
+.iz-art .tp-arc {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.iz-art .tp-node {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+/* the terminal state is dashed: the grant stops being a solid thing */
+.iz-art .tp-node-end {
+  fill: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+}
+
+
+/* ---------- VPN access plane ----------
+   viewBox is 980 wide, so it renders near 0.70 scale in the visual
+   column — 16px viewBox type lands near 11px actual, which is the
+   same treatment the IAM plane takes. Check the EFFECTIVE size on
+   screen, not the number in this file. */
+
+.iz-art--vpn .a-text {
+  font-size: 16px;
+}
+.iz-art--vpn .vp-sm {
+  font-size: 13px;
+}
+
+/* the plane's texture: endpoints that are not this session */
+.iz-art .vp-mote {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+/* the concentrator hop the architecture no longer takes */
+.iz-art .vp-hairpin {
+  fill: none;
+  stroke: color-mix(in srgb, var(--deny) 50%, transparent);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+.iz-art .vp-trace {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-art .vp-trace-dot {
+  fill: var(--allow);
+}
+
+/* ---------- T7 migration timeline ----------
+   viewBox is 720 wide, so it renders near 0.96 scale in the visual
+   column — 15px viewBox type lands near 14px actual. Check the
+   EFFECTIVE size on screen, not the number in this file. */
+
+.iz-art--mig .a-text {
+  font-size: 15px;
+}
+
+/* the leg of the VPN bar that is already going: a wash over the plate
+   rather than a second outline, so the bar stays one object */
+.iz-art .mig-bar-off {
+  fill: color-mix(in srgb, var(--deny) 10%, transparent);
+  stroke: color-mix(in srgb, var(--deny) 35%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+/* the session rows: one granted, the rest not reachable */
+.iz-art .mig-row {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+.iz-art .mig-row-on {
+  fill: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+
+/* the hairpin that is no longer taken */
+.iz-art .mig-hair {
+  fill: none;
+  stroke: color-mix(in srgb, var(--deny) 55%, transparent);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+}
+.iz-art .mig-direct {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.iz-art .mig-direct-head {
+  fill: var(--allow);
+}
+
+.iz-art .mig-spine {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.iz-art .mig-node {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.4;
+}
+.iz-art .mig-node-on {
+  fill: var(--accent);
+  stroke: none;
+}
+
 /* ============================================================
    THE OUTLINE DRAW-IN
 
@@ -1007,5 +1526,27 @@
   .izo.in .iz-art .z-dot-ok {
     animation: none;
     opacity: 1;
+  }
+}
+
+/* ============================================================
+   PHONE LABEL DROP — separate from the static block above on
+   purpose: reduced motion means "do not move", not "read less", so
+   this is width-only.
+
+   The rule (docs/three-outcomes-rule.md §4): an artifact carrying
+   more than eight labels drops to the five that matter on a phone,
+   and keeps its accent element. At ~340px wide the 13px viewBox type
+   in a 1010-unit plane renders at 4px, so `a-opt` labels are not
+   shrinking — they are unreadable, and dropping them leaves the
+   panels reading as what they are.
+
+   `display: none` rather than opacity, so nothing above can win it
+   back: the reveal rules only ever set opacity.
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .iz-art .a-opt {
+    display: none;
   }
 }

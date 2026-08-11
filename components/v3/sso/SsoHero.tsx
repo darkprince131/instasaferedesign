@@ -19,7 +19,7 @@ export function SsoHero() {
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }} className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
           SAML 2.0, OAuth and OpenID SSO with desktop SSO, directory sync and device authentication — so people sign in
-          once and reach everything. From $1/user/month.
+          once and reach everything.
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.66 }} className="mt-9 flex flex-wrap items-center justify-center gap-4">

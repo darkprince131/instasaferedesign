@@ -1,0 +1,207 @@
+/* ============================================================
+   answers.css — the illustrations that sit in IzAnswerStrip's proof
+   slot. These are EXPLAINERS: they teach a mechanism to a reader who
+   does not know it yet, which is a different job from the outcomes
+   artifacts (those argue a conclusion to a reader who does).
+
+   They borrow the `.iz-art` vocabulary from illustrations.css so the
+   two families share plates, chips, dashes and drawn glyphs, and add
+   only what an explainer needs: numbered steps, a panel with weight,
+   and a refused state.
+
+   All values are iz-system.css tokens.
+   ============================================================ */
+
+/* ---------- type ----------
+   viewBox is 720 wide against a ~518px slot (≈0.72), so these land
+   near 13px / 11px / 9px on screen. Anything smaller than 13px in
+   here is a row label or a log line, never a sentence. */
+
+/* EVERY size rule in this block is `.iz-art.iz-ans`, not `.iz-ans`.
+   illustrations.css sets `.iz-art .a-text { font-size: 13px }` at
+   (0,2,0), so the base needs three classes to beat it — and once the
+   base is at (0,3,0), the smaller steps must match it or they lose to
+   their own base and every label renders at 18px. That shipped once
+   and blew four labels out of their chips. */
+.iz-art.iz-ans .a-text {
+  font-size: 18px;
+}
+.iz-art.iz-ans .an-sm {
+  font-size: 15px;
+}
+.iz-art.iz-ans .an-xs {
+  font-size: 13px;
+}
+/* the dots stand in for a password; they need to read as glyphs, not
+   as a word set in the same colour as a label */
+.iz-art.iz-ans .an-dots {
+  letter-spacing: 0.24em;
+}
+/* the step number inside a panel title */
+.iz-ans .an-n {
+  fill: var(--accent);
+}
+
+/* ---------- the numbered steps ----------
+   The only two or three accent rings in each picture. Everything else
+   is context for them, so nothing else may take this treatment. */
+
+.iz-ans .an-step {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.iz-art.iz-ans .an-step-n {
+  fill: var(--accent);
+  font-size: 14px;
+}
+
+/* The panel the whole answer turns on — one per picture. It is a
+   CONTAINER, so it stays on the page's own surface and takes its
+   emphasis from the border and the shadow; a tinted fill at this size
+   reads as a highlighted state instead of as the subject. */
+.iz-ans .an-panel {
+  fill: var(--surface);
+  stroke: color-mix(in srgb, var(--accent) 50%, var(--line-strong));
+  stroke-width: 1.3;
+}
+/* the small decision node, where the tint IS the emphasis */
+.iz-ans .an-node {
+  fill: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  stroke: color-mix(in srgb, var(--accent) 50%, var(--line-strong));
+  stroke-width: 1.3;
+}
+
+/* the thing that is deliberately unlit: a gateway nobody can see */
+.iz-ans .an-dark {
+  fill: var(--surface-2);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+
+/* the fork at the end of the ZTNA ladder */
+.iz-ans .an-granted {
+  fill: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+}
+.iz-ans .an-unreachable {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+}
+.iz-ans .an-dot-no {
+  fill: var(--deny);
+}
+
+/* paper lifts the plates; dark lets the accent carry the depth —
+   same treatment the outcomes artifacts take, so the two families
+   sit at the same z */
+.iz[data-theme="paper"] .iz-ans .a-plate,
+.iz[data-theme="paper"] .iz-ans .an-panel,
+.iz[data-theme="paper"] .iz-ans .an-node {
+  filter: drop-shadow(0 6px 14px rgba(24, 18, 10, 0.09)) drop-shadow(0 1px 2px rgba(24, 18, 10, 0.06));
+}
+.iz[data-theme="dark"] .iz-ans .an-step,
+.iz[data-theme="dark"] .iz-ans .an-granted {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+
+/* ============================================================
+   THE REVEAL — and the cascade note that matters.
+
+   illustrations.css HIDES every `.iz-art` element by default and
+   restores it under `.izo.in`. An answer strip is not an `.izo`, so
+   without the rules below these pictures render permanently blank.
+
+   The hide rules are:
+     `.iz-art text` …                       (0,2,1) via :not()
+     `.iz-art .z-dash-accent { opacity: 0 }` (0,2,0)
+
+   So every restore here is written with THREE classes plus the
+   element (`.izans-art.in .iz-art text`), which clears both. If you
+   add a selector to illustrations.css's phase-1 list, add its twin
+   here — this is the fifth time this file family has been bitten by
+   exactly this.
+   ============================================================ */
+
+.izans-art .iz-art [data-draw] {
+  transition: stroke-dashoffset 520ms cubic-bezier(0.4, 0, 0.2, 1) 80ms;
+}
+.izans-art.in .iz-art [data-draw] {
+  stroke-dashoffset: 0;
+}
+
+.izans-art.in .iz-art text,
+.izans-art.in .iz-art rect,
+.izans-art.in .iz-art circle,
+.izans-art.in .iz-art ellipse,
+.izans-art.in .iz-art image,
+.izans-art.in .iz-art line,
+.izans-art.in .iz-art polyline,
+.izans-art.in .iz-art path:not([class*="z-dash"]) {
+  opacity: 1;
+}
+
+/* the ladder connects in authored order, then stops */
+.izans-art.in .iz-art .z-dash-accent,
+.izans-art.in .iz-art .z-dash-neutral {
+  animation: iz-art-connect 620ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: calc(560ms + var(--seg, 0) * 70ms);
+}
+
+/* ---------- phone and reduced motion: the finished frame ----------
+   Width-only would be wrong here: an explainer that never assembles
+   is fine, but one that stays blank is not, so BOTH conditions land
+   on the final state rather than on nothing. */
+
+@media (max-width: 900px), (prefers-reduced-motion: reduce) {
+  .izans-art .iz-art [data-draw],
+  .izans-art .iz-art text,
+  .izans-art .iz-art rect,
+  .izans-art .iz-art circle,
+  .izans-art .iz-art ellipse,
+  .izans-art .iz-art image,
+  .izans-art .iz-art line,
+  .izans-art .iz-art polyline,
+  .izans-art .iz-art path,
+  .izans-art .iz-art path:not([class*="z-dash"]),
+  .izans-art .iz-art .z-dash-accent,
+  .izans-art .iz-art .z-dash-neutral {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transition: none;
+    animation: none;
+  }
+  /* MIRROR THE LIVE SELECTOR. The connect rule above is written at
+     `.izans-art.in .iz-art .z-dash-*` (0,4,0); the blanket kill is
+     (0,3,0) and loses to it, so the dashes kept animating on phones
+     and under reduced motion until this twin existed. */
+  .izans-art.in .iz-art .z-dash-accent,
+  .izans-art.in .iz-art .z-dash-neutral {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ---------- the second tier of labels ----------
+   Dropped when the PICTURE is too small to carry them, which is not
+   the same question as how wide the window is: the answer slot is
+   690px on a narrow desktop and 320px on a phone, and a viewport
+   media query threw the labels away in the first case too. A
+   container query asks the only question that matters — how big did
+   this illustration actually render. */
+
+.izans-art {
+  container-type: inline-size;
+}
+
+@container (max-width: 430px) {
+  .iz-ans .an-opt {
+    display: none;
+  }
+}
+
+/* No container, no query: a browser without container queries keeps
+   every label, which is the safe direction to fail in. */

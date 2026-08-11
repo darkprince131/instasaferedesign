@@ -21,7 +21,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Single Sign-On (SSO) — InstaSafe ZTNA",
   description:
-    "One login, every app, zero password fatigue. SAML 2.0, OAuth and OpenID SSO with desktop SSO, directory sync and device authentication — from $1/user/month.",
+    "One login, every app, zero password fatigue. SAML 2.0, OAuth and OpenID SSO with desktop SSO, directory sync and device authentication.",
   alternates: { canonical: "/zero-trust-features/single-sign-on" },
   robots: { index: false, follow: false },
 };
@@ -43,7 +43,7 @@ export default function SsoPageV2() {
           <div className="relative mx-auto max-w-3xl px-5 text-center lg:px-8">
             <AnimatedText as="h2" text="Give your team one door." highlight={["one", "door."]} className="text-balance text-4xl font-bold tracking-tight sm:text-5xl" />
             <p className="mx-auto mt-6 max-w-xl text-lg text-[var(--text-secondary)]">
-              SSO from $1/user/month, with MFA and device trust layered in at the login. See it on your own apps in 30 minutes.
+              SSO with MFA and device trust layered in at the login. See it on your own apps in 30 minutes.
             </p>
             <div className="mt-9 flex justify-center">
               <a href="/book-a-demo" className="group inline-flex items-center gap-2 rounded-full bg-[var(--btn-bg)] px-8 py-4 text-base font-semibold text-[var(--btn-fg)] transition-transform hover:scale-[1.03]">

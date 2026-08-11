@@ -74,7 +74,7 @@ const BADGES = ["NIST SP 800-207", "ISO 27001", "CSA SDP"];
 
 export function IzProofGrid({
   eyebrow = "Why InstaSafe",
-  headline = ["150+ enterprises rely on us for", "Zero Trust that doesn't get in the way."],
+  headline = ["Regulated sectors rely on us for", "Zero Trust that doesn't get in the way."],
   signals = SIGNALS,
   claims = CLAIMS,
 }: {
@@ -134,8 +134,8 @@ export function IzProofGrid({
                 <span key={i} className="izpg-dot" style={{ ["--i" as string]: i }} />
               ))}
             </div>
-            <b>500,000+</b>
-            <span>endpoints secured</span>
+            <b>202</b>
+            <span>event types logged</span>
           </div>
         </div>
 

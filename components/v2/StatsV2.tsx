@@ -5,8 +5,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 const stats = [
-  { end: 500000, suffix: "+", label: "Endpoints secured" },
-  { end: 150, suffix: "+", label: "Enterprises" },
+  { end: 144, suffix: "", label: "Named policy rules" },
+  { end: 21, suffix: "", label: "Policy combinations" },
   { end: 202, suffix: "", label: "Event types logged" },
   { end: 25, suffix: "", label: "Device posture checks" },
 ];

@@ -19,7 +19,7 @@ export function FinalCTA() {
           Ready to <span className="grad-text">Retire Your VPN?</span>
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-pretty text-base text-[var(--text-secondary)] sm:text-lg">
-          Join 150+ enterprises across BFSI, Government, Logistics, and IT who&apos;ve made
+          Join the BFSI, government, logistics and IT teams who&apos;ve made
           the switch.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">

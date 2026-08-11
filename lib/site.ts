@@ -31,6 +31,20 @@ export interface PageDef {
   desc?: string; // meta description (defaults to sub)
   kind: PageKind;
   points?: { h: string; p: string }[];
+  /**
+   * Outbound destinations a hub page sends visitors to. Optional and
+   * additive — pages without it render exactly as before. Each tile may
+   * carry a second link (`altLabel` + `altHref`) for the common case of
+   * one destination with two views, e.g. upcoming vs past events.
+   */
+  tiles?: {
+    h: string;
+    p: string;
+    href: string;
+    cta: string;
+    altHref?: string;
+    altLabel?: string;
+  }[];
 }
 
 const P = (p: PageDef): PageDef => ({ ...p, desc: p.desc ?? p.sub });
@@ -171,21 +185,9 @@ const solutions: PageDef[] = [
     highlight: ["Every", "Way", "You", "Work."],
     sub: "From retiring the VPN to securing remote teams, DevOps, cloud apps and VoIP — InstaSafe ZTNA maps one platform onto every access use case.",
   }),
-  P({
-    path: "/vpn-alternative",
-    kind: "solution",
-    eyebrow: "VPN Alternative",
-    title: "VPN Alternative — Replace Your VPN with Zero Trust",
-    h1: "It's Time to Retire Your VPN.",
-    highlight: ["Retire", "Your", "VPN."],
-    sub: "VPNs grant network-wide trust, expose ports and slow your team down. InstaSafe ZTNA replaces them with app-level zero trust — faster, invisible and fully audited.",
-    points: [
-      { h: "Why VPNs fail", p: "Network-wide trust, exposed ports, latency and zero per-app visibility." },
-      { h: "App-level access", p: "Users reach one authorised app at a time — never the network behind it." },
-      { h: "Migration path", p: "Keep the VPN running, move app-by-app, retire when ready." },
-      { h: "Direct-to-app speed", p: "No backhauling through a concentrator — traffic goes device to app." },
-    ],
-  }),
+  /* /vpn-alternative was promoted to a bespoke build — app/vpn-alternative.
+     Its title and description moved there byte-identical; the registry
+     entry is gone so the catch-all no longer claims the slug. */
   P({
     path: "/secure-remote-access",
     kind: "solution",
@@ -439,9 +441,9 @@ const industry: PageDef[] = [
     path: "/case-studies",
     kind: "industry",
     eyebrow: "Customers",
-    title: "Customers & Case Studies — Trusted by 150+ Enterprises",
-    h1: "Trusted by 150+ Enterprises Across India.",
-    highlight: ["150+", "Enterprises"],
+    title: "Customers & Case Studies — Zero Trust in Production",
+    h1: "Zero Trust, in Production.",
+    highlight: ["in", "Production."],
     sub: "Government PSUs, private banks and the world's largest BPM provider run zero trust on InstaSafe ZTNA. Read how they made the switch.",
   }),
   ...caseStudies.map(([path, h1, sub]) =>
@@ -526,6 +528,22 @@ const resource: PageDef[] = [
     h1: "Everything, in One Resource Center.",
     highlight: ["One", "Resource", "Center."],
     sub: "Brochures, datasheets, webinars and competitor comparison guides for the InstaSafe ZTNA platform.",
+    tiles: [
+      {
+        h: "Blog",
+        p: "Zero trust, ZTNA, MFA and identity — product thinking, threat analysis and migration playbooks from the team.",
+        href: "/resources/blog",
+        cta: "Read the blog",
+      },
+      {
+        h: "Events & Meetups",
+        p: "InstaSafe meetups, roundtables and conference sessions — where the team is speaking next, and what you missed.",
+        href: "https://meetups.instasafe.com/events",
+        cta: "Upcoming events",
+        altHref: "https://meetups.instasafe.com/events?type=completed",
+        altLabel: "Past events",
+      },
+    ],
   }),
   P({
     path: "/blog",
@@ -547,7 +565,7 @@ const company: PageDef[] = [
     title: "About InstaSafe — Simplifying Cybersecurity Since 2012",
     h1: "Simplifying Cybersecurity Since 2012.",
     highlight: ["Since", "2012."],
-    sub: "InstaSafe is one of Asia's fastest-growing cybersecurity companies — securing 500,000 endpoints across 150+ enterprises and 100+ Fortune 2000 clients on five continents.",
+    sub: "InstaSafe is one of Asia's fastest-growing cybersecurity companies — building zero trust access for regulated sectors from Bengaluru, California and Germany.",
     points: [
       { h: "Founded 2012", p: "Headquartered in Bengaluru, led by CEO Sandip Panda." },
       { h: "Backed early", p: "Microsoft Ventures (2014) and Indian Angel Network (2017)." },
@@ -562,11 +580,14 @@ const company: PageDef[] = [
     title: "Pricing — Enterprise Security, Startup Pricing",
     h1: "Enterprise Security. Startup Pricing.",
     highlight: ["Startup", "Pricing."],
-    sub: "Three plans, public prices, billed annually. Start small and scale — or talk to us about enterprise.",
+    sub: "Three plans, billed annually. Start small and scale — talk to us for a quote against your own user count.",
     points: [
-      { h: "SSO — $1/user/mo", p: "Unlimited SAML/OAuth/OIDC, desktop SSO, directory sync, device auth, SIEM, 11 reports." },
-      { h: "MFA — $1/user/mo", p: "TOTP, FIDO2, push, biometrics, passwordless, OS MFA, backup codes, conditional MFA." },
-      { h: "Zero Trust Platform — $2/user/mo", p: "25 device checks, 7 app types, session recording, agent + agentless, 7 SIEM formats, 202 event types." },
+      /* Plan CONTENTS, not plan prices — the site does not publish
+         numbers for customers, devices or money. The quote carries the
+         figure. */
+      { h: "SSO", p: "Unlimited SAML/OAuth/OIDC, desktop SSO, directory sync, device auth, SIEM, 11 reports." },
+      { h: "MFA", p: "TOTP, FIDO2, push, biometrics, passwordless, OS MFA, backup codes, conditional MFA." },
+      { h: "Zero Trust Platform", p: "25 device checks, 7 app types, session recording, agent + agentless, 7 SIEM formats, 202 event types." },
     ],
   }),
   P({
@@ -576,7 +597,7 @@ const company: PageDef[] = [
     title: "Book a Demo — See InstaSafe ZTNA in Action",
     h1: "See InstaSafe ZTNA in Action.",
     highlight: ["in", "Action."],
-    sub: "A 30-minute walkthrough tailored to your environment. Trusted by 150+ businesses across every industry and size.",
+    sub: "A 30-minute walkthrough tailored to your environment — your apps, your directory, your policies.",
   }),
   P({
     path: "/contact-us",

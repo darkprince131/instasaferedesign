@@ -77,7 +77,7 @@ type Props = {
 
 export function IzLogoMarquee({
   logos = LOGOS,
-  label = "Trusted by 150+ enterprises",
+  label = "Trusted across BFSI, government, logistics and IT",
   speed = 44,
   className,
 }: Props) {

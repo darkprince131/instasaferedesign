@@ -1,0 +1,370 @@
+/* ============================================================
+   blog.css — /resources/blog index.
+   Every value is an iz-system.css token. Nothing hardcoded.
+
+   The page has one job that most .iz sections do not: hold 330
+   editorial cards without turning into a wall. The devices for that
+   are a hairline lattice (cards share dividers rather than each
+   drawing its own box), a fixed image ratio so no row is ragged, and
+   line-clamped text so every card is the same height regardless of
+   how Ghost cut its excerpt.
+   ============================================================ */
+
+/* ---------- hero ---------- */
+
+.izbl-hero {
+  position: relative;
+  padding: clamp(96px, 12vw, 156px) 0 clamp(var(--sp-12), 7vw, 84px);
+  background: var(--bg);
+}
+
+.izbl-herowrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.izbl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izbl-eyebrow svg { width: 14px; height: 14px; color: var(--accent); }
+
+.izbl-h1 {
+  margin: var(--sp-6) 0 0;
+  max-width: 18ch;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--tx);
+}
+.izbl-h1 em { font-style: normal; font-weight: inherit; color: var(--accent); }
+
+.izbl-sub {
+  margin: var(--sp-6) 0 0;
+  max-width: 62ch;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* Posts are on Ghost, not here. Say so once, near the top, in the
+   monospace voice the rest of the system uses for machine facts —
+   rather than repeating a disclaimer on all 330 cards. */
+.izbl-note {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-6) 0 0;
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) dashed var(--line-strong);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izbl-note svg { width: 11px; height: 11px; color: var(--accent); }
+
+/* ---------- filter row ---------- */
+
+.izbl-body {
+  padding: 0 0 var(--sp-section);
+  background: var(--bg);
+}
+
+.izbl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4) var(--sp-6);
+  padding-bottom: var(--sp-6);
+  margin-bottom: var(--sp-10);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.izbl-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.izbl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  color: var(--tx-dim);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+.izbl-chip i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+.izbl-chip:hover { color: var(--tx); border-color: var(--line-strong); }
+.izbl-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Selected state is an accent EDGE over an accent tint, not a solid
+   accent fill. The site's primary-button recipe (--accent behind
+   --btn-ink) measures 3.68:1 on the paper theme — fine for a 15px
+   button, under AA for a 13.5px chip. The tint keeps the brand colour
+   on the control and puts the label back on --tx at 14:1. */
+.izbl-chip[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  color: var(--tx);
+  font-weight: 500;
+}
+.izbl-chip[aria-pressed="true"] i { color: var(--tx-dim); }
+
+.izbl-count {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+
+/* ---------- grid ---------- */
+
+/* Shared hairlines: the outer border lives on the grid, each card
+   draws only its right + bottom edge, so neighbours never double up
+   into a 2px rule. */
+.izbl-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--bw) solid var(--line);
+  border-left: var(--bw) solid var(--line);
+}
+
+.izbl-card {
+  min-width: 0;
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  background: var(--bg);
+  transition: background var(--dur-fast) var(--ease);
+}
+.izbl-card:hover { background: var(--surface-2); }
+
+.izbl-card-a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--pad-panel);
+  text-decoration: none;
+  color: inherit;
+}
+/* `.iz a` sets its own colour with high specificity elsewhere in the
+   system; naming the anchor's children explicitly keeps the card text
+   on the text tokens instead of inheriting a link colour. */
+.izbl-card-a:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+.izbl-shot {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin-bottom: var(--sp-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.izbl-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--dur) var(--ease);
+}
+.izbl-card:hover .izbl-shot img { transform: scale(1.03); }
+
+.izbl-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.izbl-date { color: var(--tx-dim); }
+/* The topic carries an accent-tinted edge rather than accent TEXT.
+   --accent-p on --bg measures ~3.5:1, which is under AA for something
+   set at --fs-mono; the border does the marking, --tx does the reading. */
+.izbl-topic {
+  padding: 2px var(--sp-2);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: var(--r-2xs);
+  color: var(--tx);
+}
+
+.izbl-title {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-mark);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  /* Ghost titles run to 120+ characters. Clamp so a long one cannot
+     push its row taller than its neighbours. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.izbl-card:hover .izbl-title { color: var(--accent); }
+
+.izbl-excerpt {
+  margin: 0 0 var(--sp-5);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* pushed to the bottom so the affordance lines up across a row even
+   when titles and excerpts run to different lengths */
+.izbl-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: auto;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease);
+}
+.izbl-go svg { width: 12px; height: 12px; transition: transform var(--dur-fast) var(--ease); }
+.izbl-card:hover .izbl-go { color: var(--accent); }
+.izbl-card:hover .izbl-go svg { transform: translate(2px, -2px); }
+
+/* ---------- empty + load more ---------- */
+
+.izbl-empty {
+  margin: 0;
+  padding: var(--sp-12) 0;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--tx-dim);
+}
+
+.izbl-more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-12);
+}
+
+.izbl-morebtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-8);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: transparent;
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.izbl-morebtn i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izbl-morebtn:hover { color: var(--accent); border-color: var(--accent); }
+.izbl-morebtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 980px) {
+  .izbl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .izbl-grid { grid-template-columns: minmax(0, 1fr); }
+  .izbl-h1 { max-width: 100%; }
+  .izbl-filters { flex-direction: column; align-items: flex-start; }
+  /* The chip row is the one thing here that cannot wrap gracefully on a
+     phone — 15 topics stacks four rows deep and buries the grid. Scroll
+     it sideways instead, bled to the viewport edges so the row reads as
+     scrollable rather than as a truncated list.
+
+     The bleed is measured against the element's own box, not against
+     --wrap-gutter: `.iz-railed .iz-wrap` adds --rail-inset on top of
+     the gutter, so a token-based calc undershoots by exactly that much
+     and leaves a visible step at the edge.
+
+     `width: 100vw` is load-bearing, not belt-and-braces. `.izbl-filters`
+     becomes a flex column with `align-items: flex-start` here, so an
+     auto-width row shrink-to-fits its 15 chips to ~1960px and takes the
+     whole document's horizontal scroll with it. `align-self: stretch`
+     does NOT rescue it. State the width outright. */
+  .izbl-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: calc(50vw - 50%);
+  }
+  .izbl-chips::-webkit-scrollbar { display: none; }
+  .izbl-chip { flex: 0 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izbl-shot img,
+  .izbl-go svg {
+    transition: none;
+  }
+  .izbl-card:hover .izbl-shot img { transform: none; }
+  .izbl-card:hover .izbl-go svg { transform: none; }
+}

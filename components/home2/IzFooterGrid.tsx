@@ -51,6 +51,7 @@ const COLUMNS: Column[] = [
       { label: "Case Studies", href: "/case-studies" },
       { label: "Resource Center", href: "/resource-center" },
       { label: "Blog", href: "/blog" },
+      { label: "Events & Meetups", href: "https://meetups.instasafe.com/events" },
       { label: "Pricing", href: "/instasafe-zero-trust-pricing" },
       { label: "Awards", href: "/awards" },
     ],
@@ -151,9 +152,9 @@ export function IzFooterGrid() {
 
           <div className="izfg-proof">
             <div className="izfg-cell izfg-stat">
-              <span className="izfg-cell-head">Proven at scale</span>
-              <b>500,000+</b>
-              <span className="izfg-stat-sub">endpoints secured across 150+ enterprises</span>
+              <span className="izfg-cell-head">Checked before access</span>
+              <b>25 device checks</b>
+              <span className="izfg-stat-sub">re-evaluated during the session, not just at login</span>
             </div>
             <div className="izfg-cell izfg-stat">
               <span className="izfg-cell-head">Built to</span>
