@@ -31,14 +31,21 @@ import {
   Broadcast,
   Certificate,
   ClockCounterClockwise,
+  Compass,
   CurrencyDollar,
+  CursorClick,
   Devices,
   GlobeHemisphereEast,
   LinkSimple,
+  ListChecks,
+  Path,
   Prohibit,
+  Question,
   ShieldCheck,
   Stack,
+  Target,
   UserCheck,
+  Warning,
 } from "@phosphor-icons/react";
 import { AlwaysOnBoot, BlackeningScene, HeroConsole, OutcomesOrbit } from "./ZtnaScenes";
 
@@ -50,13 +57,13 @@ import { AlwaysOnBoot, BlackeningScene, HeroConsole, OutcomesOrbit } from "./Ztn
    ============================================================ */
 
 const ANCHORS = [
-  { id: "what", label: "What is ZTNA" },
-  { id: "problem", label: "The problem" },
-  { id: "signature", label: "Breach simulator" },
-  { id: "how", label: "How it works" },
-  { id: "specs", label: "Quick scan" },
-  { id: "outcomes", label: "Outcomes" },
-  { id: "faq", label: "FAQ" },
+  { id: "what", label: "What is ZTNA", icon: Compass },
+  { id: "problem", label: "The problem", icon: Warning },
+  { id: "signature", label: "Breach simulator", icon: CursorClick },
+  { id: "how", label: "How it works", icon: Path },
+  { id: "specs", label: "Quick scan", icon: ListChecks },
+  { id: "outcomes", label: "Outcomes", icon: Target },
+  { id: "faq", label: "FAQ", icon: Question },
 ];
 
 const FAQ = [

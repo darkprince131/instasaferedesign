@@ -1,4 +1,4 @@
-import { MfaPage } from "@/components/izpages/mfa/MfaPage";
+import { PosturePage } from "@/components/izpages/posture/PosturePage";
 
 import type { Metadata } from "next";
 
@@ -17,19 +17,20 @@ import "@/components/izanswer/answers.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/izfootergrid.css";
-import "@/components/izpages/mfa/mfa.css";
+import "@/components/izpages/posture/posture.css";
 
-/* SEO-locked: this URL carries the equity of the live page. Metadata
-   is unchanged from the v3 build this replaced. */
+/* SEO-locked: this URL is on the live sitemap. Title and description
+   are carried over unchanged from its scaffold registry entry, which
+   was removed when this bespoke route landed. */
 export const metadata: Metadata = {
-  title: "Multi-Factor Authentication (MFA) — InstaSafe",
+  title: "Device Posture Check — Verify the Device, Every Time",
   description:
-    "Adaptive multi-factor authentication from InstaSafe: SMS, email, TOTP, push approval, biometrics and FIDO2 hardware keys. Try the interactive login demo — no account needed.",
-  alternates: { canonical: "/multifactor-authentication" },
+    "Before any connection, InstaSafe ZTNA checks the device against 25 check types and 144 rules across 1,500+ OS combinations — and denies anything that fails.",
+  alternates: { canonical: "/zero-trust-features/device-posture-check" },
 };
 
-/* MfaPage owns the `.iz` wrapper and the theme toggle state (IzNav needs
-   both), so this route stays a thin server component around it. */
+/* PosturePage owns the `.iz` wrapper and the theme toggle state (IzNav
+   needs both), so this route stays a thin server component around it. */
 export default function Page() {
-  return <MfaPage />;
+  return <PosturePage />;
 }

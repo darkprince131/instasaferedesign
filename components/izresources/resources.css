@@ -1,0 +1,607 @@
+/* ============================================================
+   resources.css — /resource-center.
+   Every value is an iz-system.css token. Nothing hardcoded.
+
+   The page holds two card shapes that must not read as two designs:
+   a document card (no image, icon-led) and a video card (16:9 poster).
+   They share the shared-hairline lattice, the same padding token and
+   the same bottom-aligned affordance, so a mixed "Everything" view
+   still scans as one grid. The document card fills the space the
+   poster would have occupied with an oversized, low-contrast file
+   glyph rather than stretching its text — text that grows to fill a
+   card is the thing that makes a mixed grid look broken.
+   ============================================================ */
+
+/* ---------- hero ---------- */
+
+.izrc-hero {
+  position: relative;
+  padding: clamp(96px, 12vw, 156px) 0 clamp(var(--sp-12), 7vw, 84px);
+  background: var(--bg);
+}
+
+.izrc-herowrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.izrc-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izrc-eyebrow svg { width: 14px; height: 14px; color: var(--accent); }
+
+.izrc-h1 {
+  margin: var(--sp-6) 0 0;
+  max-width: 20ch;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--tx);
+}
+.izrc-h1 em { font-style: normal; font-weight: inherit; color: var(--accent); }
+
+.izrc-sub {
+  margin: var(--sp-6) 0 0;
+  max-width: 66ch;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- controls ---------- */
+
+.izrc-body {
+  padding: 0 0 var(--sp-section);
+  background: var(--bg);
+}
+
+.izrc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4) var(--sp-6);
+  padding-bottom: var(--sp-6);
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.izrc-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.izrc-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  color: var(--tx-dim);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+.izrc-tab i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+.izrc-tab:hover { color: var(--tx); border-color: var(--line-strong); }
+.izrc-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Same reasoning as .izbl-chip[aria-pressed]: accent EDGE over an
+   accent tint, never an accent fill under small text. A solid --accent
+   behind --btn-ink measures 3.68:1 on paper, which is under AA at this
+   size; the tint keeps the brand mark and puts the label back on --tx. */
+.izrc-tab[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  color: var(--tx);
+  font-weight: 500;
+}
+
+.izrc-search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: 0 1 300px;
+  padding: var(--sp-3) var(--sp-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--tx-dim);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.izrc-search:focus-within { border-color: var(--accent); }
+.izrc-search svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--tx-dim); }
+.izrc-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  color: var(--tx);
+}
+.izrc-search input::placeholder { color: var(--tx-mute); }
+.izrc-search input:focus { outline: none; }
+/* The webkit clear button is a grey X that sits badly on both themes;
+   the field is short enough to clear by hand. */
+.izrc-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* ---------- topic chips ---------- */
+
+.izrc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+  margin-top: var(--sp-6);
+}
+
+.izrc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  color: var(--tx-dim);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+.izrc-chip i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+.izrc-chip:hover { color: var(--tx); border-color: var(--line-strong); }
+.izrc-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.izrc-chip[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  color: var(--tx);
+  font-weight: 500;
+}
+
+.izrc-count {
+  margin: var(--sp-6) 0 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+.izrc-empty {
+  margin: 0;
+  padding: var(--sp-12) 0;
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- sections ---------- */
+
+.izrc-sec { margin-top: var(--sp-12); }
+
+.izrc-sechead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-3) var(--sp-6);
+  margin-bottom: var(--sp-6);
+}
+
+.izrc-h2 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+
+.izrc-secnote {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+
+/* ---------- grid ---------- */
+
+/* Shared hairlines, same recipe as .izbl-grid: the outer border lives
+   on the grid, each card draws only its right + bottom edge, so
+   neighbours never double up into a 2px rule. */
+.izrc-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--bw) solid var(--line);
+  border-left: var(--bw) solid var(--line);
+}
+
+.izrc-card {
+  min-width: 0;
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  background: var(--bg);
+  transition: background var(--dur-fast) var(--ease);
+}
+.izrc-card:hover { background: var(--surface-2); }
+
+/* The video card's trigger is a <button>; reset the UA styling that
+   comes with it so both card types share one box. `text-align: left`
+   and `font: inherit` are the two that actually bite. */
+.izrc-card-a {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: var(--pad-panel);
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.izrc-card-a:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+/* ---------- document card ---------- */
+
+.izrc-doc-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: var(--sp-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface-2);
+  color: var(--line-strong);
+  transition: color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+.izrc-doc-ico svg { width: 34%; height: auto; max-width: 76px; }
+.izrc-card--doc:hover .izrc-doc-ico {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+/* ---------- video card ---------- */
+
+.izrc-shot {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: var(--sp-5);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.izrc-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--dur) var(--ease);
+}
+.izrc-card--vid:hover .izrc-shot img { transform: scale(1.03); }
+
+/* The play badge is the only place on the page that uses a solid
+   accent fill — it sits on an arbitrary photographic poster, where a
+   tint would be unreadable, and it carries a glyph rather than text so
+   the small-text contrast rule does not apply. */
+.izrc-play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--btn-ink);
+  box-shadow: var(--panel-sh);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.izrc-play svg { width: 20px; height: 20px; margin-left: 2px; }
+.izrc-card--vid:hover .izrc-play { transform: scale(1.08); }
+
+/* ---------- shared card text ---------- */
+
+.izrc-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.izrc-dim { color: var(--tx-dim); }
+/* Accent-tinted EDGE, not accent text — --accent-p on --bg is ~3.5:1,
+   under AA at --fs-mono. The border marks it; --tx reads it. */
+.izrc-topic {
+  padding: 2px var(--sp-2);
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: var(--r-2xs);
+  color: var(--tx);
+}
+
+.izrc-title {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-mark);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.izrc-card:hover .izrc-title { color: var(--accent); }
+
+.izrc-blurb {
+  margin: 0 0 var(--sp-5);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* pushed to the bottom so the affordance lines up across a row even
+   when titles and blurbs run to different lengths */
+.izrc-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: auto;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease);
+}
+.izrc-go svg { width: 12px; height: 12px; transition: transform var(--dur-fast) var(--ease); }
+.izrc-card:hover .izrc-go { color: var(--accent); }
+.izrc-card--doc:hover .izrc-go svg { transform: translateY(2px); }
+.izrc-card--vid:hover .izrc-go svg { transform: translateX(2px); }
+
+/* ---------- elsewhere ---------- */
+
+/* Same lattice as .izrc-grid, but three fixed columns that collapse to
+   one — these are three destinations, not a filtered set, so they never
+   need the two-column intermediate step. */
+.izrc-else {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--bw) solid var(--line);
+  border-left: var(--bw) solid var(--line);
+}
+
+.izrc-elsecard {
+  min-width: 0;
+  border-right: var(--bw) solid var(--line);
+  border-bottom: var(--bw) solid var(--line);
+  background: var(--bg);
+  transition: background var(--dur-fast) var(--ease);
+}
+.izrc-elsecard:hover { background: var(--surface-2); }
+
+.izrc-elsecard a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--pad-panel);
+  text-decoration: none;
+  color: inherit;
+}
+.izrc-elsecard a:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+.izrc-elsecard:hover .izrc-title { color: var(--accent); }
+.izrc-elsecard:hover .izrc-go { color: var(--accent); }
+.izrc-elsecard:hover .izrc-go svg { transform: translate(2px, -2px); }
+
+/* ---------- lightbox ---------- */
+
+.izrc-lb {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  background: color-mix(in srgb, #000 78%, transparent);
+  backdrop-filter: blur(6px);
+  animation: izrc-fade var(--dur-fast) var(--ease);
+}
+@keyframes izrc-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.izrc-lb-panel {
+  width: min(1040px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.izrc-lb-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.izrc-lb-title {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-mark);
+  line-height: var(--lh-tight);
+  /* The overlay is its own surface, not the themed page, so this is
+     deliberately fixed white rather than --tx: --tx is near-black on
+     the paper theme and would vanish here. */
+  color: #fff;
+}
+
+.izrc-lb-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: var(--bw) solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.izrc-lb-close svg { width: 16px; height: 16px; }
+.izrc-lb-close:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+.izrc-lb-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.izrc-lb-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  background: #000;
+}
+.izrc-lb-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.izrc-lb-out {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+}
+.izrc-lb-out svg { width: 12px; height: 12px; }
+.izrc-lb-out:hover { color: #fff; }
+.izrc-lb-out:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 980px) {
+  .izrc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .izrc-grid,
+  .izrc-else { grid-template-columns: minmax(0, 1fr); }
+  .izrc-h1 { max-width: 100%; }
+  .izrc-controls { flex-direction: column; align-items: stretch; }
+  .izrc-search { flex: 1 1 auto; }
+
+  /* Same bleed as .izbl-chips, and for the same reason: these rows
+     cannot wrap gracefully on a phone, and `width: 100vw` is
+     load-bearing — inside a stretched flex column an auto-width row
+     shrink-to-fits its buttons and drags the document's horizontal
+     scroll with it. The bleed is measured against the element's own
+     box, not --wrap-gutter, because `.iz-railed .iz-wrap` adds
+     --rail-inset on top of the gutter. */
+  .izrc-tabs,
+  .izrc-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: calc(50vw - 50%);
+  }
+  .izrc-tabs::-webkit-scrollbar,
+  .izrc-chips::-webkit-scrollbar { display: none; }
+  .izrc-tab,
+  .izrc-chip { flex: 0 0 auto; }
+
+  .izrc-lb { padding: var(--sp-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izrc-shot img,
+  .izrc-go svg,
+  .izrc-play {
+    transition: none;
+  }
+  .izrc-card--vid:hover .izrc-shot img,
+  .izrc-card--vid:hover .izrc-play,
+  .izrc-card--doc:hover .izrc-go svg,
+  .izrc-card--vid:hover .izrc-go svg,
+  .izrc-elsecard:hover .izrc-go svg { transform: none; }
+  .izrc-lb { animation: none; }
+}

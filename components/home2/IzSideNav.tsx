@@ -1,62 +1,265 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CaretUp, PushPin, type Icon } from "@phosphor-icons/react";
+import "./izsidenav.css";
 
 /* ============================================================
-   00bb · IzSideNav — in-page section nav as a right-edge rail.
+   00bb · IzSideNav — in-page section navigation.
 
-   Replaces the horizontal sub-nav bar. That bar sat under a
-   transparent site nav with its own opaque background (two stacked
-   bars reading as two different systems) and spent a full band of
-   vertical space on navigation nobody asked for.
+   Two surfaces, one source of truth:
 
-   This spends none. Collapsed it is a slim orange blade on the
-   right edge with one tick per section and a longer marker on the
-   current one — position without labels. Hover or keyboard focus
-   slides the labels out; the blade is trapezoidal so it reads as a
-   tab attached to the edge rather than a floating pill.
+   DESKTOP — a collapsed orange handle on the page edge carrying one
+   tick per section, longer and opaque on the current one, so the rail
+   shows position with no labels open. Hover or keyboard focus slides
+   out a panel: a spine with a progress fill, one dot per section, and
+   a pin for anyone who wants it to stay. It costs no layout — the old
+   horizontal sub-nav bar spent a full band of vertical space and sat
+   under a transparent site nav as a second opaque bar, which read as
+   two different systems stacked.
 
-   ▸ REUSE ◂ built for every page with sections worth jumping
-   between. Pass `items`; it tracks the active one itself.
-   Hidden below 900px — a fixed side rail on a phone is noise.
+   MOBILE — a bottom pill showing "3/7 · Quick scan" with a hairline
+   progress bar, opening a sheet with the same list. The previous
+   version hid entirely below 900px, which meant the longest pages
+   lost their navigation on the device most likely to need it. The
+   pill is inset from the right so it never lands under the help
+   launcher (fixed at right:20 / 56px wide — see help-widget.css).
+
+   ▸ REUSE ◂ every page with sections worth jumping between:
+       <IzSideNav items={[{ id: "what", label: "What is ZTNA" }]} />
+   `icon` is optional per item; without one the dot carries the
+   section number, which is honest and needs no art. `side` defaults
+   to the left edge. The component sets `scroll-margin-top` on each
+   target itself, so anchor jumps clear the 66px sticky nav without a
+   global scroll-padding rule.
    ============================================================ */
 
-export type SideNavItem = { id: string; label: string };
+export type SideNavItem = { id: string; label: string; icon?: Icon };
 
-export function IzSideNav({ items }: { items: SideNavItem[] }) {
-  const [active, setActive] = useState(items[0]?.id);
+/* the sticky site nav is 66px; leave it plus a little air */
+const SCROLL_MARGIN = 90;
+/* a section becomes current once its top passes this reading line */
+const READ_LINE = 160;
 
+export function IzSideNav({
+  items,
+  side = "left",
+  label = "On this page",
+}: {
+  items: SideNavItem[];
+  side?: "left" | "right";
+  label?: string;
+}) {
+  const [active, setActive] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const [sheet, setSheet] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* Anchor targets are owned by the page, not by this component, so the
+     offset is applied to them here rather than as a global
+     scroll-padding rule that would also move every other in-page link. */
   useEffect(() => {
-    let raf = 0;
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      let best = items[0]?.id;
-      for (const it of items) {
-        const el = document.getElementById(it.id);
-        /* the section that has most recently crossed the reading line */
-        if (el && el.getBoundingClientRect().top - 160 <= 0) best = it.id;
-      }
-      setActive((p) => (p === best ? p : best));
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    for (const it of items) {
+      const el = document.getElementById(it.id);
+      if (el) el.style.scrollMarginTop = `${SCROLL_MARGIN}px`;
+    }
   }, [items]);
 
+  /* Scrollspy. A scroll listener, not an IntersectionObserver with a
+     mid-viewport band: a section shorter than that band never
+     intersects it, and the rail then sticks on whatever came before.
+     "The last section whose top has crossed the reading line" is true
+     for every section length. */
+  useEffect(() => {
+    const read = () => {
+      let best = 0;
+      items.forEach((it, i) => {
+        const el = document.getElementById(it.id);
+        if (el && el.getBoundingClientRect().top - READ_LINE <= 0) best = i;
+      });
+      setActive((p) => (p === best ? p : best));
+    };
+    read();
+    window.addEventListener("scroll", read, { passive: true });
+    window.addEventListener("resize", read);
+    return () => {
+      window.removeEventListener("scroll", read);
+      window.removeEventListener("resize", read);
+    };
+  }, [items]);
+
+  const hold = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  };
+  const doOpen = useCallback(() => {
+    hold();
+    setOpen(true);
+  }, []);
+  /* the cursor has to cross the gap between handle and panel */
+  const doClose = useCallback(() => {
+    hold();
+    if (pinned) return;
+    closeTimer.current = setTimeout(() => setOpen(false), 140);
+  }, [pinned]);
+
+  useEffect(() => () => hold(), []);
+
+  // Escape closes everything; arrows walk the list and scroll with it
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setPinned(false);
+        setOpen(false);
+        setSheet(false);
+        return;
+      }
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+      if (!rootRef.current?.contains(document.activeElement)) return;
+      e.preventDefault();
+      const n = Math.min(items.length - 1, Math.max(0, active + (e.key === "ArrowDown" ? 1 : -1)));
+      rootRef.current.querySelector<HTMLAnchorElement>(`.izsn-item[data-i="${n}"]`)?.focus();
+      document.getElementById(items[n].id)?.scrollIntoView({ behavior: "smooth" });
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [active, items]);
+
+  // focus leaving the rail closes it, same as the mouse leaving
+  useEffect(() => {
+    if (!open) return;
+    const onFocus = (e: FocusEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) doClose();
+    };
+    document.addEventListener("focusin", onFocus);
+    return () => document.removeEventListener("focusin", onFocus);
+  }, [open, doClose]);
+
+  // lock the page behind the mobile sheet
+  useEffect(() => {
+    if (!sheet) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sheet]);
+
+  /* one item is not navigation */
+  if (items.length < 2) return null;
+
+  const pct = (active / (items.length - 1)) * 100;
+
+  const list = (where: "d" | "m") => (
+    <div className="izsn-items">
+      <span className="izsn-spine" aria-hidden="true">
+        <i style={{ height: `${pct}%` }} />
+      </span>
+      {items.map((it, i) => {
+        const Ico = it.icon;
+        return (
+          <a
+            key={it.id}
+            className={`izsn-item${i === active ? " on" : ""}${i < active ? " past" : ""}`}
+            href={`#${it.id}`}
+            data-i={where === "d" ? i : undefined}
+            aria-current={i === active ? "true" : undefined}
+            onClick={() => {
+              setSheet(false);
+              if (!pinned) setOpen(false);
+            }}
+          >
+            <span className="izsn-dot">
+              {Ico ? <Ico size={14} weight="regular" aria-hidden="true" /> : <b>{String(i + 1).padStart(2, "0")}</b>}
+            </span>
+            <span className="izsn-lbl">{it.label}</span>
+          </a>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <nav className="izsn" aria-label="On this page">
-      <ul className="izsn-blade">
-        {items.map((it) => {
-          const on = active === it.id;
-          return (
-            <li key={it.id}>
-              <a href={`#${it.id}`} className={on ? "on" : undefined} aria-current={on ? "true" : undefined}>
-                <span className="izsn-label">{it.label}</span>
-                <i className="izsn-tick" aria-hidden="true" />
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <div ref={rootRef}>
+      {/* ---------------- desktop rail ---------------- */}
+      <div
+        className={`izsn izsn--${side}${open ? " is-open" : ""}${pinned ? " is-pinned" : ""}`}
+        onMouseEnter={doOpen}
+        onMouseLeave={doClose}
+      >
+        <button
+          type="button"
+          className="izsn-handle"
+          aria-expanded={open}
+          aria-controls="izsn-panel"
+          aria-label={open ? "Close section navigation" : "Open section navigation"}
+          onFocus={doOpen}
+          onClick={() => (open && pinned ? (setPinned(false), setOpen(false)) : doOpen())}
+        >
+          {items.map((it, i) => (
+            <span
+              key={it.id}
+              className={`izsn-tick${i === active ? " on" : ""}${i < active ? " done" : ""}`}
+              aria-hidden="true"
+            />
+          ))}
+        </button>
+
+        <nav className="izsn-panel" id="izsn-panel" aria-label={label}>
+          <div className="izsn-head">
+            <span className="izsn-head-t">{label}</span>
+            <button
+              type="button"
+              className="izsn-pin"
+              title="Keep open"
+              aria-label="Keep section navigation open"
+              aria-pressed={pinned}
+              onClick={(e) => {
+                e.stopPropagation();
+                const next = !pinned;
+                setPinned(next);
+                if (next) doOpen();
+              }}
+            >
+              <PushPin size={13} weight={pinned ? "fill" : "regular"} aria-hidden="true" />
+            </button>
+          </div>
+          {list("d")}
+        </nav>
+      </div>
+
+      {/* ---------------- mobile ---------------- */}
+      <div className="izsn-mob">
+        <button
+          type="button"
+          className="izsn-bar"
+          aria-haspopup="dialog"
+          aria-expanded={sheet}
+          onClick={() => setSheet(true)}
+        >
+          <span className="izsn-idx">
+            {active + 1}/{items.length}
+          </span>
+          <span className="izsn-cur">{items[active].label}</span>
+          <span className="izsn-chev" aria-hidden="true">
+            <CaretUp size={14} weight="bold" />
+          </span>
+          <span className="izsn-prog" aria-hidden="true">
+            <i style={{ width: `${((active + 1) / items.length) * 100}%` }} />
+          </span>
+        </button>
+
+        <div
+          className={`izsn-scrim${sheet ? " is-open" : ""}`}
+          onClick={() => setSheet(false)}
+          aria-hidden="true"
+        />
+        <div className={`izsn-sheet${sheet ? " is-open" : ""}`} role="dialog" aria-modal="true" aria-label={label}>
+          <span className="izsn-grab" aria-hidden="true" />
+          {list("m")}
+        </div>
+      </div>
+    </div>
   );
 }

@@ -11,12 +11,19 @@
 .izsso-hero {
   position: relative;
 }
+/* The hero breaks the 1200 wrap. The scene inside it is three columns
+   — one login, the checks inside it, the apps it opens — and at 1200
+   the middle one loses its labels. Nothing else on the page is
+   widened. */
+.izsso-hero .iz-wrap {
+  max-width: 1340px;
+}
 .izsso-hero-grid {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: var(--sp-10);
+  grid-template-columns: minmax(0, 470px) minmax(0, 1fr);
+  gap: 56px;
   align-items: center;
 }
 .izsso-hero-copy {

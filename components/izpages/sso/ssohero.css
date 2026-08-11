@@ -1,0 +1,204 @@
+/* ============================================================
+   ssohero.css — the SSO hero scene and the four claims under it.
+   Imported by SsoScenes.tsx, so the route needs no extra import.
+
+   Everything is `.iz` tokens. The scene is three columns in reading
+   order — one login, the checks inside it, the applications it opens
+   — and it collapses on its OWN width rather than the window's,
+   because it renders at ~780px beside the copy and at ~1140px
+   underneath it.
+   ============================================================ */
+
+/* The container is the hero's visual column, NOT `.ssoh` itself: an
+   element cannot answer its own container query, so with the
+   container on `.ssoh` the app rail collapsed correctly (it is a
+   descendant) while the three columns above it did not. */
+.izsso-hero-visual { container-type: inline-size; }
+
+.ssoh {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.05fr) minmax(0, 1.15fr);
+  gap: var(--sp-5);
+  align-items: center;
+}
+
+.ssoh-login,
+.ssoh-auth,
+.ssoh-app {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+
+/* ---------- the single login ---------- */
+.ssoh-login {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-5) var(--sp-4);
+  text-align: center;
+}
+.ssoh-login b {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+.ssoh-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ssoh-field--pw { letter-spacing: 0.12em; }
+.ssoh-field svg { flex: none; letter-spacing: 0; }
+.ssoh-signin {
+  width: 100%;
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: var(--tx);
+  color: var(--bg);
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+}
+
+/* ---------- the checks inside it ---------- */
+.ssoh-auth-h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.ssoh-check {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 7px;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 9px var(--sp-4);
+}
+.ssoh-check + .ssoh-check { border-top: 1px solid var(--line); }
+.ssoh-check-ic {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--tx-dim);
+}
+.ssoh-check-t { display: grid; min-width: 0; }
+.ssoh-check-t b {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.ssoh-check-t i {
+  font-style: normal;
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ssoh-check s,
+.ssoh-app s {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: var(--r-pill);
+  background: var(--allow);
+}
+.ssoh-granted {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--allow);
+}
+.ssoh-tick {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-pill);
+  background: var(--allow-bg);
+}
+
+/* ---------- everything it opens ---------- */
+.ssoh-apps { display: grid; gap: 7px; min-width: 0; }
+.ssoh-app {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 7px;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 9px var(--sp-3);
+}
+.ssoh-app-l { display: grid; place-items: center; width: 26px; height: 26px; color: var(--tx-dim); }
+.ssoh-app-l img { width: 18px; height: 18px; object-fit: contain; }
+.ssoh-app b {
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Under 560px of scene width three columns stop being readable; the
+   login and the checks stack and the app rail runs two-up beneath. */
+@container (max-width: 560px) {
+  .ssoh { grid-template-columns: minmax(0, 1fr); }
+  .ssoh-apps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   The four claims
+   ============================================================ */
+.ssoh-cells {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border-block: 1px solid var(--line);
+}
+.ssoh-cell { display: grid; gap: 7px; padding: var(--sp-8) var(--sp-6); background: var(--bg); min-width: 0; }
+.ssoh-cell svg { color: var(--orange); }
+.ssoh-cell b { font-size: var(--fs-body-sm); font-weight: 600; letter-spacing: -0.01em; }
+.ssoh-cell span { font-size: var(--fs-sm); line-height: 1.55; color: var(--tx-dim); }
+
+@media (max-width: 900px) {
+  .ssoh-cells { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .ssoh-cells { grid-template-columns: minmax(0, 1fr); }
+}

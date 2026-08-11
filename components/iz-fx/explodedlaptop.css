@@ -203,6 +203,30 @@
   stroke-dashoffset: clamp(0, calc(1 - (var(--p) - 0.78) / 0.22), 1);
 }
 
+/* ---------- posture clusters + title block ----------
+   The check-name lines under each family label. 14px on the sheet
+   ≈ 11px rendered at section width — detail text, dim by design.
+   Cluster box widths in the component are cut for the ~8.69/ch
+   advance; change them together or not at all. */
+
+.xl-checkline {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  fill: var(--xl-line-dim);
+}
+/* sheet furniture: always drawn, like the guides */
+.xl-tb-rect {
+  fill: none;
+  stroke: var(--xl-line);
+  stroke-width: 1;
+}
+.xl-tb-rule {
+  fill: none;
+  stroke: var(--xl-line-dim);
+  stroke-width: 1;
+}
+
 /* ---------- phase 4 · verdict ----------
    Scale 1.6 → 1, ease-in to the slam; opacity arrives fast and
    stops hard. A decision, not a fade. */

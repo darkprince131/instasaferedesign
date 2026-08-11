@@ -16,7 +16,7 @@
      dark  → grayscale + invert, i.e. white
    `invert` (not `brightness(0) invert(1)`) is deliberate: several
    of these logos are knockouts — white type sitting inside a
-   coloured plate (HDB, Federal Bank) — and a flat silhouette
+   coloured plate (HDB, Bajaj Allianz) — and a flat silhouette
    would fill the plate solid and swallow the wordmark. Inverting
    the greyscale keeps the knockout readable in both themes.
 
@@ -40,8 +40,8 @@ export type CustomerLogo = {
 
 /* Heights are derived from each logo's cropped aspect ratio so every
    wordmark occupies roughly the same optical width, then pulled back
-   by hand for the five brands whose art is a solid plate (Allcargo,
-   NHPC, HDB, Federal Bank, CCD) — a filled rectangle reads heavier
+   by hand for the four brands whose art is a solid plate (Allcargo,
+   NHPC, HDB, CCD) — a filled rectangle reads heavier
    than open letterforms at the same height. Order alternates plates
    and open wordmarks so the blocks never clump. */
 const LOGOS: CustomerLogo[] = [
@@ -50,7 +50,6 @@ const LOGOS: CustomerLogo[] = [
   { file: "hdb-financial", name: "HDB Financial Services", h: 22 },
   { file: "aditya-birla", name: "Aditya Birla Group", h: 44 },
   { file: "asian-paints", name: "Asian Paints", h: 24 },
-  { file: "federal-bank", name: "Federal Bank", h: 28 },
   { file: "mphasis", name: "Mphasis", h: 36 },
   { file: "landmark-group", name: "Landmark Group", h: 30 },
   { file: "nhpc", name: "NHPC", h: 38 },

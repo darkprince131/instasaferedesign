@@ -44,9 +44,14 @@ export function LaptopDemo() {
       <div className={`iz ${izFontVars}`} data-theme="paper" data-system="orange" style={{ background: "var(--bg)" }}>
         <Spacer label="scroll ↓ · paper" />
         <ExplodedLaptop />
+        <Spacer label="posture variant ↓ · paper" />
+        <ExplodedLaptop variant="posture" />
         <Spacer label="static figure (reduced-motion state)" />
         <div style={{ padding: "0 4vw 12vh" }}>
           <ExplodedLaptopStatic />
+        </div>
+        <div style={{ padding: "0 4vw 12vh" }}>
+          <ExplodedLaptopStatic variant="posture" />
         </div>
       </div>
     </>

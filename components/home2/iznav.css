@@ -1,0 +1,311 @@
+/* ============================================================
+   IzNav mega-menu — the four-pane panel that drops out of the
+   shared `.iz` nav. Imported by IzNav.tsx, so every page that
+   renders the nav gets it without touching page-level imports.
+
+   STRUCTURE. The panel is a full-bleed plate pinned under the
+   bar; the columns inside it are held to `--wrap-max` so they
+   line up with page content. Each column is a stack of hairline
+   rows (the firecrawl/fingerprint move) rather than a card grid
+   — hairlines read as one system with the dashed rails already
+   used across the site, and cards inside a dropdown stack up
+   into visual noise.
+
+   The third column is where the panes differ from each other:
+   platform gets a stat block, solutions an industry rail, and
+   the other two a featured card. Same shell, different payload,
+   so the menu never reads as four copies of one template.
+
+   NOTE ON COLOUR. Text here uses --tx / --tx-dim only. --tx-mute
+   is below AA on both themes and this is navigation, not
+   decoration.
+   ============================================================ */
+
+/* ---------- trigger buttons in the bar ---------- */
+.iz-links .iz-navbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  padding: var(--sp-1) 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  font-weight: inherit;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.iz-links .iz-navbtn:hover,
+.iz-links .iz-navbtn[aria-expanded="true"] { color: var(--tx); }
+.iz-links .iz-navbtn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: var(--orange);
+  transition: width var(--dur-fast) var(--ease-out);
+}
+.iz-links .iz-navbtn:hover::after,
+.iz-links .iz-navbtn[aria-expanded="true"]::after { width: 100%; }
+.iz-links .iz-navbtn svg { opacity: 0.55; transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }
+.iz-links .iz-navbtn[aria-expanded="true"] svg { transform: rotate(180deg); opacity: 1; }
+.iz-nav-overlay .iz-links .iz-navbtn { color: var(--tx); font-weight: 600; }
+
+/* ---------- the panel ---------- */
+.izmm {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 1;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 30px 60px -44px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out),
+              visibility var(--dur-fast) var(--ease-out);
+}
+.izmm.is-open { opacity: 1; visibility: visible; transform: none; }
+
+.izmm-in { max-width: var(--wrap-max); margin: 0 auto; }
+.izmm-pane { display: none; }
+.izmm-pane.is-on { display: grid; }
+
+/* Column shells. The last column is narrower than the two link
+   columns — it carries a stat block, a rail or a card, none of
+   which need the width a two-line link row does. */
+.izmm-pane[data-pane="platform"]  { grid-template-columns: 1fr 1fr 0.82fr; }
+.izmm-pane[data-pane="solutions"] { grid-template-columns: 1fr 1fr 0.72fr; }
+.izmm-pane[data-pane="why"]       { grid-template-columns: 1fr 1fr 0.9fr; }
+.izmm-pane[data-pane="resources"] { grid-template-columns: 1fr 1fr 0.9fr; }
+
+.izmm-col {
+  border-right: 1px solid var(--line);
+  padding: var(--sp-6) 0 var(--sp-8);
+  min-width: 0;
+}
+.izmm-col:last-of-type { border-right: 0; }
+
+.izmm-head {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  padding: 0 var(--sp-6) var(--sp-4);
+}
+
+/* ---------- link rows ---------- */
+.izmm-cell {
+  display: flex;
+  gap: var(--sp-3);
+  padding: 14px var(--sp-6);
+  border-top: 1px solid var(--line);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.izmm-cell:hover { background: var(--surface-2); }
+.izmm-cell:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+.izmm-ic {
+  flex: none;
+  margin-top: 2px;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izmm-cell:hover .izmm-ic,
+.izmm-cell:focus-visible .izmm-ic { color: var(--orange); }
+.izmm-t {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izmm-cell:hover .izmm-t,
+.izmm-cell:focus-visible .izmm-t { color: var(--orange); }
+.izmm-cell > span { min-width: 0; }
+.izmm-d {
+  display: block;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  color: var(--tx-dim);
+  margin-top: 3px;
+}
+.izmm-tag {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 12%, transparent);
+  border-radius: var(--r-pill);
+  padding: 3px 7px;
+}
+
+/* ---------- industry rail ---------- */
+.izmm-rail { padding: 0 var(--sp-5); }
+.izmm-rl {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px var(--sp-3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+  transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.izmm-rl:hover,
+.izmm-rl:focus-visible { background: var(--surface-2); color: var(--orange); }
+.izmm-rl svg { flex: none; color: var(--tx-dim); }
+.izmm-rl:hover svg,
+.izmm-rl:focus-visible svg { color: var(--orange); }
+
+/* ---------- stat block ---------- */
+.izmm-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.izmm-stat { background: var(--bg); padding: var(--sp-4) var(--sp-6); }
+.izmm-stat b {
+  display: block;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 21px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--orange);
+}
+.izmm-stat span {
+  display: block;
+  font-size: var(--fs-mono);
+  color: var(--tx-dim);
+  margin-top: 6px;
+}
+.izmm-note { padding: var(--sp-5) var(--sp-6) 0; }
+.izmm-note p {
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--tx-dim);
+  margin: 0 0 var(--sp-4);
+}
+
+/* ---------- featured card ---------- */
+.izmm-feat {
+  display: block;
+  margin: 0 var(--sp-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.izmm-feat:hover,
+.izmm-feat:focus-visible { border-color: var(--orange); }
+.izmm-viz {
+  height: 132px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.izmm-viz svg { display: block; width: 100%; height: 100%; }
+.izmm-feat-b { padding: var(--sp-4); }
+.izmm-feat-t {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.izmm-feat-l {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--orange);
+}
+
+/* ---------- footer strip ---------- */
+.izmm-strip {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+  padding: var(--sp-3) var(--sp-6);
+}
+.izmm-strip .izmm-strip-t {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izmm-strip-a { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+
+/* ---------- mobile: the panel is replaced by grouped sheet ---------- */
+@media (max-width: 1000px) {
+  .izmm { display: none; }
+}
+
+/* Groups inside the existing mobile sheet. Every mega-menu
+   destination lives here, which is 50-odd links — as a flat list
+   that is a 3,000px column behind a locked body, i.e. links you
+   cannot reach. So the sheet scrolls on its own, and each group is
+   collapsed until tapped. */
+@media (max-width: 900px) {
+  .iz-nav .iz-sheet {
+    max-height: calc(100dvh - 66px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    gap: 0;
+  }
+}
+.iz-sheet-group { border-top: 1px solid var(--line); }
+.iz-sheet-group:first-of-type { border-top: 0; }
+.iz-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  color: var(--tx);
+}
+.iz-sheet-head svg { color: var(--tx-dim); transition: transform var(--dur-fast) var(--ease-out); }
+.iz-sheet-group[data-open="true"] .iz-sheet-head svg { transform: rotate(180deg); }
+.iz-sheet-links { display: none; padding: 0 0 var(--sp-3) var(--sp-1); }
+.iz-sheet-group[data-open="true"] .iz-sheet-links { display: block; }
+.iz-sheet-links a {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px 2px;
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+}
+.iz-sheet-links a svg { flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .izmm { transition: none; }
+}

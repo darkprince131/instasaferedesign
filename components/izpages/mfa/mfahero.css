@@ -1,0 +1,244 @@
+/* ============================================================
+   mfahero.css — the MFA hero scene and the six-methods strip.
+   Imported by MfaScenes.tsx, so the route needs no extra import.
+   All `.iz` tokens; the scene collapses on its OWN width.
+   ============================================================ */
+
+.mfah {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) 34px minmax(0, 0.95fr);
+  align-items: center;
+  gap: var(--sp-2);
+}
+/* the container is the wrapper, not `.mfah` — an element cannot
+   answer its own container query */
+.mfa-hero-visual { container-type: inline-size; }
+
+.mfah-mono {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.mfah-dim { color: var(--tx-dim); }
+
+/* ---------- the authentication panel ---------- */
+.mfah-auth {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+.mfah-auth-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+}
+.mfah-who {
+  display: grid;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-4) var(--sp-4);
+  border-bottom: 1px solid var(--line);
+}
+.mfah-who > div { display: grid; gap: 2px; min-width: 0; }
+.mfah-who b {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mfah-who i { font-style: normal; font-size: var(--fs-3xs); color: var(--tx-dim); }
+
+.mfah-steps { padding: var(--sp-2) 0 var(--sp-3); }
+.mfah-step {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 8px var(--sp-4);
+}
+.mfah-step-ic {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--tx-dim);
+}
+.mfah-step-t { display: grid; min-width: 0; }
+.mfah-step-t b {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.mfah-step-t i {
+  font-style: normal;
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mfah-step-v { display: grid; place-items: center; color: var(--tx-mute); }
+.mfah-step.ok .mfah-step-v { color: var(--allow); }
+/* the two steps still running are the point of the picture, so they
+   are held back rather than dressed up */
+.mfah-step.pending .mfah-step-t b,
+.mfah-step.pending .mfah-step-t i { color: var(--tx-dim); }
+
+/* ---------- the connector node ---------- */
+.mfah-node {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--panel-sh);
+}
+.mfah-node::before,
+.mfah-node::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: var(--sp-2);
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--line-strong) 0 3px, transparent 3px 6px);
+}
+.mfah-node::before { right: 100%; }
+.mfah-node::after { left: 100%; }
+
+/* ---------- the request and the face check ---------- */
+.mfah-side { display: grid; gap: var(--sp-3); min-width: 0; }
+.mfah-req { display: grid; gap: var(--sp-2); min-width: 0; }
+.mfah-req-app {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+.mfah-req-ic {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--tx-dim);
+}
+.mfah-req-app span { display: grid; min-width: 0; }
+.mfah-req-app b { font-size: var(--fs-sm); font-weight: 600; letter-spacing: -0.01em; }
+.mfah-req-app i { font-style: normal; font-size: var(--fs-3xs); color: var(--tx-dim); }
+
+.mfah-verify {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+  text-align: center;
+}
+.mfah-scan { position: relative; width: 132px; height: 128px; }
+.mfah-mesh { width: 100%; height: 100%; }
+.mfah-mesh circle { fill: var(--tx-mute); }
+.mfah-mesh .mfah-mesh-key { fill: var(--tx); }
+.mfah-mesh .mfah-mesh-line { fill: none; stroke: var(--tx); stroke-width: 1.6; stroke-linecap: round; }
+/* the four framing brackets — the one orange element in the card */
+.mfah-bracket {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--orange);
+}
+.mfah-bracket.tl { top: 0; left: 0; border-right: 0; border-bottom: 0; border-radius: 3px 0 0 0; }
+.mfah-bracket.tr { top: 0; right: 0; border-left: 0; border-bottom: 0; border-radius: 0 3px 0 0; }
+.mfah-bracket.bl { bottom: 0; left: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 3px; }
+.mfah-bracket.br { bottom: 0; right: 0; border-left: 0; border-top: 0; border-radius: 0 0 3px 0; }
+
+.mfah-verify b { font-size: var(--fs-sm); font-weight: 600; letter-spacing: -0.01em; margin-top: 4px; }
+.mfah-verify-sub { font-size: var(--fs-3xs); color: var(--tx-dim); }
+.mfah-prog-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+}
+.mfah-live { width: 6px; height: 6px; border-radius: var(--r-pill); background: var(--allow); }
+.mfah-prog {
+  width: 100%;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.mfah-prog i { display: block; height: 100%; width: 42%; background: var(--orange); }
+
+/* Under 560px the node between the two halves has nothing to connect,
+   so it goes and the columns stack. */
+@container (max-width: 560px) {
+  .mfah { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); }
+  .mfah-node { display: none; }
+}
+
+/* ============================================================
+   Six ways to verify
+   ============================================================ */
+.mfah-ways { padding: var(--sp-10) 0; border-block: 1px solid var(--line); }
+.mfah-ways-h { display: block; margin-bottom: var(--sp-6); }
+.mfah-ways-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.mfah-way { display: grid; gap: 7px; align-content: start; padding: var(--sp-5); background: var(--bg); min-width: 0; }
+.mfah-way svg { color: var(--orange); }
+.mfah-way b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.mfah-way span { font-size: var(--fs-sm); line-height: 1.5; color: var(--tx-dim); }
+.mfah-ways-note {
+  margin: var(--sp-5) 0 0;
+  max-width: 82ch;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--tx-dim);
+}
+
+@media (max-width: 1100px) {
+  .mfah-ways-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .mfah-ways-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

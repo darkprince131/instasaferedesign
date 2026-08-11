@@ -1,0 +1,460 @@
+/* ============================================================
+   posturehero.css — the device-posture hero scene, the counts strip
+   and the DeviceTester. Imported by PostureScenes.tsx.
+
+   All `.iz` tokens. The scene collapses on its OWN width (container
+   query on the wrapper, never on the grid itself — an element cannot
+   answer its own container query).
+   ============================================================ */
+
+.pos-hero-visual { container-type: inline-size; }
+
+.pos-scene {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+  gap: var(--sp-5);
+  align-items: start;
+}
+
+.pos-mono {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.pos-dim { color: var(--tx-dim); }
+
+.pos-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+
+/* ---------- the result card ---------- */
+.pos-card-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+}
+.pos-risk {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  background: var(--deny-bg);
+  color: var(--deny);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pos-verdict {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  padding: 0 var(--sp-4) var(--sp-5);
+}
+
+/* The score ring. A conic sweep from deny through the accent to allow,
+   masked to a ring — so the number is also a quantity, read before it
+   is parsed. `--pos-score` is set inline per instance. */
+.pos-gauge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  flex: none;
+  border-radius: var(--r-pill);
+  --pos-deg: calc(var(--pos-score, 0) * 3.6deg);
+  /* The sweep runs deny → accent → allow across the filled arc, then
+     switches hard to the track. The stop is repeated at the same angle
+     because a single stop would fade into the track instead of ending.
+     No mask anywhere: a mask on this element would clip the readout
+     inside it too. */
+  background: conic-gradient(
+    from 180deg,
+    var(--deny) 0deg,
+    var(--orange) calc(var(--pos-deg) * 0.45),
+    var(--allow) var(--pos-deg),
+    var(--line) var(--pos-deg)
+  );
+}
+/* the hole that turns the disc into a ring */
+.pos-gauge::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+}
+.pos-gauge-in {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+}
+.pos-gauge-in b {
+  font-family: var(--mono);
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.pos-gauge-in i { font-style: normal; font-size: var(--fs-3xs); color: var(--tx-dim); }
+
+.pos-verdict-t { display: grid; gap: 5px; min-width: 0; }
+.pos-verdict-t b { font-size: var(--fs-h3); font-weight: 600; letter-spacing: -0.02em; }
+.pos-verdict-t span { font-size: var(--fs-sm); line-height: 1.5; color: var(--tx-dim); }
+
+.pos-cats-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  border-block: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.pos-cat {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 9px var(--sp-4);
+}
+.pos-cat + .pos-cat { border-top: 1px solid var(--line); }
+.pos-cat > svg { color: var(--tx-mute); }
+.pos-cat .pos-mono { font-size: var(--fs-3xs); letter-spacing: 0.06em; }
+.pos-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-3xs);
+  white-space: nowrap;
+}
+.pos-status.ok { color: var(--allow); }
+.pos-status.no { color: var(--deny); }
+
+.pos-all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--bg-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx-dim);
+}
+
+/* ---------- the laptop and its terminal ---------- */
+.pos-right { display: grid; gap: var(--sp-4); min-width: 0; }
+
+.pos-lap { display: grid; justify-items: center; min-width: 0; }
+/* Drawn, not photographed. If a photoreal shell lands later it becomes
+   the background of this element and the terminal keeps its markup. */
+.pos-lap-shell {
+  width: 100%;
+  padding: 11px 11px 13px;
+  border-radius: 14px 14px 4px 4px;
+  background: linear-gradient(180deg, #3a3d42, #2a2d31);
+  box-shadow: var(--panel-sh);
+}
+.pos-lap-base {
+  position: relative;
+  width: 112%;
+  height: 13px;
+  border-radius: 0 0 11px 11px;
+  background: linear-gradient(180deg, #c9ccd1, #a6a9af);
+}
+.pos-lap-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 74px;
+  height: 5px;
+  border-radius: 0 0 6px 6px;
+  background: rgba(0, 0, 0, 0.22);
+}
+.iz[data-theme="dark"] .pos-lap-base { background: linear-gradient(180deg, #6f737a, #4c5057); }
+
+.pos-term {
+  border-radius: 7px;
+  background: #101216;
+  padding: var(--sp-3) 0;
+  overflow: hidden;
+}
+.pos-term-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-4) var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.66);
+}
+.pos-live { display: inline-flex; align-items: center; gap: 6px; color: #46d38a; }
+.pos-live i { width: 6px; height: 6px; border-radius: var(--r-pill); background: #46d38a; }
+
+.pos-log {
+  display: grid;
+  grid-template-columns: auto 7px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 3px var(--sp-4);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: rgba(255, 255, 255, 0.82);
+}
+.pos-log-t { color: rgba(255, 255, 255, 0.42); }
+.pos-log s { width: 7px; height: 7px; border-radius: var(--r-pill); }
+.pos-log.ok s { background: #46d38a; }
+.pos-log.no s,
+.pos-log.score s { background: #ff5c72; }
+.pos-log-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pos-log.ok .pos-log-r { color: #46d38a; }
+.pos-log.no .pos-log-r,
+.pos-log.score .pos-log-r { color: #ff5c72; }
+
+/* ---------- the note under the laptop ---------- */
+.pos-note {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+}
+.pos-note-ic {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+.pos-note-t { display: grid; gap: 2px; min-width: 0; }
+.pos-note-t b { font-size: var(--fs-sm); font-weight: 500; color: var(--tx-dim); }
+.pos-note-t b:first-child { color: var(--tx); font-weight: 600; }
+.pos-note-r { display: grid; gap: 2px; justify-items: end; text-align: right; }
+
+@container (max-width: 620px) {
+  .pos-scene { grid-template-columns: minmax(0, 1fr); }
+  .pos-note { grid-template-columns: 34px minmax(0, 1fr); }
+  .pos-note-r { display: none; }
+}
+
+/* ============================================================
+   The counts strip
+   ============================================================ */
+.pos-strip { border-block: 1px solid var(--line); background: var(--bg-2); }
+.pos-strip-in {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--sp-10);
+  align-items: center;
+  padding-block: var(--sp-8);
+}
+.pos-figs { display: flex; gap: var(--sp-10); }
+.pos-fig { display: flex; align-items: baseline; gap: var(--sp-3); }
+.pos-fig b {
+  font-family: var(--mono);
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--orange);
+}
+.pos-fig span {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  max-width: 9ch;
+  line-height: 1.4;
+}
+.pos-sample { display: grid; gap: var(--sp-4); min-width: 0; }
+.pos-sample-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3) var(--sp-5);
+}
+.pos-sample-i {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+.pos-sample-i svg { flex: none; color: var(--orange); }
+
+@media (max-width: 1100px) {
+  .pos-strip-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-8); }
+  .pos-sample-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .pos-sample-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pos-figs { gap: var(--sp-6); }
+}
+
+/* ============================================================
+   DeviceTester
+   ============================================================ */
+.pos-tester {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--sp-6);
+  padding: var(--sp-6);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--panel-sh);
+}
+.pos-tester-l { display: grid; gap: var(--sp-4); align-content: start; }
+.pos-toggles { display: grid; gap: var(--sp-2); }
+
+.pos-toggle {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--bg-2);
+  cursor: pointer;
+  font-family: var(--body);
+  text-align: left;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+.pos-toggle:hover { border-color: var(--tx-mute); }
+.pos-toggle:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.pos-toggle-ic {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--deny);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.pos-toggle.on .pos-toggle-ic { color: var(--allow); }
+.pos-toggle-t { font-size: var(--fs-sm); font-weight: 500; color: var(--tx); }
+
+/* the switch itself */
+.pos-switch {
+  position: relative;
+  width: 38px;
+  height: 21px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+  transition: background-color var(--dur) var(--ease);
+}
+.pos-toggle.on .pos-switch { background: var(--allow); }
+.pos-switch i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 15px;
+  height: 15px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  transition: transform var(--dur) var(--ease);
+}
+.pos-toggle.on .pos-switch i { transform: translateX(17px); }
+
+/* ---------- the verdict half ---------- */
+.pos-tester-r {
+  display: grid;
+  gap: var(--sp-5);
+  justify-items: center;
+  align-content: start;
+  padding: var(--sp-6);
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  text-align: center;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.pos-tester-r.allow { background: var(--allow-bg); border-color: color-mix(in srgb, var(--allow) 30%, transparent); }
+.pos-tester-r.limited { background: color-mix(in srgb, var(--orange) 9%, transparent); border-color: color-mix(in srgb, var(--orange) 32%, transparent); }
+.pos-tester-r.deny { background: var(--deny-bg); border-color: color-mix(in srgb, var(--deny) 30%, transparent); }
+
+.pos-gauge--lg { width: 132px; height: 132px; }
+.pos-gauge--lg .pos-gauge-in b { font-size: 34px; }
+
+.pos-out { display: grid; gap: var(--sp-2); }
+.pos-out-v {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.pos-tester-r.allow .pos-out-v { color: var(--allow); }
+.pos-tester-r.limited .pos-out-v { color: var(--orange); }
+.pos-tester-r.deny .pos-out-v { color: var(--deny); }
+.pos-out p {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--tx-dim);
+}
+
+.pos-rules { display: grid; gap: 7px; justify-items: center; width: 100%; }
+.pos-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+}
+.pos-rule.ok { color: var(--allow); }
+.pos-rule.fatal { color: var(--deny); border-color: color-mix(in srgb, var(--deny) 34%, transparent); }
+.pos-rule b {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--deny);
+}
+
+@media (max-width: 900px) {
+  .pos-tester { grid-template-columns: minmax(0, 1fr); padding: var(--sp-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pos-switch,
+  .pos-switch i,
+  .pos-tester-r,
+  .pos-toggle { transition: none; }
+}

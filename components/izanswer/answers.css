@@ -109,6 +109,144 @@
 }
 
 /* ============================================================
+   AnswerMfa's surfaces.
+
+   This explainer is made of the things a login actually happens on —
+   a browser window, input fields, a phone, a scan bar — rather than
+   of boxes and arrows, so it needs a few real materials the shared
+   vocabulary does not carry. All scoped to the one illustration.
+   ============================================================ */
+
+/* The three factor icons are the subject of their cards, so they are
+   drawn in ink rather than in the shared glyph grey — at 0.72 scale
+   `--tx-dim` on a tinted plate washed out to nothing. The orange in
+   these cards belongs to the ticks and the scan bar. */
+.iz-ans--mfa .am-ink .a-glyph { stroke: var(--tx); }
+
+.iz-ans--mfa .am-dot { fill: var(--line-strong); }
+.iz-ans--mfa .am-url { fill: var(--bg-2); }
+/* the card inside the window: a surface ON a surface, so it steps up
+   rather than repeating the panel's own fill */
+.iz-ans--mfa .am-card {
+  fill: var(--bg-2);
+  stroke: var(--line);
+  stroke-width: 1.1;
+}
+.iz-ans--mfa .am-field {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.1;
+}
+/* the one control that is orange in the whole window */
+.iz-ans--mfa .am-go { fill: var(--accent); }
+.iz-ans--mfa .am-go-arrow {
+  fill: none;
+  stroke: var(--btn-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* the soft disc an icon sits on — what makes a factor read as an
+   object rather than as a bullet point */
+.iz-ans--mfa .am-plate { fill: color-mix(in srgb, var(--accent) 9%, var(--surface-2)); }
+
+.iz-ans--mfa .am-eye {
+  fill: none;
+  stroke: var(--tx-mute);
+  stroke-width: 1.3;
+}
+.iz-ans--mfa .am-eye-pupil { fill: var(--tx-mute); }
+
+.iz-ans--mfa .am-phone {
+  fill: var(--surface-2);
+  stroke: var(--tx);
+  stroke-width: 1.6;
+}
+.iz-ans--mfa .am-phone-sp { fill: var(--tx-mute); }
+/* the code card overlaps the phone, which is why it carries a shadow
+   on paper and a border on both themes */
+.iz-ans--mfa .am-code {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.1;
+}
+.iz-art.iz-ans--mfa .am-code-t { letter-spacing: 0.08em; }
+
+.iz-ans--mfa .am-track { fill: var(--line); }
+.iz-ans--mfa .am-fill { fill: var(--accent); }
+
+/* accepted, one factor at a time */
+.iz-ans--mfa .am-tick {
+  fill: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 1.4;
+}
+.iz-ans--mfa .am-tick-mark {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* the verdict disc — the only green in the picture */
+.iz-ans--mfa .am-ok {
+  fill: var(--allow-bg);
+  stroke: color-mix(in srgb, var(--allow) 45%, transparent);
+  stroke-width: 1.4;
+}
+
+.iz[data-theme="paper"] .iz-ans--mfa .am-code,
+.iz[data-theme="paper"] .iz-ans--mfa .am-card {
+  filter: drop-shadow(0 4px 10px rgba(24, 18, 10, 0.08));
+}
+
+/* ============================================================
+   AnswerPosture's surfaces.
+
+   A posture check is a report card, so this one is built from a real
+   checklist with status pills and two outcome cards, not from boxes
+   and arrows. Scoped to the one illustration.
+   ============================================================ */
+
+.iz-ans--pos .ap-ink .a-glyph { stroke: var(--tx); }
+.iz-ans--pos .ap-plate { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.1; }
+
+/* the failed row is tinted across its full width — a lone red glyph
+   on an otherwise white row is too easy to scan past */
+.iz-ans--pos .ap-row-no { fill: var(--deny-bg); }
+
+.iz-ans--pos .ap-ok { fill: var(--allow-bg); }
+.iz-ans--pos .ap-ok-mark {
+  fill: none;
+  stroke: var(--allow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iz-ans--pos .ap-no { fill: var(--deny-bg); }
+.iz-ans--pos .ap-no-mark {
+  fill: none;
+  stroke: var(--deny);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.iz-ans--pos .ap-out { fill: var(--surface); stroke-width: 1.3; }
+.iz-ans--pos .ap-out--ok { stroke: color-mix(in srgb, var(--allow) 42%, transparent); }
+.iz-ans--pos .ap-out--no { stroke: color-mix(in srgb, var(--deny) 42%, transparent); }
+/* the applications behind the granted door */
+.iz-ans--pos .ap-tile { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.1; }
+
+.iz-ans--pos .ap-note { fill: var(--bg-2); stroke: var(--line); stroke-width: 1.1; }
+
+.iz[data-theme="paper"] .iz-ans--pos .ap-out,
+.iz[data-theme="paper"] .iz-ans--pos .ap-plate {
+  filter: drop-shadow(0 4px 12px rgba(24, 18, 10, 0.07));
+}
+
+/* ============================================================
    THE REVEAL — and the cascade note that matters.
 
    illustrations.css HIDES every `.iz-art` element by default and

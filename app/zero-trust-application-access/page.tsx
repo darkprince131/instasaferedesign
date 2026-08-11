@@ -1,4 +1,4 @@
-import { IamPage } from "@/components/izpages/iam/IamPage";
+import { ZtaaPage } from "@/components/izpages/ztaa/ZtaaPage";
 
 import type { Metadata } from "next";
 
@@ -16,26 +16,33 @@ import "@/components/home2/izpanel.css";
 import "@/components/home2/iznewblocks.css";
 import "@/components/home2/izpagekit.css";
 import "@/components/home2/izlogomarquee.css";
+import "@/components/home2/izuserportal.css";
+import "@/components/home2/izavatar.css";
+import "@/components/home2/izcontrolsurface.css";
+import "@/components/home2/izminidesktop.css";
+import "@/components/home2/signalgrid.css";
 import "@/components/home2/filterstream.css";
+import "@/components/home2/izusecase.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/izoutcomes/illustrations.css";
 import "@/components/izanswer/answers.css";
 import "@/components/home2/izfootergrid.css";
-import "@/components/izpages/iam/iam.css";
+import "@/components/izpages/ztaa/ztaa.css";
 
-/* Metadata is unchanged from the v3 build this replaced — the URL and
-   its description are already linked from the nav, the footer and
-   every sibling platform page. */
+/* SEO-locked: this URL carries the equity of the live page. It was
+   previously served from the scaffold registry (lib/site.ts); the
+   entry there was removed when this bespoke route landed, so the
+   path resolves here instead of through [...slug]. */
 export const metadata: Metadata = {
-  title: "Identity & Access Management (IAM) — InstaSafe ZTNA",
+  title: "Zero Trust Application Access (ZTAA) — Agentless Access",
   description:
-    "InstaSafe's Identity Cloud: 8 authentication profiles, 6 MFA methods, directory sync, SSO, risk-based access — and InstaSafe as your own IdP. Watch identity verified continuously, in real time.",
-  alternates: { canonical: "/platform/iam" },
+    "Give employees, contractors and third parties single-click access to web apps, RDP, SSH, VNC, databases and file shares — through the browser, no agent required.",
+  alternates: { canonical: "/zero-trust-application-access" },
 };
 
-/* IamPage owns the `.iz` wrapper and the theme toggle state (IzNav needs
+/* ZtaaPage owns the `.iz` wrapper and the theme toggle state (IzNav needs
    both), so this route stays a thin server component around it. */
 export default function Page() {
-  return <IamPage />;
+  return <ZtaaPage />;
 }

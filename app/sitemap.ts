@@ -10,13 +10,16 @@ const SITE_URL = "https://www.instasafe.com";
 const BESPOKE = [
   "/multifactor-authentication",
   "/zero-trust-network-access",
+  "/zero-trust-application-access",
   "/zero-trust-features/always-on",
   "/zero-trust-features/device-binding",
+  "/zero-trust-features/device-posture-check",
   "/zero-trust-features/single-sign-on",
   "/platform",
   "/platform/iam",
   "/solutions",
   "/vpn-alternative",
+  "/resource-center",
 ];
 
 const PRIORITY: Record<string, number> = {

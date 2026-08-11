@@ -1,28 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CaretDown } from "@phosphor-icons/react";
 import { Logo } from "@/components/brand/Logo";
+import { PANES, type Cell, type MenuKey, type Pane } from "./iz-nav-data";
+import "./iznav.css";
 
 /* ============================================================
    IzNav — shared `.iz` nav. Home2 (or any consumer) owns the theme
    state + localStorage bootstrap/persistence (key: is-theme) and
    passes it down.
 
-   Desktop: full link row + a two-button theme switch.
-   Mobile:  a single circular theme toggle + a hamburger, because the
-            two-button switch plus a link row does not fit alongside
-            the wordmark.
+   Desktop: four mega-menu triggers + a two-button theme switch.
+            Panels open on hover (with a close delay, so a diagonal
+            mouse path between trigger and panel does not drop it)
+            and toggle on click, which is what keyboard users get —
+            opening on focus would fire a 20-link panel at anyone
+            merely tabbing past the bar.
+   Mobile:  a single circular theme toggle + a hamburger; the sheet
+            carries every mega-menu destination, grouped under the
+            same headings the panel uses.
+
+   Content and hrefs live in iz-nav-data.tsx. Those URLs are
+   SEO-locked — read the note at the top of that file before
+   changing one.
    ============================================================ */
 
 type Theme = "dark" | "paper";
-
-const LINKS = [
-  { href: "/why-instasafe-zero-trust", label: "Why InstaSafe?" },
-  { href: "/platform", label: "Products" },
-  { href: "/solutions", label: "Solutions" },
-  { href: "/resource-center", label: "Resources" },
-  { href: "/partners", label: "Partners" },
-];
 
 const Sun = () => (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -35,6 +39,89 @@ const Moon = () => (
     <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
   </svg>
 );
+
+const ext = (c: Cell) => (c.ext ? { target: "_blank", rel: "noreferrer" } : {});
+
+function CellRow({ c }: { c: Cell }) {
+  return (
+    <a className="izmm-cell" href={c.href} {...ext(c)}>
+      <c.Icon className="izmm-ic" size={19} weight="regular" aria-hidden="true" />
+      <span>
+        <span className="izmm-t">
+          {c.t}
+          {c.tag && <span className="izmm-tag">{c.tag}</span>}
+        </span>
+        {c.d && <span className="izmm-d">{c.d}</span>}
+      </span>
+    </a>
+  );
+}
+
+function PaneBody({ pane }: { pane: Pane }) {
+  return (
+    <>
+      {pane.cols.map((col, i) => (
+        <div className="izmm-col" key={i}>
+          <div className="izmm-head">{col.head}</div>
+
+          {col.kind === "cells" && col.items.map((c) => <CellRow key={c.href + c.t} c={c} />)}
+
+          {col.kind === "rail" && (
+            <div className="izmm-rail">
+              {col.items.map((c) => (
+                <a className="izmm-rl" key={c.href} href={c.href}>
+                  <c.Icon size={17} weight="regular" aria-hidden="true" />
+                  {c.t}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {col.kind === "stats" && (
+            <>
+              <div className="izmm-stats">
+                {col.stats.map((s) => (
+                  <div className="izmm-stat" key={s.l}>
+                    <b>{s.n}</b>
+                    <span>{s.l}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="izmm-note">
+                <p>{col.note}</p>
+                <a className="iz-btn iz-btn-ghost iz-btn-sm" href={col.cta.href}>
+                  {col.cta.label}
+                </a>
+              </div>
+            </>
+          )}
+
+          {col.kind === "feature" && (
+            <a className="izmm-feat" href={col.href}>
+              <div className="izmm-viz">{col.art}</div>
+              <div className="izmm-feat-b">
+                <div className="izmm-feat-t">{col.title}</div>
+                <div className="izmm-d">{col.desc}</div>
+                <div className="izmm-feat-l">{col.cta}</div>
+              </div>
+            </a>
+          )}
+        </div>
+      ))}
+
+      <div className="izmm-strip">
+        <span className="izmm-strip-t">{pane.strip.note}</span>
+        <span className="izmm-strip-a">
+          {pane.strip.links.map((l) => (
+            <a className="iz-btn iz-btn-ghost iz-btn-sm" key={l.href} href={l.href}>
+              {l.label}
+            </a>
+          ))}
+        </span>
+      </div>
+    </>
+  );
+}
 
 export function IzNav({
   theme,
@@ -51,6 +138,12 @@ export function IzNav({
 }) {
   const [solid, setSolid] = useState(!overlay);
   const [open, setOpen] = useState(false);
+  const [menu, setMenu] = useState<MenuKey | null>(null);
+  /* which sheet group is expanded on mobile — one at a time, all
+     closed on open, so the sheet starts as four taps not fifty links */
+  const [group, setGroup] = useState<MenuKey | null>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!overlay) {
@@ -76,20 +169,63 @@ export function IzNav({
     };
   }, [open]);
 
+  // Escape closes the mega panel wherever focus is; focus moving out of
+  // the header entirely closes it too (tabbing past the last panel link).
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenu(null);
+      headerRef.current?.querySelector<HTMLButtonElement>(`.iz-navbtn[data-pane="${menu}"]`)?.focus();
+    };
+    const onFocus = (e: FocusEvent) => {
+      if (!headerRef.current?.contains(e.target as Node)) setMenu(null);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("focusin", onFocus);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("focusin", onFocus);
+    };
+  }, [menu]);
+
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
+
+  const hold = () => { if (closeTimer.current) clearTimeout(closeTimer.current); };
+  const openMenu = (k: MenuKey) => { hold(); setMenu(k); };
+  /* 120ms of grace: the cursor has to cross a hairline gap between the
+     trigger and the panel, and an instant close makes that trip fail. */
+  const closeMenu = () => { hold(); closeTimer.current = setTimeout(() => setMenu(null), 120); };
+
   const next: Theme = theme === "dark" ? "paper" : "dark";
+  const active = PANES.find((p) => p.key === menu);
 
   return (
-    <header className={`iz-nav${overlay ? " iz-nav-overlay" : ""}${solid ? " is-solid" : ""}${open ? " is-open" : ""}`}>
+    <header
+      ref={headerRef}
+      className={`iz-nav${overlay ? " iz-nav-overlay" : ""}${solid || menu ? " is-solid" : ""}${open ? " is-open" : ""}`}
+      onMouseLeave={closeMenu}
+    >
       <div className="iz-wrap iz-nav-in">
         <a href="/" className="iz-mark" aria-label="InstaSafe home">
           <Logo height={44} />
         </a>
 
-        <nav className="iz-links">
-          {LINKS.map((l) => (
-            <a key={l.href} href={l.href}>
-              {l.label}
-            </a>
+        <nav className="iz-links" aria-label="Main">
+          {PANES.map((p) => (
+            <button
+              key={p.key}
+              type="button"
+              className="iz-navbtn"
+              data-pane={p.key}
+              aria-expanded={menu === p.key}
+              aria-controls="iz-mega"
+              onMouseEnter={() => openMenu(p.key)}
+              onClick={() => (menu === p.key ? setMenu(null) : openMenu(p.key))}
+            >
+              {p.label}
+              <CaretDown size={11} weight="bold" aria-hidden="true" />
+            </button>
           ))}
         </nav>
 
@@ -132,11 +268,49 @@ export function IzNav({
         </div>
       </div>
 
+      {/* One panel node, swapped payload — keeping four mounted panes
+          would put 80 links in the tab order on every page. */}
+      <div id="iz-mega" className={`izmm${menu ? " is-open" : ""}`} onMouseEnter={hold} onMouseLeave={closeMenu}>
+        <div className="izmm-in">
+          {active && (
+            <div className="izmm-pane is-on" data-pane={active.key}>
+              <PaneBody pane={active} />
+            </div>
+          )}
+        </div>
+      </div>
+
       <div id="iz-mobile-menu" className="iz-sheet" hidden={!open}>
-        {LINKS.map((l) => (
-          <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
-            {l.label}
-          </a>
+        {PANES.map((p) => (
+          <div className="iz-sheet-group" key={p.key} data-open={group === p.key}>
+            <button
+              type="button"
+              className="iz-sheet-head"
+              aria-expanded={group === p.key}
+              aria-controls={`iz-sheet-${p.key}`}
+              onClick={() => setGroup((g) => (g === p.key ? null : p.key))}
+            >
+              {p.label}
+              <CaretDown size={13} weight="bold" aria-hidden="true" />
+            </button>
+            <div className="iz-sheet-links" id={`iz-sheet-${p.key}`}>
+              {p.cols.map((col, i) =>
+                col.kind === "cells" || col.kind === "rail"
+                  ? col.items.map((c) => (
+                      <a key={`${i}-${c.href}-${c.t}`} href={c.href} onClick={() => setOpen(false)} {...ext(c)}>
+                        <c.Icon size={17} weight="regular" aria-hidden="true" />
+                        {c.t}
+                      </a>
+                    ))
+                  : null
+              )}
+              {p.strip.links.map((l) => (
+                <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
         ))}
         <a href="/book-a-demo" className="iz-btn iz-btn-pri iz-sheet-cta" onClick={() => setOpen(false)}>
           Book a demo

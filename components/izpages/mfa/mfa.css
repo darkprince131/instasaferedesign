@@ -1,0 +1,76 @@
+/* ============================================================
+   mfa.css — /multifactor-authentication
+
+   Only what this page's own sections need. The hero uses the same
+   split as ZTAA / IAM / SSO so the platform-deep pages read as one
+   template.
+   ============================================================ */
+
+.iz { --zt-nav: 66px; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.mfa-hero { padding: var(--sp-12) 0 var(--sp-10); }
+/* Same reasoning as the IAM and SSO heroes: the scene is a panel
+   plus two stacked cards, and at the 1200 wrap the middle column
+   loses its sub-labels. Nothing else on the page is widened. */
+.mfa-hero .iz-wrap { max-width: 1340px; }
+.mfa-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 470px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+.mfa-hero h1 { max-width: 9ch; }
+.mfa-hero .iz-lead { max-width: 44ch; }
+.mfa-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+@media (max-width: 1200px) {
+  .mfa-hero-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+}
+
+/* ============================================================
+   Section rhythm
+   ============================================================ */
+.mfa-sec { padding: var(--sp-section) 0; }
+.mfa-sec--alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+.mfa-head { margin-bottom: var(--sp-10); max-width: 60ch; }
+.mfa-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.mfa-head h2 em { font-style: normal; color: var(--orange); }
+.mfa-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* The v3 simulator paints entirely from the `--db-*` set, which
+   iz-system.css already bridges to the active `.iz` theme and accent
+   (see its section 7b). So it needs a frame here and nothing else —
+   no colour overrides, and it follows the page's design system. */
+.mfa-sim {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  padding: var(--sp-6);
+  overflow: hidden;
+}
+@media (max-width: 720px) {
+  .mfa-sim { padding: var(--sp-4); }
+}

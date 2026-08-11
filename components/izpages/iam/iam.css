@@ -1,0 +1,426 @@
+/* ============================================================
+   iam.css — /platform/iam
+
+   Section rhythm mirrors ztna.css / ztaa.css: the platform-deep pages
+   are siblings and should feel like one template. The hero is the
+   split used on ZTAA, because the claim ("the right user, the right
+   resource, the right time") wants the trace sitting next to the
+   sentence that makes it.
+   ============================================================ */
+
+.iz { --zt-nav: 66px; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.iam-hero { padding: var(--sp-12) 0 var(--sp-10); }
+/* The hero breaks the 1200 wrap. Inside it the scene has to hold a
+   trace, a person and a policy table side by side, and the headline
+   needs ~500px to break as written ("The right user, / the right
+   resource, / the right time."). At 1200 one of the two has to give;
+   at 1340 neither does. Nothing else on the page is widened. */
+.iam-hero .iz-wrap { max-width: 1340px; }
+.iam-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+.iam-hero .iz-lead { max-width: 44ch; }
+.iam-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+/* Same reasoning as ztaa.css: below this the scene's own two-up
+   collapses, and a squeezed trace next to squeezed copy is worse than
+   a full-width scene under it. */
+@media (max-width: 1200px) {
+  .iam-hero-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+}
+
+/* ============================================================
+   THE SCENE — trace · person · policy · resources
+   ============================================================ */
+.iam-scene { container-type: inline-size; display: grid; gap: var(--sp-4); }
+.iam-scene-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+}
+.iam-scene-side { display: grid; gap: var(--sp-4); }
+
+.iam-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+.iam-card-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--line);
+}
+.iam-mono {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.iam-dim { color: var(--tx-dim); }
+
+/* ---------- the trace ---------- */
+.iam-gate {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 11px var(--sp-4);
+}
+.iam-gate + .iam-gate { border-top: 1px solid var(--line); }
+.iam-gate--decision { border-top: 1px solid var(--line-strong); }
+.iam-gate-ic {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--tx-dim);
+}
+.iam-gate-ic.accent { color: var(--orange); border-color: color-mix(in srgb, var(--orange) 40%, var(--line)); }
+.iam-gate-t { display: grid; min-width: 0; }
+.iam-gate-t b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.iam-gate-t i {
+  font-style: normal;
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.iam-verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.iam-verdict s { width: 6px; height: 6px; border-radius: var(--r-pill); }
+.iam-verdict.ok { color: var(--allow); }
+.iam-verdict.ok s { background: var(--allow); }
+.iam-verdict.accent { color: var(--orange); }
+.iam-verdict.accent s { background: var(--orange); }
+
+/* ---------- the person ---------- */
+.iam-who { display: grid; gap: var(--sp-3); padding: var(--sp-4); position: relative; }
+/* The portrait is a real photograph dropped in at /people/. Until it
+   lands the initials block shows through — deliberately not a line-art
+   avatar, which reads as a wireframe rather than as a person. */
+.iam-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+.iam-face b {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx-dim);
+}
+/* The portrait itself. `--iam-face-src` is set inline by the component;
+   if the file is not there yet the layer paints nothing and the
+   initials show through, with no broken-image box. */
+.iam-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--iam-face-src);
+  background-size: cover;
+  background-position: center;
+}
+.iam-who-t { display: grid; gap: 2px; }
+.iam-who-t b { font-size: var(--fs-body-sm); font-weight: 600; letter-spacing: -0.01em; }
+.iam-who-t span { font-size: var(--fs-sm); color: var(--tx-dim); }
+.iam-who-rows { display: grid; gap: 7px; padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+.iam-who-rows span {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+.iam-who-rows svg { flex: none; }
+.iam-chip {
+  justify-self: start;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: var(--r-pill);
+}
+.iam-chip.ok { color: var(--allow); background: var(--allow-bg); }
+
+/* ---------- policy evaluation ---------- */
+.iam-prow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 8px var(--sp-4);
+}
+.iam-prow + .iam-prow { border-top: 1px solid var(--line); }
+.iam-prow b { font-size: var(--fs-sm); font-weight: 500; text-align: right; }
+.iam-prow--result {
+  border-top: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--orange) 7%, transparent);
+}
+.iam-prow--result .iam-mono,
+.iam-prow--result b { color: var(--orange); }
+
+/* ---------- the fan-out ---------- */
+.iam-fan { display: grid; justify-items: center; gap: var(--sp-4); }
+.iam-node {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--panel-sh);
+  /* the dashed drop from the trace above, drawn rather than imaged */
+  position: relative;
+}
+.iam-node::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 1px;
+  height: var(--sp-4);
+  background: repeating-linear-gradient(var(--line-strong) 0 3px, transparent 3px 6px);
+}
+.iam-res {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+  width: 100%;
+}
+.iam-res-c { display: grid; gap: 5px; padding: var(--sp-3) var(--sp-4); }
+.iam-res-h { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.iam-res-h svg { flex: none; color: var(--tx-dim); }
+.iam-res-h b {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.iam-res-h s { width: 6px; height: 6px; flex: none; border-radius: var(--r-pill); background: var(--allow); }
+.iam-res-k { font-size: var(--fs-3xs); color: var(--tx-dim); }
+.iam-res-v {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--allow);
+  padding-top: 5px;
+  border-top: 1px solid var(--line);
+}
+
+/* The scene stacks on its own width, not the window's: it renders at
+   ~680px beside the copy and ~1100px underneath it. */
+@container (max-width: 620px) {
+  .iam-scene-top { grid-template-columns: minmax(0, 1fr); }
+  .iam-res { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   Page rhythm
+   ============================================================ */
+.iam-sec { padding: var(--sp-section) 0; }
+.iam-sec--tight { padding: var(--sp-12) 0 var(--sp-10); }
+.iam-sec--alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+.iam-head { margin-bottom: var(--sp-10); max-width: 60ch; }
+.iam-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.iam-head h2 em { font-style: normal; color: var(--orange); }
+.iam-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   Identity sources
+   ============================================================ */
+.iam-sources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.iam-source { display: grid; gap: 7px; padding: var(--sp-6); background: var(--bg); min-width: 0; }
+.iam-source svg { color: var(--tx-dim); }
+.iam-source b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.iam-source span { font-size: var(--fs-sm); line-height: 1.55; color: var(--tx-dim); }
+@media (max-width: 900px) {
+  .iam-sources { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ============================================================
+   IamPolicyLab — the signature interactive
+   ============================================================ */
+.iam-lab {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  padding: var(--sp-6);
+  display: grid;
+  gap: var(--sp-5);
+}
+.iam-lab-pick { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.iam-lab-pick button {
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx-dim);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  padding: var(--sp-2) var(--sp-4);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.iam-lab-pick button:hover { color: var(--tx); border-color: var(--tx-mute); }
+.iam-lab-pick button.on {
+  color: var(--btn-ink);
+  background: var(--orange);
+  border-color: var(--orange);
+}
+.iam-lab-pick button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+.iam-lab-blurb {
+  margin: 0;
+  max-width: 72ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.iam-lab-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.iam-lab-gate { display: grid; gap: 5px; padding: var(--sp-4); background: var(--surface); min-width: 0; }
+.iam-lab-gate b { font-size: var(--fs-sm); font-weight: 500; }
+.iam-lab-gate.ok b { color: var(--allow); }
+.iam-lab-gate.warn b { color: var(--orange); }
+.iam-lab-gate.no b { color: var(--deny); }
+
+.iam-lab-out {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+}
+.iam-lab-out p { margin: 0; font-size: var(--fs-body-sm); color: var(--tx-dim); }
+.iam-lab-out.allow { background: var(--allow-bg); border-color: color-mix(in srgb, var(--allow) 32%, transparent); }
+.iam-lab-out.allow .iam-mono { color: var(--allow); }
+.iam-lab-out.stepup { background: color-mix(in srgb, var(--orange) 10%, transparent); border-color: color-mix(in srgb, var(--orange) 34%, transparent); }
+.iam-lab-out.stepup .iam-mono { color: var(--orange); }
+.iam-lab-out.deny { background: var(--deny-bg); border-color: color-mix(in srgb, var(--deny) 32%, transparent); }
+.iam-lab-out.deny .iam-mono { color: var(--deny); }
+
+.iam-lab-log { display: grid; gap: 6px; }
+.iam-lab-log code {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  color: var(--tx-dim);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 10px var(--sp-4);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .iam-lab { padding: var(--sp-4); }
+  .iam-lab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   Quick scan
+   ============================================================ */
+.iam-spec2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-10);
+}
+@media (max-width: 900px) {
+  .iam-spec2 { grid-template-columns: minmax(0, 1fr); gap: var(--sp-8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iam-lab-pick button { transition: none; }
+}

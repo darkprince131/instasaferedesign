@@ -4,6 +4,12 @@ import "@/components/home2/home2.css";
 import "@/components/home2/izgrid.css";
 import "@/components/home2/chatfaq.css";
 import "@/components/iz-fx/fx.css";
+/* the answer strip, its illustration vocabulary, and the shared
+   three-outcomes section */
+import "@/components/home2/iznewblocks.css";
+import "@/components/izoutcomes/illustrations.css";
+import "@/components/izanswer/answers.css";
+import "@/components/izpages/pro/outcomes.css";
 import "@/components/izpages/sso/sso.css";
 import "@/components/izpages/sso/oneloginrace.css";
 import "@/components/izpages/sso/ssoflowdiagram.css";

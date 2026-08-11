@@ -1,0 +1,367 @@
+/* ============================================================
+   ztaa.css — /zero-trust-application-access
+
+   Section rhythm mirrors ztna.css deliberately: the two platform-deep
+   pages are siblings and a reader moving between them should feel one
+   template, not two. What differs is the hero — ZTNA stacks copy over
+   a console, ZTAA splits them, because "one portal" is a claim you
+   want to see next to the sentence that makes it.
+   ============================================================ */
+
+.iz { --zt-nav: 66px; }
+
+/* ============================================================
+   HERO — copy left, admin console right
+   ============================================================ */
+.ztaa-hero { padding: var(--sp-12) 0 var(--sp-10); }
+.ztaa-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: var(--sp-12);
+  align-items: center;
+}
+.ztaa-hero h1 { max-width: 13ch; }
+.ztaa-hero .iz-lead { max-width: 46ch; }
+.ztaa-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+/* Below the split point the console goes full width under the copy —
+   at half a phone's width the dashboard is unreadable, and shrinking
+   the type to fit would make it decorative. */
+/* 1200, not 1080: at 1100–1200 the console track lands around 600px,
+   which is just under its own compact threshold, so the hero flipped
+   into the phone layout of the console while still sitting in a
+   two-column hero. Stacking earlier keeps the dense console on a
+   comfortable width the whole way down. */
+@media (max-width: 1200px) {
+  .ztaa-hero-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+  .ztaa-hero h1 { max-width: 18ch; }
+}
+
+/* ---------- the console plate ---------- */
+.ztaa-console { perspective: 1800px; }
+.ztaa-console-tilt {
+  transform-origin: 50% 0%;
+  transform:
+    rotateX(calc((1 - var(--p, 0)) * 4deg))
+    scale(calc(0.982 + var(--p, 0) * 0.018));
+  will-change: transform;
+}
+.ztaa-console-tilt > * {
+  display: block;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 calc(14px + var(--p, 0) * 18px) calc(34px + var(--p, 0) * 30px) -26px
+    color-mix(in srgb, var(--tx) calc(24% + var(--p, 0) * 14%), transparent);
+}
+
+.ztc {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+}
+
+/* ---------- sidebar ---------- */
+.ztc-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4) 0;
+  border-right: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.ztc-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-4) var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.ztc-brand svg { color: var(--orange); }
+.ztc-nav { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+.ztc-nav-i {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px var(--sp-4);
+  color: var(--tx-dim);
+  border-left: 2px solid transparent;
+}
+.ztc-nav-i.on {
+  color: var(--tx);
+  font-weight: 500;
+  background: var(--surface);
+  border-left-color: var(--orange);
+}
+.ztc-me {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4) 0;
+  border-top: 1px solid var(--line);
+  color: var(--tx-dim);
+}
+.ztc-av {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx);
+}
+.ztc-me-t { display: grid; flex: 1; min-width: 0; }
+.ztc-me-t b { font-weight: 600; color: var(--tx); }
+.ztc-me-t i { font-style: normal; font-size: var(--fs-3xs); }
+
+/* ---------- main ---------- */
+.ztc-main {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  min-width: 0;
+}
+.ztc-hi { display: grid; gap: 4px; }
+.ztc-hi b { font-size: var(--fs-body-sm); font-weight: 600; letter-spacing: -0.01em; }
+.ztc-hi span { color: var(--tx-dim); }
+
+.ztc-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
+.ztc-kpi {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+}
+.ztc-kpi-l { color: var(--tx-dim); }
+.ztc-kpi-v {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.ztc-kpi-v i { font-style: normal; font-size: var(--fs-3xs); }
+.ztc-kpi-v i.up { color: var(--allow); }
+.ztc-kpi-v i.down { color: var(--deny); }
+.ztc-kpi-s { color: var(--tx-mute); font-size: var(--fs-3xs); }
+
+.ztc-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  min-width: 0;
+}
+.ztc-card-h {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* The activity row is the densest thing on the page. `minmax(0,…)` on
+   every flexible track is load-bearing: without it the email column
+   refuses to shrink and the whole console overflows its plate. */
+.ztc-row {
+  display: grid;
+  grid-template-columns: auto 22px minmax(0, 1.5fr) minmax(0, 1.3fr) auto 16px;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 9px var(--sp-4);
+  border-top: 1px solid var(--line);
+}
+.ztc-row-t { font-family: var(--mono); color: var(--tx-dim); }
+.ztc-row-ic { display: grid; place-items: center; color: var(--tx-dim); }
+.ztc-row-app { display: grid; min-width: 0; }
+.ztc-row-app b { font-weight: 500; }
+.ztc-row-app i,
+.ztc-row-who {
+  font-style: normal;
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ztc-row-more { color: var(--tx-mute); }
+.ztc-chip {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  padding: 3px 7px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.ztc-chip.ok { color: var(--allow); background: var(--allow-bg); }
+.ztc-chip.no { color: var(--deny); background: var(--deny-bg); }
+
+.ztc-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--sp-3); }
+.ztc-stat,
+.ztc-app {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 8px var(--sp-4);
+  border-top: 1px solid var(--line);
+}
+.ztc-stat b,
+.ztc-app b { margin-left: auto; font-family: var(--mono); font-weight: 500; }
+.ztc-dot { width: 7px; height: 7px; border-radius: var(--r-pill); flex: none; }
+.ztc-dot.ok { background: var(--allow); }
+.ztc-dot.no { background: var(--deny); }
+.ztc-dot.warn { background: var(--orange); }
+.ztc-app-h { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ztc-bar {
+  flex: 1;
+  min-width: 32px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.ztc-bar i { display: block; height: 100%; background: var(--tx-dim); }
+
+/* Under 560px of console width the two-up cards and the six-column
+   activity row stop being readable, so both collapse. Keep this well
+   clear of the width the desktop hero gives the console (~630px) —
+   when the two were 10px apart the console spent most of the desktop
+   range in its phone layout. */
+@container (max-width: 560px) {
+  .ztc { grid-template-columns: minmax(0, 1fr); }
+  .ztc-side { flex-direction: row; align-items: center; border-right: 0; border-bottom: 1px solid var(--line); }
+  .ztc-nav,
+  .ztc-me { display: none; }
+  .ztc-brand { border-bottom: 0; padding-bottom: 0; }
+  .ztc-kpis { grid-template-columns: minmax(0, 1fr); }
+  .ztc-pair { grid-template-columns: minmax(0, 1fr); }
+  .ztc-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .ztc-row-ic,
+  .ztc-row-who,
+  .ztc-row-more { display: none; }
+  /* At full length this console is 1,150px of mock UI before the phone
+     visitor reaches the first real section. Three activity rows make
+     the same point — five protocols and a verdict column — and the two
+     summary cards repeat what the KPIs already said. */
+  .ztc-row:nth-child(n + 5) { display: none; }
+  .ztc-pair { display: none; }
+}
+.ztaa-console { container-type: inline-size; }
+
+/* ============================================================
+   Page rhythm — mirrors ztna.css so the siblings match
+   ============================================================ */
+.ztaa-sec { padding: var(--sp-section) 0; }
+.ztaa-sec--tight { padding: var(--sp-12) 0 var(--sp-10); }
+.ztaa-sec--alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+.ztaa-head { margin-bottom: var(--sp-10); max-width: 60ch; }
+.ztaa-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.ztaa-head h2 em { font-style: normal; color: var(--orange); }
+.ztaa-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.ztaa-mech { padding: var(--sp-section) 0; }
+.ztaa-mech-h { max-width: 62ch; margin-bottom: var(--sp-8); }
+.ztaa-mech-h h3 {
+  margin: var(--sp-3) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.ztaa-mech-h h3 em { font-style: normal; color: var(--orange); }
+.ztaa-mech-h p {
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ConsoleRow ships full-bleed; hold it to the page measure */
+.ztaa-crow > * { padding-block: 0; }
+
+/* ============================================================
+   The seven app types
+   ============================================================ */
+.ztaa-types {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.ztaa-type {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-5);
+  background: var(--bg);
+  min-width: 0;
+}
+.ztaa-type svg { color: var(--tx-dim); }
+.ztaa-type b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+}
+.ztaa-type span { font-size: var(--fs-sm); color: var(--tx-dim); }
+/* the eighth cell is the point of the other seven, so it carries the
+   one accent in the grid */
+.ztaa-type--note { background: var(--bg-2); }
+.ztaa-type--note svg,
+.ztaa-type--note b { color: var(--orange); }
+
+@media (max-width: 900px) {
+  .ztaa-types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ============================================================
+   Quick scan — two spec tables side by side
+   ============================================================ */
+.ztaa-spec2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-10);
+}
+@media (max-width: 900px) {
+  .ztaa-spec2 { grid-template-columns: minmax(0, 1fr); gap: var(--sp-8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ztaa-console-tilt { transform: none; }
+}

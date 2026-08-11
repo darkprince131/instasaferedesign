@@ -1,0 +1,108 @@
+/* ============================================================
+   posture.css — /zero-trust-features/device-posture-check
+
+   Only this page's own sections. The hero uses the same split as the
+   other platform-deep pages so they read as one template.
+   ============================================================ */
+
+.iz { --zt-nav: 66px; }
+
+.pos-hero { padding: var(--sp-12) 0 var(--sp-10); }
+/* Same reasoning as the IAM, SSO and MFA heroes: the scene holds a
+   full result card beside a laptop, and at the 1200 wrap the category
+   rows lose their status column. Nothing else is widened. */
+.pos-hero .iz-wrap { max-width: 1340px; }
+.pos-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+.pos-hero h1 { max-width: 12ch; }
+.pos-hero .iz-lead { max-width: 40ch; }
+.pos-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+@media (max-width: 1200px) {
+  .pos-hero-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+  .pos-hero h1 { max-width: 18ch; }
+}
+
+/* the one-line claim under the counts strip */
+.pos-kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  padding-block: var(--sp-6);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+}
+.pos-kicker svg { color: var(--orange); }
+
+/* ---------- section rhythm ---------- */
+.pos-sec { padding: var(--sp-section) 0; }
+.pos-sec--alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+.pos-head { margin-bottom: var(--sp-10); max-width: 60ch; }
+.pos-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.pos-head h2 em { font-style: normal; color: var(--orange); }
+.pos-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the disassembly ----------
+   Head block leads into the pinned posture laptop; the closing block
+   and stat strip land after the pin releases. The scroll cue is mono
+   furniture, not copy. */
+
+.pos-dis .pos-head { margin-bottom: var(--sp-6); }
+.pos-dis-cue {
+  margin-top: var(--sp-7);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+
+.pos-dis-close { margin-top: var(--sp-8); }
+.pos-dis-close p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.pos-dis-close p:first-child { margin-top: 0; }
+.pos-dis-close p em { font-style: normal; color: var(--tx); }
+
+.pos-dis-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-6);
+  list-style: none;
+  margin: var(--sp-8) 0 0;
+  padding: var(--sp-5) 0;
+  border-block: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}

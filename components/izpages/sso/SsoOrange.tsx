@@ -7,9 +7,15 @@ import { ChatFaq, type QA } from "@/components/home2/ChatFaq";
 import { IZ_FX } from "@/components/iz-fx/fx.config";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { useSectionReveals } from "@/components/home2/useIzMotion";
+import { ListChecks, LockKey, UsersThree } from "@phosphor-icons/react";
+import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
+import { AnswerSso } from "@/components/izanswer/AnswerSso";
+import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
+import { SsoLogin } from "@/components/izoutcomes/artifacts/SsoLogin";
 import { OneLoginRace } from "./OneLoginRace";
 import { SsoFlowDiagram } from "./SsoFlowDiagram";
 import { PasswordFatigueIz } from "./PasswordFatigueIz";
+import { SsoHeroCells, SsoHeroScene } from "./SsoScenes";
 
 /* ============================================================
    SsoOrange — v3 of the orange `.iz` SSO pilot page, rebuilt on
@@ -41,8 +47,6 @@ const Arrow = () => (
   </svg>
 );
 
-const HERO_TILES = ["Mail", "CRM", "Jira", "Drive", "ERP", "Chat"];
-
 const PROBLEMS = [
   {
     t: "One reused password = many breached apps",
@@ -69,11 +73,6 @@ const INCLUDED = [
 
 const INTEGRATIONS = ["O365", "Zoho", "Salesforce", "GitLab", "Atlassian", "Zimbra", "any SAML/OAuth/OIDC app"];
 
-const OUTCOMES = [
-  { t: "The password problem shrinks to one", d: "Defend one login properly instead of fifty badly." },
-  { t: "Joiner–leaver in minutes", d: "Group membership is provisioning; disabling is offboarding." },
-  { t: "Access becomes auditable", d: "Every app login is one line in one log." },
-];
 
 const FAQ: QA[] = [
   {
@@ -127,9 +126,9 @@ export function SsoOrange() {
 
   useSectionReveals();
 
-  const scrollToProblem = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const scrollToRace = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    document.getElementById("password-problem")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("race")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -145,8 +144,11 @@ export function SsoOrange() {
         <div className="iz-wrap izsso-hero-grid">
           <div className="izsso-hero-copy">
             <span className="iz-ey">Single sign-on</span>
+            {/* "Get everything" is held together: left to the column it
+                broke as "Get / everything you're allowed." */}
             <h1 className="iz-h1">
-              Log in <em>once</em>. Get everything you&apos;re allowed.
+              Log in once.{" "}
+              <span style={{ whiteSpace: "nowrap" }}>Get everything</span> you&apos;re <em>allowed</em>.
             </h1>
             <p className="iz-lead">
               One set of credentials, one dashboard, every provisioned application — with MFA and device checks built
@@ -158,37 +160,66 @@ export function SsoOrange() {
                   Book a demo <Arrow />
                 </a>
               </Magnetic>
-              <a href="#password-problem" className="iz-btn iz-btn-ghost" onClick={scrollToProblem}>
-                See how it works ↓
+              {/* points at the race, which is the thing worth watching —
+                  the old target was the copy section above it */}
+              <a href="#race" className="iz-btn iz-btn-ghost" onClick={scrollToRace}>
+                Watch the race ↓
               </a>
             </div>
           </div>
           <div className="izsso-hero-visual">
-            <div className="iz-gridcell iz-gridfield izsso-hero-stillframe" aria-hidden="true">
-              <div className="izsso-sf-head">
-                <span className="olr-dots">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span className="izsso-sf-url">portal.instasafe.app</span>
-              </div>
-              <div className="izsso-sf-body">
-                <div className="izsso-sf-login">
-                  <span className="izsso-sf-field">you@company.com</span>
-                  <span className="izsso-sf-field">••••••••</span>
-                  <span className="iz-btn iz-btn-pri iz-btn-sm">Sign in</span>
-                </div>
-                <div className="izsso-sf-tiles">
-                  {HERO_TILES.map((n) => (
-                    <span key={n} className="izsso-sf-tile">
-                      {n}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <SsoHeroScene />
           </div>
+        </div>
+      </section>
+
+      {/* the four claims the hero picture makes, stated plainly */}
+      <SsoHeroCells />
+
+      {/* ---------------- PLAIN ANSWER ---------------- */}
+      <section className="iz-section iz-sec--open" id="what">
+        <div className="iz-wrap">
+          <IzAnswerStrip
+            variant="proof"
+            eyebrow="Single sign-on"
+            heading="What is SSO?"
+            question="One login session,"
+            emphasis="honoured"
+            questionTail="by many applications."
+            answer="Instead of a password per app — remembered, reused, written down, phished — the user authenticates once to an identity provider, which then vouches for them to each application using a cryptographic assertion, most commonly SAML."
+            points={[
+              {
+                title: "Security",
+                body: "One strongly-defended login, with MFA on it, replaces dozens of weak ones. Password reuse stops mattering because there is only one password left to reuse.",
+              },
+              {
+                title: "Operations",
+                body: "Onboarding is “add to group”. Offboarding is “disable user” — not a checklist of fifteen admin consoles, each of which someone has to remember exists.",
+              },
+              {
+                title: "Experience",
+                body: "People stop burning minutes and helpdesk tickets on forgotten passwords. The security improvement and the convenience improvement are the same change.",
+              },
+              {
+                title: "Visibility",
+                body: "When every login flows through one point, “who accessed what, when, from where” becomes a report instead of an investigation.",
+              },
+            ]}
+            ctas={[
+              { label: "Book a demo", href: "/book-a-demo", primary: true },
+              { label: "Identity & Access", href: "/platform/iam" },
+            ]}
+            long={[
+              "Single Sign-On means one login session, honoured by many applications. The user signs in to the identity provider; every application afterwards asks the provider whether this person is who they claim to be, and trusts the answer rather than asking for a password of its own.",
+              "The under-appreciated fourth improvement is visibility. Fifty applications with fifty login pages produce fifty logs nobody joins up. One provider in front of all of them produces one, and the audit question stops being an investigation.",
+            ]}
+            slot={{ kind: "art", art: AnswerSso }}
+            stats={[
+              { n: "1", label: "login to defend" },
+              { n: "1", label: "action to offboard" },
+              { n: "3", label: "protocols — SAML, OAuth, OIDC" },
+            ]}
+          />
         </div>
       </section>
 
@@ -239,7 +270,7 @@ export function SsoOrange() {
       </section>
 
       {/* ---------------- ONE-LOGIN RACE — opt-in, lazy-mounted ---------------- */}
-      <section className="iz-section iz-sec--open">
+      <section className="iz-section iz-sec--open" id="race">
         <div className="iz-wrap">
           <div className="iz-reveal iz-headblock">
             <span className="iz-ey">See it, don&apos;t just read it</span>
@@ -299,28 +330,38 @@ export function SsoOrange() {
         </div>
       </section>
 
-      {/* ---------------- OUTCOMES ---------------- */}
-      <section className="iz-section iz-sec--railed">
-        <span className="iz-cross iz-cross--tl" aria-hidden="true" />
-        <span className="iz-cross iz-cross--tr" aria-hidden="true" />
-        <span className="iz-cross iz-cross--bl" aria-hidden="true" />
-        <span className="iz-cross iz-cross--br" aria-hidden="true" />
-        <div className="iz-wrap">
-          <div className="iz-reveal iz-headblock">
-            <span className="iz-ey">What changes</span>
-            <h2 className="iz-h2">Three outcomes.</h2>
-          </div>
-          <div className="izsso-outcomes iz-reveal">
-            {OUTCOMES.map((o, i) => (
-              <div key={o.t} className="izsso-outcome">
-                <span className="izsso-num">{String(i + 1).padStart(2, "0")}</span>
-                <h3>{o.t}</h3>
-                <p>{o.d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ---------------- THREE OUTCOMES ----------------
+          Now the shared IzOutcomes section, on the SsoLogin artifact
+          (sprawl → one credential → every session). The hand-rolled
+          three-column list it replaces carried no artifact, which is
+          the one thing the three-outcomes rule requires. */}
+      <div id="outcomes">
+        <IzOutcomes
+          side="left"
+          tag="SSO outcomes"
+          title={["One door.", "Everything", "behind it."]}
+          accentFrom={1}
+          sub="Fifty logins collapse into one, and that one is the login you can afford to defend properly."
+          artifact={SsoLogin}
+          outcomes={[
+            {
+              Icon: LockKey,
+              title: "The password problem shrinks to one",
+              body: "Defend one login properly instead of fifty badly. Reuse stops mattering when there is nothing left to reuse it across.",
+            },
+            {
+              Icon: UsersThree,
+              title: "Joiner-leaver in minutes",
+              body: "Group membership is provisioning. Disabling the user is offboarding — for every application at once.",
+            },
+            {
+              Icon: ListChecks,
+              title: "Access becomes auditable",
+              body: "Every application login is one line in one log, so the audit question is a report rather than an investigation.",
+            },
+          ]}
+        />
+      </div>
 
       {/* ---------------- FAQ ---------------- */}
       <section className="iz-section iz-sec--open">

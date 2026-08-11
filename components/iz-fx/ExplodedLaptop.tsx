@@ -124,6 +124,95 @@ const BOX_H = 46;
 const boxW = (label: string) => +(label.length * 14.9 + 74).toFixed(1);
 const f = (n: number) => +n.toFixed(1);
 
+/* ---------- the posture manifest ----------
+   The /platform/device-posture adaptation: the twenty hardware
+   callouts become eight CHECK FAMILY clusters — real posture checks,
+   not hardware status. A cluster is a mono family label plus the
+   actual check names under it, one leader to the layer that check
+   family reads. The columns widen (the check-name lines are long), so
+   the posture sheet runs on a 1800-wide viewBox with the stack shifted
+   +100 to stay centred.
+
+   Anchors are sheet coordinates ALREADY shifted (+100 vs the
+   generator). The right column starts low (y≥720) because the open
+   screen owns the upper-right quadrant — a leader through the screen's
+   face is not blueprint grammar. Same reason the right rows run
+   deck → fan → io → bottom (anchor heights are monotonic; the
+   family order swaps DOMAIN and PROCESSES vs the brief so no two
+   leaders cross). */
+
+const P_VB_W = 1800;
+const P_SHIFT = 100;
+/* measured in-browser on Geist Mono (getComputedTextLength):
+   24px family labels advance 15.84/ch, 14px check names 8.96/ch.
+   Constants carry a hair of slack on top of the measurement. */
+const FAM_ADV = 15.9;
+const CK_ADV = 9.0; // 14px check-name advance (~11px rendered)
+
+type Cluster = {
+  family: string;
+  checks: string[];
+  side: "l" | "r";
+  y: number;
+  at: [number, number];
+  min?: boolean;
+};
+
+const PL: Cluster[] = [
+  { family: "SESSION & IDENTITY", checks: ["BrowserID · TenantId"], side: "l", y: 230, at: [842, 250] },
+  {
+    family: "OPERATING SYSTEM",
+    checks: ["OS · OSName · OSVersion · ServicePack · Hotfix"],
+    side: "l",
+    y: 500,
+    at: [730, 900],
+    min: true,
+  },
+  { family: "DISK ENCRYPTION", checks: ["BitLocker"], side: "l", y: 790, at: [880, 992], min: true },
+  { family: "NETWORK PROTECTION", checks: ["Firewall · FirewallStatus"], side: "l", y: 1080, at: [1011, 1051] },
+];
+const PR: Cluster[] = [
+  {
+    family: "MALWARE PROTECTION",
+    checks: [
+      "Antivirus · AntiVirusStatus",
+      "AntiVirusLastUpdate · SEPLastAVUpdate",
+      "AntiSpyWare · AntiSpywareStatus",
+    ],
+    side: "r",
+    y: 720,
+    at: [1055, 800],
+    min: true,
+  },
+  {
+    family: "RUNNING PROCESSES",
+    checks: ["ProcessRunning · ProcessNotRunning"],
+    side: "r",
+    y: 940,
+    at: [1110, 820],
+    min: true,
+  },
+  { family: "DOMAIN & MANAGEMENT", checks: ["InDomain · DomainName · mdm"], side: "r", y: 1160, at: [1160, 1230] },
+  {
+    family: "FILES & REGISTRY",
+    checks: ["FileExists · FileNotExists · RegistryKeyExists"],
+    side: "r",
+    y: 1380,
+    at: [1246, 1364],
+  },
+];
+const CLUSTERS: Cluster[] = Array.from({ length: 4 }, (_, i) => [PL[i], PR[i]]).flat();
+const clusterWin = (idx: number) => {
+  const a = 0.45 + idx * 0.04;
+  return { a: f2(a), b: f2(a + 0.11) };
+};
+
+/* +26 reserves the checkmark's lane (w−36 … w−17) beside the family
+   label — without it the tick prints over long family names */
+const clusterW = (c: Cluster) =>
+  +(Math.max(c.family.length * FAM_ADV + 26, ...c.checks.map((l) => l.length * CK_ADV)) + 36).toFixed(1);
+const clusterH = (c: Cluster) => 54 + 22 * c.checks.length;
+
 /** Box → horizontal → one 45° → (vertical tail if needed) → anchor.
  *  The single-elbow form only exists when the horizontal room exceeds
  *  the vertical drop; the deck-row callouts point far up the sheet,
@@ -155,6 +244,78 @@ function boxPath(c: Callout): string {
     : `M${f(x + n)} ${y}h${f(w - n)}v${BOX_H}h${-w}v${-(BOX_H - n)}Z`;
 }
 
+/** the callout leader grammar, box-agnostic: box edge → horizontal →
+ *  one 45° → (vertical tail if needed) → anchor */
+function leaderFrom(x0: number, rowY: number, ax: number, ay: number, fwd: 1 | -1): string {
+  const dx = (ax - x0) * fwd;
+  const dyy = Math.abs(ay - rowY);
+  if (dyy <= dx - 24) {
+    const xe = ax - fwd * dyy;
+    return `M${f(x0)} ${f(rowY)}H${f(xe)}L${f(ax)} ${f(ay)}`;
+  }
+  const seg = Math.max(0, Math.min(dyy, dx - 24));
+  const xm = ax - fwd * seg;
+  const ym = rowY + Math.sign(ay - rowY) * seg;
+  return `M${f(x0)} ${f(rowY)}H${f(xm)}L${f(ax)} ${f(ym)}V${f(ay)}`;
+}
+
+function notchedBox(x: number, y: number, w: number, h: number, side: "l" | "r"): string {
+  const n = 10;
+  return side === "l"
+    ? `M${f(x)} ${y}h${f(w - n)}l${n} ${n}v${f(h - n)}h${f(-w)}Z`
+    : `M${f(x + n)} ${y}h${f(w - n)}v${f(h)}h${f(-w)}v${f(-(h - n))}Z`;
+}
+
+function ClusterG({ c, idx }: { c: Cluster; idx: number }) {
+  const w = clusterWin(idx);
+  const bw = clusterW(c);
+  const bh = clusterH(c);
+  const bx = c.side === "l" ? 60 : P_VB_W - 60 - bw;
+  const x0 = c.side === "l" ? bx + bw : bx;
+  const fwd: 1 | -1 = c.side === "l" ? 1 : -1;
+  return (
+    <g
+      className={`xl-callout${c.min ? " xl-min" : ""}`}
+      style={{ ["--a" as string]: w.a, ["--b" as string]: w.b } as React.CSSProperties}
+    >
+      <path d={leaderFrom(x0, c.y + bh / 2, c.at[0], c.at[1], fwd)} className="xl-leader" pathLength={1} />
+      <circle cx={c.at[0]} cy={c.at[1]} r={4} className="xl-anchor" />
+      <g className="xl-box">
+        <path d={notchedBox(bx, c.y, bw, bh, c.side)} className="xl-boxln" />
+        <text x={bx + 18} y={c.y + 32} className="xl-label">
+          {c.family}
+        </text>
+        {c.checks.map((line, i) => (
+          <text key={line} x={bx + 18} y={c.y + 58 + i * 22} className="xl-checkline">
+            {line}
+          </text>
+        ))}
+        <polyline
+          className="xl-check"
+          pathLength={1}
+          points={`${f(bx + bw - 36)},${c.y + 24} ${f(bx + bw - 29)},${c.y + 31} ${f(bx + bw - 17)},${c.y + 16}`}
+        />
+      </g>
+    </g>
+  );
+}
+
+/* the drawing's title block — sheet furniture, static like the guides */
+function TitleBlock() {
+  return (
+    <g className="xl-tb">
+      <rect x={60} y={1390} width={380} height={90} className="xl-tb-rect" />
+      <text x={78} y={1426} className="xl-label">
+        DEVICE POSTURE CHECK
+      </text>
+      <path d="M60 1440 H440" className="xl-tb-rule" />
+      <text x={78} y={1466} className="xl-checkline">
+        EVALUATED AT CONNECTION + CONTINUOUS
+      </text>
+    </g>
+  );
+}
+
 function CalloutG({ c, idx }: { c: Callout; idx: number }) {
   const w = calloutWin(idx);
   const bw = boxW(c.label);
@@ -184,12 +345,25 @@ function CalloutG({ c, idx }: { c: Callout; idx: number }) {
 
 /* ---------- the stamp — the generator's, with the scrub attached ---------- */
 
-function Stamp() {
+function Stamp({
+  cx = 1205,
+  arcTop = "SECURITY VERIFIED",
+  arcBottom = "ZERO TRUST",
+  word = "★ APPROVED ★",
+  uid = "xl",
+}: {
+  cx?: number;
+  arcTop?: string;
+  arcBottom?: string;
+  word?: string;
+  /** textPath ids are document-global; each sheet variant needs its own */
+  uid?: string;
+}) {
   /* The generator parks it at (W−210, 190) on a sheet with no callout
      columns; here that lands on the BIOS box. Shifted into the air
      above the lid's right shoulder — it may overprint the drawing's
-     corner, which is what a stamp does, but never a checklist row. */
-  const cx = 1205;
+     corner, which is what a stamp does, but never a checklist row.
+     Arc text must stay ≤17ch: that is what fits the r80 semicircle. */
   const cy = 112;
   return (
     <g className="xl-stamp" style={{ ["--a" as string]: 0.85, ["--b" as string]: 0.92 } as React.CSSProperties}>
@@ -198,21 +372,21 @@ function Stamp() {
           <circle r={92} className="xl-stamp-ring" strokeWidth={2.4} />
           <circle r={70} className="xl-stamp-ring" strokeWidth={1.6} />
           <defs>
-            <path id="xl-arc-t" d="M -80 0 A 80 80 0 0 1 80 0" fill="none" />
-            <path id="xl-arc-b" d="M -80 0 A 80 80 0 0 0 80 0" fill="none" />
+            <path id={`${uid}-arc-t`} d="M -80 0 A 80 80 0 0 1 80 0" fill="none" />
+            <path id={`${uid}-arc-b`} d="M -80 0 A 80 80 0 0 0 80 0" fill="none" />
           </defs>
           <text className="xl-stamp-arc">
-            <textPath href="#xl-arc-t" startOffset="50%" textAnchor="middle">
-              SECURITY VERIFIED
+            <textPath href={`#${uid}-arc-t`} startOffset="50%" textAnchor="middle">
+              {arcTop}
             </textPath>
           </text>
           <text className="xl-stamp-arc">
-            <textPath href="#xl-arc-b" startOffset="50%" textAnchor="middle">
-              ZERO TRUST
+            <textPath href={`#${uid}-arc-b`} startOffset="50%" textAnchor="middle">
+              {arcBottom}
             </textPath>
           </text>
           <text y={6} textAnchor="middle" className="xl-stamp-word">
-            ★ APPROVED ★
+            {word}
           </text>
         </g>
       </g>
@@ -222,14 +396,21 @@ function Stamp() {
 
 /* ---------- the sheet ---------- */
 
-function Sheet() {
+function Sheet({ posture = false }: { posture?: boolean }) {
+  const vbw = posture ? P_VB_W : VB_W;
+  const shift = posture ? P_SHIFT : 0;
   return (
     <svg
-      viewBox={`0 0 ${VB_W} ${VB_H}`}
+      viewBox={`0 0 ${vbw} ${VB_H}`}
       className="xl"
       role="img"
-      aria-label="Engineering drawing of a laptop exploded into its component layers, each layer verified by a security checklist and stamped approved: zero trust architecture"
+      aria-label={
+        posture
+          ? "Engineering drawing of a laptop exploded into its component layers, each layer read by a device posture check family and stamped compliant: device trust"
+          : "Engineering drawing of a laptop exploded into its component layers, each layer verified by a security checklist and stamped approved: zero trust architecture"
+      }
     >
+      <g transform={shift ? `translate(${shift} 0)` : undefined}>
       {/* the generator's alignment guides through the stack */}
       <path d={`M${CX} 190 V1410`} className="xl-guide" style={{ opacity: 0.5 }} />
       <path d={`M${CX - 330} 340 V1380`} className="xl-guide" style={{ opacity: 0.35 }} />
@@ -284,22 +465,42 @@ function Sheet() {
           <g className="xl-screen-pivot" dangerouslySetInnerHTML={{ __html: OPEN_SCREEN }} />
         </g>
       </g>
+      </g>
 
-      {CALLOUTS.map((c, i) => (
-        <CalloutG key={c.label} c={c} idx={i} />
-      ))}
-
-      <Stamp />
+      {posture ? (
+        <>
+          {CLUSTERS.map((c, i) => (
+            <ClusterG key={c.family} c={c} idx={i} />
+          ))}
+          <TitleBlock />
+          <Stamp
+            uid="xlp"
+            cx={1305}
+            arcTop="POSTURE VERIFIED"
+            arcBottom="DEVICE TRUST"
+            word="★ COMPLIANT ★"
+          />
+        </>
+      ) : (
+        <>
+          {CALLOUTS.map((c, i) => (
+            <CalloutG key={c.label} c={c} idx={i} />
+          ))}
+          <Stamp />
+        </>
+      )}
     </svg>
   );
 }
 
 /* ---------- exports ---------- */
 
-export function ExplodedLaptopStatic({ className }: { className?: string }) {
+type Variant = "hardware" | "posture";
+
+export function ExplodedLaptopStatic({ className, variant = "hardware" }: { className?: string; variant?: Variant }) {
   return (
     <div className={`xl-root xl-static${className ? ` ${className}` : ""}`}>
-      <Sheet />
+      <Sheet posture={variant === "posture"} />
     </div>
   );
 }
@@ -307,10 +508,14 @@ export function ExplodedLaptopStatic({ className }: { className?: string }) {
 export function ExplodedLaptop({
   pinLength = 300,
   className,
+  variant = "hardware",
 }: {
   /** how much scroll the pinned inspection consumes, in vh */
   pinLength?: number;
   className?: string;
+  /** "posture" swaps the hardware callouts for the 8 check-family
+   *  clusters, the posture stamp and the title block */
+  variant?: Variant;
 }) {
   const ref = useRef<HTMLElement>(null);
 
@@ -350,7 +555,7 @@ export function ExplodedLaptop({
       style={{ ["--pin" as string]: `${pinLength}vh` } as React.CSSProperties}
     >
       <div className="xl-pin">
-        <Sheet />
+        <Sheet posture={variant === "posture"} />
       </div>
     </section>
   );

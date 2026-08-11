@@ -1,0 +1,298 @@
+/* ============================================================
+   00bb · IzSideNav — in-page section navigation.
+
+   Desktop: an orange handle on the page edge (ticks only, so it costs
+   no layout) that opens a panel with a spine, a progress fill and one
+   dot per section. Mobile: a bottom pill and a sheet — the rail used
+   to vanish below 900px, which took navigation away from the device
+   that scrolls the most.
+
+   Imported by IzSideNav.tsx, so any page that renders the component
+   gets these styles without a page-level import.
+   ============================================================ */
+
+.izsn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  /* The hidden panel still occupies 246px, so the container is a
+     286px-wide box pinned to the edge of every page it appears on.
+     Without this it silently swallows clicks on whatever sits under
+     it; the two real children take their events back below. */
+  pointer-events: none;
+}
+.izsn-handle,
+.izsn-panel { pointer-events: auto; }
+.izsn--left { left: 0; }
+/* the panel has to open INTO the page, so on the right edge the two
+   children swap order rather than the panel overhanging the viewport */
+.izsn--right { right: 0; flex-direction: row-reverse; }
+
+/* ---------- collapsed handle ---------- */
+.izsn-handle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 9px;
+  border: 0;
+  cursor: pointer;
+  background: var(--orange);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+}
+.izsn--right .izsn-handle { border-radius: var(--r-lg) 0 0 var(--r-lg); }
+.izsn-handle:focus-visible { outline: 2px solid var(--tx); outline-offset: 3px; }
+
+.izsn-tick {
+  display: block;
+  width: 16px;
+  height: 2.5px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--btn-ink) 42%, transparent);
+  transition: width var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.izsn-tick.done { background: color-mix(in srgb, var(--btn-ink) 72%, transparent); }
+.izsn-tick.on { width: 22px; height: 3px; background: var(--btn-ink); }
+
+/* ---------- expanded panel ---------- */
+.izsn-panel {
+  width: 246px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 0;
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  box-shadow: var(--panel-sh);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-14px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur) var(--ease),
+    visibility var(--dur) var(--ease);
+}
+.izsn--right .izsn-panel {
+  border: 1px solid var(--line);
+  border-right: 0;
+  border-radius: var(--r-lg) 0 0 var(--r-lg);
+  transform: translateX(14px);
+}
+.izsn.is-open .izsn-panel { opacity: 1; visibility: visible; transform: none; }
+
+.izsn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5) var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+.izsn-head-t {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izsn-pin {
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izsn-pin:hover,
+.izsn.is-pinned .izsn-pin { color: var(--orange); }
+.izsn-pin:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* ---------- the list: shared by the panel and the sheet ---------- */
+.izsn-items { position: relative; padding: var(--sp-3) 0 var(--sp-4); }
+/* the connector runs behind the dots, so its offset is the dot's
+   centre: row padding (20) + half of 27, minus half its own width */
+.izsn-spine {
+  position: absolute;
+  left: 33px;
+  top: 22px;
+  bottom: 26px;
+  width: 1.5px;
+  border-radius: var(--r-hair);
+  background: var(--line-strong);
+}
+.izsn-spine i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  display: block;
+  border-radius: var(--r-hair);
+  background: var(--orange);
+  transition: height var(--dur) var(--ease);
+}
+
+.izsn-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: var(--sp-2) var(--sp-5);
+  color: var(--tx-dim);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.izsn-item:hover { color: var(--tx); }
+.izsn-dot {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  flex: none;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+/* the fallback marker when an item carries no icon */
+.izsn-dot b {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.izsn-lbl {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.izsn-item:hover .izsn-dot { border-color: var(--tx-mute); }
+.izsn-item.on { color: var(--orange); }
+.izsn-item.on .izsn-lbl { font-weight: 600; }
+.izsn-item.on .izsn-dot { border-color: var(--orange); }
+.izsn-item.past .izsn-dot { border-color: color-mix(in srgb, var(--orange) 55%, transparent); }
+.izsn-item:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; border-radius: var(--r-xs); }
+
+/* ---------- mobile: bottom pill + sheet ---------- */
+.izsn-mob { display: none; }
+
+.izsn-bar {
+  position: fixed;
+  /* inset from the right so the pill never lands under the help
+     launcher, which is fixed at right:20 and is 56px wide */
+  left: 14px;
+  right: 92px;
+  bottom: 18px;
+  z-index: 26;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  height: 46px;
+  padding: 0 6px 0 18px;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  box-shadow: var(--panel-sh);
+  color: var(--tx);
+  font-family: var(--body);
+}
+.izsn-idx {
+  flex: none;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.06em;
+  color: var(--orange);
+}
+.izsn-cur {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.izsn-chev {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  color: var(--tx-dim);
+}
+.izsn-prog {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: var(--r-hair);
+  background: var(--line);
+  overflow: hidden;
+}
+.izsn-prog i { display: block; height: 100%; background: var(--orange); transition: width var(--dur) var(--ease); }
+
+.izsn-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 27;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease-out), visibility var(--dur) var(--ease-out);
+}
+.izsn-scrim.is-open { opacity: 1; visibility: visible; }
+
+.izsn-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 28;
+  max-height: 72dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* The help launcher is fixed at z-index 999990 and cannot be dimmed
+     or stacked under a sheet, so the last row is given room to clear
+     its 56px button plus its 20px inset instead of fighting it. */
+  padding: var(--sp-2) 0 84px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  transform: translateY(101%);
+  transition: transform var(--dur) var(--ease);
+}
+.izsn-sheet.is-open { transform: none; }
+.izsn-grab {
+  display: block;
+  width: 38px;
+  height: 4px;
+  margin: 6px auto 12px;
+  border-radius: var(--r-hair);
+  background: var(--line-strong);
+}
+.izsn-sheet .izsn-item { padding: var(--sp-3) 22px; }
+.izsn-sheet .izsn-items { padding: var(--sp-1) 0 0; }
+.izsn-sheet .izsn-spine { left: 35px; top: 16px; bottom: 18px; }
+
+@media (max-width: 900px) {
+  .izsn { display: none; }
+  .izsn-mob { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izsn-panel,
+  .izsn-tick,
+  .izsn-dot,
+  .izsn-sheet,
+  .izsn-scrim,
+  .izsn-spine i,
+  .izsn-prog i { transition: none; }
+}

@@ -68,23 +68,9 @@ const platform: PageDef[] = [
       { h: "Analytics & SIEM", p: "7 SIEM formats, 11 report types, 202 event types." },
     ],
   }),
-  P({
-    path: "/zero-trust-application-access",
-    kind: "platform",
-    eyebrow: "Zero Trust Application Access",
-    title: "Zero Trust Application Access (ZTAA) — Agentless Access",
-    h1: "Every App. One Click. Zero Network Exposure.",
-    highlight: ["One", "Click.", "Zero"],
-    sub: "Give employees, contractors and third parties single-click access to web apps, RDP, SSH, VNC, databases and file shares — through the browser, no agent required.",
-    points: [
-      { h: "FQDN", p: "Domain-based access for any protocol." },
-      { h: "WEB", p: "Browser apps with SSO, landing page or direct access." },
-      { h: "RDP / SSH / VNC", p: "Remote desktop, shell and GUI — each with session recording, watermark and copy-paste blocking." },
-      { h: "DB", p: "Direct database sessions via 8 drivers — no jump server, fully governed and logged." },
-      { h: "WFS", p: "Windows file shares (Host + Share + Domain) over the tunnel." },
-      { h: "Agentless", p: "WEB, RDP, SSH and VNC open straight from the browser portal — ideal for contractors and BYOD." },
-    ],
-  }),
+  /* /zero-trust-application-access is BESPOKE — app/zero-trust-application-access.
+     Its registry entry was removed when that route landed; leaving it here
+     would put the path in generateStaticParams as well and collide. */
   P({
     path: "/secure-enterprise-browser",
     kind: "platform",
@@ -355,21 +341,10 @@ const idam: PageDef[] = [
 
 /* ───────────────────────── FEATURES ───────────────────────── */
 const features: PageDef[] = [
-  P({
-    path: "/zero-trust-features/device-posture-check",
-    kind: "feature",
-    eyebrow: "Device Posture",
-    title: "Device Posture Check — Verify the Device, Every Time",
-    h1: "Verify the Device, Every Time.",
-    highlight: ["Every", "Time."],
-    sub: "Before any connection, InstaSafe ZTNA checks the device against 25 check types and 144 rules across 1,500+ OS combinations — and denies anything that fails.",
-    points: [
-      { h: "25 check types", p: "AV/EDR, OS version, disk encryption, firewall, registry, certificates and more." },
-      { h: "144 named rules", p: "Compose checks into rules and bind them to users, groups and apps." },
-      { h: "1,500+ OS combos", p: "Coverage across Windows, macOS, Linux, iOS and Android variants." },
-      { h: "Continuous", p: "Posture is re-checked mid-session — if it drops, access closes." },
-    ],
-  }),
+  /* /zero-trust-features/device-posture-check is BESPOKE —
+     app/zero-trust-features/device-posture-check. Its registry entry was
+     removed when that route landed; leaving it here would also put the
+     path in generateStaticParams and collide. */
 ];
 
 /* ───────────────────────── COMPARE ───────────────────────── */
@@ -520,31 +495,12 @@ const resource: PageDef[] = [
     highlight: ["Glossary."],
     sub: "Plain-language definitions of the terms behind zero trust, ZTNA, SDP, IAM and the access controls that make them work.",
   }),
-  P({
-    path: "/resource-center",
-    kind: "resource",
-    eyebrow: "Resources",
-    title: "Resource Center — Brochures, Webinars, Datasheets",
-    h1: "Everything, in One Resource Center.",
-    highlight: ["One", "Resource", "Center."],
-    sub: "Brochures, datasheets, webinars and competitor comparison guides for the InstaSafe ZTNA platform.",
-    tiles: [
-      {
-        h: "Blog",
-        p: "Zero trust, ZTNA, MFA and identity — product thinking, threat analysis and migration playbooks from the team.",
-        href: "/resources/blog",
-        cta: "Read the blog",
-      },
-      {
-        h: "Events & Meetups",
-        p: "InstaSafe meetups, roundtables and conference sessions — where the team is speaking next, and what you missed.",
-        href: "https://meetups.instasafe.com/events",
-        cta: "Upcoming events",
-        altHref: "https://meetups.instasafe.com/events?type=completed",
-        altLabel: "Past events",
-      },
-    ],
-  }),
+  /* /resource-center is BESPOKE — app/resource-center, backed by
+     lib/resource-center.ts. Its registry entry was removed when that
+     route landed; leaving it here would put the path in
+     generateStaticParams as well and collide. The two tiles it carried
+     (Blog, Events & Meetups) live on in the new page's "Elsewhere"
+     strip — see components/izresources/IzResourceCenter.tsx. */
   P({
     path: "/blog",
     kind: "resource",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ShieldCheck, DeviceMobile, MapPin, Clock, AirplaneTilt, Warning,
   WifiHigh, Pulse, LockKey, Prohibit,
@@ -185,7 +185,20 @@ const GROUP_LABEL: Record<Group, string> = {
   endpoint: "endpoint control",
 };
 
-export function IzControlSurface() {
+export function IzControlSurface({ exclude }: { exclude?: string[] } = {}) {
+  /* `exclude` drops controls by id. It exists because a claim that is
+     true of the endpoint agent is not automatically true of every
+     product this surface appears under: /zero-trust-application-access
+     may not present screenshot or USB blocking as ZTAA session
+     controls, and the Content Master guardrail says so explicitly.
+     Dropping a tile leaves a hole in the scatter, which is fine — the
+     scatter is irregular by design and already carries placeholders. */
+  const key = exclude?.join(",") ?? "";
+  const controls = useMemo(
+    () => (key ? CONTROLS.filter((c) => !key.split(",").includes(c.id)) : CONTROLS),
+    [key]
+  );
+
   const [active, setActive] = useState(0);
   /* Two separate facts, deliberately. `inView` is the browser's opinion
      and flips both ways; `userPaused` is the visitor's and only they
@@ -225,9 +238,9 @@ export function IzControlSurface() {
   }, []);
 
   const go = useCallback((i: number) => {
-    setActive(((i % CONTROLS.length) + CONTROLS.length) % CONTROLS.length);
+    setActive(((i % controls.length) + controls.length) % controls.length);
     setCycle((c) => c + 1);
-  }, []);
+  }, [controls.length]);
 
   /* The loop REPLAYS the current capability; it never advances to the
      next one. Auto-advancing meant the screen tore itself down and
@@ -237,7 +250,7 @@ export function IzControlSurface() {
      next/prev buttons — nothing else. */
   const handleEnd = useCallback(() => setCycle((c) => c + 1), []);
 
-  const control = CONTROLS[active];
+  const control = controls[Math.min(active, controls.length - 1)];
 
   return (
     <div className="izsg izcs" ref={rootRef}>
@@ -325,7 +338,7 @@ export function IzControlSurface() {
           </div>
         </div>
 
-        {CONTROLS.map((c, i) => (
+        {controls.map((c, i) => (
           <button
             key={c.id}
             type="button"
@@ -352,7 +365,7 @@ export function IzControlSurface() {
             style={{
               "--gc": p.lg[0], "--gr": p.lg[1],
               "--gc-md": p.md?.[0] ?? 1, "--gr-md": p.md?.[1] ?? 1,
-              "--i": CONTROLS.length + i,
+              "--i": controls.length + i,
             } as React.CSSProperties}
           />
         ))}

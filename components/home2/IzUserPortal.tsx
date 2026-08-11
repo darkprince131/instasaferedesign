@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Laptop, ArrowRight, Clock, ShieldCheck, SquaresFour, DownloadSimple, House, type Icon } from "@phosphor-icons/react";
+import { Laptop, ArrowRight, Clock, SquaresFour, DownloadSimple, House, type Icon } from "@phosphor-icons/react";
+import { LogoMark } from "@/components/brand/Logo";
 import { IZ_USERS, IzAvatar, type IzUser } from "./izUsers";
 
 /* ============================================================
@@ -61,7 +62,9 @@ export function IzUserPortal() {
           <i style={{ background: "#28C840" }} />
         </span>
         <span className="iup-win-title">
-          <ShieldCheck weight="fill" />
+          {/* the product's own window chrome carries the mark, not a
+              stand-in shield */}
+          <LogoMark size={15} />
           InstaSafe Access Portal
         </span>
         <span className="iup-session">
