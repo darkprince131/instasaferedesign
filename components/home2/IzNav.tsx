@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown, Compass } from "@phosphor-icons/react";
 import { Logo } from "@/components/brand/Logo";
 import { PANES, type Cell, type MenuKey, type Pane } from "./iz-nav-data";
 import "./iznav.css";
@@ -176,7 +176,7 @@ export function IzNav({
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       setMenu(null);
-      headerRef.current?.querySelector<HTMLButtonElement>(`.iz-navbtn[data-pane="${menu}"]`)?.focus();
+      headerRef.current?.querySelector<HTMLButtonElement>(`.iz-navcaret[data-pane="${menu}"]`)?.focus();
     };
     const onFocus = (e: FocusEvent) => {
       if (!headerRef.current?.contains(e.target as Node)) setMenu(null);
@@ -211,21 +211,34 @@ export function IzNav({
           <Logo height={44} />
         </a>
 
+        {/* Each item is a LINK to its own hub page plus a separate
+            caret that opens the panel. As a single button the label
+            only ever opened a dropdown, which stranded /platform,
+            /solutions, /why-instasafe-zero-trust and /resource-center —
+            four built, indexed pages with no way in from the nav.
+            Hover still opens the panel from anywhere in the pair. */}
         <nav className="iz-links" aria-label="Main">
           {PANES.map((p) => (
-            <button
+            <span
               key={p.key}
-              type="button"
-              className="iz-navbtn"
-              data-pane={p.key}
-              aria-expanded={menu === p.key}
-              aria-controls="iz-mega"
+              className={`iz-navitem${menu === p.key ? " is-open" : ""}`}
               onMouseEnter={() => openMenu(p.key)}
-              onClick={() => (menu === p.key ? setMenu(null) : openMenu(p.key))}
             >
-              {p.label}
-              <CaretDown size={11} weight="bold" aria-hidden="true" />
-            </button>
+              <a className="iz-navlink" href={p.href}>
+                {p.label}
+              </a>
+              <button
+                type="button"
+                className="iz-navcaret"
+                data-pane={p.key}
+                aria-expanded={menu === p.key}
+                aria-controls="iz-mega"
+                aria-label={`${menu === p.key ? "Close" : "Open"} the ${p.label} menu`}
+                onClick={() => (menu === p.key ? setMenu(null) : openMenu(p.key))}
+              >
+                <CaretDown size={11} weight="bold" aria-hidden="true" />
+              </button>
+            </span>
           ))}
         </nav>
 
@@ -294,6 +307,13 @@ export function IzNav({
               <CaretDown size={13} weight="bold" aria-hidden="true" />
             </button>
             <div className="iz-sheet-links" id={`iz-sheet-${p.key}`}>
+              {/* the hub page itself, first — the heading above is a
+                  disclosure control on mobile, so without this row the
+                  page the group is named after is unreachable */}
+              <a className="iz-sheet-hub" href={p.href} onClick={() => setOpen(false)}>
+                <Compass size={17} weight="regular" aria-hidden="true" />
+                {p.label} overview
+              </a>
               {p.cols.map((col, i) =>
                 col.kind === "cells" || col.kind === "rail"
                   ? col.items.map((c) => (

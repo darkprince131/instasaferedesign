@@ -21,13 +21,21 @@
    decoration.
    ============================================================ */
 
-/* ---------- trigger buttons in the bar ---------- */
-.iz-links .iz-navbtn {
+/* ---------- top-level items: a link plus a disclosure caret ----------
+   The pair shares one underline and one hover state so it still reads
+   as a single control, but the label navigates and the caret opens the
+   panel. */
+.iz-links .iz-navitem {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  position: relative;
+  gap: 4px;
   padding: var(--sp-1) 0;
+}
+.iz-links .iz-navlink,
+.iz-links .iz-navcaret {
+  display: inline-flex;
+  align-items: center;
   border: 0;
   background: none;
   cursor: pointer;
@@ -37,9 +45,14 @@
   color: var(--tx-dim);
   transition: color var(--dur-fast) var(--ease-out);
 }
-.iz-links .iz-navbtn:hover,
-.iz-links .iz-navbtn[aria-expanded="true"] { color: var(--tx); }
-.iz-links .iz-navbtn::after {
+.iz-links .iz-navcaret { padding: 2px; border-radius: var(--r-2xs); }
+.iz-links .iz-navitem:hover .iz-navlink,
+.iz-links .iz-navitem:hover .iz-navcaret,
+.iz-links .iz-navitem.is-open .iz-navlink,
+.iz-links .iz-navitem.is-open .iz-navcaret { color: var(--tx); }
+
+/* one underline for the pair, drawn on the wrapper */
+.iz-links .iz-navitem::after {
   content: "";
   position: absolute;
   left: 0;
@@ -49,11 +62,19 @@
   background: var(--orange);
   transition: width var(--dur-fast) var(--ease-out);
 }
-.iz-links .iz-navbtn:hover::after,
-.iz-links .iz-navbtn[aria-expanded="true"]::after { width: 100%; }
-.iz-links .iz-navbtn svg { opacity: 0.55; transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }
-.iz-links .iz-navbtn[aria-expanded="true"] svg { transform: rotate(180deg); opacity: 1; }
-.iz-nav-overlay .iz-links .iz-navbtn { color: var(--tx); font-weight: 600; }
+.iz-links .iz-navitem:hover::after,
+.iz-links .iz-navitem.is-open::after { width: 100%; }
+
+.iz-links .iz-navcaret svg {
+  opacity: 0.55;
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.iz-links .iz-navcaret[aria-expanded="true"] svg { transform: rotate(180deg); opacity: 1; }
+.iz-links .iz-navlink:focus-visible,
+.iz-links .iz-navcaret:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+.iz-nav-overlay .iz-links .iz-navlink,
+.iz-nav-overlay .iz-links .iz-navcaret { color: var(--tx); font-weight: 600; }
 
 /* ---------- the panel ---------- */
 .izmm {
@@ -305,6 +326,16 @@
   color: var(--tx-dim);
 }
 .iz-sheet-links a svg { flex: none; }
+/* the hub row sits above the group's own links and reads as the
+   destination the heading names, not as one more child */
+.iz-sheet-links .iz-sheet-hub {
+  color: var(--tx);
+  font-weight: 500;
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--line);
+}
+.iz-sheet-links .iz-sheet-hub svg { color: var(--orange); }
 
 @media (prefers-reduced-motion: reduce) {
   .izmm { transition: none; }

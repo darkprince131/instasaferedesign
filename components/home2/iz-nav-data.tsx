@@ -89,6 +89,11 @@ export type Col =
 export type Pane = {
   key: MenuKey;
   label: string;
+  /** Every top-level item is a real page as well as a menu. The label
+      navigates there; the caret beside it opens the panel. A trigger
+      that only opens a dropdown strands the hub page it is named
+      after — the four below are all built, indexed pages. */
+  href: string;
   cols: Col[];
   strip: { note: string; links: { label: string; href: string }[] };
 };
@@ -145,6 +150,7 @@ export const PANES: Pane[] = [
   {
     key: "platform",
     label: "Platform",
+    href: "/platform",
     cols: [
       {
         kind: "cells",
@@ -193,6 +199,7 @@ export const PANES: Pane[] = [
   {
     key: "solutions",
     label: "Solutions",
+    href: "/solutions",
     cols: [
       {
         kind: "cells",
@@ -241,6 +248,7 @@ export const PANES: Pane[] = [
   {
     key: "why",
     label: "Why InstaSafe",
+    href: "/why-instasafe-zero-trust",
     cols: [
       {
         kind: "cells",
@@ -281,6 +289,7 @@ export const PANES: Pane[] = [
   {
     key: "resources",
     label: "Resources",
+    href: "/resource-center",
     cols: [
       {
         kind: "cells",
