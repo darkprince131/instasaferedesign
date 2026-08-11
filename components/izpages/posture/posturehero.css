@@ -11,7 +11,7 @@
 
 .pos-scene {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: var(--sp-5);
   align-items: start;
 }
@@ -162,67 +162,72 @@
 /* ---------- the laptop and its terminal ---------- */
 .pos-right { display: grid; gap: var(--sp-4); min-width: 0; }
 
-.pos-lap { display: grid; justify-items: center; min-width: 0; }
-/* Drawn, not photographed. If a photoreal shell lands later it becomes
-   the background of this element and the terminal keeps its markup. */
-.pos-lap-shell {
-  width: 100%;
-  padding: 11px 11px 13px;
-  border-radius: 14px 14px 4px 4px;
-  background: linear-gradient(180deg, #3a3d42, #2a2d31);
-  box-shadow: var(--panel-sh);
-}
-.pos-lap-base {
-  position: relative;
-  width: 112%;
-  height: 13px;
-  border-radius: 0 0 11px 11px;
-  background: linear-gradient(180deg, #c9ccd1, #a6a9af);
-}
-.pos-lap-notch {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 74px;
-  height: 5px;
-  border-radius: 0 0 6px 6px;
-  background: rgba(0, 0, 0, 0.22);
-}
-.iz[data-theme="dark"] .pos-lap-base { background: linear-gradient(180deg, #6f737a, #4c5057); }
+.pos-lap { position: relative; min-width: 0; container-type: inline-size; }
+/* The shell is a photograph and the screen is live markup laid into
+   it, because the log is the densest evidence on the page and must
+   stay real text rather than becoming a picture of text.
 
+   The inset percentages were measured off the asset (a 1254px square)
+   by scanning for the black panel, not eyeballed: it starts at
+   11.08% / 12.28% and runs 77.83% wide by 48.72% tall. If the asset is
+   ever re-exported, re-measure — these four numbers are the only thing
+   holding the terminal in the screen. */
+.pos-lap-img { display: block; width: 100%; height: auto; }
+.pos-lap-screen {
+  position: absolute;
+  left: 11.08%;
+  top: 12.28%;
+  width: 77.83%;
+  height: 48.72%;
+  display: flex;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+/* Everything inside the screen is sized in `cqw` against the laptop's
+   own width, so the log fills the panel at any scale instead of
+   overflowing it at small sizes and swimming in it at large ones.
+   `.pos-lap` is the container. */
 .pos-term {
-  border-radius: 7px;
-  background: #101216;
-  padding: var(--sp-3) 0;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #0b0d10;
+  padding: 0.9cqw 0;
   overflow: hidden;
 }
 .pos-term-h {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--sp-4) var(--sp-3);
+  padding: 0 3.2cqw 1cqw;
   font-family: var(--mono);
-  font-size: var(--fs-micro);
+  font-size: 2.35cqw;
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.66);
 }
-.pos-live { display: inline-flex; align-items: center; gap: 6px; color: #46d38a; }
-.pos-live i { width: 6px; height: 6px; border-radius: var(--r-pill); background: #46d38a; }
+.pos-live { display: inline-flex; align-items: center; gap: 0.8cqw; color: #46d38a; }
+.pos-live i { width: 1.1cqw; height: 1.1cqw; border-radius: var(--r-pill); background: #46d38a; }
 
 .pos-log {
   display: grid;
-  grid-template-columns: auto 7px minmax(0, 1fr) auto;
+  grid-template-columns: auto 1.3cqw minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--sp-3);
-  padding: 3px var(--sp-4);
+  gap: 2.2cqw;
+  padding: 0.2cqw 3.2cqw;
   font-family: var(--mono);
-  font-size: var(--fs-3xs);
+  font-size: 2.5cqw;
+  /* `.iz` sets --lh-body: 1.68, which these rows were inheriting — ten
+     log lines at 1.68 overflowed the screen and clipped the risk score
+     off the bottom. A terminal sets its own leading. */
+  line-height: 1.3;
   color: rgba(255, 255, 255, 0.82);
 }
 .pos-log-t { color: rgba(255, 255, 255, 0.42); }
-.pos-log s { width: 7px; height: 7px; border-radius: var(--r-pill); }
+.pos-log s { width: 1.3cqw; height: 1.3cqw; border-radius: var(--r-pill); }
 .pos-log.ok s { background: #46d38a; }
 .pos-log.no s,
 .pos-log.score s { background: #ff5c72; }

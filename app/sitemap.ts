@@ -20,6 +20,7 @@ const BESPOKE = [
   "/solutions",
   "/vpn-alternative",
   "/resource-center",
+  "/why-instasafe-zero-trust",
 ];
 
 const PRIORITY: Record<string, number> = {

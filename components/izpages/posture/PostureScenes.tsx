@@ -123,7 +123,13 @@ export function PostureHeroScene() {
       {/* ---------- the same evaluation, as the agent wrote it ---------- */}
       <div className="pos-right">
         <div className="pos-lap">
-          <div className="pos-lap-shell">
+          {/* The shell is a photograph; the screen is live markup
+              positioned into it. Bounds were measured off the asset
+              rather than eyeballed — the black panel sits at
+              11.08% / 12.28% with a 77.83% × 48.72% box. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="pos-lap-img" src="/hero/laptop-open.png" alt="" width={1254} height={1254} loading="eager" decoding="async" />
+          <div className="pos-lap-screen">
             <div className="pos-term">
               <div className="pos-term-h">
                 <span>Posture evaluation</span>
@@ -141,9 +147,6 @@ export function PostureHeroScene() {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="pos-lap-base">
-            <span className="pos-lap-notch" />
           </div>
         </div>
 

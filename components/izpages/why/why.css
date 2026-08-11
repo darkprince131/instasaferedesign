@@ -1,0 +1,47 @@
+/* ============================================================
+   why.css — /why-instasafe-zero-trust
+
+   Hero and FAQ only; the rest of the page is being written
+   separately. Same hero split as the other rebuilt pages.
+   ============================================================ */
+
+.iz { --zt-nav: 66px; }
+
+.why-hero { padding: var(--sp-12) 0 var(--sp-10); }
+/* Wider than the 1200 wrap, like the other rebuilt heroes: this one
+   holds two full architecture columns side by side and they stop
+   being comparable if either is squeezed. */
+.why-hero .iz-wrap { max-width: 1340px; }
+.why-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+.why-hero-copy h1 { max-width: 11ch; }
+.why-hero-copy .iz-lead { max-width: 42ch; margin-top: var(--sp-5); }
+
+/* the short rule under the headline, straight off the reference */
+.why-rule {
+  display: block;
+  width: 34px;
+  height: 3px;
+  margin-top: var(--sp-5);
+  border-radius: var(--r-pill);
+  background: var(--orange);
+}
+
+.why-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+@media (max-width: 1200px) {
+  .why-hero-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+  .why-hero-copy h1 { max-width: 18ch; }
+}
+
+/* ---------- sections ---------- */
+.why-sec { padding: var(--sp-section) 0; }

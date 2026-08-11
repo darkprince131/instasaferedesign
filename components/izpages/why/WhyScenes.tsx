@@ -1,0 +1,214 @@
+"use client";
+
+import {
+  ArrowsSplit,
+  CheckCircle,
+  Clock,
+  CloudArrowUp,
+  FileText,
+  GlobeHemisphereEast,
+  Lock,
+  MagnifyingGlass,
+  ShieldCheck,
+  UserRectangle,
+  type Icon,
+} from "@phosphor-icons/react";
+import { LogoMark } from "@/components/brand/Logo";
+import "./whyhero.css";
+
+/* ============================================================
+   WhyScenes — the hero visual for /why-instasafe-zero-trust.
+
+   TWO ARCHITECTURES, DRAWN THE SAME WAY SO THE DIFFERENCE IS THE ONLY
+   THING THAT MOVES. Both panels start at a user and end at the
+   customer's applications. What changes is the middle: on the left the
+   traffic goes THROUGH the vendor and gets inspected, decrypted and
+   re-routed; on the right the vendor is off to one side holding policy
+   while the connection goes straight where it was always going.
+
+   That is the page's whole argument, and it only reads if the two
+   halves are otherwise identical — same nodes, same spacing, same
+   lock chips. Only the path and the tint differ.
+
+   STATIC. Nothing here animates; the claim is architectural, not
+   temporal, and the hero is not where interaction belongs.
+   ============================================================ */
+
+const VENDOR_OPS: { label: string; Icon: Icon }[] = [
+  { label: "Inspection", Icon: MagnifyingGlass },
+  { label: "Decryption", Icon: ShieldCheck },
+  { label: "Routing", Icon: ArrowsSplit },
+];
+
+function Node({ label, Icon: I, tinted }: { label: string; Icon: Icon; tinted?: boolean }) {
+  return (
+    <div className={`why-node${tinted ? " is-tinted" : ""}`}>
+      <span className="why-node-ic">
+        <I size={20} weight="regular" />
+      </span>
+      <span className="why-node-t">{label}</span>
+    </div>
+  );
+}
+
+function LockChip({ accent }: { accent?: boolean }) {
+  return (
+    <span className={`why-lock${accent ? " is-accent" : ""}`} aria-hidden="true">
+      <Lock size={11} weight="fill" />
+    </span>
+  );
+}
+
+export function WhyCompare() {
+  return (
+    <div className="why-compare" aria-hidden="true">
+      {/* ---------------- the old way ---------------- */}
+      <div className="why-col">
+        <div className="why-col-h">
+          <span className="why-mono">The old way</span>
+          <span className="why-col-sub">Most Zero Trust vendors</span>
+        </div>
+
+        <div className="why-panel">
+          <Node label="User" Icon={UserRectangle} />
+
+          <span className="why-wire">
+            <LockChip />
+          </span>
+
+          <div className="why-vendor">
+            <b>Vendor infrastructure</b>
+            <span className="why-vendor-sub">Inspection · Decryption · Routing</span>
+            <div className="why-ops">
+              {VENDOR_OPS.map((o) => (
+                <span className="why-op" key={o.label} title={o.label}>
+                  <o.Icon size={16} weight="regular" />
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <span className="why-wire">
+            <LockChip />
+          </span>
+
+          <Node label="Your applications" Icon={CloudArrowUp} />
+        </div>
+      </div>
+
+      <span className="why-vs">VS</span>
+
+      {/* ---------------- the InstaSafe way ---------------- */}
+      <div className="why-col">
+        <div className="why-col-h">
+          <span className="why-mono is-accent">The InstaSafe way</span>
+          <span className="why-col-sub">Your data never touches our infrastructure</span>
+        </div>
+
+        <div className="why-panel is-ours">
+          <Node label="User" Icon={UserRectangle} tinted />
+
+          <span className="why-wire is-accent">
+            <LockChip accent />
+          </span>
+
+          {/* The control plane sits BESIDE the path, not on it. That
+              offset is the entire product claim, so it is the one place
+              the two columns are allowed to differ structurally. */}
+          <div className="why-cp">
+            <span className="why-cp-mark">
+              <LogoMark size={30} />
+            </span>
+            <span className="why-cp-arrow" aria-hidden="true" />
+            <div className="why-cp-t">
+              <b>InstaSafe</b>
+              <span>Control plane</span>
+              <i>Policy · Auth · Telemetry</i>
+              <i className="is-strong">No traffic. No access.</i>
+            </div>
+          </div>
+
+          <span className="why-wire is-accent">
+            <LockChip accent />
+          </span>
+
+          <div className="why-end">
+            <Node label="Your applications" Icon={CloudArrowUp} tinted />
+            <span className="why-direct">
+              <CheckCircle size={14} weight="fill" />
+              Direct &amp; private connection
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   The three standing claims, the callout, and the numbers.
+   ============================================================ */
+
+const MARKS: { t: string; d: string; Icon: Icon }[] = [
+  { t: "Deployed across", d: "regulated India", Icon: ShieldCheck },
+  { t: "Built in India", d: "for the world", Icon: GlobeHemisphereEast },
+  { t: "Privacy by", d: "architecture", Icon: Lock },
+];
+
+type Stat = { n: string; unit?: string; label: string; d: string[]; Icon: Icon };
+const STATS: Stat[] = [
+  { n: "0", unit: "ms", label: "Added latency", d: ["Direct to resource.", "No detours."], Icon: Clock },
+  { n: "0", unit: "GB", label: "Data proxied", d: ["Your data stays", "in your environment."], Icon: CloudArrowUp },
+  { n: "0", label: "Traffic hops", d: ["Straight to where", "you need to be."], Icon: ArrowsSplit },
+  { n: "100", unit: "%", label: "Encrypted end-to-end", d: ["End-to-end encryption", "you own."], Icon: ShieldCheck },
+  { n: "160", unit: "+", label: "Countries served", d: ["Global coverage.", "Local performance."], Icon: GlobeHemisphereEast },
+  { n: "100", unit: "%", label: "Transparency", d: ["We publish what", "others won't."], Icon: FileText },
+];
+
+export function WhyProof() {
+  return (
+    <>
+      <div className="why-marks-row">
+        <div className="why-marks">
+          {MARKS.map((m) => (
+            <span className="why-mark" key={m.t}>
+              <m.Icon size={19} weight="regular" />
+              <span>
+                {m.t}
+                <i>{m.d}</i>
+              </span>
+            </span>
+          ))}
+        </div>
+
+        <div className="why-callout">
+          <span className="why-callout-ic">
+            <LogoMark size={22} />
+          </span>
+          <div>
+            <b>No backhaul. No inspection. No vendor in the middle.</b>
+            <span>You stay in control of your data, your performance and your compliance.</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="why-stats">
+        {STATS.map((s) => (
+          <div className="why-stat" key={s.label}>
+            <s.Icon size={22} weight="regular" />
+            <b>
+              {s.n}
+              {s.unit && <i>{s.unit}</i>}
+            </b>
+            <span className="why-stat-l">{s.label}</span>
+            <span className="why-stat-d">
+              {s.d.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}

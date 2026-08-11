@@ -436,23 +436,9 @@ const industry: PageDef[] = [
 
 /* ───────────────────────── RESOURCES ───────────────────────── */
 const resource: PageDef[] = [
-  P({
-    path: "/why-instasafe-zero-trust",
-    kind: "resource",
-    eyebrow: "Why InstaSafe",
-    title: "Why InstaSafe — More Than Zero Trust",
-    h1: "More Than Zero Trust. The Complete Platform.",
-    highlight: ["The", "Complete", "Platform."],
-    sub: "Six reasons enterprises choose InstaSafe ZTNA over point products and global vendors.",
-    points: [
-      { h: "Privacy First", p: "Data never routes through our machines." },
-      { h: "On-premise option", p: "For sovereignty and air-gapped environments." },
-      { h: "Everything inbuilt", p: "MFA, SSO, IdP, browser, endpoint and PAM in one console." },
-      { h: "Deploy in days", p: "Cloud-native and hardware-free." },
-      { h: "Database access built in", p: "8 drivers, no bastion." },
-      { h: "Session recording built in", p: "Privileged recording at the ZTNA layer." },
-    ],
-  }),
+  /* /why-instasafe-zero-trust is BESPOKE — app/why-instasafe-zero-trust.
+     Its registry entry was removed when that route landed; leaving it
+     here would also put the path in generateStaticParams and collide. */
   P({
     path: "/what-is-zero-trust",
     kind: "resource",
