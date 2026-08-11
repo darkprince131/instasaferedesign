@@ -51,19 +51,33 @@
 .iz-links .iz-navitem.is-open .iz-navlink,
 .iz-links .iz-navitem.is-open .iz-navcaret { color: var(--tx); }
 
-/* one underline for the pair, drawn on the wrapper */
+/* ONE underline for the pair, drawn on the wrapper.
+
+   home2.css already draws an underline on every `.iz-links a`, and
+   `.iz-navlink` is one — so without this the label's own underline
+   animates to the width of the LABEL while the wrapper's animates to
+   the width of the PAIR, and a hover draws two orange rules of
+   different lengths. The link's is switched off; the wrapper owns it.
+
+   Scaled rather than widened: `width` puts the underline through
+   layout on every frame, `transform` stays on the compositor. Same
+   result at 1px tall. */
+.iz-links .iz-navlink::after { content: none; }
+
 .iz-links .iz-navitem::after {
   content: "";
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 0;
+  width: 100%;
   height: 1px;
   background: var(--orange);
-  transition: width var(--dur-fast) var(--ease-out);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
 .iz-links .iz-navitem:hover::after,
-.iz-links .iz-navitem.is-open::after { width: 100%; }
+.iz-links .iz-navitem.is-open::after { transform: scaleX(1); }
 
 .iz-links .iz-navcaret svg {
   opacity: 0.55;
@@ -338,5 +352,6 @@
 .iz-sheet-links .iz-sheet-hub svg { color: var(--orange); }
 
 @media (prefers-reduced-motion: reduce) {
-  .izmm { transition: none; }
+  .izmm,
+  .iz-links .iz-navitem::after { transition: none; }
 }
