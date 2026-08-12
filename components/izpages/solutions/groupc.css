@@ -619,6 +619,17 @@
   .izgc-item.on .izgc-desc { grid-template-rows: 1fr; padding-top: var(--sp-2); }
 }
 
+/* The rails themselves are gone below 720 (izgrid.css), but
+   `.iz-railed .iz-wrap` keeps padding for them — 24px a side that no
+   longer has anything in it, which left the accordion 269px wide next
+   to 319px everywhere else on the page. Same fix Group B's cards got. */
+@media (max-width: 720px) {
+  /* `.izgc.iz-railed` because the rule being undone is `.iz-railed
+     .iz-wrap` — two classes, so a bare `.izgc-body` loses to it. */
+  .izgc.iz-railed .izgc-head,
+  .izgc.iz-railed .izgc-body { padding-inline: var(--wrap-gutter); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .izgc-item,
   .izgc-ico,

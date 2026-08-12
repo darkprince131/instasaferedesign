@@ -359,7 +359,11 @@ export function IzGroupC({
     </>
   ),
   sub = "From legacy systems to cloud workloads and voice infrastructure, InstaSafe ZTNA gives you secure, identity-verified access to every application — without opening your network.",
-  mobileVisual = "static",
+  /* Phones get the accordion alone. The restacked diagram was a second
+     reading of what the open row already says in words, and it pushed
+     the next scenario a screen further down; the left column is the
+     whole section on a 375px viewport. */
+  mobileVisual = "none",
 }: {
   kicker?: string;
   title?: React.ReactNode;
