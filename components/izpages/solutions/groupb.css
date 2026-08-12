@@ -33,6 +33,9 @@
      this gap down, and leaving it out put step 01 exactly this far
      above the plate's line. */
   --izgb-headgap: clamp(var(--sp-8), 4vw, 56px);
+  /* the column gap, as a variable because the band rules below have to
+     reach back across it into the left column */
+  --izgb-colgap: clamp(var(--sp-8), 5vw, 72px);
 }
 
 /* ---------- head ---------- */
@@ -72,7 +75,7 @@
   /* row 1 is the head, row 2 the plate; the steps span both so the
      first scenario reads beside the heading instead of below it */
   grid-template-rows: auto 1fr;
-  gap: 0 clamp(var(--sp-8), 5vw, 72px);
+  gap: 0 var(--izgb-colgap);
   align-items: start;
 }
 .izgb-head { grid-column: 1; grid-row: 1; }
@@ -395,7 +398,22 @@
   padding: 0 0 calc((100vh - var(--izgb-plateh)) / 2);
 }
 
+/* EACH SCENARIO IS A BAND. The rule runs the full content width, not
+   just the width of the text column — the step lives in column two, so
+   the pseudo-element reaches back across the gap and over column one.
+   The multiplier is the grid's own ratio: left is 1.02fr against the
+   step's 0.98fr, so the left column is 1.02/0.98 of this element. */
+.izgb-step + .izgb-step::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: calc(-1 * (100% * (1.02 / 0.98) + var(--izgb-colgap)));
+  border-top: var(--bw) solid var(--line);
+}
+
 .izgb-step {
+  position: relative;
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: var(--sp-4);
@@ -493,17 +511,24 @@
   /* The scroll story is replaced wholesale, not adapted. The grid, the
      pinned plate and the five steps all go; the cards take over. */
   .izgb-cols { display: none; }
+  .izgb-step + .izgb-step::before { content: none; }
   .izgb-cards {
     display: grid;
     gap: var(--sp-5);
-    margin: 0;
+    /* Cancel the rail inset, nothing more. `.iz-railed` pads its wrap by
+       --wrap-gutter PLUS --rail-inset (52px against the standard 28px),
+       so these cards were 299px wide and inset 10px further than every
+       other card on the page. Backing out exactly --rail-inset lands
+       them on 319px at the same left edge as Group A's cards and Group
+       D's evidence panel — matched, not eyeballed. */
+    margin: 0 calc(var(--rail-inset) * -1);
     padding: 0;
     list-style: none;
   }
   .izgb-card {
     display: grid;
-    gap: var(--sp-4);
-    padding: var(--sp-5);
+    gap: var(--sp-5);
+    padding: var(--sp-6);
     border: var(--bw) solid var(--line);
     border-radius: var(--r-lg);
     background: var(--surface);
