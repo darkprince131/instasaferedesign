@@ -366,6 +366,18 @@
   opacity: 0.42;
   transition: opacity var(--dur-slow) var(--ease);
 }
+
+/* The first and last steps do NOT centre their content.
+
+   Centring is what pairs a step's text with the pinned plate on the
+   viewport's centre line, and that is right for the steps you reach
+   mid-pin. It is wrong at the two ends: the first step put 191px of
+   nothing between the section head and "Secure Remote Access", and
+   the last left 304px below "BYOD" before the section ended. Nobody
+   is pairing anything at those two moments — the plate is not pinned
+   yet at the top, and has already unpinned at the bottom. */
+.izgb-step:first-child { align-content: start; }
+.izgb-step:last-child { align-content: end; }
 .izgb-step.is-active {
   opacity: 1;
 }

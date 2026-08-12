@@ -9,7 +9,6 @@ import { IzGroupA } from "./IzGroupA";
 import { IzGroupB } from "./IzGroupB";
 import { IzGroupC } from "./IzGroupC";
 import { IzGroupD } from "./IzGroupD";
-import { IzThreeOutcomes } from "./IzThreeOutcomes";
 import { IzThreeOutcomesStacked } from "./IzThreeOutcomesStacked";
 
 /* ============================================================
@@ -56,9 +55,10 @@ export function IzSolutionsPage() {
         <IzGroupC />
         <IzGroupD />
       </div>
-      {/* Two candidate layouts for the outcomes section, both live
-          while the choice is being made. One gets deleted. */}
-      <IzThreeOutcomes />
+      {/* Choice made: the lower of the two candidates stays. The
+          upper one (IzThreeOutcomes, `.izto`) is unwired rather than
+          deleted — its file is untouched, so putting it back is this
+          one import. */}
       <IzThreeOutcomesStacked />
       <IzFooterGrid />
     </div>
