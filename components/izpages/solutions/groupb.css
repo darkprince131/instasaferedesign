@@ -24,10 +24,6 @@
      the reflow this section must not have. Both boxes now reserve the
      tallest state. Raise this if a scenario ever gains a fifth check. */
   --izgb-rowh: 150px;
-  /* The plate's rendered height. It is fixed because --izgb-rowh
-     reserves the tallest scenario, and the sticky offset above is
-     derived from it — remeasure both together if the plate changes. */
-  --izgb-plateh: 274px;
   /* the head's own bottom margin. It is a variable because the first
      step's offset has to include it — the plate starts one head PLUS
      this gap down, and leaving it out put step 01 exactly this far
@@ -72,32 +68,32 @@
 .izgb-cols {
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-  /* row 1 is the head, row 2 the plate; the steps span both so the
-     first scenario reads beside the heading instead of below it */
-  grid-template-rows: auto 1fr;
   gap: 0 var(--izgb-colgap);
   align-items: start;
 }
-.izgb-head { grid-column: 1; grid-row: 1; }
-.izgb-stage { grid-column: 1; grid-row: 2; }
-.izgb-steps { grid-column: 2; grid-row: 1 / -1; }
+
+/* The heading and the plate pin together, just under the nav. Nothing
+   is centred in a viewport-tall box any more, so there is no dead
+   space above or below the plate for the readings column to line up
+   against — the two columns simply start together and end together. */
+.izgb-left {
+  position: sticky;
+  top: calc(var(--izgb-navh) + var(--sp-6));
+  align-self: start;
+  min-width: 0;
+}
 
 /* ============================================================
    LEFT — the plate that stays
    ============================================================ */
 
-/* A FULL-HEIGHT STICKY FRAME, not a sticky plate.
-   Pinning the plate itself to a fixed offset left it sitting high
-   while the paragraph describing it was centred in the viewport — the
-   two halves of the same thought, visibly unpaired. Sticking a
-   100vh box and centring the plate inside it puts the plate on the
-   viewport's centre line, where the active step's text already is. */
+/* The stage no longer pins on its own — `.izgb-left` above does, with
+   the heading. Centring the plate in a viewport-tall box paired it
+   with the active paragraph, but it also meant the box carried 313px
+   of nothing at each end, and every gap complaint on this section
+   traced back to that. */
 .izgb-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: grid;
-  align-content: center;
+  margin-top: var(--izgb-headgap);
   min-width: 0;
 }
 
@@ -368,52 +364,13 @@
    RIGHT — the readings that scroll past
    ============================================================ */
 
-/* THE TWO COLUMNS SHARE A BASELINE AT BOTH ENDS.
-
-   The stage is a 100vh box with a 274px plate centred in it, so 313px
-   of it is empty above the plate and 313px below. That emptiness is
-   invisible on the stage column — but the steps column used to run the
-   full height beside it, so the first step's text began 289px above
-   the plate and the last ended 265px below it. That was the space at
-   the top of this section and the low-sitting BYOD at the bottom.
-
-   Insetting the steps column by the same 313px lines both columns up
-   at the start and at the finish. It is derived, not eyeballed:
-   (100vh − plate height) ÷ 2.
-
-   Doing it here rather than on the stage is deliberate — shortening
-   the sticky box or switching it to `align-self: start` cuts its
-   travel short and the plate stops releasing at the right moment. */
 .izgb-steps {
   margin: 0;
+  padding: 0;
   list-style: none;
-  /* Only the BOTTOM inset survives. The top one existed to push the
-     first scenario down to the plate's line; now the head holds that
-     height in the left column and the first scenario reads beside it,
-     which is what the space next to the heading was for.
-
-     The bottom is still (100vh − plate) ÷ 2, because the stage's 100vh
-     box keeps that much empty below the plate at rest and BYOD would
-     otherwise finish below it. After the reset, or `padding: 0` wins. */
-  padding: 0 0 calc((100vh - var(--izgb-plateh)) / 2);
-}
-
-/* EACH SCENARIO IS A BAND. The rule runs the full content width, not
-   just the width of the text column — the step lives in column two, so
-   the pseudo-element reaches back across the gap and over column one.
-   The multiplier is the grid's own ratio: left is 1.02fr against the
-   step's 0.98fr, so the left column is 1.02/0.98 of this element. */
-.izgb-step + .izgb-step::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: calc(-1 * (100% * (1.02 / 0.98) + var(--izgb-colgap)));
-  border-top: var(--bw) solid var(--line);
 }
 
 .izgb-step {
-  position: relative;
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: var(--sp-4);
@@ -424,7 +381,11 @@
      times over, and that dead air was most of why this section read
      as whitespace with content occasionally in it. */
   min-height: 58vh;
-  align-content: center;
+  /* start, not centre: the plate is pinned at the top now, so a step
+     pairs with it by starting where it starts. Centring is what left
+     ~190px of nothing above the first reading and ~200px below the
+     last. */
+  align-content: start;
   padding: var(--sp-6) 0;
   /* inactive steps recede rather than disappear — the reader can see
      what is coming, which is what makes it feel like one story */
@@ -441,19 +402,11 @@
    the last left 304px below "BYOD" before the section ended. Nobody
    is pairing anything at those two moments — the plate is not pinned
    yet at the top, and has already unpinned at the bottom. */
-/* The first step's BOX starts at the very top of the grid — beside the
-   heading — so the space next to the heading is scroll runway rather
-   than a hole. Its CONTENT sits one head plus the stage's own internal
-   offset down, which is exactly the plate's top line. Both numbers are
-   measured, not guessed: the head by a ResizeObserver, the offset from
-   the plate height. */
-.izgb-step:first-child {
-  align-content: start;
-  padding-top: calc(
-    var(--izgb-headh, 160px) + var(--izgb-headgap) + ((100vh - var(--izgb-plateh)) / 2)
-  );
-}
-.izgb-step:last-child { align-content: end; padding-bottom: 0; }
+/* The first reading starts flush with the heading — no leading pad. */
+.izgb-step:first-child { padding-top: 0; }
+/* The last one only needs enough box to become active before the
+   section ends; a full 58vh after BYOD is 350px of nothing. */
+.izgb-step:last-child { min-height: 0; padding-bottom: 0; }
 .izgb-step.is-active {
   opacity: 1;
 }

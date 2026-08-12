@@ -249,7 +249,6 @@ export function IzGroupB({
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const headRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -277,21 +276,6 @@ export function IzGroupB({
     return () => ro.disconnect();
   }, []);
 
-  /* Publish the head's height too. The first step's content has to sit
-     on the plate's top line, and the plate starts one head plus the
-     stage's own internal offset down from the top of the grid. The
-     step's BOX still starts at the very top, which is what turns the
-     space beside the heading into scroll runway instead of a hole. */
-  useEffect(() => {
-    const head = headRef.current;
-    const section = sectionRef.current;
-    if (!head || !section || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(([e]) => {
-      section.style.setProperty("--izgb-headh", `${Math.round(e.contentRect.height)}px`);
-    });
-    ro.observe(head);
-    return () => ro.disconnect();
-  }, []);
 
   /* Active step = the one nearest the middle of the viewport.
 
@@ -333,7 +317,11 @@ export function IzGroupB({
         }
         pick();
       },
-      { rootMargin: "-48% 0px -48% 0px", threshold: 0 }
+      /* The band sits high, not at the centre line: the plate is now
+         pinned just under the nav and each step's text starts at the
+         top of its box, so the two pair top-to-top. A centre band
+         would light the step below the one being read. */
+      { rootMargin: "-18% 0px -74% 0px", threshold: 0 }
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
@@ -358,15 +346,22 @@ export function IzGroupB({
             outside, the heading had a column of dead space to its
             right and the steps had to be pushed down past it. */}
         <div className="izgb-cols">
-          <div className="izgb-head" ref={headRef}>
-            <h2 className="izgb-lead">
-              {lead} <em>{leadEmphasis}</em>
-            </h2>
-          </div>
+          {/* The heading and the plate travel together as one sticky
+              column: the heading stays readable, the illustration sits
+              under it, and only the readings scroll. Pinning the plate
+              alone — centred in a 100vh box — is what created the dead
+              space above and below it that no amount of compensating
+              padding ever really fixed. */}
+          <div className="izgb-left">
+            <div className="izgb-head">
+              <h2 className="izgb-lead">
+                {lead} <em>{leadEmphasis}</em>
+              </h2>
+            </div>
 
-          {/* ---------- left · the plate that stays ---------- */}
-          <div className="izgb-stage" ref={stageRef}>
-            <Plate sc={sc} cycle={cycle} />
+            <div className="izgb-stage" ref={stageRef}>
+              <Plate sc={sc} cycle={cycle} />
+            </div>
           </div>
 
           {/* ---------- right · the readings ---------- */}
