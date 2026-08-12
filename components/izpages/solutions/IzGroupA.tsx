@@ -102,7 +102,6 @@ export function IzGroupA() {
     <section className="iz-section ga" id="group-a" ref={rootRef}>
       <div className="iz-wrap">
         <div className="ga-head">
-          <span className="iz-ey">Replacing something</span>
           <h2 className="iz-h2">
             You have a tool in place. It works, mostly, and it&apos;s the reason a quarter of your budget is a{" "}
             <em>renewal</em>.
@@ -123,19 +122,28 @@ export function IzGroupA() {
             </div>
 
             <div className="ga-stack">
-              {LAYERS.map((l, i) => (
-                <div
-                  className="ga-layer"
-                  key={l.name}
-                  /* top-down at 80ms — the stack unbuilds in the order
-                     it was built, which is why the stagger is not
-                     reversed on the way out */
-                  style={{ ["--i" as string]: i }}
-                >
-                  <span className="ga-layer-n">{l.name}</span>
-                  <span className="ga-layer-t">{l.tag}</span>
+              {/* Two wrappers so the removed rows can actually go away.
+                  Fading them left 380px of invisible stack sitting
+                  under the one line that replaced them, which is the
+                  whitespace this section was accused of. The outer
+                  grid collapses 1fr → 0fr once the stagger finishes —
+                  a height transition without animating height. */}
+              <div className="ga-layers">
+                <div className="ga-layers-in">
+                  {LAYERS.map((l, i) => (
+                    <div
+                      className="ga-layer"
+                      key={l.name}
+                      /* top-down at 80ms — the stack unbuilds in the
+                         order it was built */
+                      style={{ ["--i" as string]: i }}
+                    >
+                      <span className="ga-layer-n">{l.name}</span>
+                      <span className="ga-layer-t">{l.tag}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
 
               <div className="ga-after" aria-hidden={!on}>
                 <span className="ga-layer-n">{AFTER.name}</span>

@@ -44,12 +44,18 @@ export function IzSolutionsPage() {
     <div className={`iz ${izFontVars}`} data-theme={theme} data-system="orange">
       <IzNav theme={theme} onThemeChange={onThemeChange} />
       <IzSolutionsHero />
-      {/* the chooser, in group order: replacing / giving access /
-          reaching something awkward / satisfying someone */}
-      <IzGroupA />
-      <IzGroupB />
-      <IzGroupC />
-      <IzGroupD />
+      {/* The chooser is ONE run of four, not four unrelated bands, so
+          it is wrapped and given its own internal rhythm: tight
+          between the groups, full section interval at its edges.
+          Without this every junction on the page was 280px — two
+          140px paddings meeting — and the four groups read as four
+          separate pages stacked. */}
+      <div className="izsol-chooser">
+        <IzGroupA />
+        <IzGroupB />
+        <IzGroupC />
+        <IzGroupD />
+      </div>
       {/* Two candidate layouts for the outcomes section, both live
           while the choice is being made. One gets deleted. */}
       <IzThreeOutcomes />

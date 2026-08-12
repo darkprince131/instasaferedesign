@@ -378,7 +378,6 @@ export function IzGroupC({
     <section className={`izgc iz-railed izgc--m${mobileVisual}`}>
       <div className="iz-wrap izgc-head">
         <div className="izgc-head-l">
-          <span className="izgc-kicker">{kicker}</span>
           <h2 className="izgc-title">{title}</h2>
         </div>
         <p className="izgc-sub">{sub}</p>

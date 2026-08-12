@@ -90,7 +90,6 @@ export function IzGroupD() {
     <section className="iz-section gd" id="group-d">
       <div className="iz-wrap">
         <div className="gd-head">
-          <span className="iz-ey">Satisfying someone</span>
           <h2 className="iz-h2">
             The access question asked by a regulator, an acquirer, or an <em>auditor</em>.
           </h2>

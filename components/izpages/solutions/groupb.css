@@ -30,7 +30,7 @@
 
 .izgb-head {
   max-width: 46ch;
-  margin-bottom: clamp(var(--sp-10), 6vw, 72px);
+  margin-bottom: clamp(var(--sp-8), 4vw, 56px);
 }
 .izgb-kicker {
   display: block;
@@ -352,10 +352,13 @@
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: var(--sp-4);
-  /* the scroll distance each scenario gets. Tall enough that a step
-     owns the middle of the viewport on its own, which is what makes
-     the active-band detection unambiguous. */
-  min-height: 72vh;
+  /* The scroll distance each scenario gets. Tall enough that a step
+     owns the middle of the viewport on its own, which is what keeps
+     the active-band detection unambiguous — but no taller. At 72vh
+     each step reserved far more room than its content used, five
+     times over, and that dead air was most of why this section read
+     as whitespace with content occasionally in it. */
+  min-height: 58vh;
   align-content: center;
   padding: var(--sp-6) 0;
   /* inactive steps recede rather than disappear — the reader can see

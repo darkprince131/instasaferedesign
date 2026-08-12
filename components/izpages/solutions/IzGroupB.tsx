@@ -279,7 +279,6 @@ export function IzGroupB({
       <div className="iz-wrap">
         {/* ---------- head ---------- */}
         <div className="izgb-head">
-          <span className="izgb-kicker">{kicker}</span>
           <h2 className="izgb-lead">
             {lead} <em>{leadEmphasis}</em>
           </h2>

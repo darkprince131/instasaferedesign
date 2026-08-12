@@ -72,16 +72,20 @@ a.ga-card:hover .ga-card-t { color: var(--orange); }
 .ga-toggle button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 
 /* ---------- the stack ---------- */
-/* Fixed height so the counter below does not jump when six rows
-   become one — the number is the payoff and it has to stay put. */
-.ga-stack {
-  position: relative;
-  width: 100%;
+.ga-stack { position: relative; width: 100%; display: grid; gap: 7px; align-content: start; }
+
+/* The collapse. `grid-template-rows: 1fr → 0fr` on a wrapper gives a
+   real height transition without animating height, so the removed
+   rows stop reserving space instead of sitting there invisible. It
+   waits out the 6 × 80ms stagger before it starts. */
+.ga-layers {
   display: grid;
-  gap: 7px;
-  align-content: start;
-  min-height: 330px;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--dur-slow) var(--ease) 480ms;
 }
+.ga-layers-in { min-height: 0; display: grid; gap: 7px; }
+.ga-stage.is-on .ga-layers { grid-template-rows: 0fr; }
 .ga-layer,
 .ga-after {
   display: flex;
@@ -116,11 +120,8 @@ a.ga-card:hover .ga-card-t { color: var(--orange); }
 
 /* what is left, revealed once the last layer has gone */
 .ga-after {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
   opacity: 0;
+  margin-top: 7px;
   transform: translateY(8px);
   border-color: color-mix(in srgb, var(--orange) 38%, var(--line));
   background: color-mix(in srgb, var(--orange) 6%, var(--surface));
@@ -162,7 +163,6 @@ a.ga-card:hover .ga-card-t { color: var(--orange); }
    single column reads as rows failing to load — and the counter is
    static at both ends rather than recolouring mid-scroll. */
 @media (max-width: 700px) {
-  .ga-stack { min-height: 0; }
   .ga-layer { transition-delay: 0ms; transition-duration: var(--dur-fast); }
   .ga-stage.is-on .ga-layer { transform: none; }
   .ga-after { transition-delay: 0ms; }

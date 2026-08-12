@@ -462,3 +462,27 @@
   .izsh-ic { transition: none; }
   .izsh-wire.is-live { animation: none; }
 }
+
+/* ============================================================
+   THE CHOOSER'S RHYTHM
+
+   Every section on this page carried `padding: var(--sp-section) 0`,
+   so each junction was two 140px paddings meeting: a 280px gap
+   between every pair, repeated all the way down. One value repeated
+   is not rhythm — it gives every boundary the same weight, and the
+   four groups read as four separate pages stacked rather than as one
+   run you are moving through.
+
+   So the run gets a tighter internal interval and keeps the full
+   section interval only at its two edges. The contrast is the point:
+   ~144px inside the run against ~280px where the page actually
+   changes subject.
+   ============================================================ */
+
+.izsol-chooser > section {
+  padding-block: clamp(var(--sp-12), 5vw, 72px);
+}
+/* the run's outer edges keep the full interval — this is where the
+   page changes movement, and that boundary should read as one */
+.izsol-chooser > section:first-child { padding-top: var(--sp-section); }
+.izsol-chooser > section:last-child { padding-bottom: var(--sp-section); }
