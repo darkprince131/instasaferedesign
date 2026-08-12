@@ -277,14 +277,17 @@ export function IzGroupB({
   return (
     <section className="izgb iz-railed" ref={sectionRef}>
       <div className="iz-wrap">
-        {/* ---------- head ---------- */}
-        <div className="izgb-head">
-          <h2 className="izgb-lead">
-            {lead} <em>{leadEmphasis}</em>
-          </h2>
-        </div>
-
+        {/* The head sits INSIDE the grid, in the left column above the
+            plate, so the steps column can start level with it. Left
+            outside, the heading had a column of dead space to its
+            right and the steps had to be pushed down past it. */}
         <div className="izgb-cols">
+          <div className="izgb-head">
+            <h2 className="izgb-lead">
+              {lead} <em>{leadEmphasis}</em>
+            </h2>
+          </div>
+
           {/* ---------- left · the plate that stays ---------- */}
           <div className="izgb-stage" ref={stageRef}>
             <div className="izgb-plate" data-focus={sc.focus}>

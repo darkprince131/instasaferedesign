@@ -64,9 +64,15 @@
 .izgb-cols {
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-  gap: clamp(var(--sp-8), 5vw, 72px);
+  /* row 1 is the head, row 2 the plate; the steps span both so the
+     first scenario reads beside the heading instead of below it */
+  grid-template-rows: auto 1fr;
+  gap: 0 clamp(var(--sp-8), 5vw, 72px);
   align-items: start;
 }
+.izgb-head { grid-column: 1; grid-row: 1; }
+.izgb-stage { grid-column: 1; grid-row: 2; }
+.izgb-steps { grid-column: 2; grid-row: 1 / -1; }
 
 /* ============================================================
    LEFT — the plate that stays
@@ -365,8 +371,15 @@
 .izgb-steps {
   margin: 0;
   list-style: none;
-  /* after the reset, or `padding: 0` would win */
-  padding: calc((100vh - var(--izgb-plateh)) / 2) 0;
+  /* Only the BOTTOM inset survives. The top one existed to push the
+     first scenario down to the plate's line; now the head holds that
+     height in the left column and the first scenario reads beside it,
+     which is what the space next to the heading was for.
+
+     The bottom is still (100vh − plate) ÷ 2, because the stage's 100vh
+     box keeps that much empty below the plate at rest and BYOD would
+     otherwise finish below it. After the reset, or `padding: 0` wins. */
+  padding: 0 0 calc((100vh - var(--izgb-plateh)) / 2);
 }
 
 .izgb-step {
@@ -448,10 +461,24 @@
    ============================================================ */
 
 @media (max-width: 1000px) {
+  /* One column, in source order: head, plate, steps. The desktop
+     placement has to be undone explicitly — leaving `grid-column: 2`
+     on the steps collapsed the first track to 0px and left the whole
+     section running down a half-width second column. */
   .izgb-cols {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
     gap: 0;
   }
+  .izgb-head,
+  .izgb-stage,
+  .izgb-steps {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  /* the bottom inset only exists to land BYOD on the plate's baseline,
+     and there is no side-by-side baseline to hold on one column */
+  .izgb-steps { padding-bottom: 0; }
   /* The plate stays sticky on phones — it is the whole point of the
      section, and dropping it would leave five paragraphs with no
      visual argument at all. It just pins to the top of the viewport
