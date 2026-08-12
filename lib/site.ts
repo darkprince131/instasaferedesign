@@ -532,15 +532,10 @@ const company: PageDef[] = [
       { h: "Zero Trust Platform", p: "25 device checks, 7 app types, session recording, agent + agentless, 7 SIEM formats, 202 event types." },
     ],
   }),
-  P({
-    path: "/book-a-demo",
-    kind: "company",
-    eyebrow: "Demo",
-    title: "Book a Demo — See InstaSafe ZTNA in Action",
-    h1: "See InstaSafe ZTNA in Action.",
-    highlight: ["in", "Action."],
-    sub: "A 30-minute walkthrough tailored to your environment — your apps, your directory, your policies.",
-  }),
+  /* /book-a-demo is BESPOKE — app/book-a-demo, backed by
+     components/izdemo. Its registry entry was removed when that route
+     landed; leaving it here would put the path in generateStaticParams
+     as well and collide. Same arrangement as /resource-center above. */
   P({
     path: "/contact-us",
     kind: "company",

@@ -21,6 +21,7 @@ const BESPOKE = [
   "/vpn-alternative",
   "/resource-center",
   "/instasafe-newsroom",
+  "/book-a-demo",
   "/why-instasafe-zero-trust",
 ];
 

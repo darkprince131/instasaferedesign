@@ -5,8 +5,10 @@ import { IzNav } from "@/components/home2/IzNav";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
 import { izFontVars } from "@/lib/iz-fonts";
 import { IzSolutionsHero } from "./IzSolutionsHero";
+import { IzGroupA } from "./IzGroupA";
 import { IzGroupB } from "./IzGroupB";
 import { IzGroupC } from "./IzGroupC";
+import { IzGroupD } from "./IzGroupD";
 import { IzThreeOutcomes } from "./IzThreeOutcomes";
 import { IzThreeOutcomesStacked } from "./IzThreeOutcomesStacked";
 
@@ -42,8 +44,12 @@ export function IzSolutionsPage() {
     <div className={`iz ${izFontVars}`} data-theme={theme} data-system="orange">
       <IzNav theme={theme} onThemeChange={onThemeChange} />
       <IzSolutionsHero />
+      {/* the chooser, in group order: replacing / giving access /
+          reaching something awkward / satisfying someone */}
+      <IzGroupA />
       <IzGroupB />
       <IzGroupC />
+      <IzGroupD />
       {/* Two candidate layouts for the outcomes section, both live
           while the choice is being made. One gets deleted. */}
       <IzThreeOutcomes />

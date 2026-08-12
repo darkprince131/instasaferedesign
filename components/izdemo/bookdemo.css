@@ -1,0 +1,601 @@
+/* ============================================================
+   bookdemo.css — /book-a-demo.
+
+   The page is one stage band (copy + scene on the left, the access
+   request on the right) followed by a quiet "what happens next" band.
+   Everything routes through iz-system tokens; the only literals are
+   inside the ILLUSTRATION THEME block at the bottom, which is where
+   the SVG's own --illus-* variables get their paper-theme values.
+   ============================================================ */
+
+/* The one colour iz-system has no token for. Validation red is not part
+   of the brand palette, so it is declared here rather than pushed into
+   the system sheet for a single page. Both values clear AA on their own
+   theme's background. */
+.iz[data-theme="dark"] {
+  --izdm-err: #ff7a7a;
+  /* Elevation over the room. Two shadows: a tight one for the edge and
+     a long, wide one for the drop onto the floor behind it. */
+  --izdm-card-sh:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 44px 90px -46px rgba(0, 0, 0, 0.95);
+  --izdm-card-rim: rgba(255, 255, 255, 0.22);
+}
+.iz[data-theme="paper"] {
+  --izdm-err: #b42318;
+  --izdm-card-sh:
+    0 1px 3px rgba(40, 30, 10, 0.07),
+    0 36px 70px -40px rgba(40, 30, 10, 0.34);
+  --izdm-card-rim: rgba(255, 255, 255, 0.9);
+}
+
+/* ---------- stage ---------- */
+
+/* The top padding is deliberately tighter than the site's usual hero
+   lead-in. It buys 24px, and 24px is the difference between the submit
+   button sitting above the fold on a 800px-tall laptop and below it. */
+.izdm-stage {
+  position: relative;
+  padding: clamp(44px, 5vw, 68px) 0 clamp(var(--sp-12), 8vw, 110px);
+  background: var(--bg);
+  /* `clip`, not `hidden`: the room's full-bleed margins are measured
+     against 100vw, which includes the scrollbar, so it can overhang by
+     a few px. `clip` trims that without turning this into a scroll
+     container. */
+  overflow-x: clip;
+}
+
+/* Two columns, two rows. Placement is explicit for all three children
+   because the row-2 room has to span the full width (so its full-bleed
+   margins are measured against a centred box) while the card sits over
+   its right-hand end. */
+.izdm-split {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+  grid-template-rows: auto auto;
+  column-gap: clamp(var(--sp-8), 4vw, 72px);
+  align-items: start;
+  min-width: 0;
+}
+
+.izdm-copy {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  padding-bottom: clamp(var(--sp-8), 3.5vw, var(--sp-12));
+}
+
+.izdm-cardwrap {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  z-index: 2; /* over the room it is standing in */
+  min-width: 0;
+}
+
+/* ---------- the room ----------
+   A grid row, not a layer behind the whole section. That is what keeps
+   the drawing and the type apart automatically: row 2 starts wherever
+   the headline ends, at any type size or viewport. It spans both
+   columns so `calc(50% - 50vw)` is measured against a centred box and
+   bleeds to both viewport edges honestly. */
+.izdm-roomslot {
+  position: relative;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  /* The grid is `align-items: start` so the copy and the card sit at
+     the top of their rows. The room is the exception: it has to fill
+     row 2 completely, because row 2 is however tall the card plus the
+     steps beside it turn out to be, and a room that stops short leaves
+     the last block of text standing on bare background. */
+  align-self: stretch;
+  margin-inline: calc(50% - 50vw);
+  /* Sized so the whole object cluster fits at the scale `slice` picks:
+     the drawing's content is 797 of its 960 frame units tall, and at a
+     1440 viewport the frame scales to 0.92, so the cluster needs ~740px
+     of slot. Under that and the servers get cropped off the bottom. */
+  min-height: clamp(440px, 55vw, 820px);
+  overflow: hidden;
+}
+
+.izdm-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.izdm-eyebrow::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.izdm-h1 {
+  margin: var(--sp-6) 0 0;
+  max-width: 17ch;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--tx);
+}
+.izdm-h1 em { font-style: normal; font-weight: inherit; color: var(--accent); }
+
+.izdm-lede {
+  margin: var(--sp-6) 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the scene ----------
+   The room fills the section. It is a layer behind the content, edge
+   to edge, not a figure in the left column — a drawing that stops at a
+   margin reads as clip art dropped on a page, and this one is supposed
+   to be the space the form is standing in.
+
+   `preserveAspectRatio="xMinYMid slice"` (cover, anchored left) does
+   the work: the geometry stays pinned to the left edge at every
+   viewport, and what gets cropped on a wide screen is the empty floor
+   the generator added on the right for exactly that purpose. The
+   section needs a floor of its own so there is always a room to see
+   even when the card is short. */
+
+.izdm-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.izdm-scene svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- scrim ----------
+   The readability layer, three ramps in paint order: a wash under the
+   card column, then a fade into the page at the top and bottom so the
+   band has no hard seam against the headline above it or the steps
+   below. Every stop is mixed from --bg, so one declaration covers both
+   themes — on paper it lightens exactly where on dark it darkens. */
+
+.izdm-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    /* Heavier on the right than it needs to be for the card, because
+       the steps below the card are live text sitting straight on the
+       room — body copy over a drawing needs the plate, a panel does
+       not. The ramp starts late so the left two-thirds of the room is
+       untouched. */
+    linear-gradient(to right,
+      transparent 34%,
+      color-mix(in srgb, var(--bg) 62%, transparent) 62%,
+      color-mix(in srgb, var(--bg) 88%, transparent) 100%),
+    /* The headline sits directly above, so the top has to dissolve into
+       it rather than start with an edge. */
+    linear-gradient(to bottom,
+      var(--bg) 0%,
+      color-mix(in srgb, var(--bg) 30%, transparent) 12%,
+      transparent 30%),
+    /* Short and soft at the foot: the servers sit close to the bottom
+       edge, and a long fade up from --bg erases them. */
+    linear-gradient(to top,
+      var(--bg) 0%,
+      color-mix(in srgb, var(--bg) 34%, transparent) 7%,
+      transparent 18%);
+}
+
+/* ---------- the access request card ---------- */
+
+/* The card is the errand; the room is the argument. It has to sit
+   clearly in FRONT of the drawing, which a hairline alone will not do
+   over a busy background — hence a real elevation shadow plus a bright
+   top edge. The top edge is the same trick the scene's own geometry
+   uses: one lit rim on the side facing the key light, which is what
+   makes an object read as standing in a space rather than printed on
+   it. It is not an accent bar — no hue, just light. */
+/* Not sticky. It was, back when this column held nothing but the form
+   and the left column was far taller. Now the steps sit underneath it
+   in the same column, and a sticky card pins itself over them as they
+   scroll up — the content would slide behind an opaque panel and never
+   be readable. */
+.izdm-card {
+  min-width: 0;
+  border: var(--bw) solid var(--line-strong);
+  border-top-color: var(--izdm-card-rim);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--izdm-card-sh);
+}
+
+.izdm-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: var(--bw) solid var(--line);
+  background: var(--surface-2);
+}
+
+.izdm-tag {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+.izdm-livedot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: izdm-pulse 2.4s ease-in-out infinite;
+}
+@keyframes izdm-pulse { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+
+/* ---------- form ---------- */
+
+.izdm-form { padding: var(--sp-5) var(--sp-6) var(--sp-6); }
+
+.izdm-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.izdm-row.is-single { grid-template-columns: minmax(0, 1fr); }
+
+.izdm-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.izdm-field label {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--tx-dim);
+}
+.izdm-field label .izdm-opt { font-weight: 400; color: var(--tx-mute); }
+
+.izdm-field input,
+.izdm-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  line-height: 1.5;
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.izdm-field input::placeholder,
+.izdm-field textarea::placeholder { color: var(--tx-mute); }
+.izdm-field input:focus-visible,
+.izdm-field textarea:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.izdm-field textarea { resize: vertical; min-height: 84px; }
+
+.izdm-field.is-invalid input,
+.izdm-field.is-invalid textarea { border-color: var(--izdm-err); }
+
+.izdm-err {
+  display: none;
+  font-size: var(--fs-label);
+  line-height: 1.45;
+  color: var(--izdm-err);
+}
+.izdm-field.is-invalid .izdm-err { display: block; }
+
+.izdm-consent {
+  margin: var(--sp-2) 0 var(--sp-5);
+  font-size: var(--fs-label);
+  line-height: 1.55;
+  color: var(--tx-dim);
+}
+/* `.iz a` carries its own colour with enough weight to beat a bare
+   descendant selector, so the link states are stated on the anchor. */
+.izdm-consent a.izdm-link {
+  color: var(--tx);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.izdm-consent a.izdm-link:hover { color: var(--accent); }
+
+.izdm-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-4) var(--sp-6);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--btn-ink, #0a0a0b);
+  font-family: var(--body);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--cta-glow);
+  transition: filter var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.izdm-submit:hover { filter: brightness(1.07); }
+.izdm-submit:active { transform: translateY(1px); }
+.izdm-submit:focus-visible { outline: 2px solid var(--tx); outline-offset: 3px; }
+.izdm-submit:disabled { filter: saturate(.4) brightness(.85); cursor: default; }
+.izdm-submit svg { width: 16px; height: 16px; }
+
+.izdm-formerr {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--fs-label);
+  line-height: 1.5;
+  color: var(--izdm-err);
+}
+
+/* ---------- granted ---------- */
+
+.izdm-granted {
+  padding: clamp(var(--sp-10), 5vw, 56px) var(--sp-6);
+  text-align: center;
+}
+
+.izdm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+  padding: var(--sp-2) var(--sp-5);
+  border: var(--bw) solid var(--accent);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.izdm-granted p {
+  margin: 0 auto;
+  max-width: 38ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- what happens next ----------
+   Lives in the card's column, under the card. The gap is the only
+   thing separating it from the form, so it is a real one — enough that
+   the two read as two blocks, not enough that the room shows through
+   as a stripe between them. */
+
+.izdm-aside {
+  margin-top: clamp(var(--sp-10), 3.5vw, 56px);
+}
+
+.izdm-secnote {
+  margin: 0 0 var(--sp-5);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+/* Second heading in the same column needs the separation the old
+   two-column layout used to get for free. */
+.izdm-secnote--gap { margin-top: clamp(var(--sp-10), 3vw, 48px); }
+
+.izdm-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--bw) solid var(--line);
+}
+
+.izdm-step {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: var(--sp-5);
+  padding: var(--sp-6) 0;
+  border-bottom: var(--bw) solid var(--line);
+}
+
+.izdm-stepnum {
+  padding-top: 3px;
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--tx-mute);
+}
+
+.izdm-step h3 {
+  margin: 0 0 var(--sp-2);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izdm-step p {
+  margin: 0;
+  max-width: 54ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* An even hairline on all four sides, like every other panel on the
+   site. The emphasis belongs to the claim itself — the lead sentence
+   is the loud part — not to a coloured tab down one edge. */
+.izdm-assurance {
+  padding: var(--sp-5) var(--sp-6);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izdm-assurance strong {
+  display: block;
+  margin-bottom: var(--sp-2);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+
+.izdm-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  margin: var(--sp-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.izdm-facts li {
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1080px) {
+  /* One column, and the order changes: headline → form → room. The
+     room is the argument, but the form is the errand, and on a phone
+     the errand wins the fold. Explicit placement everywhere, since the
+     desktop rules put all three children on a named row. */
+  .izdm-split { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; }
+  .izdm-copy { grid-column: 1; grid-row: 1; }
+  .izdm-cardwrap { grid-column: 1; grid-row: 2; }
+  .izdm-roomslot {
+    grid-column: 1;
+    grid-row: 3;
+    margin-top: clamp(var(--sp-8), 6vw, var(--sp-12));
+    min-height: clamp(360px, 78vw, 520px);
+  }
+
+  /* Standing free rather than behind the card, the room no longer needs
+     a wash under a content column — only the two fades that keep it
+     from ending on a hard edge. */
+  .izdm-scrim {
+    background:
+      linear-gradient(to bottom,
+        var(--bg) 0%,
+        color-mix(in srgb, var(--bg) 26%, transparent) 11%,
+        transparent 26%),
+      linear-gradient(to top,
+        var(--bg) 0%,
+        color-mix(in srgb, var(--bg) 30%, transparent) 8%,
+        transparent 20%);
+  }
+}
+
+@media (max-width: 640px) {
+  .izdm-row { grid-template-columns: minmax(0, 1fr); }
+  .izdm-step { grid-template-columns: 32px minmax(0, 1fr); gap: var(--sp-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izdm-livedot { animation: none; }
+  .izdm-submit,
+  .izdm-field input,
+  .izdm-field textarea { transition: none; }
+}
+
+/* ============================================================
+   ILLUSTRATION THEME — the SVG's own variables.
+
+   The generator ships dark values as inline fallbacks, so the dark
+   theme needs nothing here. Paper is a genuine relight, not an
+   inversion: the key still comes from the upper left, but on paper the
+   surfaces are lighter than the room, so the top faces go near-white
+   and the silhouette walls carry the shading. The practicals stay the
+   same orange — the point of the drawing is that the light in it is
+   the product, and that reads on both themes.
+   ============================================================ */
+
+.iz[data-theme="paper"] .izdm-scene {
+  /* Matched to the page's own --bg / --bg-2 so the letterbox margins
+     left by `meet` disappear into the page instead of drawing a seam. */
+  --illus-void-1: #f9f9f7;
+  --illus-void-2: #f4f3ee;
+  --illus-void-3: #efeee8;
+  --illus-room: #ff7a1f;
+  --illus-room-a: .10;
+  --illus-room-b: .035;
+  --illus-keylight: #ffffff;
+  --illus-keylight-a: .55;
+  --illus-haze: #b9c2d2;
+  --illus-haze-a: .16;
+  --illus-vignette: #6b6558;
+  --illus-vignette-a: .16;
+  --illus-floorwash: #ffffff;
+  --illus-floorwash-a: .5;
+  --illus-ring: rgba(20, 18, 12, .035);
+  --illus-mote: #8b8578;
+
+  --illus-top: #efece5;
+  --illus-top-hi: #ffffff;
+  --illus-top-hi2: #ffffff;
+  --illus-side: #ddd9d0;
+  --illus-side-hi: #e9e5dc;
+  --illus-wall: #e4e0d8;
+  --illus-wall-hi: #f2efe9;
+  --illus-line: rgba(20, 18, 12, .30);
+  --illus-grid: rgba(20, 18, 12, .07);
+  --illus-screen: #17161c;
+  --illus-screen-hi: #23222b;
+  --illus-key: rgba(20, 18, 12, .07);
+  --illus-sheen: rgba(255, 255, 255, .10);
+  --illus-glass-top: rgba(236, 233, 226, .94);
+  --illus-glass-hi: rgba(252, 251, 248, .95);
+  --illus-glass-side: rgba(222, 218, 210, .96);
+  --illus-glass-side-hi: rgba(234, 231, 224, .96);
+  --illus-shadow: rgba(20, 18, 12, .10);
+  --illus-shadow-core: rgba(20, 18, 12, .16);
+  /* The floating platforms' shadow. On a light floor the dark theme's
+     value reads as a grey cloud hanging in the air, so paper needs its
+     own — barely there, just enough to say "this is above the floor". */
+  --illus-shadow-soft: rgba(20, 18, 12, .055);
+  /* On paper a white rim would vanish; the rim becomes a dark contact
+     edge instead, which is the same information with the sign flipped. */
+  --illus-rim: #14120c;
+  --illus-rim-a: .34;
+  --illus-rim-b: .10;
+
+  --illus-accent: #f2480a;
+  --illus-accent-dim: rgba(242, 72, 10, .55);
+  --illus-hot: #ff9a52;
+}

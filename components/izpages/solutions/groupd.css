@@ -1,0 +1,166 @@
+/* ============================================================
+   groupd.css — "satisfying someone".
+
+   Three columns: the ask, the evidence, the fact. The middle column
+   is the widest because it is the only one carrying an artefact.
+   ============================================================ */
+
+.gd-head { max-width: 62ch; margin-bottom: var(--sp-8); }
+.gd-head h2 { margin-top: var(--sp-4); }
+.gd-head h2 em { font-style: normal; color: var(--orange); }
+
+/* ---------- the two-position switch ---------- */
+.gd-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  margin-bottom: var(--sp-8);
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+.gd-switch button {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.gd-switch button.is-sel { background: var(--surface); color: var(--tx); box-shadow: var(--panel-sh); }
+.gd-switch button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* ---------- the triptych ---------- */
+.gd-trip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 0.85fr);
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+/* the ask — display weight, set as a quote */
+.gd-q { margin: 0; display: grid; gap: var(--sp-4); min-width: 0; }
+.gd-q-who {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.gd-q p {
+  position: relative;
+  margin: 0;
+  font-family: var(--disp);
+  /* lighter than the section head on purpose: it is someone else
+     speaking, not the page */
+  font-weight: 300;
+  font-size: var(--fs-h3);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+.gd-q-mark { color: var(--orange); }
+
+/* the evidence — the artefact, not a claim about one */
+.gd-ev {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+.gd-ev-h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.gd-ev-ic {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--orange);
+}
+.gd-ev-file { display: grid; gap: var(--sp-3); }
+.gd-ev-file code {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  color: var(--tx);
+  overflow-wrap: anywhere;
+}
+.gd-ev-bar {
+  display: block;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.gd-ev-bar i { display: block; height: 100%; width: 68%; background: var(--orange); }
+
+.gd-ev-rows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.gd-ev-row { display: grid; gap: 3px; padding: var(--sp-4) var(--sp-3); background: var(--surface); min-width: 0; }
+.gd-ev-row b {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.gd-ev-row span { font-size: var(--fs-3xs); color: var(--tx-dim); line-height: 1.35; }
+
+/* the fact and where it is proved */
+.gd-fact { display: grid; gap: var(--sp-4); align-content: start; min-width: 0; }
+.gd-fact p { margin: 0; font-size: var(--fs-sm); line-height: 1.6; color: var(--tx-dim); }
+.gd-fact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--orange);
+}
+.gd-fact-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* the child that has not shipped: same weight, no arrow, no promise */
+.gd-fact-link.is-flat { color: var(--tx); }
+
+@media (max-width: 1000px) {
+  .gd-trip { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+  .gd-switch { display: flex; width: 100%; }
+  .gd-switch button { flex: 1; }
+}
+@media (max-width: 520px) {
+  .gd-ev-rows { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gd-switch button { transition: none; }
+}
