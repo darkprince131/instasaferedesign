@@ -276,6 +276,32 @@ export function IzGroupB({
     return () => ro.disconnect();
   }, []);
 
+  /* How far the plate sits below the top of the sticky column — the
+     heading plus the gap under it. The first reading is padded by
+     exactly this so it starts level with the illustration rather than
+     with the heading, then scrolls up from there.
+
+     `offsetTop` rather than a rect: the column is sticky, so its rect
+     moves with the scroll while offsetTop stays put. Recomputed on
+     resize because the heading rewraps. */
+  useEffect(() => {
+    const stage = stageRef.current;
+    const section = sectionRef.current;
+    if (!stage || !section) return;
+    const measure = () => {
+      /* `.izgb-left` is sticky, so it IS the offsetParent — the stage's
+         own offsetTop is already its distance from the column's top.
+         Subtracting the column's offsetTop (measured against something
+         else entirely) returned 0. */
+      section.style.setProperty("--izgb-plateoff", `${Math.max(0, stage.offsetTop)}px`);
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(stage.parentElement ?? stage);
+    return () => ro.disconnect();
+  }, []);
+
 
   /* Active step = the one nearest the middle of the viewport.
 

@@ -402,8 +402,11 @@
    the last left 304px below "BYOD" before the section ended. Nobody
    is pairing anything at those two moments — the plate is not pinned
    yet at the top, and has already unpinned at the bottom. */
-/* The first reading starts flush with the heading — no leading pad. */
-.izgb-step:first-child { padding-top: 0; }
+/* The first reading starts level with the ILLUSTRATION, not with the
+   heading above it — so the pair that belongs together lines up, and
+   the reading scrolls up from there. The offset is measured, since the
+   heading rewraps at different widths. */
+.izgb-step:first-child { padding-top: var(--izgb-plateoff, 0px); }
 /* The last one only needs enough box to become active before the
    section ends; a full 58vh after BYOD is 350px of nothing. */
 .izgb-step:last-child { min-height: 0; padding-bottom: 0; }
