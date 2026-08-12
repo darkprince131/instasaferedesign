@@ -28,13 +28,18 @@
      reserves the tallest scenario, and the sticky offset above is
      derived from it — remeasure both together if the plate changes. */
   --izgb-plateh: 274px;
+  /* the head's own bottom margin. It is a variable because the first
+     step's offset has to include it — the plate starts one head PLUS
+     this gap down, and leaving it out put step 01 exactly this far
+     above the plate's line. */
+  --izgb-headgap: clamp(var(--sp-8), 4vw, 56px);
 }
 
 /* ---------- head ---------- */
 
 .izgb-head {
   max-width: 46ch;
-  margin-bottom: clamp(var(--sp-8), 4vw, 56px);
+  margin-bottom: var(--izgb-headgap);
 }
 .izgb-kicker {
   display: block;
@@ -161,9 +166,17 @@
 .izgb-node-label {
   /* the node column is narrow at phone widths and these labels are
      two words — without the cap they size to content and run past the
-     card edge instead of wrapping */
+     card edge instead of wrapping.
+
+     `anywhere` rather than `break-word`: break-word was splitting
+     APPLICATION across lines as "APPLICATI / ON" because the word is
+     wider than the column on its own. `anywhere` still breaks when it
+     genuinely must, but the space between the two words is preferred
+     first, so the label wraps where a reader expects. */
   max-width: 100%;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: none;
   font-family: var(--mono);
   font-size: var(--fs-mono-xs);
   letter-spacing: var(--ls-mono);
@@ -410,7 +423,18 @@
    the last left 304px below "BYOD" before the section ended. Nobody
    is pairing anything at those two moments — the plate is not pinned
    yet at the top, and has already unpinned at the bottom. */
-.izgb-step:first-child { align-content: start; padding-top: 0; }
+/* The first step's BOX starts at the very top of the grid — beside the
+   heading — so the space next to the heading is scroll runway rather
+   than a hole. Its CONTENT sits one head plus the stage's own internal
+   offset down, which is exactly the plate's top line. Both numbers are
+   measured, not guessed: the head by a ResizeObserver, the offset from
+   the plate height. */
+.izgb-step:first-child {
+  align-content: start;
+  padding-top: calc(
+    var(--izgb-headh, 160px) + var(--izgb-headgap) + ((100vh - var(--izgb-plateh)) / 2)
+  );
+}
 .izgb-step:last-child { align-content: end; padding-bottom: 0; }
 .izgb-step.is-active {
   opacity: 1;
@@ -457,28 +481,70 @@
 }
 
 /* ============================================================
+   PHONES — five cards, no scroll story
+   ============================================================ */
+.izgb-cards { display: none; }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 
 @media (max-width: 1000px) {
-  /* One column, in source order: head, plate, steps. The desktop
-     placement has to be undone explicitly — leaving `grid-column: 2`
-     on the steps collapsed the first track to 0px and left the whole
-     section running down a half-width second column. */
-  .izgb-cols {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto;
-    gap: 0;
+  /* The scroll story is replaced wholesale, not adapted. The grid, the
+     pinned plate and the five steps all go; the cards take over. */
+  .izgb-cols { display: none; }
+  .izgb-cards {
+    display: grid;
+    gap: var(--sp-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .izgb-head,
-  .izgb-stage,
-  .izgb-steps {
-    grid-column: 1;
-    grid-row: auto;
+  .izgb-card {
+    display: grid;
+    gap: var(--sp-4);
+    padding: var(--sp-5);
+    border: var(--bw) solid var(--line);
+    border-radius: var(--r-lg);
+    background: var(--surface);
+    box-shadow: var(--izgb-sh);
   }
-  /* the bottom inset only exists to land BYOD on the plate's baseline,
-     and there is no side-by-side baseline to hold on one column */
-  .izgb-steps { padding-bottom: 0; }
+  .izgb-card-h { display: flex; align-items: baseline; gap: var(--sp-3); }
+  .izgb-card-h h3 {
+    margin: 0;
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .izgb-card p {
+    margin: 0;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--tx-dim);
+  }
+  /* inside a card the plate is the card's own illustration, so it
+     drops the border and shadow it wears when it is the pinned stage */
+  .izgb-card .izgb-plate {
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .izgb-card .izgb-plate-tag { display: none; }
+  /* APPLICATION is 11 characters of tracked mono in a ~92px column, so
+     it broke mid-word however the wrap was configured. Giving the node
+     its horizontal padding back as width and easing the tracking lets
+     the word fit on one line instead. */
+  /* Measured: the label box was 52px and "APPLICATION" needs 62px at
+     9px mono, so it broke as "APPLICATI / ON" however the wrap was
+     configured. The 10px comes back from the node's own inline padding
+     and from narrowing the two wire columns. */
+  .izgb-card .izgb-node { padding-inline: 0; }
+  .izgb-card .izgb-node-label { letter-spacing: 0.02em; }
+  .izgb-card .izgb-flow {
+    grid-template-columns: minmax(0, 1fr) 10px minmax(0, 1.15fr) 10px minmax(0, 1fr);
+  }
+  .izgb-card .izgb-fact { justify-self: start; }
   /* The plate stays sticky on phones — it is the whole point of the
      section, and dropping it would leave five paragraphs with no
      visual argument at all. It just pins to the top of the viewport

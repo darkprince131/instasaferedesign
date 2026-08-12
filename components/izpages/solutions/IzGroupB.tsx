@@ -166,6 +166,69 @@ const SCENARIOS: Scenario[] = [
   },
 ];
 
+/* The plate, extracted so it can be rendered once in the pinned stage
+   on desktop and five times as static cards on phones. Nothing about
+   the drawing changed — only who owns it. */
+function Plate({ sc, cycle }: { sc: Scenario; cycle: number }) {
+  const who = sc.who[cycle % sc.who.length];
+  const where = sc.where[cycle % sc.where.length];
+  const checks = [...CONSTANT_CHECKS, ...(sc.extraChecks ?? [])];
+  return (
+    <div className="izgb-plate" data-focus={sc.focus}>
+      <span className="izgb-plate-tag" aria-hidden="true">
+        Identity + device → application
+      </span>
+
+      <div className="izgb-flow">
+        <div className="izgb-node izgb-node--who">
+          <span className="izgb-ic" key={who.label}>
+            <who.Icon weight="regular" />
+          </span>
+          <span className="izgb-node-label">{who.label}</span>
+          <span className="izgb-where" key={where.label}>
+            <where.Icon weight="regular" />
+            {where.label}
+          </span>
+        </div>
+
+        <Wire />
+
+        {/* the decision — the part that never moves */}
+        <div className="izgb-gate">
+          <span className="izgb-gate-brand">InstaSafe</span>
+          <ul className="izgb-checks">
+            {checks.map((c, i) => (
+              <li key={c} style={{ ["--i" as string]: i } as React.CSSProperties}>
+                <ShieldCheck weight="fill" aria-hidden="true" />
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <Wire tunnel />
+
+        <div className="izgb-node izgb-node--app">
+          <span className="izgb-ic" key={sc.app.label}>
+            <sc.app.Icon weight="regular" />
+          </span>
+          <span className="izgb-node-label">{sc.app.label}</span>
+        </div>
+      </div>
+
+      <ul className="izgb-chips">
+        {sc.chips.map((c) => (
+          <li key={c.label} className={`izgb-chip is-${c.tone ?? "on"}`}>
+            <c.Icon weight="regular" aria-hidden="true" />
+            {c.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
 /** the two rows that never change — that is the whole point */
 const CONSTANT_CHECKS = ["Identity verified", "Device checked"];
 
@@ -186,6 +249,7 @@ export function IzGroupB({
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -210,6 +274,22 @@ export function IzGroupB({
       section.style.setProperty("--izgb-stageh", `${Math.round(e.contentRect.height)}px`);
     });
     ro.observe(stage);
+    return () => ro.disconnect();
+  }, []);
+
+  /* Publish the head's height too. The first step's content has to sit
+     on the plate's top line, and the plate starts one head plus the
+     stage's own internal offset down from the top of the grid. The
+     step's BOX still starts at the very top, which is what turns the
+     space beside the heading into scroll runway instead of a hole. */
+  useEffect(() => {
+    const head = headRef.current;
+    const section = sectionRef.current;
+    if (!head || !section || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([e]) => {
+      section.style.setProperty("--izgb-headh", `${Math.round(e.contentRect.height)}px`);
+    });
+    ro.observe(head);
     return () => ro.disconnect();
   }, []);
 
@@ -270,10 +350,6 @@ export function IzGroupB({
     return () => clearInterval(id);
   }, [active, reduced, rotating]);
 
-  const who = sc.who[cycle % sc.who.length];
-  const where = sc.where[cycle % sc.where.length];
-  const checks = [...CONSTANT_CHECKS, ...(sc.extraChecks ?? [])];
-
   return (
     <section className="izgb iz-railed" ref={sectionRef}>
       <div className="iz-wrap">
@@ -282,7 +358,7 @@ export function IzGroupB({
             outside, the heading had a column of dead space to its
             right and the steps had to be pushed down past it. */}
         <div className="izgb-cols">
-          <div className="izgb-head">
+          <div className="izgb-head" ref={headRef}>
             <h2 className="izgb-lead">
               {lead} <em>{leadEmphasis}</em>
             </h2>
@@ -290,60 +366,7 @@ export function IzGroupB({
 
           {/* ---------- left · the plate that stays ---------- */}
           <div className="izgb-stage" ref={stageRef}>
-            <div className="izgb-plate" data-focus={sc.focus}>
-              <span className="izgb-plate-tag" aria-hidden="true">
-                Identity + device → application
-              </span>
-
-              <div className="izgb-flow">
-                {/* who */}
-                <div className="izgb-node izgb-node--who">
-                  <span className="izgb-ic" key={who.label}>
-                    <who.Icon weight="regular" />
-                  </span>
-                  <span className="izgb-node-label">{who.label}</span>
-                  <span className="izgb-where" key={where.label}>
-                    <where.Icon weight="regular" />
-                    {where.label}
-                  </span>
-                </div>
-
-                <Wire />
-
-                {/* the decision — the part that never moves */}
-                <div className="izgb-gate">
-                  <span className="izgb-gate-brand">InstaSafe</span>
-                  <ul className="izgb-checks">
-                    {checks.map((c, i) => (
-                      <li key={c} style={{ ["--i" as string]: i } as React.CSSProperties}>
-                        <ShieldCheck weight="fill" aria-hidden="true" />
-                        {c}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <Wire tunnel />
-
-                {/* app */}
-                <div className="izgb-node izgb-node--app">
-                  <span className="izgb-ic" key={sc.app.label}>
-                    <sc.app.Icon weight="regular" />
-                  </span>
-                  <span className="izgb-node-label">{sc.app.label}</span>
-                </div>
-              </div>
-
-              {/* the chips are where most of the per-scenario change lands */}
-              <ul className="izgb-chips">
-                {sc.chips.map((c) => (
-                  <li key={c.label} className={`izgb-chip is-${c.tone ?? "on"}`}>
-                    <c.Icon weight="regular" aria-hidden="true" />
-                    {c.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <Plate sc={sc} cycle={cycle} />
           </div>
 
           {/* ---------- right · the readings ---------- */}
@@ -372,6 +395,31 @@ export function IzGroupB({
             ))}
           </ol>
         </div>
+
+        {/* PHONES GET CARDS, NOT A SCROLL STORY.
+
+            The pinned plate needs a viewport tall enough to hold the
+            plate and the step being read at the same time, and a phone
+            has neither the height nor a hover state to make the pairing
+            legible. So below the split this renders five plain cards —
+            each scenario's own illustration with its own text, no
+            pinning, no active state, nothing to drive. Same content,
+            same order, read rather than scrubbed. */}
+        <ol className="izgb-cards">
+          {SCENARIOS.map((s2) => (
+            <li className="izgb-card" key={s2.key}>
+              <div className="izgb-card-h">
+                <span className="izgb-n" aria-hidden="true">
+                  {s2.n}
+                </span>
+                <h3>{s2.title}</h3>
+              </div>
+              <Plate sc={s2} cycle={0} />
+              <p>{s2.line}</p>
+              {!s2.unconfirmed && s2.fact && <span className="izgb-fact">{s2.fact}</span>}
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
