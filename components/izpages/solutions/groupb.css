@@ -24,6 +24,10 @@
      the reflow this section must not have. Both boxes now reserve the
      tallest state. Raise this if a scenario ever gains a fifth check. */
   --izgb-rowh: 150px;
+  /* The plate's rendered height. It is fixed because --izgb-rowh
+     reserves the tallest scenario, and the sticky offset above is
+     derived from it — remeasure both together if the plate changes. */
+  --izgb-plateh: 274px;
 }
 
 /* ---------- head ---------- */
@@ -342,10 +346,27 @@
    RIGHT — the readings that scroll past
    ============================================================ */
 
+/* THE TWO COLUMNS SHARE A BASELINE AT BOTH ENDS.
+
+   The stage is a 100vh box with a 274px plate centred in it, so 313px
+   of it is empty above the plate and 313px below. That emptiness is
+   invisible on the stage column — but the steps column used to run the
+   full height beside it, so the first step's text began 289px above
+   the plate and the last ended 265px below it. That was the space at
+   the top of this section and the low-sitting BYOD at the bottom.
+
+   Insetting the steps column by the same 313px lines both columns up
+   at the start and at the finish. It is derived, not eyeballed:
+   (100vh − plate height) ÷ 2.
+
+   Doing it here rather than on the stage is deliberate — shortening
+   the sticky box or switching it to `align-self: start` cuts its
+   travel short and the plate stops releasing at the right moment. */
 .izgb-steps {
   margin: 0;
-  padding: 0;
   list-style: none;
+  /* after the reset, or `padding: 0` would win */
+  padding: calc((100vh - var(--izgb-plateh)) / 2) 0;
 }
 
 .izgb-step {
@@ -376,17 +397,17 @@
    the last left 304px below "BYOD" before the section ended. Nobody
    is pairing anything at those two moments — the plate is not pinned
    yet at the top, and has already unpinned at the bottom. */
-.izgb-step:first-child { align-content: start; }
-.izgb-step:last-child { align-content: end; }
+.izgb-step:first-child { align-content: start; padding-top: 0; }
+.izgb-step:last-child { align-content: end; padding-bottom: 0; }
 .izgb-step.is-active {
   opacity: 1;
 }
-/* The last step keeps full height on purpose. Shortening it released
-   the sticky plate while BYOD was still the thing being read, so the
-   visual slid away mid-sentence. */
-.izgb-step:last-child {
-  padding-bottom: var(--sp-12);
-}
+/* The last step keeps its full HEIGHT on purpose — shortening the box
+   released the sticky plate while BYOD was still being read, so the
+   visual slid away mid-sentence. The trailing padding it used to carry
+   is gone though: with the step now bottom-aligned, 48px of padding
+   was the last 48px between BYOD's baseline and the plate's. Height
+   stays, padding goes. */
 
 .izgb-n {
   font-family: var(--mono);
