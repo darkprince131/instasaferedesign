@@ -5,6 +5,7 @@ import { IzNav } from "@/components/home2/IzNav";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
 import { izFontVars } from "@/lib/iz-fonts";
 import { IzSolutionsHero } from "./IzSolutionsHero";
+import { IzSolutionsAnswer } from "./IzSolutionsAnswer";
 import { IzGroupA } from "./IzGroupA";
 import { IzGroupB } from "./IzGroupB";
 import { IzGroupC } from "./IzGroupC";
@@ -43,6 +44,10 @@ export function IzSolutionsPage() {
     <div className={`iz ${izFontVars}`} data-theme={theme} data-system="orange">
       <IzNav theme={theme} onThemeChange={onThemeChange} />
       <IzSolutionsHero />
+      {/* 01 — the plain answer, before the chooser: one policy engine
+          against seven application types, which is the claim every
+          group below is a case of. */}
+      <IzSolutionsAnswer />
       {/* The chooser is ONE run of four, not four unrelated bands, so
           it is wrapped and given its own internal rhythm: tight
           between the groups, full section interval at its edges.

@@ -1,0 +1,301 @@
+/* ============================================================
+   solutionsanswer.css — /solutions · 01, the plain answer.
+
+   Copy left, the policy-engine diagram right. The diagram is a 3×3
+   grid: eight cells around a centre, seven of them cards. Connectors
+   are pseudo-elements on the cards pointing inward, so the geometry
+   survives any width without a second coordinate system.
+   ============================================================ */
+
+.sa-in {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(var(--sp-8), 5vw, 72px);
+  align-items: center;
+}
+
+/* ---------------- the copy ---------------- */
+.sa-copy { min-width: 0; }
+
+.sa-eyebrow {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.sa-eyebrow i { font-style: normal; color: var(--tx-mute); margin: 0 4px; }
+.sa-eyebrow b { font-weight: 500; color: var(--orange); }
+
+.sa-h {
+  margin: var(--sp-5) 0 0;
+  max-width: 16ch;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+/* the full stop carries the accent, not a word — the sentence is two
+   flat statements and emphasising either one unbalances it */
+.sa-h em { font-style: normal; color: var(--orange); }
+
+.sa-lead {
+  margin: var(--sp-6) 0 0;
+  max-width: 46ch;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------------- the three numbers ---------------- */
+.sa-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+  margin-top: var(--sp-10);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--line);
+}
+.sa-fact { display: grid; gap: 5px; align-content: start; min-width: 0; }
+.sa-fact + .sa-fact { border-left: 1px solid var(--line); padding-left: var(--sp-5); }
+.sa-fact b {
+  font-family: var(--disp);
+  font-size: 44px;
+  font-weight: var(--fw-disp);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--orange);
+}
+.sa-fact-l {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.sa-fact-s { font-size: var(--fs-sm); line-height: 1.45; color: var(--tx-dim); }
+
+.sa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-10);
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.sa-badge span {
+  display: grid;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  line-height: 1.7;
+}
+.sa-badge i { font-style: normal; color: var(--tx-dim); }
+
+/* ---------------- the diagram ---------------- */
+.sa-diagram { min-width: 0; display: grid; gap: var(--sp-5); }
+
+.sa-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "tl t  tr"
+    "l  c  r"
+    "bl b  .";
+  gap: clamp(var(--sp-6), 4vw, 56px);
+  align-items: center;
+}
+.sa-at-tl { grid-area: tl; }
+.sa-at-t { grid-area: t; }
+.sa-at-tr { grid-area: tr; }
+.sa-at-l { grid-area: l; }
+.sa-at-r { grid-area: r; }
+.sa-at-bl { grid-area: bl; }
+.sa-at-b { grid-area: b; }
+
+/* ---------------- an application card ---------------- */
+.sa-card {
+  position: relative;
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+  min-width: 0;
+}
+/* the one card the eye should land on first */
+.sa-at-tl { border-color: color-mix(in srgb, var(--orange) 42%, var(--line)); }
+
+.sa-card header { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
+.sa-card-n {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sa-card-dots { color: var(--tx-mute); letter-spacing: 1px; line-height: 0.6; }
+.sa-card-ic { display: grid; place-items: center; padding: var(--sp-3) 0; color: var(--tx); }
+
+.sa-card dl { display: grid; gap: 4px; margin: 0; padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+.sa-card dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
+.sa-card dt {
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+}
+.sa-card dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.04em;
+}
+.sa-card dd.is-allow { color: var(--orange); }
+
+/* ---------------- connectors ----------------
+   Each card points at the centre. Orthogonal neighbours get one
+   straight run; corners get an L. The runs are sized off the grid gap
+   so they always meet the middle cell. */
+.sa-card::before,
+.sa-card::after {
+  content: "";
+  position: absolute;
+  background: repeating-linear-gradient(var(--dir, 90deg), var(--line-strong) 0 4px, transparent 4px 8px);
+}
+.sa-card::before { display: none; }
+
+.sa-at-t::after { --dir: 180deg; top: 100%; left: 50%; width: 1px; height: clamp(var(--sp-6), 4vw, 56px); }
+.sa-at-b::after { --dir: 180deg; bottom: 100%; left: 50%; width: 1px; height: clamp(var(--sp-6), 4vw, 56px); }
+.sa-at-l::after { left: 100%; top: 50%; height: 1px; width: clamp(var(--sp-6), 4vw, 56px); }
+.sa-at-r::after { right: 100%; top: 50%; height: 1px; width: clamp(var(--sp-6), 4vw, 56px); }
+
+/* corners: across, then down/up into the middle cell */
+.sa-at-tl::before,
+.sa-at-tr::before,
+.sa-at-bl::before { display: block; }
+.sa-at-tl::before { left: 100%; top: 50%; height: 1px; width: clamp(var(--sp-6), 4vw, 56px); }
+.sa-at-tl::after { --dir: 180deg; left: calc(100% + clamp(var(--sp-6), 4vw, 56px)); top: 50%; width: 1px; height: 50%; }
+.sa-at-tr::before { right: 100%; top: 50%; height: 1px; width: clamp(var(--sp-6), 4vw, 56px); }
+.sa-at-tr::after { --dir: 180deg; right: calc(100% + clamp(var(--sp-6), 4vw, 56px)); top: 50%; width: 1px; height: 50%; }
+.sa-at-bl::before { left: 100%; top: 50%; height: 1px; width: clamp(var(--sp-6), 4vw, 56px); }
+.sa-at-bl::after { --dir: 180deg; left: calc(100% + clamp(var(--sp-6), 4vw, 56px)); bottom: 50%; width: 1px; height: 50%; }
+
+/* ---------------- the engine ---------------- */
+.sa-core {
+  grid-area: c;
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+/* concentric rings, drawn rather than imaged so they take the theme */
+.sa-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  height: 260px;
+  transform: translate(-50%, -58%);
+  border-radius: var(--r-pill);
+  pointer-events: none;
+  background:
+    radial-gradient(circle, transparent 29%, color-mix(in srgb, var(--orange) 16%, transparent) 29.5%, transparent 30.5%),
+    radial-gradient(circle, transparent 39%, color-mix(in srgb, var(--orange) 12%, transparent) 39.5%, transparent 40.5%),
+    radial-gradient(circle, transparent 49%, color-mix(in srgb, var(--orange) 9%, transparent) 49.5%, transparent 50.5%);
+}
+.sa-hex {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 70px;
+  background: var(--surface);
+  border: 1.5px solid var(--orange);
+  /* a hexagon, per the reference — the one shape on the page that is
+     not a rectangle, which is what makes the engine read as the hub */
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.sa-core-t {
+  display: grid;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.sa-core-t i { font-style: normal; color: var(--tx-dim); }
+
+/* ---------------- the legend ---------------- */
+.sa-legend {
+  justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.sa-legend-h { color: var(--tx); }
+.sa-legend .is-dot::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 7px;
+  border-radius: var(--r-pill);
+  background: var(--orange);
+}
+
+/* ---------------- responsive ---------------- */
+@media (max-width: 1180px) {
+  .sa-in { grid-template-columns: minmax(0, 1fr); }
+  .sa-h { max-width: 22ch; }
+}
+
+/* Below this the 3×3 loses its point — the cards are too narrow to
+   read their own protocol rows. It becomes a plain list with the
+   engine at the head of it, and the connectors go. */
+@media (max-width: 760px) {
+  .sa-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: none;
+    gap: var(--sp-3);
+  }
+  .sa-at-tl,
+  .sa-at-t,
+  .sa-at-tr,
+  .sa-at-l,
+  .sa-at-r,
+  .sa-at-bl,
+  .sa-at-b,
+  .sa-core { grid-area: auto; }
+  .sa-core { grid-column: 1 / -1; order: -1; padding-block: var(--sp-6); }
+  .sa-card::before,
+  .sa-card::after { display: none; }
+  .sa-rings { width: 190px; height: 190px; }
+  .sa-facts { grid-template-columns: minmax(0, 1fr); }
+  .sa-fact + .sa-fact { border-left: 0; padding-left: 0; padding-top: var(--sp-4); border-top: 1px solid var(--line); }
+  .sa-legend { justify-self: stretch; }
+}
