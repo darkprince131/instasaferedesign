@@ -18,6 +18,9 @@ import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/mfa/mfa.css";
+/* order matters: the six methods run on the C38 triptych and only
+   ship the deltas, so qatriptych.css has to land first */
+import "@/components/home2/qatriptych.css";
 import "@/components/izpages/mfa/mfamethods.css";
 
 /* SEO-locked: this URL carries the equity of the live page. Metadata

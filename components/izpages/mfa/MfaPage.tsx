@@ -165,7 +165,8 @@ export function MfaPage() {
             </h2>
             <p>
               Not a ranking. Two groups of three, split by the problem each one actually solves — getting the code to
-              the person, and making the approval hard to fake. Most organisations need one from each row.
+              the person, and making the approval hard to fake. Pick the situation that is yours, or let it run and
+              meet all six. Most organisations need one from each column.
             </p>
           </div>
           <MfaMethods />

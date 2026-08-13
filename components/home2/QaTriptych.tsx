@@ -25,14 +25,24 @@ import {
                a slim progress bar sits under the panel
    ============================================================ */
 
-interface Query {
-  icon: Icon;
+export interface Query {
+  /* Phosphor icons OR a hand-drawn component. The MFA page draws its
+     own six, because each has to carry a detail no icon set ships —
+     the dashed arc for the seconds left on a TOTP code, the tap
+     ripple over an approve button. The render site only ever passes
+     `weight`, so anything accepting that is a legal icon here. */
+  icon: Icon | React.ComponentType<{ weight?: string }>;
   title: string;
   desc: string;
   q: string;
   a: ReactNode;
   readMs: number; // dwell ≈ time to read this point
+  /** optional monospace line pinned under the answer — a proof detail */
+  foot?: string;
 }
+
+/** who is asking, when the questioner is not the site's standing cast member */
+export type QaAsker = { name: string; initials: string };
 
 const C = ({ children }: { children: ReactNode }) => <span className="qa-code">{children}</span>;
 
@@ -165,13 +175,46 @@ function Feature({ q, on, onClick }: { q: Query; on: boolean; onClick: () => voi
   );
 }
 
-export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
+/* ============================================================
+   CONTENT IS INJECTABLE (2026-08-14).
+
+   The queries, the header and the questioner were hardcoded, so this
+   layout could only ever say the one thing it was born saying. The
+   MFA page needs the same mechanism carrying six authentication
+   methods — three per side, the customer's own sentence in the chat,
+   the product's answer beneath it — so `items`, `head`, `asker` and
+   `sides` are props now.
+
+   Every one of them defaults to the original content, so the homepage
+   and the lab render exactly as before.
+   ============================================================ */
+export function QaTriptych({
+  nav = "icons",
+  items,
+  head,
+  asker = { name: "Alen J.", initials: "AJ" },
+  sides,
+  time = "9:14 AM",
+}: {
+  nav?: "icons" | "none";
+  /** override the six queries; defaults to the access-investigation set */
+  items?: Query[];
+  /** replace the header block, or pass null to drop it entirely */
+  head?: ReactNode | null;
+  /** who the left-hand chat bubble belongs to */
+  asker?: QaAsker;
+  /** optional captions over the two feature columns, when the split means something */
+  sides?: [string, string];
+  /** the timestamp shown on both bubbles */
+  time?: string;
+}) {
   const [active, setActive] = useState(0);
   const [hover, setHover] = useState(false);
   const [inView, setInView] = useState(false);
   const reduced = useRef(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const cur = QUERIES[active];
+  const queries = items ?? QUERIES;
+  const cur = queries[active];
 
   useEffect(() => {
     reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -185,7 +228,7 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
     return () => obs.disconnect();
   }, []);
 
-  const next = () => setActive((a) => (a + 1) % QUERIES.length);
+  const next = () => setActive((a) => (a + 1) % queries.length);
   const paused = hover || !inView;
 
   // the autoplay driver: a progress fill that advances onAnimationEnd
@@ -200,22 +243,27 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
 
   return (
     <div className="qa" ref={rootRef} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <div className="qa-top">
-        <div>
-          <span className="qa-eye">Queries</span>
-          <h2 className="qa-h1">
-            Ask <em>anything</em>.
-          </h2>
+      {head === undefined ? (
+        <div className="qa-top">
+          <div>
+            <span className="qa-eye">Queries</span>
+            <h2 className="qa-h1">
+              Ask <em>anything</em>.
+            </h2>
+          </div>
+          <a href="/book-a-demo" className="qa-demo">
+            Book a demo
+          </a>
         </div>
-        <a href="/book-a-demo" className="qa-demo">
-          Book a demo
-        </a>
-      </div>
+      ) : (
+        head
+      )}
 
       <div className="qa-grid">
         {/* left features */}
         <div className="qa-side">
-          {QUERIES.slice(0, 3).map((q, i) => (
+          {sides && <span className="qa-sidecap">{sides[0]}</span>}
+          {queries.slice(0, 3).map((q, i) => (
             <Feature key={q.title} q={q} on={active === i} onClick={() => setActive(i)} />
           ))}
         </div>
@@ -229,11 +277,11 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
                     the same person in the access flow, the console mocks
                     and the journey card. One name across the site, not a
                     different placeholder per component. */}
-                <span className="qa-av user">AJ</span>
+                <span className="qa-av user">{asker.initials}</span>
                 <span>
                   <span className="qa-mhead">
-                    <span className="nm">Alen J.</span>
-                    <span className="tm">9:14 AM</span>
+                    <span className="nm">{asker.name}</span>
+                    <span className="tm">{time}</span>
                   </span>
                   <span className="qa-mbody">
                     <p>{cur.q}</p>
@@ -246,9 +294,12 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
                   <span className="qa-mhead">
                     <span className="nm">InstaSafe</span>
                     <span className="badge">APP</span>
-                    <span className="tm">9:14 AM</span>
+                    <span className="tm">{time}</span>
                   </span>
-                  <span className="qa-mbody">{cur.a}</span>
+                  <span className="qa-mbody">
+                    {cur.a}
+                    {cur.foot && <span className="qa-foot">{cur.foot}</span>}
+                  </span>
                 </span>
               </div>
             </div>
@@ -259,7 +310,7 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
 
           {nav === "icons" ? (
             <div className="qa-nav icons" role="tablist" aria-label="Query type">
-              {QUERIES.map((q, i) => {
+              {queries.map((q, i) => {
                 const on = active === i;
                 return (
                   <button
@@ -285,7 +336,8 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
 
         {/* right features */}
         <div className="qa-side">
-          {QUERIES.slice(3, 6).map((q, i) => (
+          {sides && <span className="qa-sidecap">{sides[1]}</span>}
+          {queries.slice(3, 6).map((q, i) => (
             <Feature key={q.title} q={q} on={active === i + 3} onClick={() => setActive(i + 3)} />
           ))}
         </div>

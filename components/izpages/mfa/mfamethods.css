@@ -1,153 +1,53 @@
 /* ============================================================
-   mfamethods.css — six factors as two Q&A triptychs.
+   mfamethods.css — the six factors on the C38 triptych.
 
-   The whole sheet turns on one rule: EQUAL HEIGHT PANELS. The answers
-   were written close in length on purpose, and a single panel that
-   stretches its row undoes that work — so the panel is a grid with
-   the answer in the flexible row and the footer pinned to the
-   bottom, and the row is a plain three-column grid whose items
-   stretch. Nothing here uses flex-basis guesses.
+   Almost nothing lives here on purpose. The layout is
+   qatriptych.css; this sheet only carries what is specific to
+   running MFA content through it — how the six drawn icons sit in
+   C38's 29px feature bullet and 56px nav button, and the tie line
+   underneath.
+
+   The previous version of this file styled six standalone cards.
+   Those cards were not C38, and none of that CSS survives.
    ============================================================ */
 
-.mfm { display: grid; gap: var(--sp-12); min-width: 0; }
+.mfm { display: grid; gap: var(--sp-10); min-width: 0; }
 
-.mfm-row { display: grid; gap: var(--sp-6); min-width: 0; }
+/* ---------- the drawn icons inside C38's slots ----------
+   MfaMethodIcons draws on a 24-unit box with a 1.5px stroke, which
+   is tuned for the 26px it gets in the feature bullet. At the 17px
+   the nav button gives it, that same stroke reads as a smudge — so
+   the nav copies get a thinner one and the incidental detail (the
+   crossed signal bars on TOTP) drops out entirely rather than
+   turning into noise. */
+.qa-feat .ic .mfic { width: 17px; height: 17px; }
+.qa-navi .mfic { width: 19px; height: 19px; stroke-width: 1.3; }
+.qa-navi .mfic-sig { display: none; }
 
-.mfm-rowhead { display: grid; gap: var(--sp-2); max-width: 62ch; }
-/* MEASURED: accent on the page background is 3.49:1, which fails AA
-   for text this small. The site-wide `.iz-ey` eyebrow sits at exactly
-   that ratio too, but that is an argument for not adding a second one
-   rather than for repeating it — so the row kicker is muted text
-   (6.65:1) with the accent moved into a rule beside it. It also reads
-   as hierarchy: the section eyebrow above is accent, the row kicker
-   under it is not. */
-.mfm-kicker {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  font-family: var(--mono);
-  font-size: var(--fs-2xs);
-  letter-spacing: var(--ls-mono);
-  text-transform: uppercase;
-  color: var(--tx-dim);
-}
-.mfm-kicker::before {
-  content: "";
-  width: 16px;
-  height: 2px;
-  border-radius: 1px;
-  background: var(--accent);
-  flex: none;
-}
-.mfm-rowtitle {
-  margin: 0;
-  font-family: var(--disp);
-  font-weight: 400;
-  font-size: var(--fs-h3);
-  line-height: 1.2;
-  letter-spacing: var(--ls-h3);
-  color: var(--tx);
-}
-.mfm-rownote {
-  margin: 0;
-  font-size: var(--fs-body-sm);
-  line-height: var(--lh-body);
-  color: var(--tx-dim);
-  text-wrap: pretty;
-}
-
-/* ---------- the triptych ---------- */
-.mfm-trip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--sp-4);
-  align-items: stretch;
-  min-width: 0;
-}
-
-.mfm-panel {
-  /* icon · question · answer(flex) · footer — the 1fr row is what
-     lets three panels of slightly different copy end level */
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
-  gap: var(--sp-4);
-  padding: var(--sp-6);
-  border: 1px solid var(--line);
-  border-radius: var(--r-md);
-  background: var(--surface);
-  min-width: 0;
-  transition: border-color var(--dur) var(--ease);
-}
-.mfm-panel:hover { border-color: var(--line-strong); }
-
-.mfm-ic {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-sm);
-  background: var(--bg-2);
-  box-shadow: inset 0 0 0 1px var(--line);
-  color: var(--tx);
-}
-.mfm-ic svg { width: 26px; height: 26px; display: block; }
-/* exactly one element per icon is accent — see MfaMethodIcons.tsx */
+/* Exactly one element per icon is accent — see MfaMethodIcons.tsx.
+   In the feature bullet and the nav button, the whole glyph already
+   takes the active colour from C38, so the accent stroke has to give
+   way there or the "one hot element" idea reads as an inconsistency. */
 .mfic-hot { stroke: var(--accent); }
 .mfic-sig { opacity: 0.7; }
+.qa-feat.on .ic .mfic-hot,
+.qa-navi.on .mfic-hot { stroke: currentColor; }
 
-/* ---------- the question ----------
-   Marked as speech by the rule alone. The brief is explicit that a
-   rule AND quote marks is saying it twice, and the rule wins because
-   it survives a long sentence wrapping to four lines, which a hanging
-   open-quote does not. */
-.mfm-q {
-  margin: 0;
-  padding-left: var(--sp-4);
-  border-left: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  font-family: var(--disp);
-  font-weight: 400;
-  font-size: var(--fs-body);
-  line-height: 1.45;
-  letter-spacing: -0.006em;
-  color: var(--tx);
-  text-wrap: pretty;
+/* ---------- the panel does not jump ----------
+   MEASURED across all six methods at 1440: 493 / 493 / 530 / 514 /
+   514 / 509 — a 37px spread. On click that is invisible, but this
+   thing AUTOPLAYS, so every advance shoved the tie line and the rest
+   of the page up or down by up to 37px on a timer. Pinned to the
+   tallest, and only above 1000px where the three-column measure
+   holds; below that the copy rewraps and the number would be a lie.
+   Re-measure if any answer changes length. */
+@media (min-width: 1001px) {
+  .mfm .qa-panel { min-height: 530px; }
 }
 
-.mfm-a {
-  margin: 0;
-  font-size: var(--fs-body-sm);
-  line-height: var(--lh-body);
-  color: var(--tx-dim);
-  text-wrap: pretty;
-}
-.mfm-a em { font-style: italic; color: var(--tx); }
-
-/* ---------- the footer ----------
-   The proof line is the detail that makes a panel read as written by
-   somebody who has run the thing, rather than by somebody describing
-   it. Monospace, muted, small, and never the same sentence as the
-   answer above it. */
-.mfm-foot {
-  display: grid;
-  gap: var(--sp-2);
-  padding-top: var(--sp-4);
-  border-top: 1px dashed var(--line);
-}
-.mfm-label {
-  font-size: var(--fs-2xs);
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  color: var(--tx);
-}
-.mfm-proof {
-  font-family: var(--mono);
-  font-size: var(--fs-2xs);
-  letter-spacing: var(--ls-mono);
-  color: var(--tx-dim);
-  overflow-wrap: anywhere;
-}
-
-/* ---------- the tie line ---------- */
+/* ---------- the tie line ----------
+   The conclusion of both columns at once, which is why it sits under
+   the whole triptych rather than inside either side. */
 .mfm-tie {
   margin: 0;
   padding: var(--sp-6) var(--sp-8);
@@ -165,24 +65,8 @@
 }
 .mfm-tie em { font-style: normal; color: var(--accent); }
 
-/* ============================================================
-   RESPONSIVE
-   The stack keeps the row grouping intact — reachability first, then
-   assurance — because a reader who scrolls past three panels has
-   read a category, not three unrelated features.
-   ============================================================ */
-@media (max-width: 1080px) {
-  .mfm-trip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* the odd panel out spans both columns rather than leaving a hole,
-     and its copy is short enough to read across the full width */
-  .mfm-trip > :last-child { grid-column: 1 / -1; }
-}
-
 @media (max-width: 700px) {
-  .mfm { gap: var(--sp-10); }
-  .mfm-trip { grid-template-columns: minmax(0, 1fr); }
-  .mfm-trip > :last-child { grid-column: auto; }
-  .mfm-panel { padding: var(--sp-5); gap: var(--sp-3); }
+  .mfm { gap: var(--sp-8); }
   .mfm-tie {
     padding: var(--sp-5);
     font-size: var(--fs-body);
