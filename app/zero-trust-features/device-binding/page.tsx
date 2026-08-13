@@ -19,6 +19,7 @@ import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/binding/binding.css";
+import "@/components/izpages/pro/quickscan.css";
 
 /* SEO-LOCKED: this URL is on the live sitemap and its metadata is
    carried over from the v3 route this replaced, byte for byte. Only

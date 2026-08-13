@@ -19,6 +19,8 @@ import { izFontVars } from "@/lib/iz-fonts";
 import { DeviceTester, PostureHeroScene, PostureStrip } from "./PostureScenes";
 import { PostureDisassembly } from "./PostureDisassembly";
 import { PostureScenarios } from "./PostureScenarios";
+import { IzQuickScan } from "@/components/izpages/pro/IzQuickScan";
+import { POSTURE_SPECS } from "@/components/izpages/pro/quickscan.data";
 
 /* ============================================================
    /zero-trust-features/device-posture-check — SEO-locked live URL,
@@ -46,6 +48,7 @@ const ANCHORS = [
   { id: "disassembly", label: "The disassembly", icon: MagnifyingGlass },
   { id: "scenarios", label: "How it's used", icon: UsersThree },
   { id: "signature", label: "Device tester", icon: DeviceMobile },
+  { id: "quickscan", label: "Quick scan", icon: Certificate },
   { id: "outcomes", label: "Outcomes", icon: Certificate },
   { id: "faq", label: "FAQ", icon: Question },
 ];
@@ -194,6 +197,20 @@ export function PosturePage() {
           <DeviceTester />
         </div>
       </section>
+
+      {/* ---------------- QUICK SCAN ---------------- */}
+      <div id="quickscan">
+        <IzQuickScan
+          specs={POSTURE_SPECS}
+          subject="InstaSafe device posture"
+          title={
+            <>
+              The posture engine, <em>as a checklist</em>.
+            </>
+          }
+          lead="Tick what your evaluation actually needs and copy the shortlist straight into your ticket. Filtering hides rows; it never clears a tick."
+        />
+      </div>
 
       {/* ---------------- THREE OUTCOMES ---------------- */}
       <div id="outcomes">

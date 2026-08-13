@@ -29,7 +29,7 @@ import { Check, Copy, CheckCircle, FunnelSimple } from "@phosphor-icons/react";
    All content is DATA below — a new spec is one array entry.
    ============================================================ */
 
-type Spec = { group: string; label: string; value: string };
+export type Spec = { group: string; label: string; value: string };
 
 const SPECS: Spec[] = [
   { group: "Access", label: "App types", value: "7 — FQDN, WEB, RDP, SSH, VNC, DB, WFS" },
@@ -50,14 +50,39 @@ const SPECS: Spec[] = [
   { group: "Deployment", label: "Deployment", value: "Cloud controller; gateways as software" },
 ];
 
-const GROUPS = [...new Set(SPECS.map((s) => s.group))];
+/* ============================================================
+   CONTENT IS INJECTABLE (2026-08-14).
 
-export function IzQuickScan() {
+   The sheet was the platform-wide one, hardcoded. Three feature
+   pages — MFA, device posture, device binding — each need the same
+   working checklist over their OWN numbers, and shipping the platform
+   sheet on all four would mean a reader ticking rows about database
+   drivers on a page about fingerprints.
+
+   `specs`, `title`, `lead` and `subject` are props now. Omitted, the
+   platform page renders exactly as before.
+
+   Groups are derived from whatever set is passed, so a page with
+   three groups gets three chips without touching this file.
+   ============================================================ */
+export function IzQuickScan({
+  specs = SPECS,
+  title,
+  lead,
+  subject = "InstaSafe platform",
+}: {
+  specs?: Spec[];
+  title?: React.ReactNode;
+  lead?: string;
+  /** heads the copied shortlist, so a pasted block says what it is about */
+  subject?: string;
+}) {
+  const groups = useMemo(() => [...new Set(specs.map((s) => s.group))], [specs]);
   const [ticked, setTicked] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const shown = useMemo(() => (filter ? SPECS.filter((s) => s.group === filter) : SPECS), [filter]);
+  const shown = useMemo(() => (filter ? specs.filter((s) => s.group === filter) : specs), [filter, specs]);
 
   function toggle(label: string) {
     setTicked((prev) => {
@@ -73,10 +98,10 @@ export function IzQuickScan() {
     /* Copy in SOURCE order, not tick order — a shortlist that comes
        out shuffled by whatever you happened to click first is harder
        to read than the sheet it came from. */
-    const lines = SPECS.filter((s) => ticked.has(s.label)).map((s) => `${s.label}: ${s.value}`);
+    const lines = specs.filter((s) => ticked.has(s.label)).map((s) => `${s.label}: ${s.value}`);
     if (!lines.length) return;
     try {
-      await navigator.clipboard.writeText(`InstaSafe platform — shortlist\n\n${lines.join("\n")}`);
+      await navigator.clipboard.writeText(`${subject} — shortlist\n\n${lines.join("\n")}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2400);
     } catch {
@@ -92,11 +117,15 @@ export function IzQuickScan() {
       <div className="izqs-head">
         <span className="iz-ey">Quick scan</span>
         <h2 className="iz-h2">
-          The spec sheet, <em>as a checklist</em>.
+          {title ?? (
+            <>
+              The spec sheet, <em>as a checklist</em>.
+            </>
+          )}
         </h2>
         <p className="izqs-lead">
-          Tick what your evaluation actually needs, then copy the shortlist straight into your ticket. Filtering never
-          clears a tick.
+          {lead ??
+            "Tick what your evaluation actually needs, then copy the shortlist straight into your ticket. Filtering never clears a tick."}
         </p>
       </div>
 
@@ -107,9 +136,9 @@ export function IzQuickScan() {
           </span>
           <button type="button" className={filter === null ? "izqs-chip on" : "izqs-chip"} onClick={() => setFilter(null)}>
             All
-            <i>{SPECS.length}</i>
+            <i>{specs.length}</i>
           </button>
-          {GROUPS.map((g) => (
+          {groups.map((g) => (
             <button
               key={g}
               type="button"
@@ -118,7 +147,7 @@ export function IzQuickScan() {
               onClick={() => setFilter(filter === g ? null : g)}
             >
               {g}
-              <i>{SPECS.filter((s) => s.group === g).length}</i>
+              <i>{specs.filter((s) => s.group === g).length}</i>
             </button>
           ))}
         </span>

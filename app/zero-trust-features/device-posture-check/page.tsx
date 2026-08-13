@@ -23,6 +23,7 @@ import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/pro/tabswitch.css";
 import "@/components/izpages/posture/posture.css";
 import "@/components/izpages/posture/posturescenarios.css";
+import "@/components/izpages/pro/quickscan.css";
 
 /* SEO-locked: this URL is on the live sitemap. Title and description
    are carried over unchanged from its scaffold registry entry, which

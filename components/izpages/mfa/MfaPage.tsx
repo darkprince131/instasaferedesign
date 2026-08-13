@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Fingerprint, Prohibit, SlidersHorizontal } from "@phosphor-icons/react";
+import { Certificate, Fingerprint, Prohibit, SlidersHorizontal } from "@phosphor-icons/react";
 
 import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
@@ -16,6 +16,8 @@ import { MfaMethods } from "./MfaMethods";
 import { MfaSaasConsole, MfaDesktopLogin } from "./MfaApplies";
 import { MfaNetworkHub } from "./MfaNetworkHub";
 import { MfaBadges } from "./MfaBadges";
+import { IzQuickScan } from "@/components/izpages/pro/IzQuickScan";
+import { MFA_SPECS } from "@/components/izpages/pro/quickscan.data";
 import { ConsoleRow } from "@/components/home2/ConsoleRow";
 import { MfaSimulator } from "@/components/v3/MfaSimulator";
 import { Magnetic } from "@/components/v2/Magnetic";
@@ -42,6 +44,7 @@ const ANCHORS = [
   { id: "what", label: "What is MFA", icon: Fingerprint },
   { id: "methods", label: "The six methods", icon: Fingerprint },
   { id: "applies", label: "Where it applies", icon: SlidersHorizontal },
+  { id: "quickscan", label: "Quick scan", icon: Certificate },
   { id: "signature", label: "Try the simulator", icon: SlidersHorizontal },
   { id: "outcomes", label: "Outcomes", icon: Prohibit },
 ];
@@ -303,6 +306,24 @@ export function MfaPage() {
           </div>
         </div>
       </section>
+
+      {/* ---------------- QUICK SCAN ----------------
+          Last before the outcomes, which is where an evaluator is by
+          the time they want it: everything above has argued, and this
+          is the sheet they tick against their own requirements list
+          and paste into a ticket. */}
+      <div id="quickscan">
+        <IzQuickScan
+          specs={MFA_SPECS}
+          subject="InstaSafe MFA"
+          title={
+            <>
+              Every number on this page, <em>as a checklist</em>.
+            </>
+          }
+          lead="Tick what your evaluation actually needs and copy the shortlist straight into your ticket. Filtering hides rows; it never clears a tick."
+        />
+      </div>
 
       {/* ---------------- THREE OUTCOMES ---------------- */}
       <div id="outcomes">

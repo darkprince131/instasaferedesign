@@ -17,6 +17,8 @@ import { izFontVars } from "@/lib/iz-fonts";
 
 import { AnswerBinding } from "@/components/izanswer/AnswerBinding";
 import { BindingOutcomes } from "./BindingOutcomes";
+import { IzQuickScan } from "@/components/izpages/pro/IzQuickScan";
+import { BINDING_SPECS } from "@/components/izpages/pro/quickscan.data";
 
 import { BindingHeroScene, BindingPillars } from "./BindingScenes";
 
@@ -51,6 +53,7 @@ const ANCHORS = [
   { id: "how", label: "How it binds", icon: Cpu },
   { id: "signature", label: "Approve a device", icon: ShieldCheck },
   { id: "outcomes", label: "What stops", icon: KeyReturn },
+  { id: "quickscan", label: "Quick scan", icon: Certificate },
   { id: "faq", label: "FAQ", icon: Question },
 ];
 
@@ -205,6 +208,20 @@ export function BindingPage() {
       <BindingOutcomes />
 
       {/* ---------------- FAQ ---------------- */}
+      {/* ---------------- QUICK SCAN ---------------- */}
+      <div id="quickscan">
+        <IzQuickScan
+          specs={BINDING_SPECS}
+          subject="InstaSafe device binding"
+          title={
+            <>
+              What the binding is made of, <em>as a checklist</em>.
+            </>
+          }
+          lead="Tick what your evaluation actually needs and copy the shortlist straight into your ticket. Filtering hides rows; it never clears a tick."
+        />
+      </div>
+
       <section className="dbg-sec" id="faq">
         <div className="iz-wrap">
           <ChatFaq

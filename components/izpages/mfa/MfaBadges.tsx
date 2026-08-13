@@ -1,34 +1,28 @@
 /* ============================================================
    MfaBadges — two hover-lift decks (00r's mechanism, new cargo).
 
-   ▸ WHY THESE ARE DECKS NOW ◂
-   They were two flat lists of seals. A list says "here are three
-   things"; a DECK says "here are three things and there are more
-   underneath", which is the truer statement in both cases — three
-   directory protocols standing in front of an estate of applications,
-   and three frameworks standing in front of a compliance programme.
-   The 00r isometric stack already carries exactly that meaning on the
-   SSO page, so it is reused rather than reinvented: same tilted
-   plane, same lift on hover, same transform-only motion.
+   ▸ THE TWO CARDS ARE DIFFERENT SHAPES, DELIBERATELY ◂
 
-   ▸ THE ORDER IS ILLUSTRATION THEN TEXT ◂
-   Deck on top, words underneath, in both cards — the order 00r uses.
-   A reader meets the picture, forms a question, and the copy answers
-   it. Reversed, the copy answers a question nobody has asked yet.
+   LEFT — ADFS / LDAP is a DECK, on 00r's isometric stack: picture on
+   top, words underneath, screens that lift and fan on hover. A deck
+   says "here are three, and there are more underneath", which is the
+   true statement about directory protocols standing in front of an
+   estate of applications. The screens carry REAL apps, because the
+   claim is about the reader's own estate — ADFS holds the Microsoft
+   stack it federates, LDAP holds what reads groups from a directory
+   of record, Kerberos holds what a domain login already opens.
 
-   ▸ WHAT IS PRINTED ON THE SCREENS ◂
-   Left card: real applications, because the claim is about YOUR
-   estate. ADFS carries the Microsoft stack it federates, LDAP carries
-   the things that read groups from a directory of record, Kerberos
-   carries what a domain login already opens. Naming them is the
-   difference between "we support LDAP" and "the app you are thinking
-   of is on this card".
+   RIGHT — compliance is a LIST, and it goes back to being one. There
+   is no "and more underneath" here: three frameworks is the whole
+   claim, and a deck would imply a fourth that does not exist. A list
+   also lets all three seals be seen at once, which is what somebody
+   scanning for the one their auditor named actually needs.
 
-   Right card: the outline seals. Drawn rather than the real marks —
-   GDPR, ISO 27001 and SOC 2 are all trademarked with usage rules, SOC
-   2 is an AICPA report type rather than a badge you display, and the
-   three real marks are three colours and two aspect ratios that would
-   never sit together at one weight.
+   The seals are drawn rather than the real marks — GDPR, ISO 27001
+   and SOC 2 are all trademarked with usage rules, SOC 2 is an AICPA
+   report type rather than a badge you display, and the three real
+   marks are three colours and two aspect ratios that would never sit
+   together at one weight.
    ============================================================ */
 
 const SEAL = {
@@ -164,7 +158,7 @@ const PROTOCOLS: AppScreen[] = [
 ];
 
 const FRAMEWORKS: SealScreen[] = [
-  { name: "GDPR", note: "Data-protection obligations", Art: Gdpr },
+  { name: "GDPR", note: "Data-protection obligations supported", Art: Gdpr },
   { name: "ISO 27001", note: "Information security management", Art: Iso },
   { name: "SOC 2", note: "AICPA trust services criteria", Art: Soc2 },
 ];
@@ -176,7 +170,7 @@ function screenStyle(depth: number, count: number) {
   return { ["--d" as string]: depth, ["--lift" as string]: lift } as React.CSSProperties;
 }
 
-function Card({
+function DeckCard({
   eyebrow,
   title,
   body,
@@ -190,7 +184,7 @@ function Card({
   deck: React.ReactNode;
 }) {
   return (
-    <article className="mfb-card">
+    <article className="mfb-card is-deck">
       <div className="mfb-stage" aria-hidden="true">
         <div className="mfb-stack">{deck}</div>
       </div>
@@ -206,10 +200,48 @@ function Card({
   );
 }
 
+/* The list card. Copy first, then the three seals — the reverse of
+   the deck beside it, because here the words say what the seals are
+   FOR and a reader who already knows can skip straight to them. */
+function ListCard({
+  eyebrow,
+  title,
+  body,
+  seals,
+}: {
+  eyebrow: string;
+  title: React.ReactNode;
+  body: string;
+  seals: SealScreen[];
+}) {
+  return (
+    <article className="mfb-card is-list">
+      <div className="mfb-head">
+        <span className="mfb-ey">{eyebrow}</span>
+        <h3 className="mfb-h">{title}</h3>
+        <p className="mfb-b">{body}</p>
+      </div>
+      <ul className="mfb-list">
+        {seals.map((s) => (
+          <li className="mfb-item" key={s.name}>
+            <span className="mfb-seal" aria-hidden="true">
+              <s.Art />
+            </span>
+            <span className="mfb-txt">
+              <b>{s.name}</b>
+              <em>{s.note}</em>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 export function MfaBadges() {
   return (
     <div className="mfb">
-      <Card
+      <DeckCard
         eyebrow="ADFS / LDAP apps"
         title={
           <>
@@ -249,7 +281,7 @@ export function MfaBadges() {
         })}
       />
 
-      <Card
+      <ListCard
         eyebrow="Compliance supported"
         title={
           <>
@@ -257,25 +289,7 @@ export function MfaBadges() {
           </>
         }
         body="MFA on every surface, with a login record per attempt, is what these three ask for in different words. The trail exports in the format your auditor already reads."
-        href="/security"
-        deck={[...FRAMEWORKS].reverse().map((s, ri) => {
-          const depth = FRAMEWORKS.length - 1 - ri;
-          return (
-            <div
-              className={`mfb-screen is-seal${depth === 0 ? " front" : ""}`}
-              key={s.name}
-              style={screenStyle(depth, FRAMEWORKS.length)}
-            >
-              <span className="mfb-sealart">
-                <s.Art />
-              </span>
-              <span className="mfb-sealtxt">
-                <b>{s.name}</b>
-                <em>{s.note}</em>
-              </span>
-            </div>
-          );
-        })}
+        seals={FRAMEWORKS}
       />
     </div>
   );

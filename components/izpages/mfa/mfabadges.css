@@ -28,14 +28,28 @@
   min-width: 0;
 }
 
+/* TWO SHAPES, ONE FRAME. The deck and the list share the border, the
+   radius and the surface so they read as a pair; everything inside
+   differs because they are making different claims. See the component
+   header. */
 .mfb-card {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   background: var(--surface);
-  overflow: hidden;
   min-width: 0;
+}
+.mfb-card.is-deck {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+/* the list card has no stage to clip, and padding rather than a
+   full-bleed illustration */
+.mfb-card.is-list {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-5);
+  padding: var(--sp-6);
 }
 
 /* ---------- the stage ----------
@@ -185,6 +199,56 @@
   color: var(--tx-dim);
 }
 
+/* ---------- the list card ---------- */
+.mfb-head { display: grid; gap: var(--sp-2); }
+.mfb-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sp-3);
+}
+.mfb-item {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  min-width: 0;
+  transition: border-color var(--dur) var(--ease);
+}
+.mfb-item:hover { border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); }
+.mfb-seal {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  color: var(--accent);
+}
+/* the seal is bigger in the list than on a deck screen — it is the
+   thing being looked at here rather than a mark printed on a card */
+.mfb-item .mfb-svg { width: 66px; height: 66px; }
+.mfb-txt { display: grid; gap: 2px; min-width: 0; }
+.mfb-txt b {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.mfb-txt em {
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  line-height: 1.4;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+/* the plate is knocked out with the tile background it sits on, which
+   is --bg-2 in the list and --surface on a deck screen */
+.mfb-item .mfb-plate { fill: var(--bg-2); }
+
 /* ---------- the foot: text under the picture ---------- */
 .mfb-foot {
   display: grid;
@@ -251,6 +315,10 @@
   .mfb-stage { height: 226px; }
   .mfb-stack { width: 218px; }
   .mfb-foot { padding: var(--sp-4) var(--sp-4) var(--sp-5); }
+  .mfb-card.is-list { padding: var(--sp-5); }
+  .mfb-item { grid-template-columns: 54px minmax(0, 1fr); gap: var(--sp-3); padding: var(--sp-3); }
+  .mfb-seal,
+  .mfb-item .mfb-svg { width: 54px; height: 54px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
