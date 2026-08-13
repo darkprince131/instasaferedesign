@@ -365,3 +365,19 @@
 @media (prefers-reduced-motion: reduce) {
   .ztaa-console-tilt { transform: none; }
 }
+
+
+/* ============================================================
+   Seven application types — categorical tones.
+
+   The palette is built from the accent and the ink and deliberately
+   EXCLUDES --deny. These are protocol families; none of them is a
+   failure, and a red tile would say one of them was. Four tones cycle
+   across seven items, which is enough to break the grey wall without
+   implying seven separate meanings.
+   ============================================================ */
+.ztaa-type svg { color: var(--accent); }
+.ztaa-type.is-a svg { color: var(--accent); }
+.ztaa-type.is-b svg { color: var(--allow); }
+.ztaa-type.is-c svg { color: color-mix(in srgb, var(--accent) 55%, var(--tx)); }
+.ztaa-type.is-d svg { color: var(--tx-dim); }

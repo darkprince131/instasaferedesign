@@ -255,14 +255,15 @@
   background: color-mix(in srgb, #fff 92%, transparent);
   box-sizing: content-box;
 }
-/* the typed placeholder that stands in for a mark we do not hold */
-.zph-target-ic b {
-  font-family: var(--mono);
-  font-size: 8.5px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--tx-mute);
-}
+/* CEF, LEEF and NDJSON are wire formats with no vendor mark, so they
+   carry a coloured glyph instead. Toned apart from each other for the
+   same reason logos differ: so the eye can tell three rows apart
+   without reading them. */
+.zph-target-ic b { display: grid; place-items: center; }
+.zph-target-ic b svg { width: 20px; height: 20px; }
+.zph-target-ic b.is-accent { color: var(--accent); }
+.zph-target-ic b.is-allow { color: var(--allow); }
+.zph-target-ic b.is-info { color: color-mix(in srgb, var(--allow) 70%, var(--tx)); }
 .zph-target-n { color: var(--tx); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .zph-ext {
   font-family: var(--mono);
@@ -318,13 +319,23 @@
 .zph-kic.is-deny, .zph-ric.is-deny { color: var(--deny); }
 .zph-kic.is-accent, .zph-ric.is-accent { color: var(--accent); }
 .zph-kic.is-mute, .zph-ric.is-mute { color: var(--tx-mute); }
+/* Two more tones for the report rail — five list items in one grey read
+   as the same report five times, which undercuts the "11 types" claim.
+
+   NEITHER IS --deny. A report type and a wire format are categories, not
+   verdicts; a red icon beside "Devices" or "NDJSON" says something is
+   wrong with it. Red stays reserved for the event stream, where a
+   failure really is a failure. */
+.zph-kic.is-info { color: color-mix(in srgb, var(--allow) 70%, var(--tx)); }
+.zph-kic.is-violet { color: color-mix(in srgb, var(--accent) 55%, var(--tx)); }
 
 /* the stream gains an icon column ahead of the timestamp */
 .zph-rows li { grid-template-columns: auto auto minmax(0, 1.1fr) minmax(0, 1.2fr) auto auto; }
 
 .zph-rail-plain li { gap: var(--sp-3); }
-.zph-rail-plain li svg { width: 15px; height: 15px; flex: none; color: var(--tx-mute); }
-.zph-rail-plain li.on svg { color: var(--accent); }
+.zph-rail-plain li svg { width: 16px; height: 16px; flex: none; }
+.zph-rail-plain li .zph-kic { flex: none; }
+
 .zph-chip svg { width: 13px; height: 13px; }
 
 /* ============================================================

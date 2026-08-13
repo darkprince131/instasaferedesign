@@ -25,6 +25,11 @@
      pattern.
    - The watermark scene named "Anita R."; it is Alen J. now, the same
      cast member used across the rest of the site.
+   - The tunnel scene's destination console was missing the three window
+     dots every other scene's chrome carries, and its avatar circle sat
+     at cy=240 while the two text bars beside it (y=234 and y=246, 6 high)
+     centre on 243 — three pixels out, which is exactly the kind of gap
+     the eye reads as "broken" without being able to name.
 
    Held as raw markup and injected: this is generated art, and a JSX
    rewrite would add a transcription step for no benefit. Static,
@@ -82,8 +87,9 @@ export const ZTAA_SCENES: Record<ZtaaSceneId, string> = {
         <!-- destination app -->
         <rect class="sv-frame" x="474" y="180" width="122" height="112" rx="7"/>
         <path class="sv-chrome" d="M474 187a7 7 0 017-7h108a7 7 0 017 7v13H474z"/>
+        <circle cx="486" cy="190" r="3.4" class="sv-denyf"/><circle cx="497" cy="190" r="3.4" class="sv-denyf"/><circle cx="508" cy="190" r="3.4" class="sv-denyf"/>
         <text class="sv-lbl" x="486" y="216">BILLING PORTAL</text>
-        <circle cx="492" cy="240" r="9" class="sv-bar-d"/>
+        <circle cx="492" cy="243" r="9" class="sv-bar-d"/>
         <rect class="sv-bar" x="508" y="234" width="72" height="6" rx="3"/>
         <rect class="sv-bar" x="508" y="246" width="52" height="6" rx="3"/>
         <rect class="sv-bar" x="486" y="262" width="94" height="6" rx="3"/>

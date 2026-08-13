@@ -14,6 +14,8 @@ import {
   Monitor,
   ShieldCheck,
   SquaresFour,
+  Browser,
+  Desktop,
   Terminal,
   UserCircleGear,
   Users,
@@ -218,22 +220,30 @@ export function ZtaaConsole() {
    without reading a table.
    ============================================================ */
 
-const TYPES: { k: string; label: string; Icon: Icon }[] = [
-  { k: "FQDN", label: "Domain-based", Icon: GlobeSimple },
-  { k: "WEB", label: "Browser apps", Icon: SquaresFour },
-  { k: "RDP", label: "Remote desktop", Icon: Monitor },
-  { k: "SSH", label: "Shell", Icon: Terminal },
-  { k: "VNC", label: "Remote GUI", Icon: Monitor },
-  { k: "DB", label: "Database", Icon: Database },
-  { k: "WFS", label: "Windows file share", Icon: FolderSimple },
+/* Seven types, seven DISTINCT icons — RDP and VNC both used `Monitor`,
+   so two of the seven were the same picture with different letters, on
+   the one block whose whole claim is that the seven are different.
+
+   `tone` is CATEGORICAL, not semantic. These are protocol families, and
+   none of them is a pass or a failure — so the palette is drawn from the
+   accent and the ink and deliberately excludes --deny. A red tile here
+   would read as "this one is a problem". */
+const TYPES: { k: string; label: string; Icon: Icon; tone: string }[] = [
+  { k: "FQDN", label: "Domain-based", Icon: GlobeSimple, tone: "a" },
+  { k: "WEB", label: "Browser apps", Icon: Browser, tone: "b" },
+  { k: "RDP", label: "Remote desktop", Icon: Desktop, tone: "c" },
+  { k: "SSH", label: "Shell", Icon: Terminal, tone: "d" },
+  { k: "VNC", label: "Remote GUI", Icon: Monitor, tone: "a" },
+  { k: "DB", label: "Database", Icon: Database, tone: "b" },
+  { k: "WFS", label: "Windows file share", Icon: FolderSimple, tone: "c" },
 ];
 
 export function ZtaaAppTypes() {
   return (
     <div className="ztaa-types">
       {TYPES.map((t) => (
-        <div className="ztaa-type" key={t.k}>
-          <t.Icon size={20} weight="regular" />
+        <div className={`ztaa-type is-${t.tone}`} key={t.k}>
+          <t.Icon size={20} weight="duotone" />
           <b>{t.k}</b>
           <span>{t.label}</span>
         </div>

@@ -2,11 +2,12 @@
 
 import {
   ArrowSquareOut,
+  BracketsCurly,
   ChartBar,
   Clock,
   Cursor,
   DownloadSimple,
-  FileText,
+  FileCode,
   Fingerprint,
   Play,
   ShareNetwork,
@@ -14,6 +15,8 @@ import {
   SignIn,
   SignOut,
   Stop,
+  Table,
+  UsersThree,
   WarningCircle,
   type Icon,
 } from "@phosphor-icons/react";
@@ -148,7 +151,17 @@ const REPORT_STATS = [
   { label: "Denied requests", value: "328", d: "−26%", spark: [22, 19, 20, 14, 12, 9, 7], hue: "deny" },
 ];
 
-const REPORT_KINDS = ["Overview", "Access", "Devices", "Users", "Authentication"];
+/* One icon per report type, each toned. They were all FileText in the
+   same grey, which made a list of five report types look like the same
+   report five times — the opposite of what "11 built-in report types"
+   is trying to say. */
+const REPORT_KINDS: { label: string; Icon: Icon; tone: string }[] = [
+  { label: "Overview", Icon: ChartBar, tone: "accent" },
+  { label: "Access", Icon: SignIn, tone: "allow" },
+  { label: "Devices", Icon: Fingerprint, tone: "info" },
+  { label: "Users", Icon: UsersThree, tone: "violet" },
+  { label: "Authentication", Icon: ShieldCheck, tone: "mute" },
+];
 
 /* Real marks only — see the logo note in the header. */
 const TOP_APPS = [
@@ -183,9 +196,11 @@ function ReportsView() {
         <span className="zph-rail-h">11 built-in report types</span>
         <ul className="zph-rail-plain">
           {REPORT_KINDS.map((k, i) => (
-            <li key={k} className={i === 0 ? "on" : undefined}>
-              <FileText weight={i === 0 ? "fill" : "regular"} aria-hidden="true" />
-              {k}
+            <li key={k.label} className={i === 0 ? "on" : undefined}>
+              <span className={`zph-kic is-${k.tone}`} aria-hidden="true">
+                <k.Icon weight="duotone" />
+              </span>
+              {k.label}
             </li>
           ))}
         </ul>
@@ -250,18 +265,20 @@ const EXPORT_SOURCES: { label: string; Icon: Icon; tone: string }[] = [
   { label: "In-session action", Icon: Cursor, tone: "mute" },
 ];
 
-/* Four of these now have real marks. CEF, LEEF and NDJSON are wire
-   FORMATS rather than products — there is no vendor logo to hold, so
-   they keep the typed abbreviation permanently rather than waiting on
-   an asset that does not exist. */
-const EXPORT_TARGETS: { name: string; ext: string; logo: string | null; abbr: string }[] = [
-  { name: "Splunk", ext: ".json", logo: "splunk", abbr: "SPL" },
-  { name: "Elastic Common Schema", ext: ".ecs", logo: "elastic", abbr: "ECS" },
-  { name: "CEF", ext: ".cef", logo: null, abbr: "CEF" },
-  { name: "LEEF", ext: ".leef", logo: null, abbr: "LEEF" },
-  { name: "ArcSight", ext: ".arc", logo: "arcsight", abbr: "ARC" },
-  { name: "Syslog", ext: ".log", logo: "syslog", abbr: "SYS" },
-  { name: "NDJSON", ext: ".ndjson", logo: null, abbr: "NDJ" },
+/* CEF, LEEF and NDJSON are wire FORMATS, not products — there is no
+   vendor mark to hold and none is coming. They carry a coloured glyph
+   rather than a typed abbreviation: the row already prints the name and
+   the extension, so repeating "CEF" a third time as a monogram said
+   nothing and read as a missing asset. Each glyph is toned differently
+   so the three are told apart at a glance, the same job a logo does. */
+const EXPORT_TARGETS: { name: string; ext: string; logo: string | null; Glyph?: Icon; tone?: string }[] = [
+  { name: "Splunk", ext: ".json", logo: "splunk" },
+  { name: "Elastic Common Schema", ext: ".ecs", logo: "elastic" },
+  { name: "CEF", ext: ".cef", logo: null, Glyph: BracketsCurly, tone: "accent" },
+  { name: "LEEF", ext: ".leef", logo: null, Glyph: Table, tone: "allow" },
+  { name: "ArcSight", ext: ".arc", logo: "arcsight" },
+  { name: "Syslog", ext: ".log", logo: "syslog" },
+  { name: "NDJSON", ext: ".ndjson", logo: null, Glyph: FileCode, tone: "info" },
 ];
 
 /* The connector layer. Rows are evenly spaced, so the y of row i is
@@ -327,11 +344,11 @@ function ExportsView() {
               {t.logo ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={`/logos/integrations/${t.logo}.svg`} alt="" loading="lazy" />
-              ) : (
-                /* `abbr` is written out per target, not sliced from the
-                   extension — slicing gave "JSO" for Splunk. */
-                <b>{t.abbr}</b>
-              )}
+              ) : t.Glyph ? (
+                <b className={`is-${t.tone}`}>
+                  <t.Glyph weight="duotone" />
+                </b>
+              ) : null}
             </span>
             <span className="zph-target-n">{t.name}</span>
             <span className="zph-ext">{t.ext}</span>
