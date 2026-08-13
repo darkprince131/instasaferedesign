@@ -1,0 +1,158 @@
+/* ============================================================
+   mfabadges.css — outline seals, two cards.
+
+   ▸ THE SEALS ARE STROKE-ONLY, WITH THREE EXCEPTIONS ◂
+   Everything inherits `stroke: currentColor; fill: none` from the
+   markup. Three things must break that or they break the drawing:
+
+     .mfb-fill   the twelve stars. A stroked five-point star at 8px
+                 is a smudge; it has to be solid.
+     .mfb-t      text. SVG text with a stroke and no fill renders as
+                 an outline of the letterforms — unreadable at 9px.
+     .mfb-plate  the label plate. It is filled with the CARD's own
+                 background so the diagonal behind it is knocked out
+                 rather than running through the words, which is
+                 exactly what the reference does.
+
+   That last one is why the plate is filled with --surface and not
+   with white: this card exists on a paper page and a dark one.
+   ============================================================ */
+
+.mfb {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+.mfb-card {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-5);
+  padding: var(--sp-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  min-width: 0;
+}
+
+.mfb-head { display: grid; gap: var(--sp-2); }
+.mfb-ey {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+/* Same call as the row kickers two sections up: accent text at this
+   size measures 3.49:1 and fails AA, so the accent moves into a rule
+   and the words stay readable. */
+.mfb-ey::before {
+  content: "";
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  flex: none;
+}
+.mfb-h {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  text-wrap: pretty;
+}
+.mfb-b {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ---------- the seals ---------- */
+.mfb-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sp-3);
+}
+.mfb-item {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  min-width: 0;
+  transition: border-color var(--dur) var(--ease);
+}
+.mfb-item:hover { border-color: color-mix(in srgb, var(--accent) 38%, var(--line)); }
+
+.mfb-seal {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  color: var(--accent);
+}
+.mfb-svg { width: 66px; height: 66px; display: block; overflow: visible; }
+
+/* the broken arc riding outside the frame */
+.mfb-arc {
+  stroke-dasharray: 3.5 4;
+  opacity: 0.75;
+}
+/* a boundary, as opposed to a thing — dashed says "this is a line
+   somebody drew", which is exactly what a trust boundary is */
+.mfb-dash { stroke-dasharray: 3 3.5; }
+
+/* the three exceptions to stroke-only — see the header */
+.mfb-fill { fill: currentColor; stroke: none; }
+.mfb-plate { fill: var(--bg-2); stroke: currentColor; }
+.mfb-t {
+  fill: currentColor;
+  stroke: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-anchor: middle;
+}
+.mfb-t.sm { font-size: 10px; }
+/* one size smaller, for the one label a 37-unit ring cannot hold */
+.mfb-t.xs { font-size: 8.4px; letter-spacing: 0.02em; }
+
+.mfb-txt { display: grid; gap: 2px; min-width: 0; }
+.mfb-txt b {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.mfb-txt em {
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  line-height: 1.4;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .mfb { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 520px) {
+  .mfb-card { padding: var(--sp-5); }
+  .mfb-item { grid-template-columns: 54px minmax(0, 1fr); gap: var(--sp-3); padding: var(--sp-3); }
+  .mfb-seal,
+  .mfb-svg { width: 54px; height: 54px; }
+}

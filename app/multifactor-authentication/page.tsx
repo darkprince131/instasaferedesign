@@ -25,6 +25,7 @@ import "@/components/izpages/mfa/mfamethods.css";
 import "@/components/home2/consolerow.css";
 import "@/components/izpages/mfa/mfaapplies.css";
 import "@/components/izpages/mfa/mfanetworkhub.css";
+import "@/components/izpages/mfa/mfabadges.css";
 
 /* SEO-locked: this URL carries the equity of the live page. Metadata
    is unchanged from the v3 build this replaced. */

@@ -15,6 +15,7 @@ import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { MfaMethods } from "./MfaMethods";
 import { MfaSaasConsole, MfaDesktopLogin } from "./MfaApplies";
 import { MfaNetworkHub } from "./MfaNetworkHub";
+import { MfaBadges } from "./MfaBadges";
 import { ConsoleRow } from "@/components/home2/ConsoleRow";
 import { MfaSimulator } from "@/components/v3/MfaSimulator";
 import { Magnetic } from "@/components/v2/Magnetic";
@@ -270,6 +271,16 @@ export function MfaPage() {
             >
               <MfaNetworkHub />
             </ConsoleRow>
+
+            {/* Two more surfaces that do not want a console row each.
+
+                ADFS and LDAP apps are a real fourth place MFA lands,
+                but the picture is a list of protocols rather than a
+                screen — there is nothing to show, because the whole
+                point is that the application is not modified. And
+                compliance is not a surface at all; it is the reason
+                the other four get asked about. Both are seals. */}
+            <MfaBadges />
           </div>
         </div>
       </section>

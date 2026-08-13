@@ -484,6 +484,11 @@
      "which factor" is the argument */
   .mfap-tr { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .mfap-proto { display: none; }
+  /* the HEADER cell too. It is a plain span, not a .mfap-proto, so
+     hiding the body column alone left three headings reflowing into
+     two tracks — "Factors required" wrapped onto its own line under
+     "Application  Protocol", labelling nothing. */
+  .mfap-th span:nth-child(2) { display: none; }
   .mfap-card { width: 84%; padding: 14px 12px 12px; }
   .mfap-clock b { font-size: 22px; }
   .mfap-screen { aspect-ratio: 4 / 3; }
