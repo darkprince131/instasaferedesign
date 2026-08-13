@@ -35,6 +35,7 @@ import { IzSpecTable } from "@/components/home2/IzSpecTable";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzTrustBar } from "@/components/home2/IzTrustBar";
 import { ZtaaSessionSplit } from "./ZtaaSessionSplit";
+import { ZTAA_PEOPLE } from "./ztaa-people";
 import { IzUseCaseSwitch } from "@/components/home2/IzUseCaseSwitch";
 import { IzUserPortal } from "@/components/home2/IzUserPortal";
 import { LiveActivity } from "@/components/home2/LiveActivity";
@@ -331,7 +332,13 @@ export function ZtaaPage() {
         </div>
       </section>
 
-      {/* ---------------- USE CASES ---------------- */}
+      {/* ---------------- USE CASES ----------------
+          The cases are passed, not defaulted. The component ships four
+          generic ones — unmanaged devices, VPN replacement, third-party
+          access, impossible travel — which are use-case CATEGORIES. This
+          heading promises "very different people", so the four below are
+          people, and each shows what that person's portal actually
+          contains. The heading and the block agree now. */}
       <div id="usecases">
         <IzUseCaseSwitch
           kicker="Where ZTAA lands"
@@ -342,6 +349,7 @@ export function ZtaaPage() {
           }
           sub="Employees get their whole toolkit behind one login. Contractors get two systems, recorded, until the contract ends. Neither of them gets a network."
           cta={{ label: "See all solutions", href: "/solutions" }}
+          cases={ZTAA_PEOPLE}
         />
       </div>
 

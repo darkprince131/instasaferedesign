@@ -40,7 +40,7 @@ import { useDrawIn } from "@/components/iz-fx/useDrawIn";
 
 type Row = { label: string; value: string; tone?: "allow" | "deny" | "accent" };
 
-type Case = {
+export type IzUseCase = {
   id: string;
   title: string;
   desc: string;
@@ -52,7 +52,7 @@ type Case = {
   rows: Row[];
 };
 
-const CASES: Case[] = [
+const CASES: IzUseCase[] = [
   {
     id: "unmanaged",
     title: "Unmanaged devices",
@@ -122,7 +122,7 @@ const CASES: Case[] = [
    animate. Anything decorative that shouldn't draw carries
    data-draw="skip". */
 
-function Art({ kind }: { kind: Case["art"] }) {
+function Art({ kind }: { kind: IzUseCase["art"] }) {
   const ref = useDrawIn<SVGSVGElement>({ stagger: 110, duration: 850 });
   const common = {
     fill: "none",
@@ -183,7 +183,19 @@ function Art({ kind }: { kind: Case["art"] }) {
   );
 }
 
+/* ============================================================
+   CASES ARE INJECTABLE (2026-08-13).
+
+   They were hardcoded, so the block could only ever illustrate the
+   four generic use cases below whatever headline a page gave it. On
+   /zero-trust-application-access that produced a real mismatch: the
+   heading promised "Same portal. Very different people" and then
+   listed use-case CATEGORIES — unmanaged devices, VPN replacement —
+   which are not people. Pass `cases` to say what the headline says.
+   Omit it and every existing caller is unchanged.
+   ============================================================ */
 export function IzUseCaseSwitch({
+  cases = CASES,
   kicker = "What we solve",
   title = (
     <>
@@ -193,13 +205,14 @@ export function IzUseCaseSwitch({
   sub = "One gate in front of every application. Less friction for the people who belong. No route at all for anyone who doesn't.",
   cta = { label: "See all use cases", href: "/use-cases" },
 }: {
+  cases?: IzUseCase[];
   kicker?: string;
   title?: React.ReactNode;
   sub?: string;
   cta?: { label: string; href: string };
 }) {
   const [open, setOpen] = useState(0);
-  const active = CASES[open];
+  const active = cases[open];
 
   return (
     <section className="izuc iz-railed">
@@ -222,7 +235,7 @@ export function IzUseCaseSwitch({
 
       <div className="iz-wrap izuc-body">
         <div className="izuc-acc">
-          {CASES.map((c, i) => {
+          {cases.map((c, i) => {
             const on = i === open;
             return (
               <div key={c.id} className={`izuc-item ${on ? "on" : ""}`}>
