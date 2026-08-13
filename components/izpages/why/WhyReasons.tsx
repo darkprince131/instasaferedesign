@@ -3,9 +3,7 @@
 import {
   ArrowRight,
   ArrowUpRight,
-  Bank,
   Books,
-  ChartLine,
   CloudArrowUp,
   Fingerprint,
   Presentation,
@@ -16,7 +14,6 @@ import { ConvergeFlow } from "@/components/home2/ConvergeFlow";
 import { IzDevBand } from "@/components/home2/IzDevBand";
 import { WallOfLove } from "@/components/home2/WallOfLove";
 import { IzLogoGrid } from "@/components/izpages/pro/IzLogoGrid";
-import { IzTabSwitch, type IzTabSwitchTab } from "@/components/izpages/pro/IzTabSwitch";
 import {
   CLUSTERS,
   GLOBAL_FRAMEWORKS,
@@ -312,100 +309,6 @@ function FrameworkList({ head, sub, items, accent }: { head: string; sub: string
   );
 }
 
-/* ---------- 00ao tab content: the three Indian regulators ----------
-   The console skin, because what an auditor wants from this section is
-   not a claim that we comply — it is the RECORD. Each tab shows the
-   evidence the platform actually emits, and the two outcomes are the
-   two things a reviewer checks: the control that applied, and the event
-   that proves it fired.
-
-   Sanitised demo payloads, same convention as the other consoles.
-   Nothing here asserts certification — the claims stay at the level of
-   "these controls map, this evidence exists", which is what the Trust
-   Center link is for. */
-const REGULATOR_TABS: IzTabSwitchTab[] = [
-  {
-    id: "dpdp",
-    label: "DPDP",
-    Icon: ShieldCheck,
-    json: {
-      outcomes: ["The control", "The evidence"],
-      payloads: [
-        `{
-  "framework": "DPDP Act 2023",
-  "principle": "purpose_limitation",
-  "control": "access_scoped_to_role",
-  "data_residency": "customer_environment",
-  "vendor_copy_of_payload": false,
-  "note": "Processing boundary stays yours"
-}`,
-        `{
-  "event": "access.granted",
-  "principal": "alen.joseph",
-  "resource": "prod-bastion",
-  "purpose": "it_operations",
-  "payload_transited_vendor": false,
-  "retained_by_instasafe": ["decision", "metadata"],
-  "time": "2026-08-13T09:14:02.588Z"
-}`,
-      ],
-    },
-  },
-  {
-    id: "rbi",
-    label: "RBI",
-    Icon: Bank,
-    json: {
-      outcomes: ["The control", "The evidence"],
-      payloads: [
-        `{
-  "framework": "RBI cyber security framework",
-  "control": "privileged_access_review",
-  "standing_privilege": false,
-  "session_recording": "enabled",
-  "mfa": "required",
-  "review_cycle_days": 90
-}`,
-        `{
-  "event": "session.recorded",
-  "principal": "contractor.42",
-  "resource": "core-banking-jump",
-  "approval": "ticket CHG-8841",
-  "expired_after_minutes": 45,
-  "recording": "session-2f9a.mp4",
-  "time": "2026-08-13T11:02:41.107Z"
-}`,
-      ],
-    },
-  },
-  {
-    id: "sebi",
-    label: "SEBI · IRDAI",
-    Icon: ChartLine,
-    json: {
-      outcomes: ["The control", "The evidence"],
-      payloads: [
-        `{
-  "frameworks": ["SEBI CSCRF", "IRDAI guidelines"],
-  "control": "segregation_of_access",
-  "market_systems": "isolated_segment",
-  "lateral_reachability": "none",
-  "log_export": ["syslog", "cef", "leef"]
-}`,
-        `{
-  "event": "access.denied",
-  "principal": "analyst.09",
-  "resource": "settlement-db",
-  "reason": "outside_entitlement",
-  "network_visible_to_principal": false,
-  "exported_to": "siem",
-  "time": "2026-08-13T14:38:55.902Z"
-}`,
-      ],
-    },
-  },
-];
-
 function ReasonFrameworks() {
   return (
     <section className="whyr-sec" id="reason-frameworks">
@@ -418,39 +321,11 @@ function ReasonFrameworks() {
         other — the combination is the part the market lacks.
       </p>
 
-      {/* 00ao carries the three Indian regulators IN DEPTH, so the
-          matrix below now shows only the global column. Running both
-          would have listed DPDP, RBI and SEBI twice in one section,
-          once as a badge and once as a tab — and the badge version
-          would have been the weaker of the two.
-
-          A custom `head` is passed, which also drops the component's
-          default console header: it ships a "Star 2.4k" vanity count
-          and a /docs link this site does not have. */}
-      <div className="whyr-embed">
-        <IzTabSwitch
-          tabs={REGULATOR_TABS}
-          initial={0}
-          head={
-            <>
-              <h2 className="izts-title">
-                What your <mark>auditor</mark> actually asks for
-              </h2>
-              <p className="izts-sub">
-                Not a compliance badge — the control that applied and the event that proves it fired. Pick a regulator.
-              </p>
-            </>
-          }
-        />
-      </div>
-
-      {/* BOTH COLUMNS ARE BACK (user call, 2026-08-13). The India list
-          was pulled out when the tab block landed, on the reasoning that
-          DPDP/RBI/SEBI would then appear twice in one section. The
-          side-by-side matrix is the section's actual argument — "both
-          columns, filled" is what the heading says — so it returns, and
-          the tabs stay above it as the depth behind the India side.
-          Whether both survive is the user's next call. */}
+      {/* India and Global, side by side — the section's whole argument.
+          The 00ao tab block that briefly sat above this is removed
+          (user call, 2026-08-13): it restated the same three regulators
+          the India column already lists, and carried a second h2 into a
+          section that reads better without one. */}
       <div className="whyr-matrix">
         <FrameworkList head="India" sub="The regulators your auditor cites" items={INDIA_FRAMEWORKS} accent />
         <FrameworkList head="Global" sub="The standards your board cites" items={GLOBAL_FRAMEWORKS} />

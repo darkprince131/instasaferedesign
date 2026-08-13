@@ -13,54 +13,171 @@ import {
 /* ============================================================
    C32 · Mac Dock Nav — the trusted-by section.
    Magnify-on-hover floating dock (the macOS dock effect). Hovering a
-   logo swaps the window preview above it.
+   tile swaps the window preview above it.
 
-   ▸ REAL LOGOS, AND ONLY THE ONES THAT FIT ◂ (2026-08-13)
+   ▸▸ THIS COMPONENT IS OFF BY DEFAULT. READ BEFORE FLIPPING IT ▸▸
 
-   This shipped with nine invented brands — Northwind, Volta, Meridian
-   and so on — drawn as gradient tiles with an initial, each carrying
-   INVENTED STATISTICS: "48,000 endpoints", "212 sites", "TCO cut 40%".
-   Fictional numbers on fictional companies are merely placeholder;
-   the same numbers behind a REAL company's mark are a false claim
-   about a named third party. They are gone and are not coming back
-   without a source.
+   instasafe.com names ZERO customers today. Every published case study
+   is anonymised by sector — the banking one is "one of India's leading
+   private sector banks with over 250 branches", the logistics one "a
+   leading Indian air express, cargo and logistics company operating
+   across 500 districts". Even homepage testimonials are first-name-
+   plus-initial (Ranjith P, Hariharan S, Sadanand H).
 
-   WHICH LOGOS: the dock tile is square-ish, so selection is by aspect
-   ratio, measured from each SVG's viewBox rather than guessed. The
-   nine below are every customer mark at or under ~2.5:1. The other
-   ten in /public/logos/customers are wordmarks running to 6.9:1
-   (Mirae Asset Sharekhan, Siemens, Samsonite, Asian Paints…) — in a
-   square tile those either clip or shrink to an illegible sliver, so
-   they stay in IzLogoMarquee, which is built for that shape.
+   A wall of named logos is therefore not a design change, it is a
+   disclosure change. Each named entry needs a signed logo-use clause
+   or written marketing consent, and the screen copy has to survive
+   that customer's security team reading it. `NAMED_CUSTOMERS` stays
+   false until Sandip confirms which entries are cleared.
 
-   `detail` is the slot the invented stats vacated. It is deliberately
-   empty pending publicly-attributable copy per customer; the preview
-   renders without it and shows the sector alone.
+   With the flag false the dock runs the ANONYMOUS set below, which
+   uses InstaSafe's own published case-study language and discloses
+   nothing new.
+
+   ▸ WHY THE NAMED SET IS SHORTER THAN THE LOGO FOLDER ◂
+
+   Four of the nine marks that fit the tile were removed on research,
+   not on layout:
+
+     Café Coffee Day  — dropped. Outlets fell from 1,700+ (2019) to
+       ~423 (Q2 FY2026) and insolvency proceedings against Coffee Day
+       Enterprises have run through NCLT and NCLAT. Any figure printed
+       ages badly, and the mark invites a reader to search a distressed
+       company.
+     Bajaj            — dropped pending a new asset. The entity is now
+       Bajaj General Insurance Ltd; Allianz has exited. The file we
+       hold is the old Bajaj Allianz co-brand, so shipping it would
+       display a partnership that no longer exists.
+     Tata             — dropped. A group mark, not a contracting
+     Aditya Birla       entity. The customer is one company inside
+       each, so showing the group logo claims the whole conglomerate.
+       This is the biggest overclaim in the set. Name the actual
+       subsidiary if the contract allows it, then re-add.
+
+   Facts are dated and sourced deliberately: an undated scale number
+   silently becomes wrong. Each says "an environment this size trusted
+   us" without claiming anything about the deployment we cannot
+   substantiate. Nothing here describes what InstaSafe did for them.
+
+   ▸ ASPECT RATIO IS LAYOUT DATA, NOT CONTENT ◂
+   `ar` is the measured viewBox ratio and never renders. It picks which
+   marks survive a square-ish tile and flags the portrait one; the
+   wordmarks running to 6.9:1 stay in IzLogoMarquee, built for that
+   shape.
    ============================================================ */
+
+/** Flip ONLY with signed logo-use consent for every entry in NAMED. */
+const NAMED_CUSTOMERS = false;
 
 interface Brand {
   name: string;
-  /** file in /public/logos/customers, without the .svg */
-  file: string;
+  /** file in /public/logos/customers, without the .svg — named set only */
+  file?: string;
   sector: string;
   /** measured width/height of the source viewBox — drives tile fit */
-  ar: number;
-  /** awaiting approved, publicly-available copy. No invented figures. */
+  ar?: number;
+  /** anonymous set only: short tile code. Written out rather than
+      derived, because slicing the sector clipped it to "LOGISTI" and
+      "MANUFA" in a 34px content box. */
+  code?: string;
+  /** one dated, publicly-verifiable scale fact */
   detail?: string;
+  /** shown under the fact, so the claim can be traced */
+  source?: string;
   href: string;
 }
 
-const LOGOS: Brand[] = [
-  { name: "Tata", file: "tata", ar: 1.14, sector: "Conglomerate", href: "/case-studies" },
-  { name: "NHPC", file: "nhpc", ar: 1.74, sector: "Power · PSU", href: "/case-studies" },
-  { name: "Aditya Birla Group", file: "aditya-birla", ar: 1.81, sector: "Conglomerate", href: "/case-studies" },
-  { name: "Haldiram's", file: "haldirams", ar: 1.88, sector: "FMCG", href: "/case-studies" },
-  { name: "Allcargo Logistics", file: "allcargo", ar: 1.9, sector: "Logistics", href: "/case-studies" },
-  { name: "Pidilite", file: "pidilite", ar: 1.98, sector: "Manufacturing", href: "/case-studies" },
-  { name: "Café Coffee Day", file: "cafe-coffee-day", ar: 0.69, sector: "Retail · F&B", href: "/case-studies" },
-  { name: "Bajaj General Insurance", file: "bajaj-allianz", ar: 2.39, sector: "Insurance", href: "/case-studies" },
-  { name: "Jana Small Finance Bank", file: "jana-bank", ar: 2.49, sector: "Banking · BFSI", href: "/case-studies" },
+/* Cleared for display today: sector-anonymous, in the same language as
+   the published case studies. No logo, no company name. */
+const ANONYMOUS: Brand[] = [
+  {
+    name: "A leading private sector bank",
+    sector: "Banking · BFSI",
+    code: "BFSI",
+    detail: "Over 250 branches across North, West and South India.",
+    href: "/case-studies",
+  },
+  {
+    name: "A national air express and cargo operator",
+    sector: "Logistics",
+    code: "LOG",
+    detail: "Operating across 500 districts.",
+    href: "/case-studies",
+  },
+  {
+    name: "An Indian manufacturing group",
+    sector: "Manufacturing",
+    code: "MFG",
+    detail: "Publicly listed, multi-plant operations.",
+    href: "/case-studies",
+  },
+  {
+    name: "A central public sector undertaking",
+    sector: "Power · PSU",
+    code: "PSU",
+    detail: "Government-majority, multi-state generation estate.",
+    href: "/case-studies",
+  },
 ];
+
+/* Researched and corrected, but NOT cleared for publication. Every
+   figure is dated because scale numbers go stale silently. */
+const NAMED: Brand[] = [
+  {
+    name: "NHPC",
+    file: "nhpc",
+    ar: 1.74,
+    sector: "Power · PSU",
+    detail: "8,332.9 MW installed capacity; Government of India holds 70.95%.",
+    source: "October 2025",
+    href: "/case-studies",
+  },
+  {
+    name: "Haldiram's",
+    file: "haldirams",
+    ar: 1.88,
+    sector: "FMCG",
+    detail: "₹12,800 crore revenue. Founded 1937 in Bikaner.",
+    source: "FY24",
+    href: "/case-studies",
+  },
+  {
+    /* Do NOT reintroduce ECU Worldwide or "180 countries" copy: the
+       international supply-chain business demerged into Allcargo Global
+       Ltd on 1 November 2025. Headcount is also misleading — the 557
+       figure is the listed holding entity, not the operating footprint. */
+    name: "Allcargo Logistics",
+    file: "allcargo",
+    ar: 1.9,
+    sector: "Logistics",
+    detail: "~₹16,000 crore revenue. Founded 1993, headquartered in Mumbai.",
+    source: "FY2025",
+    href: "/case-studies",
+  },
+  {
+    /* The only one of the set already publicly linked to InstaSafe by a
+       third party — a 2016 CIO Choice listing. Ten years stale, but
+       public, which makes it the safest name to lead with. */
+    name: "Pidilite",
+    file: "pidilite",
+    ar: 1.98,
+    sector: "Manufacturing",
+    detail: "₹13,094 crore revenue. Maker of Fevicol, M-Seal and Dr. Fixit.",
+    source: "FY2025",
+    href: "/case-studies",
+  },
+  {
+    name: "Jana Small Finance Bank",
+    file: "jana-bank",
+    ar: 2.49,
+    sector: "Banking · BFSI",
+    detail: "783 branches across 25 states and union territories.",
+    source: "December 2025",
+    href: "/case-studies",
+  },
+];
+
+const LOGOS: Brand[] = NAMED_CUSTOMERS ? NAMED : ANONYMOUS;
 
 const IcHeart = (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -93,15 +210,24 @@ function DockIcon({ mouseX, item, on, onHover, reduced }: { mouseX: MotionValue<
       onClick={() => (window.location.href = item.href)}
       aria-label={item.name}
     >
-      {/* `data-tall` marks a PORTRAIT mark. `object-fit: contain` fits
+      {/* `data-tall` marks a PORTRAIT mark: `object-fit: contain` fits
           the constraining axis, so a wide wordmark is capped by width
-          and lands ~16px tall while Café Coffee Day — the one mark
-          taller than it is wide — is capped by HEIGHT and filled the
-          tile at 45px, roughly three times its neighbours' optical
-          mass. The cap in walloflove.css puts it back on their scale. */}
-      <span className="logo" data-tall={item.ar < 1 || undefined}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/logos/customers/${item.file}.svg`} alt="" aria-hidden="true" loading="lazy" />
+          and lands ~16px tall while a taller-than-wide mark is capped
+          by HEIGHT and fills the tile, at roughly three times its
+          neighbours' optical mass. The cap in walloflove.css fixes it.
+
+          With no `file` the entry is anonymous, so the tile carries the
+          SECTOR instead — there is no mark to show and inventing a
+          monogram for an unnamed company would be a fake logo. */}
+      <span className="logo" data-tall={(item.ar ?? 1) < 1 || undefined}>
+        {item.file ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={`/logos/customers/${item.file}.svg`} alt="" aria-hidden="true" loading="lazy" />
+        ) : (
+          <span className="wol-anon" aria-hidden="true">
+            {item.code}
+          </span>
+        )}
       </span>
       <AnimatePresence>
         {on && (
@@ -146,20 +272,34 @@ export function WallOfLove() {
               <i />
               <i />
             </span>
-            <span className="wt">{cur.name.toLowerCase()}.app</span>
+            <span className="wt">{cur.sector.split(" · ")[0].toLowerCase()}.log</span>
           </div>
           <div className="wol-body" key={active}>
-            <span className="wol-logo-lg" data-tall={cur.ar < 1 || undefined}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/logos/customers/${cur.file}.svg`} alt={cur.name} loading="lazy" />
-            </span>
+            {cur.file && (
+              <span className="wol-logo-lg" data-tall={(cur.ar ?? 1) < 1 || undefined}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/logos/customers/${cur.file}.svg`} alt={cur.name} loading="lazy" />
+              </span>
+            )}
             <span className="wol-name">{cur.name}</span>
             <span className="wol-sector">{cur.sector}</span>
-            {/* The stats row that sat here carried invented figures. It
-                renders only when there is real, attributable copy to
-                put in it — an empty row beats a made-up one. */}
-            {cur.detail && <p className="wol-detail">{cur.detail}</p>}
-            <span className="wol-badge">{IcShield} Protected by InstaSafe ZTNA</span>
+            {/* The stats row that sat here carried invented figures. A
+                fact renders only with its AS-OF DATE beside it: an
+                undated scale number does not stay true, it just stops
+                being checkable. */}
+            {cur.detail && (
+              <p className="wol-detail">
+                {cur.detail}
+                {cur.source && <span className="wol-asof">as of {cur.source}</span>}
+              </p>
+            )}
+            {/* Deliberately NOT "Protected by InstaSafe ZTNA" next to a
+                named third party — that is a claim about their security
+                posture, and it is exactly the sentence their security
+                team would object to. The rating is ours to cite. */}
+            <a className="wol-badge" href="https://www.gartner.com/reviews/market/zero-trust-network-access/vendor/instasafe" target="_blank" rel="noopener noreferrer">
+              {IcShield} 4.7 on Gartner Peer Insights · 13 reviews
+            </a>
           </div>
         </div>
 

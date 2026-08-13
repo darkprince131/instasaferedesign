@@ -65,13 +65,46 @@
   line-height: 1.55;
   color: var(--tx-dim);
 }
+/* the as-of date sits on its own line in mono — a scale figure without
+   one is not checkable, and running it inline reads as part of the claim */
+.wol-asof {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+}
+
+/* Anonymous tile: sector type, not a monogram. A letter in a plate
+   looks like a logo, and drawing a logo for a company we are not
+   naming is the one thing this state exists to avoid. */
+.wol-anon {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.25;
+  color: var(--tx-dim);
+}
 .wol-name { font-family: var(--disp); font-weight: 500; font-size: var(--fs-h3); color: var(--tx); margin-top: 18px; letter-spacing: -0.01em; }
 .wol-sector { font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--tx-mute); margin-top: 6px; }
 .wol-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
 .wol-stat { font-family: var(--mono); font-size: var(--fs-label); color: var(--tx-dim); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 6px 13px; background: var(--bg-2); }
 .wol-stat b { color: var(--orange); font-weight: 600; }
-.wol-badge { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--allow); }
-.wol-badge svg { width: 14px; height: 14px; }
+/* `.wol a.wol-badge` — `.iz a { color: inherit }` is (0,1,1) and beats
+   a bare class, so the link needs the parent to keep its colour. */
+.wol .wol-badge,
+.wol a.wol-badge {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 22px;
+  font-family: var(--mono); font-size: var(--fs-mono-xs); color: var(--tx-dim);
+  border-bottom: 1px solid var(--line-strong); padding-bottom: 2px;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.wol a.wol-badge:hover { color: var(--orange); border-bottom-color: var(--orange); }
+.wol a.wol-badge:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+.wol-badge svg { width: 14px; height: 14px; color: var(--allow); }
 
 /* ---- floating dock ---- */
 .wol-dock {
