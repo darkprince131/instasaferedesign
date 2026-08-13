@@ -122,10 +122,22 @@ function Card({ item, clone }: { item: Integration; clone?: boolean }) {
   );
 }
 
-export function IzIntegrationGrid() {
+/* ▸ COPY IS INJECTABLE (2026-08-13) ▸
+   The homepage frames this as "here is what SSO is". The SSO page
+   reaches the same wall having already made that argument three
+   times, so it needs the wall to answer a different question — which
+   applications, and where is the full list. Same logos, same marquee,
+   different question above it. Omit `copy` and the homepage renders
+   exactly as before. */
+export function IzIntegrationGrid({
+  copy,
+}: {
+  copy?: React.ReactNode;
+}) {
   return (
     <div className="izig">
-      <div className="izig-copy">
+      <div className="izig-copy">{copy ?? (
+        <>
         <span className="iz-ey">Single sign-on</span>
         <h2 className="iz-h2">
           One login in. <em>One action out.</em>
@@ -158,6 +170,8 @@ export function IzIntegrationGrid() {
         <a href="/solutions/idam-single-sign-on" className="izig-cta">
           Explore SSO {Arrow}
         </a>
+        </>
+      )}
       </div>
 
       <div className="izig-wall" aria-label="Applications InstaSafe signs users into">

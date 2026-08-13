@@ -14,6 +14,11 @@ import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { SsoLogin } from "@/components/izoutcomes/artifacts/SsoLogin";
 import { OneLoginRace } from "./OneLoginRace";
 import { SsoWindowStack } from "@/components/izpages/sso/SsoWindowStack";
+import { SsoProtocolSlider } from "@/components/izpages/sso/SsoProtocolSlider";
+import { IzAgentCards } from "@/components/izpages/pro/IzAgentCards";
+import { AggregateStack } from "@/components/home2/AggregateStack";
+import { IzIntegrationGrid } from "@/components/home2/IzIntegrationGrid";
+import type { AgentCard } from "@/components/izpages/pro/sections.config";
 import { SsoFlowDiagram } from "./SsoFlowDiagram";
 import { PasswordFatigueIz } from "./PasswordFatigueIz";
 import { SsoHeroCells, SsoHeroScene } from "./SsoScenes";
@@ -63,16 +68,38 @@ const PROBLEMS = [
   },
 ];
 
-const INCLUDED = [
-  { t: "One dashboard", d: "Tiles for provisioned apps only; entitlement is the interface." },
-  { t: "Standard protocols", d: "SAML 2.0, OAuth, OpenID Connect — IdP- and SP-initiated. Act as IdP or federate with yours." },
-  { t: "MFA at the door", d: "The single login carries the strong factors — 6 methods, per-group profiles." },
-  { t: "Device binding", d: "Optionally require an approved device even with perfect credentials." },
-  { t: "Instant offboard", d: "One disable action ends portal, apps, and sessions." },
-  { t: "Full trail", d: "Login time, result, device, location — logged, reportable, SIEM-exportable." },
+/* The three control claims, as animated cards on the 00an shell.
+   Tone is not decoration — it is the verdict each mock reaches, and
+   the wash under the card is tinted to match it. */
+const SSO_CARDS: AgentCard[] = [
+  {
+    id: "mfa",
+    title: ["MFA at the door,", "not a second door"],
+    body: "The single login carries the strong factors — 6 methods, and which ones are required is decided by the group.",
+    mock: "mfa",
+    tone: "allow",
+    aria:
+      "A sign-in that collects multi-factor authentication on the same screen, with the required factors chosen by the group the user belongs to.",
+  },
+  {
+    id: "bind",
+    title: ["The password was right.", "The laptop was not."],
+    body: "Optionally require an approved device even with perfect credentials.",
+    mock: "bind",
+    tone: "deny",
+    aria: "A sign-in with valid credentials refused because the device is not bound to the user.",
+  },
+  {
+    id: "offboard",
+    title: ["One revoke,", "everything goes dark"],
+    body: "One action removes a leaver from every application, every device and every session already open.",
+    mock: "offboard",
+    tone: "warn",
+    fade: true,
+    aria:
+      "An administrator revoking access once, removing four applications and closing two live sessions immediately.",
+  },
 ];
-
-const INTEGRATIONS = ["O365", "Zoho", "Salesforce", "GitLab", "Atlassian", "Zimbra", "any SAML/OAuth/OIDC app"];
 
 
 const FAQ: QA[] = [
@@ -305,28 +332,82 @@ export function SsoOrange() {
         </div>
       </section>
 
-      {/* ---------------- WHAT YOU GET ---------------- */}
-      <section className="iz-section iz-sec--cells">
+      {/* ---------------- WHAT SSO INCLUDES ----------------
+          This was a grid of six equal cells, which made "SAML 2.0,
+          OAuth, OpenID Connect" exactly as prominent as "one
+          dashboard" — and the protocol line is the most load-bearing
+          fact on the page for the reader who is actually evaluating.
+          The six are now shown at the size each deserves: protocols
+          as a track you can find your own entry in, the three control
+          claims as animated cards that show the beat rather than
+          asserting it, and the trail as the aggregate deck. "One
+          dashboard" is the window stack immediately below. */}
+      <section className="iz-section iz-sec--cells" id="included">
         <div className="iz-wrap">
           <div className="iz-reveal iz-headblock">
             <span className="iz-ey">What you get</span>
             <h2 className="iz-h2">What SSO includes.</h2>
+            <p className="iz-lead">
+              One login is the surface. Underneath it are the protocols your estate already speaks, the checks that
+              login carries, and the record it leaves behind.
+            </p>
           </div>
-          <div className="iz-reveal iz-cellgrid cols-3">
-            {INCLUDED.map((f, i) => (
-              <div key={f.t} className="iz-gridcell">
-                <span className="iz-kicker">{String(i + 1).padStart(2, "0")}</span>
-                <h3>{f.t}</h3>
-                <p>{f.d}</p>
-              </div>
-            ))}
+          <div className="iz-reveal iz-block-top">
+            <SsoProtocolSlider />
           </div>
-          <div className="izsso-integrations iz-reveal iz-block-top">
-            {INTEGRATIONS.map((n) => (
-              <span key={n} className="iz-chip">
-                {n}
-              </span>
-            ))}
+        </div>
+      </section>
+
+      {/* ---------------- THE THREE CONTROL CLAIMS (00an) ----------------
+          MFA, device binding and offboarding are each a claim that is
+          easy to write and hard to believe, so each one gets the
+          hover-played mock instead of a sentence. The washes are not
+          decoration: mint says something was verified, pink says
+          something was refused, peach says the product is acting. */}
+      <IzAgentCards
+        className="izsso-cards"
+        items={SSO_CARDS}
+        head={
+          <>
+            <h2 className="izac-title">
+              The single login carries the <mark>strong factors</mark>.
+            </h2>
+            <p className="izac-sub">
+              Hover any card to watch it happen. Nothing here needs a second portal, a second password, or a ticket
+              queue.
+            </p>
+          </>
+        }
+      />
+
+      {/* ---------------- FULL TRAIL ----------------
+          Deliberately NOT the live activity feed (00l). A streaming
+          event list already appears elsewhere in the system and a
+          second one here would read as the same component twice. The
+          claim on this page is not "watch it happen live", it is
+          "it was all written down and you can report on it" — which
+          is what the aggregate deck says. */}
+      <section className="iz-section iz-sec--open" id="full-trail">
+        <div className="iz-wrap">
+          {/* Two columns, because the deck is a fixed 560px card and a
+              1200px wrap left it stranded against 640px of nothing. */}
+          <div className="izsso-trail iz-reveal">
+            <div className="iz-headblock">
+              <span className="iz-ey">Full trail</span>
+              <h2 className="iz-h2">
+                Login time, result, device, location — <em>written down</em>.
+              </h2>
+              <p className="iz-lead">
+                Every authentication through the portal is an event, and every event rolls up. Reportable in the
+                console, exportable to your SIEM in the format it already ingests.
+              </p>
+              <ul className="izsso-trailfacts">
+                <li>Who signed in, from which device, in which country</li>
+                <li>What was allowed, what was refused, and on which rule</li>
+                <li>Which applications a person actually opened last quarter</li>
+              </ul>
+            </div>
+            <AggregateStack href="/solutions/idam-reporting-and-analytics" />
           </div>
         </div>
       </section>
@@ -355,6 +436,54 @@ export function SsoOrange() {
           </div>
           <div className="iz-reveal">
             <SsoWindowStack />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- WHICH APPLICATIONS ----------------
+          The homepage SSO wall, reused. Same marquee of real logos,
+          but the question above it changes: the homepage asks "what is
+          SSO", and a reader who has got this far already knows. What
+          they want now is whether their own application is on the
+          list, so the copy answers that and the CTA goes to the full
+          set of application pages rather than back to an SSO explainer. */}
+      <section className="iz-section" id="applications">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <IzIntegrationGrid
+              copy={
+                <>
+                  <span className="iz-ey">Which applications</span>
+                  <h2 className="iz-h2">
+                    If it speaks SAML, <em>it is already on the list</em>.
+                  </h2>
+                  <p className="izig-body">
+                    The logos moving alongside are the ones we are asked about most, not the limit of what we support.
+                    Support is a protocol question: anything speaking SAML 2.0, OAuth or OpenID Connect can sit behind
+                    this login, which in practice is over 800 business applications.
+                  </p>
+                  <p className="izig-body">
+                    The ones with their own integration page are simply the ones where setup has a wrinkle worth
+                    writing down — a non-standard assertion, a desktop client, a legacy console that never learned
+                    SAML at all.
+                  </p>
+                  <ul className="izig-facts">
+                    <li>
+                      <b>800+</b> SAML, OAuth and OIDC applications
+                    </li>
+                    <li>
+                      <b>3</b> protocols cover almost all of them
+                    </li>
+                    <li>
+                      <b>1</b> login in front of every one
+                    </li>
+                  </ul>
+                  <a href="/solutions/idam-authentication-protocols" className="izig-cta">
+                    Every supported application <Arrow />
+                  </a>
+                </>
+              }
+            />
           </div>
         </div>
       </section>

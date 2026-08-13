@@ -15,6 +15,10 @@ import "@/components/izpages/sso/oneloginrace.css";
 import "@/components/izpages/sso/ssoflowdiagram.css";
 import "@/components/izpages/sso/passwordfatigue.css";
 import "@/components/izpages/sso/ssowindowstack.css";
+import "@/components/izpages/sso/ssoprotocolslider.css";
+import "@/components/izpages/pro/sections.css";
+import "@/components/home2/aggregatestack.css";
+import "@/components/home2/izintegrationgrid.css";
 import { SsoOrange } from "@/components/izpages/sso/SsoOrange";
 import type { Metadata } from "next";
 

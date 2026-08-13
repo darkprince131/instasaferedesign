@@ -722,6 +722,19 @@
   text-align: center;
 }
 
+/* The body line sits between title and mock and eats into the gap the
+   flex column would otherwise give it, so the card does not grow taller
+   than its siblings just for carrying a sentence. */
+.izac-cardbody {
+  margin: calc(var(--sp-6) * -0.5) 0 0;
+  max-width: 34ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-align: center;
+  text-wrap: pretty;
+}
+
 .izac-stage {
   display: grid;
   place-items: center;
@@ -816,4 +829,381 @@
   .izac-wash {
     transition: none;
   }
+}
+
+/* ============================================================
+   6. THE SSO TRIO — MFA at the door · Device binding · Instant offboard
+
+   Same contract as everything above: declared inside `.is-live`, so
+   hover-out REMOVES the animation and the element snaps to its
+   natural state. Which means the natural state of every element here
+   is its FINISHED state — the tray is open, the chips are lit, the
+   tiles are already dark. That is what makes the reduced-motion and
+   touch stills correct without a single extra rule.
+
+   One shared duration so the three cards feel like one family.
+   ============================================================ */
+
+.izm-mfa,
+.izm-bind,
+.izm-off {
+  --izmd: 3500ms;
+}
+
+/* --- the scripted cursor (not the real pointer) --- */
+.izm-cur {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  width: 13px;
+  height: 13px;
+  color: var(--tx);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.izm-cur svg {
+  width: 13px;
+  height: 13px;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.25));
+}
+/* the dark tooltip pill that rides with it */
+.izm-cur i {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  padding: 2px 6px;
+  border-radius: var(--r-xs);
+  background: var(--tx);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+/* --- 6a. MockMfaDoor · THE URL NEVER CHANGES --- */
+
+/* the email typing itself in, done as a width reveal over real text
+   rather than a JS character loop */
+.izm-typed { position: relative; }
+.izm-type {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  font-style: normal;
+}
+.izm-type::before {
+  content: "anita.r@acme.in";
+}
+.izm-tray {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+  padding-top: var(--sp-2);
+  border-top: 1px dashed var(--line);
+}
+.izm-group {
+  align-self: flex-start;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+}
+.izm-chips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+.izm-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+  min-width: 0;
+}
+.izm-chip svg { width: 10px; height: 10px; flex: none; }
+.izm-chip.on {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--accent);
+}
+.izm-chip.off {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line);
+  opacity: 0.45;
+  outline: 1px dashed var(--line-strong);
+  outline-offset: -1px;
+}
+.izm-chiptick { margin-left: auto; }
+.izm-trayfoot {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+
+.is-live .izm-mfa .izm-type { animation: izm-typein 400ms steps(16, end) 300ms both; }
+.is-live .izm-mfa .izm-mask--fill { animation: izm-fadein 250ms var(--ease-out) 700ms both; }
+.is-live .izm-mfa .izm-btn--press { animation: izm-tap 300ms var(--ease) 1000ms both; }
+.is-live .izm-mfa .izm-tray { animation: izm-trayup 420ms var(--ease-out) 1300ms both; }
+.is-live .izm-mfa .izm-group { animation: izm-fadein 320ms var(--ease-out) 1800ms both; }
+.is-live .izm-mfa .izm-chip {
+  animation: izm-chipwake 380ms var(--ease-out) both;
+  animation-delay: calc(2200ms + var(--i) * 40ms);
+}
+.is-live .izm-mfa .izm-trayfoot { animation: izm-fadein 320ms var(--ease-out) 2400ms both; }
+.is-live .izm-mfa .izm-chip:nth-child(2) .izm-chiptick { animation: izm-pop 300ms var(--ease-out) 2800ms both; }
+.is-live .izm-mfa .izm-chip:nth-child(4) .izm-chiptick { animation: izm-pop 300ms var(--ease-out) 2950ms both; }
+.is-live .izm-mfa .izm-late { animation: izm-pop 380ms var(--ease-out) 3200ms both; }
+.is-live .izm-mfa .izm-cur--mfa { animation: izm-cur-mfa var(--izmd) var(--ease) both; }
+
+/* --- 6b. MockBind · right password, wrong machine --- */
+
+.izm-ok { color: var(--allow); flex: none; }
+.izm-valid {
+  align-self: flex-end;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--allow);
+}
+.izm-btn--turnsbad { background: var(--deny); color: #fff; }
+.izm-devrow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 4px var(--sp-2);
+  border-radius: var(--r-xs);
+  background: color-mix(in srgb, var(--deny) 8%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--deny) 30%, transparent);
+  font-size: var(--fs-3xs);
+  min-width: 0;
+}
+.izm-devrow svg { width: 12px; height: 12px; flex: none; color: var(--tx-dim); }
+.izm-devrow b {
+  font-family: var(--mono);
+  font-weight: 400;
+  color: var(--tx);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izm-devrow em {
+  margin-left: auto;
+  font-style: normal;
+  font-family: var(--mono);
+  color: var(--deny);
+  flex: none;
+}
+.izm-bound {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: var(--sp-2);
+  border-top: 1px dashed var(--line);
+}
+.izm-boundh {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+.izm-boundrow {
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+  opacity: 0.6;
+}
+
+.is-live .izm-bind .izm-type { animation: izm-typein 400ms steps(16, end) 300ms both; }
+.is-live .izm-bind .izm-mask--fill { animation: izm-fadein 250ms var(--ease-out) 700ms both; }
+.is-live .izm-bind .izm-ok { animation: izm-pop 300ms var(--ease-out) 1000ms both; }
+.is-live .izm-bind .izm-ok--2 { animation-delay: 1150ms; }
+.is-live .izm-bind .izm-valid { animation: izm-fadein 300ms var(--ease-out) 1200ms both; }
+.is-live .izm-bind .izm-btn--turnsbad { animation: izm-goesbad 900ms var(--ease) 1500ms both; }
+.is-live .izm-bind .izm-devrow { animation: izm-trayup 400ms var(--ease-out) 1900ms both; }
+.is-live .izm-bind .izm-body { animation: izm-shake 320ms var(--ease) 2200ms both; }
+.is-live .izm-bind .izm-cur--bind { animation: izm-cur-bind var(--izmd) var(--ease) both; }
+.is-live .izm-bind .izm-cur--bind i { animation: izm-fadein 260ms var(--ease-out) 2500ms both; }
+.is-live .izm-bind .izm-bound { animation: izm-fadein 420ms var(--ease-out) 3000ms both; }
+
+/* --- 6c. MockOffboard · one action, everything dark --- */
+
+.izm-person--admin { align-items: center; }
+.izm-status { margin-left: auto; position: relative; display: grid; }
+.izm-status span {
+  grid-area: 1 / 1;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  white-space: nowrap;
+}
+.izm-status-on {
+  background: color-mix(in srgb, var(--allow) 14%, transparent);
+  color: var(--allow);
+  opacity: 0;
+}
+.izm-status-off {
+  background: var(--surface-2);
+  color: var(--tx-mute);
+}
+.izm-apps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+/* removal is ABSENCE, not alarm — dashed and dim, never red */
+.izm-app {
+  padding: 5px 2px;
+  border-radius: var(--r-xs);
+  border: 1px dashed var(--line-strong);
+  background: none;
+  color: var(--tx-mute);
+  opacity: 0.45;
+  font-size: var(--fs-3xs);
+  text-align: center;
+}
+.izm-sessions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+}
+.izm-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); flex: none; }
+.izm-count { position: relative; display: inline-grid; font-weight: 400; }
+.izm-count span { grid-area: 1 / 1; opacity: 0; }
+.izm-count span:last-child { opacity: 1; }
+.izm-btn--revoke { background: var(--deny); color: #fff; }
+.izm-stamp {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-mute);
+  line-height: 1.35;
+}
+
+.is-live .izm-off .izm-btn--revoke { animation: izm-revoke 800ms var(--ease) both; }
+.is-live .izm-off .izm-app {
+  animation: izm-goesdark 420ms var(--ease-out) both;
+  animation-delay: calc(900ms + var(--i) * 120ms);
+}
+.is-live .izm-off .izm-pulse { animation: izm-pulse 500ms var(--ease) 3 both; }
+.is-live .izm-off .izm-count span:nth-child(1) { animation: izm-tick 200ms linear 1500ms both; }
+.is-live .izm-off .izm-count span:nth-child(2) { animation: izm-tick 200ms linear 1700ms both; }
+.is-live .izm-off .izm-count span:nth-child(3) { animation: izm-fadein 200ms linear 1900ms both; }
+.is-live .izm-off .izm-status-on { animation: izm-flipout 300ms var(--ease) 2000ms both; }
+.is-live .izm-off .izm-status-off { animation: izm-fadein 300ms var(--ease) 2150ms both; }
+.is-live .izm-off .izm-stamp { animation: izm-fadein 400ms var(--ease-out) 2400ms both; }
+.is-live .izm-off .izm-cur--off { animation: izm-cur-off var(--izmd) var(--ease) both; }
+
+/* --- shared keyframes for the trio --- */
+@keyframes izm-typein { from { width: 0; } to { width: 100%; } }
+@keyframes izm-fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes izm-tap {
+  0%, 100% { transform: none; filter: none; }
+  40%, 60% { transform: scale(0.97); filter: brightness(0.85); }
+}
+@keyframes izm-trayup {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes izm-chipwake {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes izm-goesbad {
+  0%, 70% { background: var(--tx); }
+  100% { background: var(--deny); }
+}
+@keyframes izm-shake {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+@keyframes izm-revoke {
+  0%, 55% { background: none; color: var(--deny); box-shadow: inset 0 0 0 1px var(--deny); }
+  75% { transform: scale(0.97); }
+  100% { background: var(--deny); color: #fff; box-shadow: none; transform: none; }
+}
+@keyframes izm-goesdark {
+  from {
+    opacity: 1;
+    border-style: solid;
+    border-color: var(--line);
+    background: var(--surface-2);
+    color: var(--tx);
+  }
+  to { opacity: 0.45; }
+}
+@keyframes izm-pulse {
+  0%, 100% { background: var(--allow); transform: scale(1); }
+  50% { background: var(--allow); transform: scale(1.5); }
+}
+@keyframes izm-tick { 0%, 90% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes izm-flipout { from { opacity: 1; } to { opacity: 0; } }
+
+/* The scripted routes, in % of the mock box. Every waypoint below is
+   a MEASURED target centre, not an estimate — the first pass guessed
+   and put the cursor 4-10 points under the field it was supposed to
+   be clicking, which on a 307px mock is the difference between
+   clicking a field and clicking the gap beneath it. Re-measure if a
+   mock gains or loses a row. */
+@keyframes izm-cur-mfa {
+  0%   { left: 6%; top: 96%; opacity: 0; }
+  6%   { left: 14%; top: 86%; opacity: 1; }
+  9%   { left: 31.8%; top: 26.5%; }   /* email field, 0.3s */
+  19%  { left: 31.8%; top: 26.5%; }
+  23%  { left: 20%; top: 36.3%; }     /* password, 0.7s */
+  27%  { left: 20%; top: 36.3%; }
+  30%  { left: 31.8%; top: 46.4%; }   /* sign in, 1.0s */
+  40%  { left: 31.8%; top: 46.4%; }
+  62%  { left: 36%; top: 62%; }       /* the tray it opened */
+  86%  { left: 40%; top: 77.2%; opacity: 1; }
+  100% { left: 46%; top: 90%; opacity: 0; }
+}
+@keyframes izm-cur-bind {
+  0%   { left: 6%; top: 96%; opacity: 0; }
+  6%   { left: 14%; top: 86%; opacity: 1; }
+  9%   { left: 31.8%; top: 26.7%; }   /* email field, 0.3s */
+  19%  { left: 31.8%; top: 26.7%; }
+  23%  { left: 20%; top: 36.5%; }     /* password, 0.7s */
+  38%  { left: 20%; top: 36.5%; }
+  43%  { left: 31.8%; top: 54.5%; }   /* sign in, 1.5s */
+  95%  { left: 31.8%; top: 54.5%; opacity: 1; }
+  100% { left: 31.8%; top: 54.5%; opacity: 0; }
+}
+@keyframes izm-cur-off {
+  0%   { left: 8%; top: 96%; opacity: 0; }
+  5%   { left: 16%; top: 88%; opacity: 1; }
+  17%  { left: 31.8%; top: 76.9%; }   /* revoke access, 0.6s */
+  34%  { left: 31.8%; top: 76.9%; }
+  50%  { left: 34%; top: 65.7%; }     /* the sessions it just closed */
+  92%  { left: 34%; top: 65.7%; opacity: 1; }
+  100% { left: 36%; top: 72%; opacity: 0; }
+}
+
+/* the offboard card's wash settles from peach to grey, which is the
+   only card-level beat in the set — hence the modifier on the card */
+.izac-card.t-fade.is-live .izac-wash { animation: izm-desat 600ms var(--ease) 3000ms both; }
+@keyframes izm-desat { from { opacity: 1; } to { opacity: 0.25; filter: grayscale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* nothing to switch off — every element's resting state is already
+     the final frame, which is the point of the contract above */
+  .is-live .izm-mfa *,
+  .is-live .izm-bind *,
+  .is-live .izm-off *,
+  .izac-card.t-fade.is-live .izac-wash {
+    animation: none !important;
+  }
+  .izm-cur { display: none; }
 }

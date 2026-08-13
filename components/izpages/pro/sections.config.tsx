@@ -41,6 +41,12 @@ export type AgentCard = {
   mock: MockKey;
   /** which way the card's wash leans — matches the mock's verdict */
   tone: "allow" | "deny" | "warn";
+  /** optional body line under the title, when the title cannot carry the point alone */
+  body?: string;
+  /** the wash desaturates at the end of the animation (offboarding only) */
+  fade?: boolean;
+  /** one sentence describing the outcome, for anyone who never sees the motion */
+  aria?: string;
 };
 
 export const CARDS = {

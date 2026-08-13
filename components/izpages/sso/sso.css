@@ -205,3 +205,48 @@
 @media (max-width: 719px) {
   #password-problem { display: none; }
 }
+
+/* ============================================================
+   FULL TRAIL — copy left, aggregate deck right.
+   The deck is a fixed 560px card; on its own in a 1200px wrap it
+   sat against 640px of empty page. Pairing it with the copy is the
+   fix, not shrinking the card.
+   ============================================================ */
+.izsso-trail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 560px;
+  gap: var(--sp-10);
+  align-items: center;
+  min-width: 0;
+}
+.izsso-trail .iz-headblock { margin: 0; }
+.izsso-trailfacts {
+  margin: var(--sp-5) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--sp-2);
+}
+.izsso-trailfacts li {
+  position: relative;
+  padding-left: var(--sp-5);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.izsso-trailfacts li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 8px;
+  height: 1px;
+  background: var(--accent);
+}
+
+@media (max-width: 1080px) {
+  .izsso-trail {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-8);
+  }
+}
