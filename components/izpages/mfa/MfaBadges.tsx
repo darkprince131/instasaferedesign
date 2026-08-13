@@ -1,85 +1,84 @@
 /* ============================================================
-   MfaBadges — two cards of outline seals.
+   MfaBadges — two hover-lift decks (00r's mechanism, new cargo).
 
-   ▸ ONE DRAWING LANGUAGE, TWO SUBJECTS ◂
-   The reference is a set of compliance seals drawn as thin outlines:
-   a 100-unit box, a 1.5px accent stroke, no fills, the name set in
-   mono INSIDE the frame rather than captioned under it, and a broken
-   arc riding outside two of them. That last detail is what stops
-   three circles reading as three buttons.
+   ▸ WHY THESE ARE DECKS NOW ◂
+   They were two flat lists of seals. A list says "here are three
+   things"; a DECK says "here are three things and there are more
+   underneath", which is the truer statement in both cases — three
+   directory protocols standing in front of an estate of applications,
+   and three frameworks standing in front of a compliance programme.
+   The 00r isometric stack already carries exactly that meaning on the
+   SSO page, so it is reused rather than reinvented: same tilted
+   plane, same lift on hover, same transform-only motion.
 
-   The same language then has to carry a completely different subject
-   — the directory protocols — because the two cards sit side by side
-   and a seal next to a logo would read as two unrelated components.
-   So ADFS, LDAP and Kerberos get seals too, and each one is
-   distinguished by a MARK that says something about the protocol
-   rather than by a different frame:
+   ▸ THE ORDER IS ILLUSTRATION THEN TEXT ◂
+   Deck on top, words underneath, in both cards — the order 00r uses.
+   A reader meets the picture, forms a question, and the copy answers
+   it. Reversed, the copy answers a question nobody has asked yet.
 
-     ADFS      a federation arrow crossing the boundary
-     LDAP      a directory tree, because that is literally what it is
-     Kerberos  three heads, one gate — the ticket-granting triangle
+   ▸ WHAT IS PRINTED ON THE SCREENS ◂
+   Left card: real applications, because the claim is about YOUR
+   estate. ADFS carries the Microsoft stack it federates, LDAP carries
+   the things that read groups from a directory of record, Kerberos
+   carries what a domain login already opens. Naming them is the
+   difference between "we support LDAP" and "the app you are thinking
+   of is on this card".
 
-   ▸ WHY OUTLINE AND NOT THE REAL LOGOS ◂
-   GDPR, ISO 27001 and SOC 2 all have trademarked marks with usage
-   rules, and SOC 2 in particular is an AICPA report type rather than
-   a certification you display a badge for. A drawn outline naming
-   the standard states the fact without borrowing a mark we have no
-   licence to place. It is also the only way the three sit together
-   at one weight — the real marks are three different colours, three
-   different aspect ratios and two of them carry their own wordmark.
+   Right card: the outline seals. Drawn rather than the real marks —
+   GDPR, ISO 27001 and SOC 2 are all trademarked with usage rules, SOC
+   2 is an AICPA report type rather than a badge you display, and the
+   three real marks are three colours and two aspect ratios that would
+   never sit together at one weight.
    ============================================================ */
 
-const BOX = {
+const SEAL = {
   viewBox: "0 0 100 100",
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.6,
+  strokeWidth: 1.8,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
   "aria-hidden": true,
 };
 
-/* The broken arc that rides outside a seal. Not decoration — it is
-   what makes the frame read as a stamp rather than a plain ring, and
-   it is why the reference's GDPR and SOC 2 look like seals while its
-   ISO square looks like a label. */
-function Arc({ from = -35, to = 120, r = 45 }: { from?: number; to?: number; r?: number }) {
+/* Every trigonometric result below is rounded. These coordinates are
+   computed during render, so they are computed twice — once in Node
+   for the HTML and once in the browser on hydration — and the two
+   engines stringify the last bits of a double differently. Left raw,
+   React reports a hydration mismatch and refuses to patch the tree. */
+const round = (n: number) => Math.round(n * 100) / 100;
+
+/* The broken arc that rides outside a seal. It is what makes a frame
+   read as a stamp rather than a plain ring. */
+function Arc({ from, to, r = 45 }: { from: number; to: number; r?: number }) {
   const p = (deg: number) => {
     const a = (deg * Math.PI) / 180;
     return [round(50 + r * Math.cos(a)), round(50 + r * Math.sin(a))];
   };
   const [x1, y1] = p(from);
   const [x2, y2] = p(to);
-  const large = Math.abs(to - from) > 180 ? 1 : 0;
-  return <path className="mfb-arc" d={`M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2}`} />;
+  return <path className="mfb-arc" d={`M${x1} ${y1} A${r} ${r} 0 ${Math.abs(to - from) > 180 ? 1 : 0} 1 ${x2} ${y2}`} />;
 }
 
-/* ▸ EVERY TRIGONOMETRIC RESULT IS ROUNDED ▸
-   Not tidiness — correctness. These coordinates are computed during
-   render, so they are computed twice: once in Node for the HTML and
-   once in the browser on hydration. The two engines stringify the
-   last bits of a double differently — 26.61731409782016 on the
-   server against 26.617314097820163 in the browser — and React
-   reports that as a hydration mismatch and refuses to patch the
-   tree. Two decimals is far finer than a 100-unit box can show and
-   it makes both sides produce the same string. */
-const round = (n: number) => Math.round(n * 100) / 100;
-
-/* One five-point star, drawn once and rotated into a ring. */
 const STAR = "M0 -4.2 1.24 -1.3 4.0 -1.3 1.7 0.5 2.6 3.4 0 1.7 -2.6 3.4 -1.7 0.5 -4.0 -1.3 -1.24 -1.3Z";
 
 function Gdpr() {
   return (
-    <svg {...BOX} className="mfb-svg">
-      <Arc from={-120} to={100} r={45} />
+    <svg {...SEAL} className="mfb-svg">
+      <Arc from={-120} to={100} />
       <circle cx="50" cy="50" r="37" />
       {Array.from({ length: 12 }, (_, i) => {
         const a = (i * 30 - 90) * (Math.PI / 180);
-        const x = round(50 + 27 * Math.cos(a));
-        const y = round(50 + 27 * Math.sin(a));
-        return <path key={i} className="mfb-fill" d={STAR} transform={`translate(${x} ${y})`} />;
+        return (
+          <path
+            key={i}
+            className="mfb-fill"
+            d={STAR}
+            transform={`translate(${round(50 + 27 * Math.cos(a))} ${round(50 + 27 * Math.sin(a))})`}
+          />
+        );
       })}
-      <text className="mfb-t" x="50" y="54">
+      <text className="mfb-t" x="50" y="55">
         GDPR
       </text>
     </svg>
@@ -88,14 +87,10 @@ function Gdpr() {
 
 function Iso() {
   return (
-    <svg {...BOX} className="mfb-svg">
+    <svg {...SEAL} className="mfb-svg">
       <rect x="17" y="17" width="66" height="66" rx="10" />
-      {/* The diagonal is the reference's own device for the square seal
-          — it stops a plain rounded rectangle reading as a card. It
-          descends left-to-right, as the reference does, and that is
-          not arbitrary: it leaves the lower-left triangle empty, which
-          is exactly where the label plate goes. Run the other way and
-          the plate has to knock a hole in the line. */}
+      {/* the diagonal descends left-to-right so the lower-left triangle
+          stays empty — which is exactly where the label plate goes */}
       <path d="M23 23 77 77" />
       <rect className="mfb-plate" x="21" y="53" width="46" height="26" rx="4" />
       <text className="mfb-t sm" x="44" y="63">
@@ -110,8 +105,8 @@ function Iso() {
 
 function Soc2() {
   return (
-    <svg {...BOX} className="mfb-svg">
-      <Arc from={-60} to={130} r={45} />
+    <svg {...SEAL} className="mfb-svg">
+      <Arc from={-60} to={130} />
       <circle cx="50" cy="50" r="37" />
       <path d="M14 50h72" />
       <text className="mfb-t sm" x="50" y="42">
@@ -124,104 +119,89 @@ function Soc2() {
   );
 }
 
-/* ---------- the directory protocols, same language ---------- */
+const Arrow = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);
 
-function Adfs() {
-  return (
-    <svg {...BOX} className="mfb-svg">
-      <Arc from={-130} to={90} r={45} />
-      <circle cx="50" cy="50" r="37" />
-      {/* A claim crossing a trust boundary, which is all federation is.
-          The boundary is the DASHED vertical and the claim is the
-          arrow through it — drawn above the label rather than around
-          it, because the first attempt ran the boundary line straight
-          down through the word ADFS. */}
-      <path className="mfb-dash" d="M50 24v34" />
-      <path d="M32 41h36" />
-      <path d="M62 35.5l6 5.5-6 5.5" />
-      <text className="mfb-t sm" x="50" y="70">
-        ADFS
-      </text>
-    </svg>
-  );
-}
+/* ---------- what goes on each screen ---------- */
 
-function Ldap() {
-  return (
-    <svg {...BOX} className="mfb-svg">
-      <rect x="17" y="17" width="66" height="66" rx="10" />
-      {/* the tree: one root, three leaves — a directory, drawn */}
-      <path d="M50 27v9M32 45v-4a4 4 0 0 1 4-4h28a4 4 0 0 1 4 4v4" />
-      <circle cx="50" cy="25" r="3.4" />
-      <circle cx="32" cy="47" r="3.4" />
-      <circle cx="50" cy="47" r="3.4" />
-      <circle cx="68" cy="47" r="3.4" />
-      <path d="M50 36v8" />
-      <rect className="mfb-plate" x="27" y="57" width="46" height="18" rx="4" />
-      <text className="mfb-t sm" x="50" y="70">
-        LDAP
-      </text>
-    </svg>
-  );
-}
+type App = { name: string; logo: string };
+type AppScreen = { proto: string; note: string; apps: App[] };
+type SealScreen = { name: string; note: string; Art: () => React.JSX.Element };
 
-function Kerberos() {
-  return (
-    <svg {...BOX} className="mfb-svg">
-      <Arc from={-50} to={140} r={45} />
-      <circle cx="50" cy="50" r="37" />
-      {/* client, service and the ticket granter — the three-headed
-          arrangement the protocol is named after */}
-      <circle cx="50" cy="34" r="5" />
-      <circle cx="36" cy="56" r="5" />
-      <circle cx="64" cy="56" r="5" />
-      <path d="M46.6 38.2 39.4 51.8M53.4 38.2 60.6 51.8M41 56h18" />
-      {/* MEASURED: at the `sm` size this word is 51 units wide, and the
-          circle only allows 40 at the baseline it wanted. The longest
-          label in the set gets its own size rather than the ring
-          getting bigger — the six seals have to stay one family. */}
-      <text className="mfb-t xs" x="50" y="74">
-        KERBEROS
-      </text>
-    </svg>
-  );
-}
-
-type Seal = { id: string; Art: () => React.JSX.Element; label: string; note: string };
-
-const DIRECTORY: Seal[] = [
-  { id: "adfs", Art: Adfs, label: "ADFS", note: "Federate to the trust you already run" },
-  { id: "ldap", Art: Ldap, label: "LDAP", note: "Groups read from the directory of record" },
-  { id: "kerberos", Art: Kerberos, label: "Kerberos", note: "Desktop SSO carries into the portal" },
+/* front → back. The front screen is the one a reader looks at, so the
+   protocol most estates actually run goes there. */
+const PROTOCOLS: AppScreen[] = [
+  {
+    proto: "ADFS",
+    note: "Federate to the trust you already run",
+    apps: [
+      { name: "Microsoft 365", logo: "microsoft-365.svg" },
+      { name: "Teams", logo: "microsoft-teams.svg" },
+      { name: "Azure", logo: "azure.svg" },
+    ],
+  },
+  {
+    proto: "LDAP",
+    note: "Groups read from the directory of record",
+    apps: [
+      { name: "OpenLDAP", logo: "openldap.webp" },
+      { name: "Oracle", logo: "oracle.svg" },
+      { name: "VMware", logo: "vmware.svg" },
+    ],
+  },
+  {
+    proto: "Kerberos",
+    note: "Desktop SSO carries into the portal",
+    apps: [
+      { name: "Active Directory", logo: "active-directory.svg" },
+      { name: "SAP", logo: "sap.svg" },
+      { name: "ServiceNow", logo: "servicenow.svg" },
+    ],
+  },
 ];
 
-const COMPLIANCE: Seal[] = [
-  { id: "gdpr", Art: Gdpr, label: "GDPR", note: "Data-protection obligations supported" },
-  { id: "iso", Art: Iso, label: "ISO 27001", note: "Information security management" },
-  { id: "soc2", Art: Soc2, label: "SOC 2", note: "AICPA trust services criteria" },
+const FRAMEWORKS: SealScreen[] = [
+  { name: "GDPR", note: "Data-protection obligations", Art: Gdpr },
+  { name: "ISO 27001", note: "Information security management", Art: Iso },
+  { name: "SOC 2", note: "AICPA trust services criteria", Art: Soc2 },
 ];
 
-function Card({ eyebrow, title, body, seals }: { eyebrow: string; title: string; body: string; seals: Seal[] }) {
+/* ---------- the deck ---------- */
+
+function screenStyle(depth: number, count: number) {
+  const lift = count - 1 - depth; // front sits highest in the iso stack
+  return { ["--d" as string]: depth, ["--lift" as string]: lift } as React.CSSProperties;
+}
+
+function Card({
+  eyebrow,
+  title,
+  body,
+  href,
+  deck,
+}: {
+  eyebrow: string;
+  title: React.ReactNode;
+  body: string;
+  href: string;
+  deck: React.ReactNode;
+}) {
   return (
     <article className="mfb-card">
-      <div className="mfb-head">
+      <div className="mfb-stage" aria-hidden="true">
+        <div className="mfb-stack">{deck}</div>
+      </div>
+      <div className="mfb-foot">
         <span className="mfb-ey">{eyebrow}</span>
         <h3 className="mfb-h">{title}</h3>
         <p className="mfb-b">{body}</p>
+        <a className="mfb-learn" href={href}>
+          Learn more {Arrow}
+        </a>
       </div>
-      <ul className="mfb-list">
-        {seals.map((s) => (
-          <li className="mfb-item" key={s.id}>
-            <span className="mfb-seal" aria-hidden="true">
-              <s.Art />
-            </span>
-            <span className="mfb-txt">
-              <b>{s.label}</b>
-              <em>{s.note}</em>
-            </span>
-          </li>
-        ))}
-      </ul>
     </article>
   );
 }
@@ -231,15 +211,71 @@ export function MfaBadges() {
     <div className="mfb">
       <Card
         eyebrow="ADFS / LDAP apps"
-        title="The apps that authenticate against your directory."
-        body="Not everything speaks SAML. Applications wired straight into Active Directory or an LDAP server get the second factor at the directory, without being modified to understand what a factor is."
-        seals={DIRECTORY}
+        title={
+          <>
+            The apps that authenticate <em>against your directory</em>.
+          </>
+        }
+        body="Not everything speaks SAML. Applications wired straight into Active Directory or an LDAP server get the second factor at the directory — without being modified to understand what a factor is."
+        href="/platform/iam"
+        /* rendered back → front so the front screen paints last and
+           takes the highest z, exactly as 00r does */
+        deck={[...PROTOCOLS].reverse().map((s, ri) => {
+          const depth = PROTOCOLS.length - 1 - ri;
+          return (
+            <div
+              className={`mfb-screen${depth === 0 ? " front" : ""}`}
+              key={s.proto}
+              style={screenStyle(depth, PROTOCOLS.length)}
+            >
+              <div className="mfb-screen-h">
+                <span className="mfb-proto">{s.proto}</span>
+                <span className="mfb-count">{s.apps.length} apps</span>
+              </div>
+              <div className="mfb-apps">
+                {s.apps.map((a) => (
+                  <span className="mfb-app" key={a.name}>
+                    <i>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`/logos/integrations/${a.logo}`} alt="" loading="lazy" decoding="async" />
+                    </i>
+                    <b>{a.name}</b>
+                  </span>
+                ))}
+              </div>
+              <span className="mfb-screen-f">{s.note}</span>
+            </div>
+          );
+        })}
       />
+
       <Card
         eyebrow="Compliance supported"
-        title="The frameworks this evidence is asked for by."
+        title={
+          <>
+            The frameworks this evidence is <em>asked for by</em>.
+          </>
+        }
         body="MFA on every surface, with a login record per attempt, is what these three ask for in different words. The trail exports in the format your auditor already reads."
-        seals={COMPLIANCE}
+        href="/security"
+        deck={[...FRAMEWORKS].reverse().map((s, ri) => {
+          const depth = FRAMEWORKS.length - 1 - ri;
+          return (
+            <div
+              className={`mfb-screen is-seal${depth === 0 ? " front" : ""}`}
+              key={s.name}
+              style={screenStyle(depth, FRAMEWORKS.length)}
+            >
+              <span className="mfb-sealart">
+                <s.Art />
+              </span>
+              <span className="mfb-sealtxt">
+                <b>{s.name}</b>
+                <em>{s.note}</em>
+              </span>
+            </div>
+          );
+        })}
       />
     </div>
   );
