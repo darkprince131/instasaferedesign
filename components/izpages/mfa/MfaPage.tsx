@@ -12,6 +12,7 @@ import { IzSideNav } from "@/components/home2/IzSideNav";
 import { AnswerMfa } from "@/components/izanswer/AnswerMfa";
 import { MfaEngine } from "@/components/izoutcomes/artifacts/MfaEngine";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
+import { MfaMethods } from "./MfaMethods";
 import { MfaSimulator } from "@/components/v3/MfaSimulator";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
@@ -35,6 +36,7 @@ import { MfaHeroCells, MfaHeroScene } from "./MfaScenes";
 
 const ANCHORS = [
   { id: "what", label: "What is MFA", icon: Fingerprint },
+  { id: "methods", label: "The six methods", icon: Fingerprint },
   { id: "signature", label: "Try the simulator", icon: SlidersHorizontal },
   { id: "outcomes", label: "Outcomes", icon: Prohibit },
 ];
@@ -145,6 +147,28 @@ export function MfaPage() {
               { n: "3", label: "kinds of proof" },
             ]}
           />
+        </div>
+      </section>
+
+      {/* ---------------- THE SIX METHODS (00h) ----------------
+          Placed between the plain answer and the simulator on purpose.
+          The answer above says what MFA is; the simulator below opens
+          with "pick a factor". Asking a reader to pick from six things
+          they have not met yet is the wrong order, and this section is
+          what makes the pick meaningful. */}
+      <section className="mfa-sec" id="methods">
+        <div className="iz-wrap">
+          <div className="mfa-head">
+            <span className="iz-ey">Six methods</span>
+            <h2>
+              Which one is <em>yours</em>?
+            </h2>
+            <p>
+              Not a ranking. Two groups of three, split by the problem each one actually solves — getting the code to
+              the person, and making the approval hard to fake. Most organisations need one from each row.
+            </p>
+          </div>
+          <MfaMethods />
         </div>
       </section>
 

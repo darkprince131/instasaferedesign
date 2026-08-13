@@ -1,0 +1,192 @@
+/* ============================================================
+   mfamethods.css — six factors as two Q&A triptychs.
+
+   The whole sheet turns on one rule: EQUAL HEIGHT PANELS. The answers
+   were written close in length on purpose, and a single panel that
+   stretches its row undoes that work — so the panel is a grid with
+   the answer in the flexible row and the footer pinned to the
+   bottom, and the row is a plain three-column grid whose items
+   stretch. Nothing here uses flex-basis guesses.
+   ============================================================ */
+
+.mfm { display: grid; gap: var(--sp-12); min-width: 0; }
+
+.mfm-row { display: grid; gap: var(--sp-6); min-width: 0; }
+
+.mfm-rowhead { display: grid; gap: var(--sp-2); max-width: 62ch; }
+/* MEASURED: accent on the page background is 3.49:1, which fails AA
+   for text this small. The site-wide `.iz-ey` eyebrow sits at exactly
+   that ratio too, but that is an argument for not adding a second one
+   rather than for repeating it — so the row kicker is muted text
+   (6.65:1) with the accent moved into a rule beside it. It also reads
+   as hierarchy: the section eyebrow above is accent, the row kicker
+   under it is not. */
+.mfm-kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.mfm-kicker::before {
+  content: "";
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  flex: none;
+}
+.mfm-rowtitle {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  line-height: 1.2;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.mfm-rownote {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ---------- the triptych ---------- */
+.mfm-trip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-4);
+  align-items: stretch;
+  min-width: 0;
+}
+
+.mfm-panel {
+  /* icon · question · answer(flex) · footer — the 1fr row is what
+     lets three panels of slightly different copy end level */
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  min-width: 0;
+  transition: border-color var(--dur) var(--ease);
+}
+.mfm-panel:hover { border-color: var(--line-strong); }
+
+.mfm-ic {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--tx);
+}
+.mfm-ic svg { width: 26px; height: 26px; display: block; }
+/* exactly one element per icon is accent — see MfaMethodIcons.tsx */
+.mfic-hot { stroke: var(--accent); }
+.mfic-sig { opacity: 0.7; }
+
+/* ---------- the question ----------
+   Marked as speech by the rule alone. The brief is explicit that a
+   rule AND quote marks is saying it twice, and the rule wins because
+   it survives a long sentence wrapping to four lines, which a hanging
+   open-quote does not. */
+.mfm-q {
+  margin: 0;
+  padding-left: var(--sp-4);
+  border-left: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  letter-spacing: -0.006em;
+  color: var(--tx);
+  text-wrap: pretty;
+}
+
+.mfm-a {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+.mfm-a em { font-style: italic; color: var(--tx); }
+
+/* ---------- the footer ----------
+   The proof line is the detail that makes a panel read as written by
+   somebody who has run the thing, rather than by somebody describing
+   it. Monospace, muted, small, and never the same sentence as the
+   answer above it. */
+.mfm-foot {
+  display: grid;
+  gap: var(--sp-2);
+  padding-top: var(--sp-4);
+  border-top: 1px dashed var(--line);
+}
+.mfm-label {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--tx);
+}
+.mfm-proof {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- the tie line ---------- */
+.mfm-tie {
+  margin: 0;
+  padding: var(--sp-6) var(--sp-8);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h3);
+  line-height: 1.35;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  text-align: center;
+  text-wrap: balance;
+}
+.mfm-tie em { font-style: normal; color: var(--accent); }
+
+/* ============================================================
+   RESPONSIVE
+   The stack keeps the row grouping intact — reachability first, then
+   assurance — because a reader who scrolls past three panels has
+   read a category, not three unrelated features.
+   ============================================================ */
+@media (max-width: 1080px) {
+  .mfm-trip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* the odd panel out spans both columns rather than leaving a hole,
+     and its copy is short enough to read across the full width */
+  .mfm-trip > :last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+  .mfm { gap: var(--sp-10); }
+  .mfm-trip { grid-template-columns: minmax(0, 1fr); }
+  .mfm-trip > :last-child { grid-column: auto; }
+  .mfm-panel { padding: var(--sp-5); gap: var(--sp-3); }
+  .mfm-tie {
+    padding: var(--sp-5);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    text-align: left;
+  }
+}

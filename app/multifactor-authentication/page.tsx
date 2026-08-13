@@ -18,6 +18,7 @@ import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/mfa/mfa.css";
+import "@/components/izpages/mfa/mfamethods.css";
 
 /* SEO-locked: this URL carries the equity of the live page. Metadata
    is unchanged from the v3 build this replaced. */
