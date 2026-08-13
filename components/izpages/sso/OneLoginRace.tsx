@@ -21,18 +21,41 @@ import { ArrowCounterClockwise } from "@phosphor-icons/react";
    client-side in an effect.
    ============================================================ */
 
-type AppDef = { id: string; name: string };
+type AppDef = { id: string; name: string; logo: string; host: string };
 
+/* SIX REAL APPLICATIONS, and every one of them has a real mark.
+
+   These used to be "Mail · CRM · Jira · Drive · ERP · Chat" — category
+   nouns, rendered as text in a box. A category noun is exactly the kind
+   of placeholder a reader discounts: nobody logs into "CRM", they log
+   into Salesforce, and the whole argument of this race is how tedious
+   that specific act is six times over.
+
+   Anything without a mark in public/logos/integrations was swapped for
+   something that has one, rather than shipped as a lettered monogram —
+   a wall of six logos with one grey square in it reads as a bug. Jira
+   was the casualty (no jira.svg in the repo yet); GitLab took its slot. */
 const APPS: AppDef[] = [
-  { id: "mail", name: "Mail" },
-  { id: "crm", name: "CRM" },
-  { id: "jira", name: "Jira" },
-  { id: "drive", name: "Drive" },
-  { id: "erp", name: "ERP" },
-  { id: "chat", name: "Chat" },
+  { id: "gmail", name: "Gmail", logo: "gmail", host: "mail.google.com" },
+  { id: "salesforce", name: "Salesforce", logo: "salesforce", host: "acme.my.salesforce.com" },
+  { id: "gitlab", name: "GitLab", logo: "gitlab", host: "gitlab.acme.in" },
+  { id: "dropbox", name: "Dropbox", logo: "dropbox", host: "acme.dropbox.com" },
+  { id: "sap", name: "SAP", logo: "sap", host: "sap.acme.in" },
+  { id: "slack", name: "Slack", logo: "slack", host: "acme.slack.com" },
 ];
 
-const DETOUR_INDEX = 3; // Drive — the 4th app in the queue
+/* One mark, one place. Both panels render app identity through this,
+   so the left queue and the right dashboard can never drift apart. */
+function AppMark({ app, size = "md" }: { app: AppDef; size?: "sm" | "md" | "lg" }) {
+  return (
+    <span className={`olr-mark is-${size}`} aria-hidden="true">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`/logos/integrations/${app.logo}.svg`} alt="" loading="lazy" decoding="async" />
+    </span>
+  );
+}
+
+const DETOUR_INDEX = 3; // Dropbox — the 4th app in the queue
 const LEFT_STEP_MS = 1400;
 const DETOUR_EXTRA_MS = 2000;
 const RIGHT_LOGIN_MS = 2000;
@@ -217,8 +240,11 @@ export function OneLoginRace() {
               return (
                 <div key={app.id} className={`olr-tile ${state}`}>
                   <div className="olr-tile-head">
-                    <span className="olr-tile-idx">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="olr-tile-name">{app.name}</span>
+                    <AppMark app={app} size="sm" />
+                    <span className="olr-tile-text">
+                      <span className="olr-tile-name">{app.name}</span>
+                      <span className="olr-tile-host">{app.host}</span>
+                    </span>
                     {state === "done" && <span className="olr-tile-tick">✓</span>}
                   </div>
                   {state === "active" && (
@@ -291,21 +317,41 @@ export function OneLoginRace() {
             )}
           </div>
 
-          <div className="olr-cascade">
-            {APPS.map((app, i) => {
-              const unlocked = i < unlockedCount;
-              return (
-                <div
-                  key={app.id}
-                  className={`olr-ctile${unlocked ? " unlocked" : ""}`}
-                  style={{ transitionDelay: unlocked ? `${(i % APPS.length) * 10}ms` : "0ms" }}
-                >
-                  <span className="olr-tile-idx">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="olr-tile-name">{app.name}</span>
-                  {unlocked && <span className="olr-tile-tick">✓</span>}
-                </div>
-              );
-            })}
+          {/* THE PORTAL, not a second list.
+
+              The left column is a queue because that is what it is —
+              one thing at a time, in order. The right column was drawn
+              the same way, which quietly conceded the point: a queue of
+              six on both sides differs only in speed. It is a dashboard
+              now, and the six tiles arrive together rather than in
+              turn, because "all of them at once" is the actual claim. */}
+          <div className="olr-portal">
+            <div className="olr-portal-bar">
+              <span className="olr-portal-me">AJ</span>
+              <span className="olr-portal-t">
+                <b>Alen Joseph</b>
+                <em>portal.acme.in</em>
+              </span>
+              <span className={`olr-portal-n${unlockedCount ? " on" : ""}`}>
+                {unlockedCount}/{APPS.length} open
+              </span>
+            </div>
+            <div className="olr-cascade">
+              {APPS.map((app, i) => {
+                const unlocked = i < unlockedCount;
+                return (
+                  <div
+                    key={app.id}
+                    className={`olr-ctile${unlocked ? " unlocked" : ""}`}
+                    style={{ transitionDelay: unlocked ? `${(i % APPS.length) * 10}ms` : "0ms" }}
+                  >
+                    <AppMark app={app} />
+                    <span className="olr-tile-name">{app.name}</span>
+                    {unlocked && <span className="olr-tile-tick">✓</span>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="olr-finish">{rightDone && <span className="olr-chip allow final">DONE — {RIGHT_FINAL_LABEL}</span>}</div>

@@ -12,7 +12,6 @@ import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
 import { AnswerSso } from "@/components/izanswer/AnswerSso";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { SsoLogin } from "@/components/izoutcomes/artifacts/SsoLogin";
-import { OneLoginRace } from "./OneLoginRace";
 import { SsoWindowStack } from "@/components/izpages/sso/SsoWindowStack";
 import { SsoProtocolSlider } from "@/components/izpages/sso/SsoProtocolSlider";
 import { IzAgentCards } from "@/components/izpages/pro/IzAgentCards";
@@ -34,11 +33,9 @@ import { SsoHeroCells, SsoHeroScene } from "./SsoScenes";
    - The ONE signature interactive is PasswordFatigueIz, placed at
      fold 2 where a scroller is already holding the question "why
      does password sprawl actually hurt?"
-   - OneLoginRace is demoted to an opt-in teaser — a static stat
-     comparison (01:47 vs 0:09) behind a real <button>; the component
-     only mounts (and therefore only starts its animation clock) after
-     that click. Nothing needed to understand or buy the page requires
-     triggering it.
+   - OneLoginRace has moved to its own page. What is left here is the
+     still frame — 01:47 vs 0:09 — and a link. Nothing needed to
+     understand or buy this page runs an animation clock.
    - Section variants alternate (railed → band → railed → open →
      cells → railed → open → band) so no two adjacent sections read
      the same, per the anti-monotony brief.
@@ -128,7 +125,6 @@ const FAQ: QA[] = [
 export function SsoOrange() {
   const [theme, setTheme] = useState<Theme>("paper");
   const [system, setSystem] = useState<DesignSystem>("orange");
-  const [raceStarted, setRaceStarted] = useState(false);
 
   // theme bootstrap — identical pattern to Home2 (key = is-theme)
   useEffect(() => {
@@ -307,27 +303,36 @@ export function SsoOrange() {
               Six app logins, timed side by side — with a password-reset detour thrown in for realism.
             </p>
           </div>
+          {/* THE RACE MOVED OUT (2026-08-14).
+
+              It used to mount here behind a "Watch it run" button. The
+              button was the right call — a 13-second looping animation
+              does not belong unasked on the page that has to explain
+              SSO in the first fold — but "behind a button, on a page
+              about something else" is a bad home for the one asset here
+              somebody might actually send a colleague. It has its own
+              page now, and this stays as the still frame that earns the
+              click: the two numbers, and nothing moving. */}
           <div className="iz-reveal">
-            {raceStarted ? (
-              <OneLoginRace />
-            ) : (
-              <div className="iz-gridcell izsso-race-still">
-                <div className="izsso-race-row">
-                  <div className="izsso-race-stat">
-                    <span className="izsso-race-label">Without SSO</span>
-                    <span className="izsso-race-num deny">01:47</span>
-                  </div>
-                  <span className="izsso-race-vs">vs</span>
-                  <div className="izsso-race-stat">
-                    <span className="izsso-race-label">With InstaSafe</span>
-                    <span className="izsso-race-num allow">0:09</span>
-                  </div>
+            <div className="iz-gridcell izsso-race-still">
+              <div className="izsso-race-row">
+                <div className="izsso-race-stat">
+                  <span className="izsso-race-label">Without SSO</span>
+                  <span className="izsso-race-num deny">01:47</span>
                 </div>
-                <button type="button" className="iz-btn iz-btn-pri izsso-race-btn" onClick={() => setRaceStarted(true)}>
-                  Watch it run <Arrow />
-                </button>
+                <span className="izsso-race-vs">vs</span>
+                <div className="izsso-race-stat">
+                  <span className="izsso-race-label">With InstaSafe</span>
+                  <span className="izsso-race-num allow">0:09</span>
+                </div>
               </div>
-            )}
+              <a
+                className="iz-btn iz-btn-pri izsso-race-btn"
+                href="/zero-trust-features/single-sign-on/login-race"
+              >
+                Watch it run <Arrow />
+              </a>
+            </div>
           </div>
         </div>
       </section>

@@ -1,0 +1,113 @@
+/* ============================================================
+   ssorace.css — the login-race page.
+
+   Only the parts the shared `.iz` section system does not already
+   give: the two breakdown columns, the method block, and the note
+   under the race. Everything else on this page is iz-section,
+   iz-headblock, iz-h1/h2 and iz-btn, unchanged.
+   ============================================================ */
+
+.izrace-hero { padding-bottom: var(--sp-10); }
+
+.izrace-note {
+  margin: var(--sp-5) 0 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+
+/* ---------- the two columns ----------
+   Deliberately NOT a table. A table invites the eye to compare row
+   against row, and these rows do not correspond: "1 reset" has no
+   opposite number on the right, and inventing one to fill the cell
+   would be the sort of tidy symmetry that quietly lies. */
+.izrace-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-6);
+  min-width: 0;
+}
+.izrace-col {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  min-width: 0;
+}
+.izrace-colh {
+  justify-self: start;
+  padding: 3px var(--sp-3);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+.izrace-colh.deny {
+  background: color-mix(in srgb, var(--deny) 12%, transparent);
+  color: var(--deny);
+}
+.izrace-colh.allow {
+  background: color-mix(in srgb, var(--allow) 12%, transparent);
+  color: var(--allow);
+}
+
+.izrace-list { margin: 0; display: grid; gap: var(--sp-4); }
+.izrace-item {
+  display: grid;
+  gap: 4px;
+  padding-top: var(--sp-4);
+  border-top: 1px dashed var(--line);
+  min-width: 0;
+}
+.izrace-item:first-child { padding-top: 0; border-top: 0; }
+.izrace-item dt {
+  font-family: var(--disp);
+  font-size: var(--fs-h3);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.izrace-item dd {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ---------- method ---------- */
+.izrace-method {
+  max-width: 68ch;
+  margin-inline: auto;
+  display: grid;
+  gap: var(--sp-4);
+  text-align: center;
+}
+.izrace-method p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+.izrace-method-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4) !important;
+}
+
+@media (max-width: 860px) {
+  .izrace-cols { grid-template-columns: minmax(0, 1fr); }
+  .izrace-col { padding: var(--sp-5); }
+  .izrace-method { text-align: left; }
+  .izrace-method-cta { justify-content: flex-start; }
+}

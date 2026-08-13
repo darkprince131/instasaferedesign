@@ -16,6 +16,7 @@ const BESPOKE = [
   "/zero-trust-features/device-binding",
   "/zero-trust-features/device-posture-check",
   "/zero-trust-features/single-sign-on",
+  "/zero-trust-features/single-sign-on/login-race",
   "/platform",
   "/platform/iam",
   "/solutions",
