@@ -407,6 +407,51 @@
   .whyr-matrix { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* ============================================================
+   .whyr-embed — hosting page-level sections inside a reason.
+
+   ConvergeFlow, IzDevBand, IzLogoGrid, WallOfLove and IzTabSwitch were
+   all authored as FULL-BLEED PAGE SECTIONS: they carry their own
+   `iz-railed` rails, their own `--sp-section` padding, and an
+   `.iz-wrap` that re-centres their content at 1200px with gutters.
+
+   In here they are not page sections. They sit in the 864px reason
+   column beside the sticky rail, so every one of those assumptions is
+   wrong: the vertical padding double-spaces an already-spaced list,
+   and the inner wrap adds a second set of gutters inside a column that
+   already has them, shrinking the content and leaving it visibly
+   narrower than the prose above it.
+
+   Neutralising the chrome is the whole job — nothing about the
+   components' internals is touched, so they stay correct wherever else
+   they are used.
+   ============================================================ */
+.whyr-embed {
+  margin-top: var(--sp-8);
+  min-width: 0;
+}
+.whyr-embed > .izdb,
+.whyr-embed > .izlg,
+.whyr-embed > .izts {
+  padding-block: 0;
+  background: none;
+}
+/* the rails are drawn against the PAGE gutters; inside a column they
+   would run through the content rather than beside it */
+.whyr-embed > .iz-railed::before,
+.whyr-embed > .iz-railed::after { display: none; }
+
+.whyr-embed .iz-wrap {
+  max-width: none;
+  padding-inline: 0;
+  margin-inline: 0;
+}
+
+/* One column of frameworks, not two: reason 04 moved the Indian
+   regulators into the tab block above, so the matrix carries only the
+   global list and a 2-up grid would leave half of it empty. */
+.whyr-matrix--single { grid-template-columns: minmax(0, 1fr); }
+
 @media (prefers-reduced-motion: reduce) {
   .whyr-rail a,
   .whyr-cell { transition: none; }

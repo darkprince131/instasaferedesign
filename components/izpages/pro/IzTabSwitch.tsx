@@ -43,7 +43,7 @@ import { IzJson } from "@/components/home2/IzPanel";
    re-tokenised on every click.
    ============================================================ */
 
-type Tab = {
+export type IzTabSwitchTab = {
   id: string;
   label: string;
   Icon: Icon;
@@ -57,7 +57,7 @@ type Tab = {
 
 /* ---------- console variant content ---------- */
 
-const CONSOLE_TABS: Tab[] = [
+const CONSOLE_TABS: IzTabSwitchTab[] = [
   {
     id: "posture",
     label: "Device posture",
@@ -153,7 +153,7 @@ const CONSOLE_TABS: Tab[] = [
 
 /* ---------- resource variant content ---------- */
 
-const RESOURCE_TABS: Tab[] = [
+const RESOURCE_TABS: IzTabSwitchTab[] = [
   {
     id: "case",
     label: "Case study",
@@ -211,10 +211,39 @@ function Story({ tone }: { tone: "a" | "b" | "c" }) {
   );
 }
 
-export function IzTabSwitch({ variant = "console" }: { variant?: "console" | "resource" }) {
+/* ============================================================
+   CONTENT IS INJECTABLE (2026-08-13).
+
+   Both tab sets and both headers used to be hardcoded, so the layout
+   could only ever say the two things it was born saying. The
+   frameworks reason on /why-instasafe-zero-trust needs the same
+   mechanism carrying three Indian regulators, so `tabs` and `head`
+   are props now. Omit them and every existing caller — the lab, and
+   anything using the console/resource skins — renders exactly as
+   before.
+
+   Passing `head` also drops the default console header, which is the
+   point as much as the copy: it carries a "Star 2.4k" GitHub-style
+   vanity count and a /docs link that does not resolve on this site.
+   Neither belongs on a page about regulators.
+   ============================================================ */
+export function IzTabSwitch({
+  variant = "console",
+  tabs: tabsProp,
+  head: headProp,
+  initial,
+}: {
+  variant?: "console" | "resource";
+  /** override the tab set; defaults to the variant's built-in content */
+  tabs?: IzTabSwitchTab[];
+  /** replace the header block entirely */
+  head?: React.ReactNode;
+  /** which tab opens; defaults to the variant's own choice */
+  initial?: number;
+}) {
   const isConsole = variant === "console";
-  const tabs = isConsole ? CONSOLE_TABS : RESOURCE_TABS;
-  const [tab, setTab] = useState(isConsole ? 1 : 2);
+  const tabs = tabsProp ?? (isConsole ? CONSOLE_TABS : RESOURCE_TABS);
+  const [tab, setTab] = useState(initial ?? (isConsole ? 1 : 2));
   const [outcome, setOutcome] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -231,7 +260,7 @@ export function IzTabSwitch({ variant = "console" }: { variant?: "console" | "re
 
   const active = tabs[tab];
 
-  const head = isConsole ? (
+  const head = headProp ?? (isConsole ? (
     <>
       <span className="izts-star">
         <Star weight="fill" aria-hidden="true" />
@@ -258,7 +287,7 @@ export function IzTabSwitch({ variant = "console" }: { variant?: "console" | "re
     <h2 className="izts-title">
       Learn more about <mark>controlling access</mark> and <mark>proving it</mark>
     </h2>
-  );
+  ));
 
   return (
     <section className={`izts izts--${variant} iz-railed`}>

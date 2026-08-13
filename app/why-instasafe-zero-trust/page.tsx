@@ -14,6 +14,13 @@ import "@/components/home2/iznewblocks.css";
 import "@/components/home2/izpagekit.css";
 import "@/components/home2/izvpnztna.css";
 import "@/components/home2/izlogomarquee.css";
+/* the four blocks embedded in the reasons — 00u, 00aj, 00ap, 00ao,
+   plus the wall of quotes that closes reason 03 */
+import "@/components/home2/convergeflow.css";
+import "@/components/home2/izdevband.css";
+import "@/components/home2/walloflove.css";
+import "@/components/izpages/pro/tabswitch.css";
+import "@/components/izpages/pro/blocks.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/why/why.css";

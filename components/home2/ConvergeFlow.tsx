@@ -18,6 +18,32 @@ const ROWS = [
   { label: "Networks", marks: 3 },
 ];
 
+/* ============================================================
+   WHAT CONVERGES IS CONFIGURABLE, AND IT MATTERS.
+
+   The defaults below say everything "meets at InstaSafe" — true for
+   the consolidation story this was drawn for, and flatly wrong next to
+   a privacy argument, where the whole claim is that your traffic never
+   reaches us. Reused as-is on /why-instasafe-zero-trust it would have
+   made reason 01 argue against itself in a single section.
+
+   So the copy and the two node labels are props. A caller that means
+   "SIGNALS converge, traffic does not" says so, and the same drawing
+   carries the opposite point without a second component.
+   ============================================================ */
+export type ConvergeFlowProps = {
+  kicker?: string;
+  /** the accented clause is passed separately so it stays an <em> */
+  title?: string;
+  titleEm?: string;
+  lead?: string;
+  /** label under the core ellipse */
+  coreLabel?: string;
+  /** heading on the right-hand panel */
+  outLabel?: string;
+  cta?: { label: string; href: string };
+};
+
 const rowY = (i: number) => 70 + i * 92;
 const NODE = { x: 680, y: 310 };
 
@@ -34,13 +60,21 @@ const Arrow = (
   </svg>
 );
 
-export function ConvergeFlow() {
+export function ConvergeFlow({
+  kicker = "One control point",
+  title = "Everything funnels through",
+  titleEm = "one verified core",
+  lead = "People, devices, identities, apps, locations and networks all meet at InstaSafe — then flow out to one secured workspace.",
+  coreLabel = "InstaSafe ZTNA",
+  outLabel = "One secured workspace",
+  cta = { label: "Explore the platform", href: "/platform" },
+}: ConvergeFlowProps = {}) {
   return (
     <div className="cf">
       <div className="cf-head">
-        <span className="iz-ey">One control point</span>
-        <h2 className="iz-h2">Everything funnels through <em>one verified core</em>.</h2>
-        <p className="cf-lead">People, devices, identities, apps, locations and networks all meet at InstaSafe — then flow out to one secured workspace.</p>
+        <span className="iz-ey">{kicker}</span>
+        <h2 className="iz-h2">{title} <em>{titleEm}</em>.</h2>
+        <p className="cf-lead">{lead}</p>
       </div>
 
       <svg viewBox="0 0 1060 620" className="cf-svg" role="img" aria-label="Sources converging through the InstaSafe core to one secured workspace">
@@ -80,12 +114,12 @@ export function ConvergeFlow() {
           <path d="M11 20 v-6 a11 11 0 0 1 22 0 v6" fill="none" />
           <circle cx={22} cy={32} r={3.4} />
         </g>
-        <text className="cf-node-label" x={NODE.x} y={NODE.y + 132}>InstaSafe ZTNA</text>
+        <text className="cf-node-label" x={NODE.x} y={NODE.y + 132}>{coreLabel}</text>
 
         {/* right product panel */}
         <g>
           <rect className="cf-panel" x={840} y={150} width={196} height={320} rx={14} />
-          <text className="cf-panel-title" x={938} y={184}>One secured workspace</text>
+          <text className="cf-panel-title" x={938} y={184}>{outLabel}</text>
           {/* mini bars */}
           {[40, 64, 30, 80, 52, 70].map((h, i) => (
             <rect key={i} className={`cf-bar${i === 3 ? " hot" : ""}`} x={866 + i * 26} y={266 - h} width={14} height={h} rx={3} />
@@ -114,8 +148,8 @@ export function ConvergeFlow() {
         </circle>
       </svg>
 
-      <a className="cf-learn" href="/platform">
-        Explore the platform {Arrow}
+      <a className="cf-learn" href={cta.href}>
+        {cta.label} {Arrow}
       </a>
     </div>
   );

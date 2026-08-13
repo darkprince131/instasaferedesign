@@ -1,9 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, CloudArrowUp } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Bank,
+  Books,
+  ChartLine,
+  CloudArrowUp,
+  Fingerprint,
+  Presentation,
+  ShieldCheck,
+} from "@phosphor-icons/react";
 import { LogoMark } from "@/components/brand/Logo";
-import { IzLogoMarquee } from "@/components/home2/IzLogoMarquee";
+import { ConvergeFlow } from "@/components/home2/ConvergeFlow";
+import { IzDevBand } from "@/components/home2/IzDevBand";
+import { WallOfLove } from "@/components/home2/WallOfLove";
+import { IzLogoGrid } from "@/components/izpages/pro/IzLogoGrid";
+import { IzTabSwitch, type IzTabSwitchTab } from "@/components/izpages/pro/IzTabSwitch";
 import {
   CLUSTERS,
   GLOBAL_FRAMEWORKS,
@@ -140,6 +154,26 @@ function ReasonPath() {
         </div>
       </div>
 
+      {/* 00u ConvergeFlow, RETITLED — and the retitling is the whole
+          point. Its defaults say "everything funnels through one
+          verified core", which is the exact opposite of this section's
+          claim; dropped in unchanged it would have had reason 01 argue
+          against itself. What actually converges here is the DECISION —
+          identity, device, context — while the traffic it authorises
+          goes straight to the app. Same drawing, opposite argument, and
+          now the picture and the headline agree. */}
+      <div className="whyr-embed">
+        <ConvergeFlow
+          kicker="What converges"
+          title="The decisions meet here."
+          titleEm="Your traffic never does"
+          lead="Identity, device posture, location and risk are evaluated in one place, on every request. What comes out is a verdict — the session it authorises runs straight from your people to your applications."
+          coreLabel="Control plane"
+          outLabel="Your apps, direct"
+          cta={{ label: "Take the data path apart", href: "/why-instasafe/privacy-first" }}
+        />
+      </div>
+
       <blockquote className="whyr-quote">
         <span aria-hidden="true">“</span>
         We can&apos;t leak what we never carry.
@@ -189,6 +223,36 @@ function ReasonNumbers() {
         ))}
       </div>
 
+      {/* 00aj IzDevBand closes the reason. The grid above is the CLAIM
+          (every figure has a page behind it); this is the mechanism that
+          makes the figures checkable — the logs, the exports, the
+          replay. Its own stats are the two counts the grid does not
+          spend, so the reason never states a number twice.
+
+          Links are wired to routes that exist; the component's defaults
+          point at /docs/*, which this site does not have. */}
+      <div className="whyr-embed">
+        <IzDevBand
+          kicker="Checkable, not quotable"
+          title={
+            <>
+              Every number here is <mark>something you can query</mark>
+            </>
+          }
+          sub="Controls you can enumerate are only worth anything if you can pull the evidence yourself. Every decision the platform makes is logged as a typed event, exportable to the tooling you already run."
+          links={[
+            { label: "The full spec sheet", href: "/platform", Icon: Books },
+            { label: "Device checks in detail", href: "/zero-trust-features/device-posture-check", Icon: Fingerprint },
+            { label: "Control mappings", href: "/trust-center", Icon: ShieldCheck },
+            { label: "Book a demo", href: "/book-a-demo", Icon: Presentation },
+          ]}
+          stats={[
+            { value: "7", label: "SIEM formats to export to" },
+            { value: "11", label: "report types out of the box" },
+          ]}
+        />
+      </div>
+
       <aside className="whyr-aside">When a vendor won&apos;t give you numbers, ask why.</aside>
     </section>
   );
@@ -223,9 +287,27 @@ function ReasonRecord() {
         ))}
       </ol>
 
-      <div className="whyr-scale">
-        <span className="whyr-scale-h">Where that has landed</span>
-        <IzLogoMarquee />
+      {/* 00ap IzLogoGrid REPLACES the marquee that closed this reason.
+          Both are logo displays, so running them together would have
+          been the same proof twice; the grid is the stronger of the two
+          because its gaps stop it reading as a logo wall, and one cell
+          is a copy strip set into the lattice rather than a mark. */}
+      <div className="whyr-embed">
+        <IzLogoGrid
+          kicker="Where that has landed"
+          title={["The estates that", "run on it."]}
+          sub="Banks, insurers, manufacturers and IT services — the organisations whose access decisions are audited hardest. The architecture arguments above are what they bought."
+          cta={{ label: "Read the case studies", href: "/case-studies" }}
+        />
+      </div>
+
+      {/* …and the quotes, which the timeline and the lattice cannot give:
+          the people who ran the migration, in their own words. A third
+          visual language for one reason is deliberate — the section is
+          making a record argument, and a record is dates, logos AND
+          testimony. */}
+      <div className="whyr-embed">
+        <WallOfLove />
       </div>
     </section>
   );
@@ -260,6 +342,100 @@ function FrameworkList({ head, sub, items, accent }: { head: string; sub: string
   );
 }
 
+/* ---------- 00ao tab content: the three Indian regulators ----------
+   The console skin, because what an auditor wants from this section is
+   not a claim that we comply — it is the RECORD. Each tab shows the
+   evidence the platform actually emits, and the two outcomes are the
+   two things a reviewer checks: the control that applied, and the event
+   that proves it fired.
+
+   Sanitised demo payloads, same convention as the other consoles.
+   Nothing here asserts certification — the claims stay at the level of
+   "these controls map, this evidence exists", which is what the Trust
+   Center link is for. */
+const REGULATOR_TABS: IzTabSwitchTab[] = [
+  {
+    id: "dpdp",
+    label: "DPDP",
+    Icon: ShieldCheck,
+    json: {
+      outcomes: ["The control", "The evidence"],
+      payloads: [
+        `{
+  "framework": "DPDP Act 2023",
+  "principle": "purpose_limitation",
+  "control": "access_scoped_to_role",
+  "data_residency": "customer_environment",
+  "vendor_copy_of_payload": false,
+  "note": "Processing boundary stays yours"
+}`,
+        `{
+  "event": "access.granted",
+  "principal": "alen.joseph",
+  "resource": "prod-bastion",
+  "purpose": "it_operations",
+  "payload_transited_vendor": false,
+  "retained_by_instasafe": ["decision", "metadata"],
+  "time": "2026-08-13T09:14:02.588Z"
+}`,
+      ],
+    },
+  },
+  {
+    id: "rbi",
+    label: "RBI",
+    Icon: Bank,
+    json: {
+      outcomes: ["The control", "The evidence"],
+      payloads: [
+        `{
+  "framework": "RBI cyber security framework",
+  "control": "privileged_access_review",
+  "standing_privilege": false,
+  "session_recording": "enabled",
+  "mfa": "required",
+  "review_cycle_days": 90
+}`,
+        `{
+  "event": "session.recorded",
+  "principal": "contractor.42",
+  "resource": "core-banking-jump",
+  "approval": "ticket CHG-8841",
+  "expired_after_minutes": 45,
+  "recording": "session-2f9a.mp4",
+  "time": "2026-08-13T11:02:41.107Z"
+}`,
+      ],
+    },
+  },
+  {
+    id: "sebi",
+    label: "SEBI · IRDAI",
+    Icon: ChartLine,
+    json: {
+      outcomes: ["The control", "The evidence"],
+      payloads: [
+        `{
+  "frameworks": ["SEBI CSCRF", "IRDAI guidelines"],
+  "control": "segregation_of_access",
+  "market_systems": "isolated_segment",
+  "lateral_reachability": "none",
+  "log_export": ["syslog", "cef", "leef"]
+}`,
+        `{
+  "event": "access.denied",
+  "principal": "analyst.09",
+  "resource": "settlement-db",
+  "reason": "outside_entitlement",
+  "network_visible_to_principal": false,
+  "exported_to": "siem",
+  "time": "2026-08-13T14:38:55.902Z"
+}`,
+      ],
+    },
+  },
+];
+
 function ReasonFrameworks() {
   return (
     <section className="whyr-sec" id="reason-frameworks">
@@ -269,8 +445,33 @@ function ReasonFrameworks() {
         other — the combination is the part the market lacks.
       </p>
 
-      <div className="whyr-matrix">
-        <FrameworkList head="India" sub="The regulators your auditor cites" items={INDIA_FRAMEWORKS} accent />
+      {/* 00ao carries the three Indian regulators IN DEPTH, so the
+          matrix below now shows only the global column. Running both
+          would have listed DPDP, RBI and SEBI twice in one section,
+          once as a badge and once as a tab — and the badge version
+          would have been the weaker of the two.
+
+          A custom `head` is passed, which also drops the component's
+          default console header: it ships a "Star 2.4k" vanity count
+          and a /docs link this site does not have. */}
+      <div className="whyr-embed">
+        <IzTabSwitch
+          tabs={REGULATOR_TABS}
+          initial={0}
+          head={
+            <>
+              <h2 className="izts-title">
+                What your <mark>auditor</mark> actually asks for
+              </h2>
+              <p className="izts-sub">
+                Not a compliance badge — the control that applied and the event that proves it fired. Pick a regulator.
+              </p>
+            </>
+          }
+        />
+      </div>
+
+      <div className="whyr-matrix whyr-matrix--single">
         <FrameworkList head="Global" sub="The standards your board cites" items={GLOBAL_FRAMEWORKS} />
       </div>
 
