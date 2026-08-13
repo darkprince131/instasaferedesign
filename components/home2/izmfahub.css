@@ -256,46 +256,21 @@
 }
 
 /* ============================================================
-   Sticky category strip.
+   Category strip — ABOVE the stage, never pinned.
 
-   The three topic tiles are the only control for the stage, and they
-   sit UNDER it. Clicking one changed something the reader could no
-   longer see, so the strip pins to the foot of the viewport for the
-   length of the section — stage above, controls in reach, no scrolling
-   back up to re-choose.
+   This was `position: sticky; bottom: 0`: the strip detached and rode
+   the foot of the viewport for the length of the section, with the
+   stage scrolling behind it. It was solving a real problem — the
+   control sat under the thing it controlled — but a bar that follows
+   the reader down the page reads as site furniture, not as part of
+   the section, and it covered the stage on short viewports.
 
-   It needs its own ground: the stage scrolls behind it and hairline
-   text over a moving diagram is unreadable.
+   Removed on the user's call (2026-08-13). The component now renders
+   the strip BEFORE the caption and the stage, which fixes the original
+   complaint at the source: you choose, then you see what you chose,
+   in reading order. Nothing here needs to pin, so nothing does.
    ============================================================ */
 .izmfa .izmfa-groups {
-  position: sticky;
-  bottom: 0;
-  z-index: 3;
-  margin-top: var(--sp-10);
-  padding: var(--sp-6) 0 var(--sp-5);
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-}
-/* the ground has to reach the wrap's edges or the stage shows through
-   the gutters either side of the grid */
-.izmfa .izmfa-groups::before {
-  content: "";
-  position: absolute;
-  inset: 0 calc(var(--wrap-gutter) * -1);
-  z-index: -1;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-}
-
-/* Sticky only pays where the section is taller than the viewport. On a
-   short viewport the strip would pin immediately and eat the stage, and
-   the mobile branch renders cards with no tab strip at all. */
-@media (max-width: 900px), (max-height: 720px) {
-  .izmfa .izmfa-groups {
-    position: static;
-    background: none;
-    border-top: 0;
-    padding: 0;
-  }
-  .izmfa .izmfa-groups::before { display: none; }
+  margin-top: var(--sp-6);
+  margin-bottom: var(--sp-2);
 }

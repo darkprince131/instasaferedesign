@@ -36,6 +36,32 @@ import "./signalgrid.css";
 import "./izcontrolsurface.css";
 import "./izminidesktop.css";
 
+/* ---- 2026-08-13: the five blocks the user placed on this page ----
+   00g ProblemSolution · 00s UserJourney · 00c UnificationSlider ·
+   00aj IzDevBand · 00h QaTriptych. Placement rationale is on each
+   section below. */
+import { BookOpen, CalendarCheck, Certificate, Files } from "@phosphor-icons/react";
+import { ProblemSolution } from "./ProblemSolution";
+import "./problemsolution.css";
+import { UserJourney } from "./UserJourney";
+import "./userjourney.css";
+import { UnificationSlider } from "./UnificationSlider";
+import "./unification.css";
+import { IzDevBand } from "./IzDevBand";
+/* iz-backdrops.css MUST land for IzDevBand, and the reason is a real
+   trap. `.iz-inverted` is declared in TWO files and needs both:
+   iz-system.css §7 flips the token VALUES (--bg, --tx, --line …), while
+   iz-backdrops.css §5 is what actually PAINTS them
+   (`background: var(--bg); color: var(--tx)`). This page imported only
+   the first, so the band got the dark token values and then never used
+   them — it rendered transparent, inheriting paper-coloured ink, which
+   is exactly the "breaking in white" the user saw. Token flip without
+   the paint rule is a no-op. */
+import "./iz-backdrops.css";
+import "./izdevband.css";
+import { QaTriptych } from "./QaTriptych";
+import "./qatriptych.css";
+
 /* ============================================================
    InstaSafe ZTNA — "Balanced" homepage, new design language.
    Self-contained: own theme (paper default / dark toggle, localStorage is-theme),
@@ -100,26 +126,25 @@ const PILLARS = [
   { name: "See everything", desc: "Every login and every block shows up in the security tools you already use.", stat: ["7", "report formats"] },
 ];
 
-const COMPARE: Record<string, [string, string, string][]> = {
-  "vs VPN": [
-    ["What they can reach", "Your whole network", "Just the one app they need"],
-    ["Visible to attackers", "Yes — ports are open", "No — nothing to find"],
-    ["If one login is stolen", "They can roam freely", "They're stuck at one app"],
-    ["Speed", "Slower — traffic detours", "Direct, so it's fast"],
-  ],
-  "vs Zscaler": [
-    ["Your traffic goes through", "Their cloud", "Straight to your app — never us"],
-    ["Sign-in & extra checks built in", "no", "yes"],
-    ["Records sensitive sessions", "no", "yes"],
-    ["Can run in your own server room", "no", "yes"],
-  ],
-  "vs Fortinet": [
-    ["What it runs on", "A hardware box", "The cloud — nothing to rack"],
-    ["Works on Mac, Linux, iPhone", "no", "yes"],
-    ["Safe access to databases", "no", "yes"],
-    ["Adding capacity", "Buy another box", "A configuration change"],
-  ],
-};
+/* NAMED COMPETITORS REMOVED (user call, 2026-08-13).
+
+   This was a three-way toggle: "vs VPN" / "vs Zscaler" / "vs Fortinet".
+   Naming a rival on the homepage puts their brand in front of a visitor
+   who may not have been considering them, and every claim in those two
+   columns is a claim we have to keep true about someone else's product
+   as it changes. Both tabs are gone.
+
+   The toggle went with them. One tab labelled "vs VPN" is not a choice,
+   it is a button that does nothing — so the table simply IS the VPN
+   comparison now, which is the one the whole page has been building
+   toward anyway. Head-to-head competitor content belongs on the
+   comparison pages, where it can be dated and sourced. */
+const COMPARE: [string, string, string][] = [
+  ["What they can reach", "Your whole network", "Just the one app they need"],
+  ["Visible to attackers", "Yes — ports are open", "No — nothing to find"],
+  ["If one login is stolen", "They can roam freely", "They're stuck at one app"],
+  ["Speed", "Slower — traffic detours", "Direct, so it's fast"],
+];
 
 /* The three testimonials that used to live here moved into
    IzReviewWall, which owns every quote on the page now. Two copies of
@@ -136,7 +161,6 @@ const Arrow = () => (
 export function Home2() {
   const [theme, setTheme] = useState<Theme>("paper");
   const [system, setSystem] = useState<DesignSystem>("orange");
-  const [cmp, setCmp] = useState<keyof typeof COMPARE>("vs VPN");
   const [visitor, setVisitor] = useState<[string, string][]>([]);
   const posturePanelRef = useRef<HTMLDivElement>(null);
   useSectionReveals();
@@ -194,6 +218,27 @@ export function Home2() {
 
       {/* ---------------- CUSTOMER LOGOS ---------------- */}
       <IzLogoMarquee />
+
+      {/* ---------------- THE PROBLEM (00g) ----------------
+          Directly after the hero, per the user's placement: the page has
+          just made a claim, and the fastest way to earn the next scroll
+          is to name the thing the reader already lives with. The
+          component carries its own two h3s (the hand-wired half and the
+          automatic half), so this section supplies only the h2 above
+          them — heading it twice would flatten the split. */}
+      <section className="iz-section" id="problem">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <span className="iz-ey">Before and after</span>
+            <h2 className="iz-h2">
+              Access built by hand, or <em>decided for you</em>.
+            </h2>
+          </div>
+          <div className="iz-reveal iz-block-top">
+            <ProblemSolution />
+          </div>
+        </div>
+      </section>
 
       {/* ---------------- CAPABILITIES DECK ---------------- */}
       {/* rails: this block is wide and benefits from column edges */}
@@ -342,6 +387,30 @@ export function Home2() {
         </div>
       </section>
 
+      {/* ---------------- A DAY OF ACCESS (00s) ----------------
+          The flagship, and deliberately NOT next to IzAccessFlow at
+          "How it works" (user call: keep both, separate them). The two
+          answer different questions and would read as one diagram twice
+          if they sat together — IzAccessFlow traces ONE request through
+          the checks, up at fold 4; this traces ONE PERSON through a
+          working day, after the four products have been introduced, so
+          the reader already knows what each stop is. Roughly two-thirds
+          down: far enough that nothing about it echoes the earlier
+          diagram. */}
+      <section className="iz-section" id="journey">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <span className="iz-ey">A day on it</span>
+            <h2 className="iz-h2">
+              What this feels like <em>for your people</em>.
+            </h2>
+          </div>
+          <div className="iz-reveal iz-block-top">
+            <UserJourney />
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- INTEGRATIONS ---------------- */}
       {/* The stack it plugs into — identity, endpoint, cloud. Placed
           before the SSO wall on purpose: this answers "does it fit what
@@ -361,6 +430,27 @@ export function Home2() {
         </div>
       </section>
 
+      {/* ---------------- CONSOLIDATION (00c) ----------------
+          Placed immediately BEFORE the VPN comparison, because the two
+          arguments are a pair and this one has to land first: the slider
+          shows five tools collapsing into one console, then the
+          comparison shows what happens to the one that is left. Reversed,
+          the reader meets "InstaSafe vs VPN" before knowing InstaSafe is
+          more than a VPN. */}
+      <section className="iz-section" id="consolidate">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <span className="iz-ey">One console</span>
+            <h2 className="iz-h2">
+              Five tools in, <em>one way in</em> out.
+            </h2>
+          </div>
+          <div className="iz-reveal iz-block-top">
+            <UnificationSlider />
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- COMPARISON ---------------- */}
       <section className="iz-section alt iz-irail" style={{ ["--ir-a" as string]: "30%", ["--ir-b" as string]: "70%" }}>
         <div className="iz-wrap">
@@ -369,25 +459,18 @@ export function Home2() {
             <h2 className="iz-h2">
               The difference, <em>line by line</em>.
             </h2>
-            <div className="iz-cmp-toggle">
-              {Object.keys(COMPARE).map((k) => (
-                <button key={k} className={cmp === k ? "on" : ""} onClick={() => setCmp(k as keyof typeof COMPARE)}>
-                  {k}
-                </button>
-              ))}
-            </div>
           </div>
           <div className="iz-reveal">
             <table className="iz-cmp">
               <thead>
                 <tr>
                   <th>What matters</th>
-                  <th>{cmp.replace("vs ", "")}</th>
+                  <th>A traditional VPN</th>
                   <th className="ours">InstaSafe</th>
                 </tr>
               </thead>
               <tbody>
-                {COMPARE[cmp].map((row) => (
+                {COMPARE.map((row) => (
                   <tr key={row[0]}>
                     <td>{row[0]}</td>
                     <td>{row[1] === "no" ? <span className="no">✗ no</span> : row[1]}</td>
@@ -407,6 +490,43 @@ export function Home2() {
           </div>
         </div>
       </section>
+
+      {/* ---------------- PROOF BAND (00aj) ----------------
+          The dark band is a TEXTURE break as much as an argument: the
+          page has run light-alt-light-alt for eleven sections and needs
+          one hard change of ground before the closing run.
+
+          NUMBERS: the component ships illustrative defaults and its own
+          header says to wire real ones before it goes on a page. These
+          are real, and deliberately ones this page has NOT already used
+          — 25 / 144 / 202 / 0 are spent up in the stat band, so
+          restating them here would read as the page having four facts.
+          The sparkline is still a shape, not data, which is what the
+          `note` line is for; leave it until a real series is wired.
+
+          LINKS: all four resolve. The component's defaults point at
+          /docs/*, which does not exist on this site. */}
+      <IzDevBand
+        kicker="For the people who get audited"
+        title={
+          <>
+            Every decision is <mark>written down</mark>,
+            <br />
+            not taken on trust
+          </>
+        }
+        sub="Who got in, from which device, to what, and when — recorded as it happens and exportable to whatever you already run. Nothing about an access decision is ours to keep."
+        links={[
+          { label: "See the whole platform", href: "/platform", Icon: BookOpen },
+          { label: "How device checks work", href: "/zero-trust-features/device-posture-check", Icon: Certificate },
+          { label: "Guides and case studies", href: "/resource-center", Icon: Files },
+          { label: "Book a demo", href: "/book-a-demo", Icon: CalendarCheck },
+        ]}
+        stats={[
+          { value: "7", label: "ways to export your logs" },
+          { value: "11", label: "reports out of the box" },
+        ]}
+      />
 
       {/* ---------------- LIVE VISITOR ---------------- */}
       <section className="iz-section iz-irail" style={{ ["--ir-a" as string]: "55%" }}>
@@ -469,6 +589,22 @@ export function Home2() {
           </div>
           <div className="iz-reveal iz-block-top">
             <IzReviewWall />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- CLOSING Q&A (00h) ----------------
+          Last content block before the CTA, per the user's placement.
+          It earns that slot because it is the only block on the page
+          that answers the objection a reader is actually carrying by
+          now, and answering it is what makes the CTA under it clickable
+          rather than a wall.
+
+          No section heading: QaTriptych carries its own h2. */}
+      <section className="iz-section" id="questions">
+        <div className="iz-wrap">
+          <div className="iz-reveal">
+            <QaTriptych />
           </div>
         </div>
       </section>

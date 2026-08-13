@@ -1,205 +1,143 @@
 "use client";
 
-import { useId, useState } from "react";
-import { Check, X } from "@phosphor-icons/react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { LogoMark } from "@/components/brand/Logo";
 
 /* ============================================================
-   IzVpnZtnaFlow — TIER 2 SECTION  (lab 00ak)
+   IzVpnZtnaFlow — TIER 2 SECTION  (lab 00ak) — REBUILD
 
-   The `vpn-ztna` variant of the WithWithout family, specced in
-   §C.5 of the audit and modelled on the DiagramSection from
-   fingerprint.com/products/identification/.
+   "A VPN lets people onto the network.
+    InstaSafe lets them into one app."
 
-   Their structure, which is what makes it work:
-     - a segmented [Before | After] control ABOVE the scene, not
-       beside it, so the two states read as one object changing
-       rather than two things being compared
-     - an incoming cone of undifferentiated dots on the left
-     - a decision point in the middle: a "?" when it's off, the
-       product mark when it's on
-     - an outgoing cone on the right that SPLITS into a green half
-       and a red half only in the "after" state
-     - annotations that arrive with the after state (callout box,
-       node tags), so switching feels like information appearing
+   WHY THE PREVIOUS VERSION WAS THROWN AWAY
+   ----------------------------------------
+   - Two hatched wedges pointed in unrelated directions; neither
+     encoded narrowing, so the geometry said nothing.
+   - The left half was ~60% empty scatter, the right half was
+     crowded. No balance.
+   - Green "allowed" / red "blocked" dots never connected to the app
+     chips, so "allowed to reach WHAT" was never answered.
+   - Two orphan L-arrows in the bottom band pointed nowhere, and the
+     "Session"/"Verdict" chips floated with no leader to what they
+     were labelling.
+   - Worst: a red X reading "Blocked" CONTRADICTS the copy. "Blocked"
+     means the host was reachable and refused you — which is exactly
+     what a VPN plus an ACL does. Our claim is *never routable*.
 
-   Our content is the one you asked for: VPN puts everybody on the
-   same network; ZTNA gives each person only the apps their role
-   lists. The InstaSafe mark sits at the junction — absent in
-   "before", the node everything routes through in "after". That
-   single swap is what makes the diagram ours rather than generic.
+   So in this rebuild NOTHING IS EVER BLOCKED. Denied hosts simply do
+   not resolve: dashed, dimmed, "· no route". That absence is the
+   entire argument, and it is why there is no red X and no "Blocked"
+   label anywhere in this file.
 
-   Desktop runs left→right with 12 sessions and 4 apps. Mobile runs
-   top→down with 4 sessions and 3 apps — a smaller CAST, not a
-   scaled-down drawing, which is why it's a separate SVG rather than
-   a viewBox trick.
+   And because the argument is topological rather than chromatic, the
+   tab REWIRES THE LINK GRAPH instead of recolouring it:
+     vpn  — gateway fans out to all seven apps plus the rest of the
+            subnet (many-to-many)
+     ztna — gateway draws exactly one line, to the one host this
+            session is entitled to (one-to-one)
+
+   HOW IT IS DRAWN
+   ---------------
+   The link layer is an absolutely-positioned SVG under the three
+   columns, drawn from LIVE element geometry (getBoundingClientRect)
+   rather than from a fixed viewBox. That is what lets it survive the
+   900px switch to a vertical stack, font swaps, and any container
+   width — no coordinate table to re-tune. Redraw is rAF-wrapped and
+   fires on mount, mode/session change, ResizeObserver on the stage,
+   window resize, and document.fonts.ready.
+
+   THEME-AWARE (user call, 2026-08-13). The band was `.iz-inverted`,
+   i.e. always dark. It now follows the page theme like every other
+   section: light on paper, dark on dark. Not one hex is hardcoded
+   below, so this cost nothing but removing the class.
    ============================================================ */
 
-type Tone = "allow" | "deny" | "mute";
-type Dot = { x: number; y: number; r?: number; tone: Tone };
+type Mode = "vpn" | "ztna";
 
-/* Deterministic scatter — no Math.random in render, so SSR and the
-   client agree (house rule). Coordinates are in the 1200x560 viewBox. */
-const IN_DOTS: Dot[] = [
-  { x: 92, y: 118, tone: "mute" },
-  { x: 168, y: 196, tone: "mute" },
-  { x: 60, y: 268, tone: "mute" },
-  { x: 214, y: 152, tone: "mute" },
-  { x: 132, y: 330, tone: "mute" },
-  { x: 250, y: 262, tone: "mute" },
-  { x: 196, y: 372, tone: "mute" },
-  { x: 96, y: 420, tone: "mute" },
-  { x: 286, y: 200, tone: "mute" },
-  { x: 264, y: 344, tone: "mute" },
-  { x: 158, y: 452, tone: "mute" },
-  { x: 316, y: 292, tone: "mute" },
+type App = { id: string; name: string; host: string };
+
+const APPS: App[] = [
+  { id: "crm", name: "CRM", host: "crm.internal" },
+  { id: "payroll", name: "Payroll", host: "payroll.internal" },
+  { id: "repos", name: "Source repos", host: "git.internal" },
+  { id: "wiki", name: "Wiki", host: "wiki.internal" },
+  { id: "ci", name: "Build server", host: "ci.internal" },
+  { id: "files", name: "File share", host: "files.internal" },
+  { id: "db", name: "Database console", host: "db.internal" },
 ];
 
-/* Right-hand field. `tone` is the AFTER state; before, they're all mute. */
-const OUT_DOTS: Dot[] = [
-  { x: 906, y: 108, tone: "allow" },
-  { x: 984, y: 74, tone: "allow" },
-  { x: 1052, y: 132, tone: "allow" },
-  { x: 934, y: 186, tone: "allow" },
-  { x: 1024, y: 214, tone: "allow" },
-  { x: 1102, y: 92, tone: "allow" },
-  { x: 1088, y: 248, tone: "allow" },
-  { x: 878, y: 250, tone: "allow" },
-  { x: 926, y: 372, tone: "deny" },
-  { x: 1010, y: 336, tone: "deny" },
-  { x: 1084, y: 406, tone: "deny" },
-  { x: 962, y: 452, tone: "deny" },
-  { x: 1046, y: 490, tone: "deny" },
-  { x: 892, y: 470, tone: "deny" },
+type Check = { label: string; on: boolean };
+type Session = { id: string; who: string; meta: string; grant: string; checks: Check[] };
+
+/* Three deliberately different kinds of principal — an employee, a
+   third party and a machine — because "one app each" has to hold for
+   all three or it is just an employee feature. */
+const SESSIONS: Session[] = [
+  {
+    id: "s1",
+    who: "Priya R. — Finance",
+    meta: "managed laptop · corporate IdP · in-domain",
+    grant: "payroll",
+    checks: [
+      { label: "Identity", on: true },
+      { label: "Managed device", on: true },
+      { label: "Posture: 25 checks", on: true },
+      { label: "Role: Finance", on: true },
+    ],
+  },
+  {
+    id: "s2",
+    who: "Arjun M. — Contractor",
+    meta: "unmanaged laptop · guest IdP · BYOD",
+    grant: "repos",
+    checks: [
+      { label: "Identity", on: true },
+      { label: "Managed device", on: false },
+      { label: "Posture: partial", on: true },
+      { label: "Role: Contractor", on: true },
+    ],
+  },
+  {
+    id: "s3",
+    who: "build-agent-04 — Service account",
+    meta: "CI runner · certificate · headless",
+    grant: "ci",
+    checks: [
+      { label: "Certificate", on: true },
+      { label: "Managed device", on: true },
+      { label: "Posture: headless", on: true },
+      { label: "Role: Build", on: true },
+    ],
+  },
 ];
 
-const APPS = ["CRM", "Payroll", "Repos", "Wiki"];
-const APPS_SM = ["CRM", "Payroll", "Repos"];
+/* VPN mode shows the same four rows for every session on purpose: the
+   concentrator knows nothing beyond "a credential was accepted", so
+   the other three are greyed as "not evaluated" rather than failed. */
+const VPN_CHECKS: Check[] = [
+  { label: "Credential accepted", on: true },
+  { label: "Device state", on: false },
+  { label: "Posture", on: false },
+  { label: "Per-app rule", on: false },
+];
 
-function Hatches({ uid }: { uid: string }) {
-  return (
-    <defs>
-      <pattern id={`h-mute-${uid}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="7" stroke="var(--tx)" strokeWidth="1.6" opacity="0.16" />
-      </pattern>
-      <pattern id={`h-allow-${uid}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="7" stroke="var(--allow)" strokeWidth="1.6" opacity="0.42" />
-      </pattern>
-      <pattern id={`h-deny-${uid}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="7" stroke="var(--deny)" strokeWidth="1.6" opacity="0.42" />
-      </pattern>
-    </defs>
-  );
-}
+const SVG_NS = "http://www.w3.org/2000/svg";
 
-function dotFill(t: Tone, on: boolean) {
-  if (!on) return "var(--ghost)";
-  if (t === "allow") return "var(--allow)";
-  if (t === "deny") return "var(--deny)";
-  return "var(--ghost)";
-}
+/* The one breakpoint that matters: past it the stage stacks and every
+   link becomes a vertical bezier. Kept in lockstep with the same query
+   in izvpnztna.css. */
+const VERTICAL_Q = "(max-width: 900px)";
 
-/* ---------- desktop scene ---------- */
-function SceneWide({ on }: { on: boolean }) {
-  const uid = useId().replace(/:/g, "");
-  return (
-    <svg className="izvz-svg" viewBox="0 0 1200 560" role="img" aria-hidden="true">
-      <Hatches uid={uid} />
-
-      {/* incoming cone — identical in both states: the same people
-          arrive either way, which is the point */}
-      <polygon points="300,70 300,490 610,280" fill={`url(#h-mute-${uid})`} />
-
-      {/* outgoing cone — one undifferentiated field, or split in two */}
-      {on ? (
-        <>
-          <polygon points="790,280 1160,64 1160,280" fill={`url(#h-allow-${uid})`} />
-          <polygon points="790,280 1160,280 1160,496" fill={`url(#h-deny-${uid})`} />
-        </>
-      ) : (
-        <polygon points="790,280 1160,64 1160,496" fill={`url(#h-mute-${uid})`} />
-      )}
-
-      {IN_DOTS.map((d, i) => (
-        <circle key={`i${i}`} cx={d.x} cy={d.y} r={d.r ?? 9} fill="var(--ghost)" />
-      ))}
-
-      {OUT_DOTS.map((d, i) => (
-        <circle
-          key={`o${i}`}
-          className="izvz-out"
-          cx={d.x}
-          cy={d.y}
-          r={d.r ?? 9}
-          fill={dotFill(d.tone, on)}
-          style={{ ["--i" as string]: i } as React.CSSProperties}
-        />
-      ))}
-
-      {/* elbow arrows, drawn not typed */}
-      <path d="M300 520 L300 486 L344 486" fill="none" stroke="var(--tx-mute)" strokeWidth="1.5" />
-      <path d="M336 481 L346 486 L336 491" fill="none" stroke="var(--tx-mute)" strokeWidth="1.5" />
-      <path d="M600 528 L700 528 L700 500" fill="none" stroke="var(--tx-mute)" strokeWidth="1.5" />
-      <path d="M695 508 L700 498 L705 508" fill="none" stroke="var(--tx-mute)" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-/* ---------- mobile scene ----------
-   Top→down, and a smaller cast: 4 sessions, 3 apps. A reduction in
-   CONTENT, not a squeezed copy of the wide drawing. */
-function SceneTall({ on }: { on: boolean }) {
-  const uid = useId().replace(/:/g, "");
-  const inDots: Dot[] = [
-    { x: 96, y: 40, tone: "mute" },
-    { x: 190, y: 68, tone: "mute" },
-    { x: 268, y: 38, tone: "mute" },
-    { x: 148, y: 96, tone: "mute" },
-  ];
-  const outDots: Dot[] = [
-    { x: 84, y: 470, tone: "allow" },
-    { x: 150, y: 508, tone: "allow" },
-    { x: 116, y: 552, tone: "allow" },
-    { x: 258, y: 480, tone: "deny" },
-    { x: 300, y: 534, tone: "deny" },
-  ];
-  return (
-    <svg className="izvz-svg" viewBox="0 0 380 600" role="img" aria-hidden="true">
-      <Hatches uid={uid} />
-      <polygon points="40,140 340,140 190,300" fill={`url(#h-mute-${uid})`} />
-      {on ? (
-        <>
-          <polygon points="190,340 40,600 190,600" fill={`url(#h-allow-${uid})`} />
-          <polygon points="190,340 190,600 340,600" fill={`url(#h-deny-${uid})`} />
-        </>
-      ) : (
-        <polygon points="190,340 40,600 340,600" fill={`url(#h-mute-${uid})`} />
-      )}
-      {inDots.map((d, i) => (
-        <circle key={`i${i}`} cx={d.x} cy={d.y} r="9" fill="var(--ghost)" />
-      ))}
-      {outDots.map((d, i) => (
-        <circle
-          key={`o${i}`}
-          className="izvz-out"
-          cx={d.x}
-          cy={d.y}
-          r="9"
-          fill={dotFill(d.tone, on)}
-          style={{ ["--i" as string]: i } as React.CSSProperties}
-        />
-      ))}
-    </svg>
-  );
-}
+type Pt = { x: number; y: number };
 
 export function IzVpnZtnaFlow({
-  kicker = "VPN vs Zero Trust",
+  kicker = "Reachability",
   title = (
     <>
-      A VPN lets people <mark>onto the network</mark>.
+      A VPN lets people onto the network.
       <br />
-      InstaSafe lets them into <mark>one app</mark>.
+      InstaSafe lets them into <em>one app</em>.
     </>
   ),
   sub = "Same people, same devices, same day. The only thing that changes is what a session can reach once it is connected.",
@@ -208,121 +146,322 @@ export function IzVpnZtnaFlow({
   title?: React.ReactNode;
   sub?: string;
 }) {
-  const [on, setOn] = useState(false);
+  /* DEFAULT IS "ztna" — the first thing a visitor sees is our own mark
+     on the gateway, not a competitor's topology. */
+  const [mode, setMode] = useState<Mode>("ztna");
+  const [activeId, setActiveId] = useState<string>(SESSIONS[0].id);
+
+  const active = SESSIONS.find((s) => s.id === activeId) ?? SESSIONS[0];
+  const grantedApp = APPS.find((a) => a.id === active.grant) ?? APPS[0];
+  const checks = mode === "vpn" ? VPN_CHECKS : active.checks;
+
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const gateRef = useRef<HTMLDivElement | null>(null);
+  const restRef = useRef<HTMLParagraphElement | null>(null);
+  const sessionRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const appRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const rafRef = useRef<number | null>(null);
+
+  /* ---- the link layer -------------------------------------------------
+     Imperative on purpose: React owns an EMPTY <svg>, this owns its
+     children. Geometry is only knowable after layout, so re-rendering
+     paths through state would mean a second commit per frame. */
+  const draw = useCallback(() => {
+    const stage = stageRef.current;
+    const svg = svgRef.current;
+    const gateEl = gateRef.current;
+    if (!stage || !svg || !gateEl) return;
+
+    const box = stage.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+
+    svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const g = gateEl.getBoundingClientRect();
+    const gate: Pt = {
+      x: g.left - box.left + g.width / 2,
+      y: g.top - box.top + g.height / 2,
+    };
+    const vertical = window.matchMedia(VERTICAL_Q).matches;
+
+    const link = (a: Pt, b: Pt, stroke: string, w: number, op: number, dashed = false) => {
+      let d: string;
+      if (vertical) {
+        const my = (a.y + b.y) / 2;
+        d = `M${a.x},${a.y} C${a.x},${my} ${b.x},${my} ${b.x},${b.y}`;
+      } else {
+        const mx = (a.x + b.x) / 2;
+        d = `M${a.x},${a.y} C${mx},${a.y} ${mx},${b.y} ${b.x},${b.y}`;
+      }
+      const p = document.createElementNS(SVG_NS, "path");
+      p.setAttribute("d", d);
+      p.setAttribute("fill", "none");
+      p.setAttribute("stroke", stroke);
+      p.setAttribute("stroke-width", String(w));
+      p.setAttribute("stroke-linecap", "round");
+      p.setAttribute("opacity", String(op));
+      if (dashed) p.setAttribute("stroke-dasharray", "3 5");
+      svg.appendChild(p);
+    };
+
+    /* ingress — every session reaches the gateway in both models. The
+       chosen one is lit; the other two stay hairlines. */
+    SESSIONS.forEach((s) => {
+      const el = sessionRefs.current[s.id];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const from: Pt = vertical
+        ? { x: r.left - box.left + r.width / 2, y: r.bottom - box.top }
+        : { x: r.right - box.left, y: r.top - box.top + r.height / 2 };
+      const on = s.id === activeId;
+      link(
+        from,
+        gate,
+        on ? (mode === "vpn" ? "var(--deny)" : "var(--accent)") : "var(--line-strong)",
+        on ? 1.6 : 1,
+        on ? 1 : 0.45,
+      );
+    });
+
+    /* egress — this is the whole comparison. */
+    APPS.forEach((a) => {
+      const el = appRefs.current[a.id];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const to: Pt = vertical
+        ? { x: r.left - box.left + r.width / 2, y: r.top - box.top }
+        : { x: r.left - box.left, y: r.top - box.top + r.height / 2 };
+
+      if (mode === "vpn") {
+        link(gate, to, "var(--deny)", 1, 0.55);
+      } else if (a.id === active.grant) {
+        link(gate, to, "var(--accent)", 1.8, 1);
+      }
+      /* ztna + not granted => NO LINE AT ALL. Not a dimmed line, not a
+         crossed-out line. The absence is the point. */
+    });
+
+    /* vpn only: the spray into everything else on the subnet */
+    if (mode === "vpn" && restRef.current) {
+      const rr = restRef.current.getBoundingClientRect();
+      const to: Pt = vertical
+        ? { x: rr.left - box.left + rr.width / 2, y: rr.top - box.top }
+        : { x: rr.left - box.left, y: rr.top - box.top + rr.height / 2 };
+      link(gate, to, "var(--deny)", 1, 0.4, true);
+    }
+  }, [mode, activeId, active.grant]);
+
+  /* one scheduler for every trigger, so a resize storm costs one draw */
+  const schedule = useCallback(() => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      draw();
+    });
+  }, [draw]);
+
+  useEffect(() => {
+    schedule();
+
+    const stage = stageRef.current;
+    const ro = new ResizeObserver(schedule);
+    if (stage) ro.observe(stage);
+    window.addEventListener("resize", schedule);
+
+    /* Geometry moves when the webfonts land — the session rows and app
+       rows both reflow — so redraw once more after that. */
+    let alive = true;
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        if (alive) schedule();
+      });
+    }
+
+    return () => {
+      alive = false;
+      ro.disconnect();
+      window.removeEventListener("resize", schedule);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [schedule]);
 
   return (
-    <section className="izvz iz-railed">
+    <section className="izvz iz-railed" aria-labelledby="izvz-title">
       <div className="iz-wrap izvz-head">
         <span className="izvz-kicker">
           {kicker}
           <i aria-hidden="true">_</i>
         </span>
-        <h2 className="izvz-title">{title}</h2>
+        <h2 className="izvz-title" id="izvz-title">
+          {title}
+        </h2>
         <p className="izvz-sub">{sub}</p>
       </div>
 
       <div className="iz-wrap">
-        <div className="izvz-band iz-inverted">
-          {/* the control sits ABOVE the scene: one object changing,
-              not two things side by side */}
-          <div className="izvz-tabs" role="tablist" aria-label="Access model">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={!on}
-              className={`izvz-tab ${!on ? "on" : ""}`}
-              onClick={() => setOn(false)}
-            >
-              With a VPN
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={on}
-              className={`izvz-tab ${on ? "on accent" : ""}`}
-              onClick={() => setOn(true)}
-            >
-              With InstaSafe
-            </button>
+        <div className="izvz-band">
+          {/* THE control. Centred above the stage so the two states read
+              as one object changing rather than two things compared. */}
+          <div className="izvz-switch-wrap">
+            <div className="izvz-switch" role="tablist" aria-label="Access model">
+              <button
+                type="button"
+                role="tab"
+                id="izvz-tab-vpn"
+                aria-selected={mode === "vpn"}
+                aria-controls="izvz-stage"
+                className="izvz-switch-btn"
+                onClick={() => setMode("vpn")}
+              >
+                With a VPN
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="izvz-tab-ztna"
+                aria-selected={mode === "ztna"}
+                aria-controls="izvz-stage"
+                className="izvz-switch-btn"
+                onClick={() => setMode("ztna")}
+              >
+                With InstaSafe
+              </button>
+            </div>
           </div>
 
-          <div className={`izvz-stage ${on ? "on" : ""}`}>
-            {/* Everything anchored to the drawing lives inside .izvz-plot.
-                On mobile the caption and the incoming label drop into
-                normal flow BELOW it — if they were inside, the plot box
-                would grow and every percentage anchor (the gate most
-                visibly) would drift off the cone junction. */}
-            <div className="izvz-plot">
-              <div className="izvz-scene izvz-scene--wide">
-                <SceneWide on={on} />
+          {/* Restates the mode in plain words AND names the one host that
+              resolved, so screen readers hear something on a session
+              change too, not only on a mode change. */}
+          <p className="izvz-caption" aria-live="polite">
+            {mode === "vpn" ? (
+              <>
+                <b>With a VPN:</b> one credential, one tunnel, one flat network. The concentrator does not know which
+                application this session is for, so it hands over <b>the whole subnet</b> and leaves the rest to
+                firewall rules. Picking a different person changes nothing — they all land in the same place.
+              </>
+            ) : (
+              <>
+                <b>With InstaSafe:</b> identity, device and posture are checked, then the gateway resolves{" "}
+                <b>exactly one host</b> for this session — <b>{grantedApp.host}</b>. The other six are not denied at the
+                door; they never appear.
+              </>
+            )}
+          </p>
+
+          <div className="izvz-stage" id="izvz-stage" data-mode={mode} ref={stageRef}>
+            <svg className="izvz-links" ref={svgRef} aria-hidden="true" preserveAspectRatio="none" />
+
+            {/* ---------- COLUMN 1 — sessions ---------- */}
+            <div className="izvz-col">
+              <div className="izvz-col-label">
+                Incoming sessions <span aria-hidden="true">03</span>
               </div>
-              <div className="izvz-scene izvz-scene--tall">
-                <SceneTall on={on} />
-              </div>
 
-              {/* --- overlay: HTML so labels use our type tokens --- */}
-
-              <span className="izvz-gate" aria-hidden="true">
-              {on ? (
-                <span className="izvz-mark">
-                  {/* forceTheme: LogoMark auto-detects the nearest [data-theme],
-                      but `.iz-inverted` flips TOKENS without setting that
-                      attribute — so on a paper page it would pick the colour
-                      mark and put orange on an orange tile. Pin the white one. */}
-                  <LogoMark size={30} forceTheme="dark" />
-                </span>
-              ) : (
-                  <span className="izvz-q">?</span>
-                )}
-              </span>
-
-              {/* annotations that only exist in the ON state — switching
-                  should feel like information appearing */}
-              <span className="izvz-tag izvz-tag--user">Session</span>
-              <span className="izvz-tag izvz-tag--id">Verdict</span>
-
-              <span className="izvz-verdict izvz-verdict--allow">
-                <Check weight="bold" aria-hidden="true" />
-                Allowed · role-scoped
-              </span>
-              <span className="izvz-verdict izvz-verdict--deny">
-                <X weight="bold" aria-hidden="true" />
-                Blocked · not listed
-              </span>
-
-              <span className="izvz-callout">
-                Each person reaches only the applications their role lists. Everything else is not just denied — it is
-                never routable.
-              </span>
-
-              <span className="izvz-apps" aria-hidden="true">
-                {(on ? APPS : APPS_SM).map((a) => (
-                  <span key={a} className="izvz-app">
-                    {a}
-                  </span>
-                ))}
-                {!on && <span className="izvz-app izvz-app--all">…and the rest of the subnet</span>}
-              </span>
+              {SESSIONS.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className="izvz-session"
+                  aria-pressed={s.id === activeId}
+                  onClick={() => setActiveId(s.id)}
+                  ref={(el) => {
+                    sessionRefs.current[s.id] = el;
+                  }}
+                >
+                  <span className="izvz-session-who">{s.who}</span>
+                  <span className="izvz-session-meta">{s.meta}</span>
+                </button>
+              ))}
             </div>
 
-            <span className="izvz-node izvz-node--in">
-              Incoming sessions
-              <b>Staff, contractors, service accounts</b>
-            </span>
+            {/* ---------- COLUMN 2 — the gateway ---------- */}
+            <div className="izvz-col izvz-gate">
+              <div className="izvz-gate-node" ref={gateRef} data-mode={mode}>
+                {mode === "ztna" ? (
+                  /* forceTheme stays pinned even though the band is now
+                     theme-aware: the TILE under the mark is accent orange
+                     in both themes, so auto-detection would put the
+                     colour mark on a paper page — orange on orange. The
+                     white mark is the one that reads on this tile,
+                     whatever the page is doing. */
+                  <LogoMark size={36} forceTheme="dark" />
+                ) : (
+                  /* the concentrator: a ring, not a brand. Deny-tinted,
+                     never crossed out — it works, that is the problem. */
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="2.2" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="9.6" />
+                    <path d="M12 2.4v3.6M12 18v3.6M2.4 12h3.6M18 12h3.6" />
+                  </svg>
+                )}
+              </div>
 
-            <p className="izvz-caption">
-              {on
-                ? "InstaSafe checks identity, device and posture, then opens one application. Nothing else is routable."
-                : "The VPN checks a credential once and places the session on the network. Everything on it is now reachable."}
-            </p>
+              <div className="izvz-gate-name">{mode === "vpn" ? "VPN concentrator" : "InstaSafe gateway"}</div>
+
+              <div className="izvz-checks">
+                {checks.map((c) => (
+                  <div key={c.label} className={`izvz-check${c.on ? "" : " izvz-check--off"}`}>
+                    <span className="izvz-check-dot" aria-hidden="true" />
+                    {c.label}
+                    {c.on ? "" : " — not evaluated"}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ---------- COLUMN 3 — the application estate ---------- */}
+            <div className="izvz-col">
+              <div className="izvz-col-label">
+                Application estate <span aria-hidden="true">07</span>
+              </div>
+
+              {APPS.map((a) => {
+                /* three states, and none of them is "blocked":
+                   granted  — routed for this session
+                   exposed  — reachable because the network is reachable
+                   dark     — does not resolve */
+                const state = mode === "vpn" ? "exposed" : a.id === active.grant ? "granted" : "dark";
+                return (
+                  <div
+                    key={a.id}
+                    className="izvz-app"
+                    data-state={state}
+                    ref={(el) => {
+                      appRefs.current[a.id] = el;
+                    }}
+                  >
+                    <span className="izvz-app-name">{a.name}</span>
+                    <span className="izvz-app-host">{a.host}</span>
+                  </div>
+                );
+              })}
+
+              <p className="izvz-rest" ref={restRef}>
+                {mode === "vpn"
+                  ? "+ 214 further hosts on 10.0.0.0/8 — discoverable, scannable, one hop away"
+                  : "10.0.0.0/8 — no route offered, nothing to discover"}
+              </p>
+            </div>
+          </div>
+
+          <div className="izvz-legend">
+            <span>
+              <i className="izvz-key izvz-key--route" aria-hidden="true" />
+              Routed for this session
+            </span>
+            <span>
+              <i className="izvz-key izvz-key--open" aria-hidden="true" />
+              Reachable because the network is reachable
+            </span>
+            <span>
+              <i className="izvz-key izvz-key--none" aria-hidden="true" />
+              Does not resolve
+            </span>
           </div>
         </div>
-
-        {/* the external description box the reference puts under its band */}
-        <p className="izvz-external">
-          InstaSafe brokers each request against identity, device posture and policy before an application is exposed.
-          There is no network segment to land on, so there is nothing to move laterally across.
-        </p>
       </div>
     </section>
   );

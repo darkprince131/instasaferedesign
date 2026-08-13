@@ -225,10 +225,14 @@ export function QaTriptych({ nav = "icons" }: { nav?: "icons" | "none" }) {
           <div className="qa-panel">
             <div className="qa-chat" key={active}>
               <div className="qa-msg user">
-                <span className="qa-av user">DJ</span>
+                {/* Alen J. — the site's standing cast member (izUsers.tsx),
+                    the same person in the access flow, the console mocks
+                    and the journey card. One name across the site, not a
+                    different placeholder per component. */}
+                <span className="qa-av user">AJ</span>
                 <span>
                   <span className="qa-mhead">
-                    <span className="nm">Deba J.</span>
+                    <span className="nm">Alen J.</span>
                     <span className="tm">9:14 AM</span>
                   </span>
                   <span className="qa-mbody">

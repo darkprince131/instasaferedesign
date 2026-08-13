@@ -140,20 +140,26 @@ export function UserJourney() {
         {/* ---------------- COLUMN 3 — centre identity ---------------- */}
         <div className="uj-col c3">
           <div className="uj-id-card">
+            {/* Alen Joseph is the site's standing cast member — the same
+                person in IzAccessFlow, IzAppWindow, the console mocks and
+                the watermark line, defined once in izUsers.tsx. This card
+                used to be "Anita Rao" on a HOTLINKED randomuser.me photo:
+                a stranger's face, fetched from a third party at render
+                time, on our homepage. Now it is the local asset, cropped
+                to the plate by `object-fit: cover` in userjourney.css. */}
             <span className="uj-photo">
-              <span className="uj-photo-fallback" aria-hidden="true">AR</span>
+              <span className="uj-photo-fallback" aria-hidden="true">AJ</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://randomuser.me/api/portraits/women/68.jpg"
-                alt="Anita Rao"
+                src="/people/alen-joseph-256.webp"
+                alt="Alen Joseph"
                 loading="lazy"
-                referrerPolicy="no-referrer"
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
               />
               <span className="uj-status" title="Offline"><i /></span>
             </span>
-            <span className="uj-id-name">Anita Rao</span>
-            <span className="uj-id-mail">anita.r@acme.com</span>
+            <span className="uj-id-name">Alen Joseph</span>
+            <span className="uj-id-mail">alen.joseph@veno.co.in</span>
             <span className="uj-id-row">
               <span className="uj-id-ad"><Buildings weight="fill" /> AD user</span>
               <span className="uj-id-off"><i /> Offline · 2h ago</span>

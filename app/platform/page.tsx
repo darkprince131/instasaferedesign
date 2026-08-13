@@ -7,15 +7,20 @@ import "@/components/home2/iz-system.css";
 import "@/components/home2/home2.css";
 import "@/components/home2/izgrid.css";
 import "@/components/home2/iznewblocks.css";
+import "@/components/home2/izpagekit.css";
 import "@/components/home2/izpanel.css";
 import "@/components/home2/consolerow.css";
+import "@/components/home2/chatfaq.css";
+import "@/components/home2/izlogomarquee.css";
+import "@/components/home2/izsidenav.css";
 import "@/components/izoutcomes/illustrations.css";
 import "@/components/izanswer/answers.css";
 import "@/components/izpages/pro/pro.css";
-import "@/components/izpages/pro/quickscan.css";
+import "@/components/izpages/pro/platform.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/izpages/pro/consolelaptop.css";
 import "@/components/izpages/pro/trustengine.css";
+import "@/components/izpages/pro/mechanismband.css";
 import "@/components/home2/izfootergrid.css";
 
 /* SEO-locked: /platform already exists as a canonical entry in

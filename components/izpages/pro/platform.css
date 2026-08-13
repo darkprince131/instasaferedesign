@@ -1,0 +1,27 @@
+/* ============================================================
+   /platform — page-local section furniture.
+
+   Only the bits the shared kit doesn't already own: the section
+   head (eyebrow / h2 / lead) used above the two IzSpecTable
+   blocks, and the tight variant for the related rail, which sits
+   under a full section and needs less air above it than a normal
+   `.iz-section` gives.
+   ============================================================ */
+
+.izpl-head {
+  max-width: 62ch;
+  margin: 0 0 var(--sp-10);
+}
+.izpl-head .iz-h2 { margin: var(--sp-4) 0 0; }
+
+.izpl-lead {
+  margin: var(--sp-4) 0 0;
+  max-width: 58ch;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* the related rail closes the page's reading, so it hangs off the
+   section above rather than opening a new one */
+.izpl-tight { padding-top: 0; }

@@ -618,21 +618,22 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
               <span className="n">00ak</span> VPN vs ZTNA flow (WithWithout · <code>vpn-ztna</code> variant)
             </div>
             <p className="izc-sec-desc">
-              Modelled on the <code>DiagramSection</code> from fingerprint.com/products/identification/, with the
-              content specced in §C.5. Their structural moves, all kept: the segmented control sits <b>above</b> the
-              scene so the two states read as <i>one object changing</i> rather than two things compared; an incoming
-              cone of undifferentiated dots on the left; a decision point in the middle; an outgoing cone that{" "}
-              <b>splits into a green half and a red half only in the second state</b>; and annotations that arrive
-              with that state, so switching feels like information appearing rather than colours changing.
+              Rebuilt from the approved <code>zt-reach</code> prototype. The old cone drawing is gone: the wedges
+              encoded no narrowing, the verdict dots never connected to an app, and a red X reading{" "}
+              <b>&ldquo;Blocked&rdquo;</b> contradicted the copy — <i>blocked</i> means the host was reachable and
+              refused you, which is what a VPN plus an ACL does. Our claim is <b>never routable</b>.
               <br />
               <br />
-              The <b>InstaSafe mark sits at the junction</b> — a <code>?</code> when it&apos;s off, the orange node
-              everything routes through when it&apos;s on. That single swap is what makes the diagram ours rather
-              than generic. Desktop runs left→right with 12 sessions and 4 apps; mobile runs top→down with{" "}
-              <b>4 sessions and 3 apps</b> — a smaller <i>cast</i>, not a squeezed drawing, which is why it is a
-              separate SVG rather than a viewBox trick. The band is <code>.iz-inverted</code>, so no hex is hardcoded.
+              So nothing here is ever blocked. Denied hosts simply <b>do not resolve</b> — dashed, dimmed,{" "}
+              <code>· no route</code>, and with <i>no link drawn to them at all</i>. Because the argument is
+              topological rather than chromatic, the centred segmented control <b>rewires the link graph</b>: VPN fans
+              the concentrator out to all seven apps plus the rest of the subnet, InstaSafe draws exactly one line
+              from the gateway — with our mark on it — to the single host this session is entitled to. Click a session
+              in column one to re-target it. The SVG link layer is drawn from live geometry and redrawn on resize, so
+              it survives the 900px flip to a vertical stack. The band is <code>.iz-inverted</code>, so no hex is
+              hardcoded.
             </p>
-            <Spec label="<b>IzVpnZtnaFlow</b> · flip the control; narrow past 900px for the vertical cast">
+            <Spec label="<b>IzVpnZtnaFlow</b> · flip the control; click a session; narrow past 900px for the vertical stack">
               <IzVpnZtnaFlow />
             </Spec>
           </section>

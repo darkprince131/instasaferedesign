@@ -43,14 +43,22 @@
   color: var(--tx-mute); transition: border-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out);
 }
 .qa-feat .ic svg { width: 15px; height: 15px; }
-.qa-feat .ttl { font-family: var(--disp); font-weight: 500; font-size: var(--fs-lead); letter-spacing: -0.01em; color: var(--tx-dim); transition: color var(--dur) var(--ease-out); }
-.qa-feat .desc { font-size: var(--fs-sm); line-height: 1.5; color: var(--tx-mute); margin-top: 6px; transition: color var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); opacity: 0.7; }
+/* display:block on both — they are <span>s, and an inline element
+   ignores vertical margin, so the `margin-top` below was doing nothing
+   and the title ran straight into its description
+   ("Access investigationAsk in plain language…"). */
+.qa-feat .ttl { display: block; font-family: var(--disp); font-weight: 500; font-size: var(--fs-lead); letter-spacing: -0.01em; color: var(--tx-dim); transition: color var(--dur) var(--ease-out); }
+/* --tx-dim, not --tx-mute: --tx-mute measures 4.29:1 on --bg and misses
+   AA for text this size on its own, and the 0.7 opacity was taking it
+   well below 3:1. The resting state is now separated from the active
+   one by opacity alone, which stays readable either way. */
+.qa-feat .desc { display: block; font-size: var(--fs-sm); line-height: 1.5; color: var(--tx-dim); margin-top: var(--sp-2); transition: color var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); opacity: 0.92; }
 .qa-feat:hover .ttl { color: var(--tx); }
 .qa-feat:hover .desc { opacity: 1; }
 .qa-feat:hover .ic { border-color: var(--tx-mute); color: var(--tx-dim); }
 .qa-feat.on .ic { border-color: var(--orange); color: var(--orange); background: color-mix(in srgb, var(--orange) 12%, var(--surface)); }
 .qa-feat.on .ttl { color: var(--tx); }
-.qa-feat.on .desc { color: var(--tx-dim); opacity: 1; }
+.qa-feat.on .desc { color: var(--tx); opacity: 1; }
 
 /* ---- center panel ---- */
 .qa-center { display: flex; flex-direction: column; gap: 14px; }

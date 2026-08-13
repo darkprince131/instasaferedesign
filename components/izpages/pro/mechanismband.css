@@ -1,0 +1,129 @@
+/* ============================================================
+   IzMechanismBand — pre-footer banner.
+
+   A seam, not a panel: hairline top and bottom, page background,
+   no fill and no shadow. Everything that reads as "banner" here is
+   type scale and air, so it can sit directly above IzFinalCta's
+   lattice without two boxes stacking.
+   ============================================================ */
+
+/* --bg-2, not --surface: the band is a change of GROUND, so the emblem
+   has something to sit on and the lattice CTA below reads as a separate
+   object. A panel here would stack two boxes. */
+.izmb {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: var(--sp-section) 0;
+  overflow: hidden;
+}
+
+.izmb-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 80px);
+}
+
+/* ---- the emblem ---- */
+.izmb-art {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+/* The component writes width/height attributes; these override them so
+   the SVG scales with the column instead of pinning it to 400px. */
+.izmb .izmb-emblem {
+  width: clamp(200px, 26vw, 340px);
+  height: auto;
+}
+
+/* ---- copy ---- */
+.izmb-body { min-width: 0; }
+
+.izmb-ey {
+  margin: 0 0 var(--sp-4);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izmb-ey i { font-style: normal; color: var(--orange); }
+
+.izmb-h {
+  margin: 0 0 var(--sp-5);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.izmb-h em { font-style: italic; color: var(--orange); }
+
+.izmb-sub {
+  margin: 0 0 var(--sp-6);
+  max-width: 52ch;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* the five inputs, as a mono strip — words, not numbers: every figure
+   on this page is already stated once above (hub rule) */
+.izmb-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin: 0 0 var(--sp-8);
+  padding: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.izmb-meta span { display: inline-flex; align-items: center; }
+/* separator TRAILS its item rather than leading the next one — when the
+   strip wraps, a leading "·" would start the new line */
+.izmb-meta span:not(:last-child)::after {
+  content: "·";
+  margin-left: var(--sp-4);
+  color: var(--orange);
+}
+
+/* one ghost link, no button: the demand for the demo is made once,
+   in IzFinalCta directly below */
+.izmb .izmb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.04em;
+  color: var(--tx);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.izmb .izmb-link i { font-style: normal; color: var(--orange); transition: transform var(--dur-fast) var(--ease-out); }
+.izmb .izmb-link:hover { color: var(--orange); border-bottom-color: var(--orange); }
+.izmb .izmb-link:hover i { transform: translateX(3px); }
+.izmb .izmb-link:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+/* ---- tablet / phone ---- */
+@media (max-width: 900px) {
+  .izmb-wrap {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: var(--sp-10);
+  }
+  .izmb-art { justify-content: flex-start; }
+  .izmb .izmb-emblem { width: clamp(180px, 46vw, 260px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izmb .izmb-link,
+  .izmb .izmb-link i { transition: none; }
+}

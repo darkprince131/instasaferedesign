@@ -302,40 +302,23 @@ export function IzMfaHub() {
           or duplicate the page's own outer rail. */}
       <Head />
 
-      {/* All three captions and all three stage views are rendered and
-          stacked in one cell, with only the active one visible. The
-          block is therefore always as tall as its TALLEST member, so
-          switching tabs cannot change the section's height — which is
-          what was shunting the whole page every six seconds as autoplay
-          advanced. A min-height would have needed a magic number per
-          breakpoint; this needs none and can never drift out of date. */}
-      <div className="izmfa-cap">
-        {TABS.map((t, i) => (
-          <div className={i === tab ? "izmfa-capitem on" : "izmfa-capitem"} key={t.title} aria-hidden={i !== tab}>
-            <h3 className="izmfa-cap-h">{t.headline}</h3>
-            <div className="izmfa-cap-b">
-              {t.body.map((p, j) => (
-                <p key={j}>{p}</p>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* CONTROL FIRST (user call, 2026-08-13).
 
-      <div className="fh-stage izmfa-stage-stack">
-        {VIEWS.map((V, i) => (
-          <div className={i === tab ? "izmfa-panel on" : "izmfa-panel"} key={TABS[i].title} aria-hidden={i !== tab}>
-            <V />
-          </div>
-        ))}
-      </div>
+          This strip used to be the last child and was pinned with
+          `position: sticky; bottom: 0` — the stage scrolled behind it and
+          it rode the foot of the viewport for the length of the section.
+          The reason was sound (the control sat below the thing it
+          controlled, so clicking a tab changed something off-screen) but
+          the cure was worse: a bar that detaches and follows you reads as
+          site furniture, not as part of the section.
 
-      {/* Sticky, because this strip is the only way to change the stage and
-          it sits BELOW it: click a tab here and the thing that changed is
-          off-screen above. Pinned to the viewport foot for the length of
-          the section, both stay visible together.
-          `focus-within` pauses too, so a keyboard user tabbing the strip
-          gets the same hold a hovering cursor does. */}
+          Moving it ABOVE the caption and the stage fixes the original
+          problem outright — control, then what it changes, in reading
+          order — and needs no pinning at all. Same arrangement as
+          IzVpnZtnaFlow's mode switch.
+
+          `focus-within` pauses autoplay too, so a keyboard user tabbing
+          the strip gets the same hold a hovering cursor does. */}
       <div
         className="fh-groups izmfa-groups"
         role="tablist"
@@ -364,6 +347,34 @@ export function IzMfaHub() {
             <a href="/multifactor-authentication" className="learn" onClick={(e) => e.stopPropagation()}>
               Explore MFA {Arrow}
             </a>
+          </div>
+        ))}
+      </div>
+
+      {/* All three captions and all three stage views are rendered and
+          stacked in one cell, with only the active one visible. The
+          block is therefore always as tall as its TALLEST member, so
+          switching tabs cannot change the section's height — which is
+          what was shunting the whole page every six seconds as autoplay
+          advanced. A min-height would have needed a magic number per
+          breakpoint; this needs none and can never drift out of date. */}
+      <div className="izmfa-cap">
+        {TABS.map((t, i) => (
+          <div className={i === tab ? "izmfa-capitem on" : "izmfa-capitem"} key={t.title} aria-hidden={i !== tab}>
+            <h3 className="izmfa-cap-h">{t.headline}</h3>
+            <div className="izmfa-cap-b">
+              {t.body.map((p, j) => (
+                <p key={j}>{p}</p>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="fh-stage izmfa-stage-stack">
+        {VIEWS.map((V, i) => (
+          <div className={i === tab ? "izmfa-panel on" : "izmfa-panel"} key={TABS[i].title} aria-hidden={i !== tab}>
+            <V />
           </div>
         ))}
       </div>

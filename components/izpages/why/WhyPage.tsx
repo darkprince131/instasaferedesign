@@ -6,6 +6,7 @@ import { ChatFaq } from "@/components/home2/ChatFaq";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
 import { IzNav } from "@/components/home2/IzNav";
+import { IzVpnZtnaFlow } from "@/components/home2/IzVpnZtnaFlow";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
 
@@ -106,6 +107,16 @@ export function WhyPage() {
 
       {/* ---------------- THE FOUR REASONS ---------------- */}
       <WhyReasons />
+
+      {/* ---------------- THE COMPARISON ----------------
+          Storyboard row 10.0 puts 00ak IzVpnZtnaFlow directly after the
+          four reasons (rows 3.0–9.0) and before the closing blocks, with
+          `-> /compare` as its interlink. The FAQ is not in the storyboard
+          at all, so it stays last; the anchor id matches the one
+          /vpn-alternative uses for the same component. */}
+      <div id="compare">
+        <IzVpnZtnaFlow />
+      </div>
 
       {/* ---------------- FAQ ---------------- */}
       <section className="why-sec" id="faq">

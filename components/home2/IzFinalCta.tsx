@@ -24,7 +24,11 @@ const Arrow = () => (
   </svg>
 );
 
-const CORNERS = ["Verify", "Segment", "Tunnel", "Record"];
+/* The four corner tags — [ Verify ] [ Segment ] [ Tunnel ] [ Record ] —
+   were removed on the user's call (2026-08-13). They labelled nothing
+   in the panel they sat on: four bracketed words parked in the corners
+   of a CTA, competing with the headline for the only attention this
+   block gets. The lattice and the deflection field carry the texture. */
 
 /* `reveal` opts into Home2's scroll-reveal choreography, which requires
    useSectionReveals() to be mounted on the page. Pages that do not run that
@@ -35,12 +39,6 @@ export function IzFinalCta({ reveal = true }: { reveal?: boolean } = {}) {
   return (
     <section className="izcta">
       <div className="izcta-lattice" aria-hidden="true" />
-
-      {CORNERS.map((c, i) => (
-        <span key={c} className={`izcta-corner c${i + 1}`} aria-hidden="true">
-          [ {c} ]
-        </span>
-      ))}
 
       <div className="izcta-stage">
         <IzShieldField className="izcta-field" height={230} apex={0.52} spread={1.7} />
@@ -83,3 +81,4 @@ export function IzFinalCta({ reveal = true }: { reveal?: boolean } = {}) {
     </section>
   );
 }
+

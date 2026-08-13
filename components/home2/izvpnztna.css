@@ -1,12 +1,39 @@
 /* ============================================================
-   izvpnztna.css — IzVpnZtnaFlow (lab 00ak)
-   TIER 2 SECTION. All values are iz-system.css tokens.
+   izvpnztna.css — IzVpnZtnaFlow (lab 00ak) — REBUILD
+   TIER 2 SECTION. Every value is an iz-system.css token.
 
-   Written mobile-first: the tall scene and its stacked annotations
-   are the base, and the wide scene plus its absolutely-positioned
-   overlay come in at 900px. Overlay coordinates are percentages of
-   the stage, tuned to each scene's own viewBox (1200x560 wide,
-   380x600 tall) — which is why the two can't share them.
+   The prototype's --zt-* literals map on as:
+     --zt-bg/panel/panel-2 -> --bg / --surface / --surface-2
+     --zt-line/line-2      -> --line / --line-strong
+     --zt-text/muted/faint -> --tx / --tx-dim / --tx-mute
+     --zt-orange           -> --accent
+     --zt-risk             -> --deny, tints via --deny-bg
+   Nothing here hardcodes a hex, so the band renders correctly on both
+   site themes by inheritance alone.
+
+   THEME-AWARE (user call, 2026-08-13). The band used to carry
+   `.iz-inverted` and was dark on every page. It now takes the page
+   theme like any other section. The rules below did not change —
+   they were already token-only, which is the whole point of writing
+   them that way.
+
+   TRAP WORTH KEEPING — DO NOT USE var(--orange) INSIDE .iz-inverted.
+   home2.css declares `--orange: var(--accent)` on `.iz`, and a custom
+   property's var() is substituted on the element the declaration
+   matches. So --orange computes ONCE, at `.iz`, to the PAGE accent and
+   then inherits down as that literal — `.iz .iz-inverted` re-declaring
+   --accent never reaches it. That bit this component when it WAS
+   inverted (paper #f2480a instead of #ff6a2c). Accents below still
+   read var(--accent) directly; any future inverted component must.
+
+   Layout is desktop-first for the stage (three columns) with the
+   vertical stack taking over at 900px — the same breakpoint the
+   component's matchMedia uses to switch its beziers from horizontal
+   to vertical. Change one, change the other.
+
+   `--tx-mute` fails AA at small sizes, so it is used only for
+   decorative marks (the legend keys, the count in a column label).
+   Anything that must be READ uses --tx-dim or --tx.
    ============================================================ */
 
 .izvz {
@@ -16,7 +43,7 @@
 }
 /* Rail breathing room lives in izgrid.css (`--rail-inset`). */
 
-/* ---------- head ---------- */
+/* ---------- head (sits on the PAGE, not in the dark band) ---------- */
 
 .izvz-head {
   display: flex;
@@ -33,7 +60,7 @@
   font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
-  color: var(--tx-mute);
+  color: var(--tx-dim);
 }
 .izvz-kicker i {
   font-style: normal;
@@ -47,6 +74,7 @@
 }
 .izvz-title {
   margin: 0;
+  max-width: 22ch;
   font-family: var(--disp);
   font-weight: var(--fw-disp);
   font-size: var(--fs-h2);
@@ -54,346 +82,480 @@
   letter-spacing: var(--ls-h2);
   color: var(--tx);
 }
-.izvz-title mark {
+/* the accent is orange TEXT, never a highlight box — call sites use
+   <mark> (VpnPage) or <em> (the default title), so both are covered */
+.izvz-title mark,
+.izvz-title em {
   background: none;
+  font-style: normal;
   color: var(--accent);
 }
 .izvz-sub {
   margin: 0;
-  max-width: 56ch;
+  max-width: 58ch;
   color: var(--tx-dim);
   font-size: var(--fs-body-sm);
   line-height: var(--lh-body);
 }
 
-/* ---------- dark band ----------
-   `.iz-inverted` flips every token, so nothing below hardcodes a
-   dark value and the band is correct on both themes. */
+/* ---------- the band ----------
+   Theme-aware: every value is a token, so this is light on paper and
+   dark on dark with no variant. */
 
 .izvz-band {
   position: relative;
-  border: 0;
   border-radius: var(--r-lg);
-  background: var(--bg);
+  /* --bg-2, not --bg: the section behind it already paints --bg, so a
+     band on --bg has no edge at all. One step off keeps it reading as
+     a band on both themes. */
+  background: var(--bg-2);
   box-shadow: 0 0 0 1px var(--line);
-  padding: var(--sp-8) var(--sp-6) var(--sp-10);
+  padding: var(--sp-10) var(--sp-6) var(--sp-10);
   overflow: hidden;
-}
-
-/* ---------- segmented control ---------- */
-
-.izvz-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 0;
-  margin-bottom: var(--sp-8);
-}
-.izvz-tab {
-  padding: var(--sp-3) var(--sp-6);
-  border: var(--bw) solid var(--line);
-  background: transparent;
-  color: var(--tx-dim);
-  font-family: var(--body);
-  font-size: var(--fs-body-sm);
-  cursor: pointer;
-  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
-}
-.izvz-tab:first-child {
-  border-radius: var(--r-sm) 0 0 var(--r-sm);
-}
-.izvz-tab:last-child {
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
-  border-left: 0;
-}
-.izvz-tab:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  z-index: 1;
-}
-.izvz-tab.on {
-  background: var(--surface-2);
   color: var(--tx);
 }
-.izvz-tab.on.accent {
+
+/* The prototype drew a 64px blueprint grid behind the stage. Removed
+   (user call, 2026-08-13): the SVG link layer IS the drawing, and a
+   tiled hairline field behind it competed with the one set of lines
+   that carries the argument. The surface step + hairline border are
+   what separate the band from the page. */
+.izvz-band > * {
+  position: relative;
+}
+
+/* ---------- the segmented control ----------
+   Requirement: this is THE thing to click. Centred, 44px+ hit target,
+   mono uppercase, orange fill on the active half. */
+
+.izvz-switch-wrap {
+  display: flex;
+  justify-content: center;
+}
+.izvz-switch {
+  display: inline-flex;
+  gap: var(--sp-1);
+  padding: var(--sp-1);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  max-width: 100%;
+}
+.izvz-switch-btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  min-height: 44px;
+  padding: var(--sp-3) var(--sp-8);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--tx-dim);
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izvz-switch-btn:hover {
+  color: var(--tx);
+}
+.izvz-switch-btn[aria-selected="true"] {
   background: var(--accent);
-  border-color: var(--accent);
   color: var(--btn-ink);
+  font-weight: 600;
+}
+/* offset puts the ring on the pill's --surface backing, where orange
+   still reads even when the segment itself is orange */
+.izvz-switch-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- caption ---------- */
+
+.izvz-caption {
+  margin: var(--sp-6) auto var(--sp-8);
+  max-width: 74ch;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.7;
+  color: var(--tx-dim);
+  /* reserved so flipping modes does not jump the stage */
+  min-height: 3.4em;
+}
+.izvz-caption b {
+  color: var(--tx);
+  font-weight: 500;
 }
 
 /* ---------- stage ---------- */
 
 .izvz-stage {
   position: relative;
+  display: grid;
+  /* col 3 is the widest share because it carries the longest strings —
+     "Database console" plus "db.internal · no route" needs ~290px of
+     row before the host is forced onto a second line. */
+  grid-template-columns: minmax(230px, 1fr) minmax(180px, 0.8fr) minmax(260px, 1.3fr);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: center;
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  padding: clamp(20px, 3vw, 40px);
 }
-/* The anchor box for every percentage-positioned overlay. It contains
-   ONLY the drawing, so its height is the drawing's height — which is
-   what keeps the gate on the cone junction when the caption and the
-   incoming label drop into normal flow on mobile. */
-.izvz-plot {
+
+/* the link layer: under the columns, never in the way of a click */
+.izvz-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+.izvz-col {
   position: relative;
+  z-index: 1;
+  min-width: 0;
 }
-.izvz-svg {
+
+.izvz-col-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  border-bottom: var(--bw) solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izvz-col-label span {
+  color: var(--tx-mute); /* decorative count only */
+}
+
+/* ---------- sessions ---------- */
+
+.izvz-session {
   display: block;
   width: 100%;
-  height: auto;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--body);
+  background: var(--surface-2);
+  color: inherit;
+  border: var(--bw) solid var(--line);
+  border-left: 2px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-3);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
 }
-.izvz-scene--wide {
-  display: none;
+.izvz-session:hover {
+  border-color: var(--line-strong);
+  background: var(--surface);
+}
+.izvz-session[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-2));
+}
+.izvz-session:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.izvz-session-who {
+  display: block;
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--tx);
+}
+.izvz-session-meta {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  line-height: 1.45;
+  color: var(--tx-dim);
 }
 
-/* dots recolour one after another rather than all at once, so the
-   split reads as a decision being made */
-.izvz-out {
-  transition: fill var(--dur-slow) var(--ease);
-  transition-delay: calc(var(--i, 0) * 26ms);
-}
-
-/* ---------- the gate ---------- */
+/* ---------- gateway ---------- */
 
 .izvz-gate {
-  position: absolute;
-  left: 50%;
-  top: 53%;
-  transform: translate(-50%, -50%);
-  display: grid;
-  place-items: center;
-  width: 74px;
-  height: 74px;
-  border-radius: var(--r-lg);
-  transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
-.izvz-q {
+.izvz-gate-node {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 100%;
-  height: 100%;
-  border: var(--bw) solid var(--line-strong);
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  color: var(--tx-mute);
-  font-family: var(--disp);
-  font-size: 30px;
-}
-.izvz-mark {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
+  width: 84px;
+  height: 84px;
   border-radius: var(--r-lg);
   background: var(--accent);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 18%, transparent);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
-
-/* ---------- annotations ---------- */
-
-.izvz-node--in,
-.izvz-caption {
-  display: block;
-  color: var(--tx-dim);
-}
-.izvz-node--in {
-  margin-top: var(--sp-6);
-  font-size: var(--fs-2xs);
-  color: var(--tx-mute);
-}
-.izvz-node--in b {
-  display: block;
-  font-weight: 400;
-  color: var(--tx-dim);
-  font-size: var(--fs-body-sm);
-}
-.izvz-caption {
-  margin-top: var(--sp-4);
-  font-size: var(--fs-body-sm);
-  line-height: var(--lh-body);
-  max-width: 46ch;
-}
-
-.izvz-verdict {
+.izvz-gate-node::after {
+  content: "";
   position: absolute;
-  display: inline-flex;
+  inset: -9px;
+  border: var(--bw) solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 22px;
+}
+/* VPN: not our node. A concentrator ring — never crossed out, because
+   the thing works; that is exactly the problem.
+
+   SOLID, not tinted. It was `--deny-bg` (a ~9% wash), which on the old
+   always-dark band read as a tile but on a paper page collapsed into a
+   faint pink square next to a solid orange one — the two modes stopped
+   carrying equal weight. Glyph is `--bg`, so it is light ink on deep
+   red in paper and dark ink on bright red in dark. */
+.izvz-gate-node[data-mode="vpn"] {
+  background: var(--deny);
+  color: var(--bg);
+}
+.izvz-gate-node[data-mode="vpn"]::after {
+  border-color: color-mix(in srgb, var(--deny) 30%, transparent);
+}
+.izvz-gate-node svg {
+  width: 36px;
+  height: 36px;
+}
+.izvz-gate-name {
+  margin-top: var(--sp-5);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izvz-checks {
+  margin-top: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  width: 100%;
+  max-width: 210px;
+}
+.izvz-check {
+  display: flex;
   align-items: center;
   gap: var(--sp-2);
-  padding: var(--sp-1) var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--bw) solid var(--line);
   border-radius: var(--r-pill);
-  background: var(--surface);
-  box-shadow: 0 0 0 1px var(--line);
-  font-size: var(--fs-2xs);
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  line-height: 1.3;
   color: var(--tx-dim);
+  text-align: left;
+}
+.izvz-check-dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+/* "not evaluated" rows are recessed, not erased — the same AA problem
+   as the no-route rows above, so the fade is paired with a brighter
+   ink token instead of just being turned down. */
+.izvz-check--off {
+  opacity: 0.62;
+  color: var(--tx);
+}
+.izvz-check--off .izvz-check-dot {
+  background: var(--tx-mute);
+}
+
+/* ---------- the application estate ---------- */
+
+.izvz-app {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* wrap + nowrap host: when a row IS too narrow the host drops to its
+     own line whole, instead of breaking mid-hostname */
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-3);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  padding: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-2);
+  transition: opacity var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+.izvz-app-name {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--tx);
+}
+.izvz-app-host {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+  text-align: right;
   white-space: nowrap;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
-}
-.izvz-stage.on .izvz-verdict {
-  opacity: 1;
-  transform: none;
-}
-.izvz-verdict svg {
-  width: 12px;
-  height: 12px;
-}
-.izvz-verdict--allow {
-  left: var(--sp-2);
-  top: 74%;
-}
-.izvz-verdict--allow svg {
-  color: var(--allow);
-}
-.izvz-verdict--deny {
-  right: var(--sp-2);
-  top: 74%;
-}
-.izvz-verdict--deny svg {
-  color: var(--deny);
 }
 
-/* only meaningful over the wide scene */
-.izvz-tag,
-.izvz-callout,
-.izvz-apps {
-  display: none;
+/* granted — the one host this session resolved */
+.izvz-app[data-state="granted"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+}
+/* Semantic hostname colours are mixed toward --tx rather than used raw.
+   A saturated mid-tone that reads on a dark band drops under AA on a
+   paper one (measured: raw --deny on its own tint = 4.30:1). Mixing
+   toward --tx is self-correcting — it darkens the hue on paper and
+   lightens it on dark, keeping the hue legible on both. */
+.izvz-app[data-state="granted"] .izvz-app-host {
+  color: color-mix(in srgb, var(--accent) 70%, var(--tx));
 }
 
-/* ---------- external description ---------- */
+/* exposed — reachable only because the whole network is reachable */
+.izvz-app[data-state="exposed"] {
+  border-color: color-mix(in srgb, var(--deny) 38%, var(--line));
+  background: var(--deny-bg);
+}
+.izvz-app[data-state="exposed"] .izvz-app-host {
+  color: color-mix(in srgb, var(--deny) 70%, var(--tx));
+}
 
-.izvz-external {
-  margin: var(--sp-6) auto 0;
-  max-width: 78ch;
-  text-align: center;
+/* dark — DOES NOT RESOLVE. Not blocked, not denied: absent. There is
+   deliberately no X, no "blocked" label, and no link drawn to it. */
+.izvz-app[data-state="dark"] {
+  border-style: dashed;
+  border-color: var(--line);
+  background: transparent;
+  /* The prototype dimmed these to .34. Measured against the stage that
+     puts 13.5px text at 3.0:1 — below AA, and these rows carry real
+     content ("· no route" is the whole argument). .68 over --tx keeps
+     the row visibly quieter than its filled neighbours while landing
+     around 6:1. The "absent" reading comes mostly from the dashed
+     border and the missing fill, not from the fade. */
+  opacity: 0.68;
+}
+.izvz-app[data-state="dark"] .izvz-app-name,
+.izvz-app[data-state="dark"] .izvz-app-host {
+  color: var(--tx);
+}
+.izvz-app[data-state="dark"] .izvz-app-host::after {
+  content: " · no route";
+}
+
+.izvz-rest {
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: var(--bw) dashed var(--line);
+  border-radius: var(--r-sm);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  line-height: 1.5;
   color: var(--tx-dim);
-  font-size: var(--fs-body-sm);
-  line-height: var(--lh-body);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.izvz-stage[data-mode="vpn"] .izvz-rest {
+  color: color-mix(in srgb, var(--deny) 70%, var(--tx));
+  border-color: color-mix(in srgb, var(--deny) 38%, var(--line));
+}
+
+/* ---------- legend ---------- */
+
+.izvz-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-6);
+  margin-top: var(--sp-6);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+}
+.izvz-key {
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  margin-right: var(--sp-2);
+  vertical-align: middle;
+  font-style: normal;
+}
+.izvz-key--route {
+  background: var(--accent);
+}
+.izvz-key--open {
+  background: var(--deny);
+}
+.izvz-key--none {
+  background: var(--line-strong);
 }
 
 /* ============================================================
-   WIDE — the left→right scene with the full overlay
+   VERTICAL STACK — keep in lockstep with VERTICAL_Q in the .tsx
    ============================================================ */
 
-@media (min-width: 900px) {
+@media (max-width: 900px) {
   .izvz-band {
-    padding: var(--sp-8) var(--sp-8) var(--sp-10);
+    padding: var(--sp-8) var(--sp-4) var(--sp-8);
   }
-  .izvz-scene--wide {
-    display: block;
+  .izvz-switch {
+    flex-wrap: wrap;
+    justify-content: center;
   }
-  .izvz-scene--tall {
-    display: none;
-  }
-
-  /* gate sits on the cone junction at x=700/1200, y=280/560 */
-  .izvz-gate {
-    left: 58.3%;
-    top: 50%;
-    width: 92px;
-    height: 92px;
-  }
-
-  .izvz-node--in {
-    position: absolute;
-    left: 2%;
-    top: 86%;
-    margin: 0;
-    max-width: 20%;
+  .izvz-switch-btn {
+    flex: 1 1 auto;
+    padding: var(--sp-3) var(--sp-5);
   }
   .izvz-caption {
-    position: absolute;
-    left: 58.3%;
-    top: 61%;
-    transform: translateX(-50%);
-    margin: 0;
-    width: 27%;
-    text-align: center;
-    font-size: var(--fs-2xs);
+    text-align: left;
+    min-height: 0;
   }
-
-  .izvz-verdict--allow {
-    left: 63%;
-    top: 20%;
+  .izvz-stage {
+    grid-template-columns: 1fr;
+    gap: var(--sp-10);
+    /* the clamp's 20px min left the longest host ("files.internal ·
+       no route") 2px short of one line at 375px; 16px buys it back */
+    padding: var(--sp-4);
   }
-  .izvz-verdict--deny {
-    left: 63%;
-    right: auto;
-    top: 76%;
-  }
-
-  /* node tags — only in the ON state, so switching feels like
-     information appearing rather than colours changing */
-  .izvz-tag {
-    position: absolute;
-    display: inline-block;
-    padding: 2px var(--sp-2);
-    border-radius: var(--r-2xs);
-    background: var(--surface);
-    box-shadow: 0 0 0 1px var(--line);
-    font-family: var(--mono);
-    font-size: var(--fs-mono-xs);
-    letter-spacing: var(--ls-mono);
-    color: var(--tx-dim);
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateY(4px);
-    transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
-  }
-  .izvz-stage.on .izvz-tag {
-    opacity: 1;
-    transform: none;
-  }
-  .izvz-tag--user {
-    left: 21%;
-    top: 29%;
-  }
-  .izvz-tag--id {
-    left: 80%;
-    top: 31%;
-  }
-
-  .izvz-callout {
-    position: absolute;
-    display: block;
-    right: 1%;
-    top: 1%;
-    width: 25%;
-    padding: var(--sp-3) var(--sp-4);
-    border-radius: var(--r-sm);
-    background: var(--surface);
-    box-shadow: 0 0 0 1px var(--line);
-    font-size: var(--fs-2xs);
-    line-height: 1.5;
-    color: var(--tx-dim);
-    opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
-  }
-  .izvz-stage.on .izvz-callout {
-    opacity: 1;
-    transform: none;
-  }
-
-  .izvz-apps {
-    position: absolute;
-    display: flex;
+  /* the gateway turns into a row so the vertical beziers have a short,
+     readable run in and out of it */
+  .izvz-gate {
+    flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--sp-2);
-    left: 63%;
-    top: 91%;
-    max-width: 35%;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    gap: var(--sp-4);
   }
+  .izvz-gate-name {
+    margin-top: 0;
+  }
+  .izvz-checks {
+    max-width: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .izvz-check {
+    flex: 1 1 auto;
+  }
+  /* At ~240px of stage the name/host pair can't sit on one line without
+     the mono host wrapping to three ragged lines — stack them instead. */
   .izvz-app {
-    padding: 2px var(--sp-2);
-    border-radius: var(--r-2xs);
-    background: var(--surface-2);
-    box-shadow: 0 0 0 1px var(--line);
-    font-family: var(--mono);
-    font-size: var(--fs-mono-xs);
-    color: var(--tx-mute);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-1);
   }
-  .izvz-app--all {
-    background: transparent;
-    box-shadow: none;
-    font-family: var(--body);
-    font-size: var(--fs-2xs);
+  .izvz-app-host {
+    text-align: left;
   }
 }
 
@@ -401,12 +563,11 @@
   .izvz-kicker i {
     animation: none;
   }
-  .izvz-out,
-  .izvz-verdict,
-  .izvz-tag,
-  .izvz-callout,
-  .izvz-gate,
-  .izvz-tab {
+  .izvz-switch-btn,
+  .izvz-session,
+  .izvz-app,
+  .izvz-rest,
+  .izvz-gate-node {
     transition: none;
   }
 }
