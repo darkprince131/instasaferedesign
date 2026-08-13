@@ -2,28 +2,36 @@
 
 import { useState } from "react";
 import {
+  BookOpen,
   Briefcase,
+  Buildings,
   Broadcast,
   CaretRight,
   Cloud,
   Clock,
+  Check,
+  CheckCircle,
   Code,
   Database,
   DeviceMobile,
   Desktop,
+  Envelope,
   Eye,
   EyeSlash,
   FileCode,
   Fingerprint,
+  FileText,
   Folders,
   Globe,
   HardDrives,
   Handshake,
   Laptop,
   Lock,
+  Kanban,
   LockKey,
   Monitor,
   Path,
+  Plus,
   Prohibit,
   Record,
   ShieldCheck,
@@ -66,6 +74,13 @@ import {
    ============================================================ */
 
 type Node = { label: string; Icon?: Icon; logo?: string; sub?: string };
+/* `kind` drives which miniature is drawn — a laptop lid or a phone body.
+   Devices are DRAWN rather than iconified: an icon of a laptop reads as
+   a symbol, a little laptop with a screen in it reads as a device, and
+   this section is about whose device is asking. */
+type Device = { label: string; sub?: string; kind: "laptop" | "phone"; ok?: boolean };
+/* the tiles inside the workspace mock — what this person's portal holds */
+type Tile = { label: string; Icon: Icon; tone?: string; logo?: string };
 type Benefit = { Icon: Icon; tone: "accent" | "allow" | "info" | "violet"; lead: string; body: string; accent: string };
 
 type UseCase = {
@@ -75,8 +90,11 @@ type UseCase = {
   title: string;
   desc: string;
   sourceHead: string;
-  sources: Node[];
+  devices: Device[];
   sourceNote?: string;
+  /** what the portal shows this person */
+  mockHead: string;
+  tiles: Tile[];
   targetHead: string;
   targets: Node[];
   /** the strip under the scene — one case uses it for session controls */
@@ -101,9 +119,19 @@ const CASES: UseCase[] = [
     title: "Workforce access",
     desc: "Employees get their full toolkit in one portal, on managed or personal devices, with MFA and posture invisible until something is wrong.",
     sourceHead: "Your people",
-    sources: [
-      { label: "Managed device", Icon: Laptop, sub: "posture 25/25" },
-      { label: "Personal device", Icon: DeviceMobile, sub: "posture checked" },
+    devices: [
+      { label: "Managed device", sub: "posture 25/25", kind: "laptop", ok: true },
+      { label: "Personal device", sub: "posture checked", kind: "phone", ok: true },
+    ],
+    mockHead: "My workspace",
+    tiles: [
+      { label: "Mail", Icon: Envelope, tone: "a" },
+      { label: "Files", Icon: Folders, tone: "b" },
+      { label: "CRM", Icon: Buildings, tone: "c" },
+      { label: "HR", Icon: UsersThree, tone: "d" },
+      { label: "Docs", Icon: FileText, tone: "b" },
+      { label: "Tickets", Icon: Kanban, tone: "a" },
+      { label: "Wiki", Icon: BookOpen, tone: "c" },
     ],
     targetHead: "Their toolkit",
     targets: [
@@ -128,11 +156,16 @@ const CASES: UseCase[] = [
     title: "Third-party and vendor access",
     desc: "Contractors reach the two systems their contract names, from their own laptops, with the session recorded and an expiry date already set.",
     sourceHead: "Outside the company",
-    sources: [
-      { label: "Vendor laptop", Icon: Laptop, sub: "unmanaged" },
-      { label: "Contractor", Icon: Handshake, sub: "guest identity" },
+    devices: [
+      { label: "Vendor laptop", sub: "unmanaged", kind: "laptop" },
+      { label: "Their phone", sub: "guest identity", kind: "phone" },
     ],
     sourceNote: "No agent required.",
+    mockHead: "Contractor portal",
+    tiles: [
+      { label: "Reports DB", Icon: Database, tone: "a" },
+      { label: "Ticketing", Icon: Kanban, tone: "b" },
+    ],
     targetHead: "Exactly what was agreed",
     targets: [
       { label: "Two named systems", Icon: Stack },
@@ -155,10 +188,18 @@ const CASES: UseCase[] = [
     title: "DevOps tooling",
     desc: "GitLab, Jenkins, staging servers and SSH — governed and hidden from the internet, without changing how developers work.",
     sourceHead: "Developer workflow",
-    sources: [
-      { label: "Code", Icon: Code },
-      { label: "Build", Icon: Terminal },
-      { label: "Deploy", Icon: Broadcast },
+    devices: [
+      { label: "Dev laptop", sub: "bound + posture", kind: "laptop", ok: true },
+      { label: "On call", sub: "same policy", kind: "phone", ok: true },
+    ],
+    mockHead: "Engineering portal",
+    tiles: [
+      { label: "GitLab", Icon: Code, tone: "a", logo: "gitlab" },
+      { label: "Jenkins", Icon: Terminal, tone: "b", logo: "jenkins" },
+      { label: "GitHub", Icon: Code, tone: "c", logo: "github" },
+      { label: "Staging", Icon: HardDrives, tone: "d" },
+      { label: "SSH", Icon: Terminal, tone: "a" },
+      { label: "Registry", Icon: Stack, tone: "b" },
     ],
     targetHead: "What they reach",
     targets: [
@@ -184,10 +225,16 @@ const CASES: UseCase[] = [
     title: "Privileged sessions",
     desc: "Admin RDP and SSH with recording on — the lightweight answer to the audit finding that says there is no oversight of privileged access.",
     sourceHead: "Privileged users",
-    sources: [
-      { label: "IT admin", Icon: UserCircle },
-      { label: "DB admin", Icon: Database },
-      { label: "SecOps", Icon: ShieldCheck },
+    devices: [
+      { label: "Admin workstation", sub: "bound device", kind: "laptop", ok: true },
+      { label: "Step-up device", sub: "MFA prompt", kind: "phone", ok: true },
+    ],
+    mockHead: "Privileged portal",
+    tiles: [
+      { label: "RDP", Icon: Desktop, tone: "a" },
+      { label: "SSH", Icon: Terminal, tone: "b" },
+      { label: "Databases", Icon: Database, tone: "c" },
+      { label: "Cloud", Icon: Cloud, tone: "d" },
     ],
     targetHead: "Privileged systems",
     targets: [
@@ -221,11 +268,18 @@ const CASES: UseCase[] = [
     title: "BYOD",
     desc: "Personal devices use the clientless portal with watermark, clipboard and download controls — so corporate data is used but never kept on the device.",
     sourceHead: "Personal devices",
-    sources: [
-      { label: "Personal laptop", Icon: Laptop },
-      { label: "Personal phone", Icon: DeviceMobile },
+    devices: [
+      { label: "Personal laptop", sub: "no agent", kind: "laptop" },
+      { label: "Personal phone", sub: "no install", kind: "phone" },
     ],
-    sourceNote: "No agent. No install.",
+    sourceNote: "Clientless. Browser only.",
+    mockHead: "Browser portal",
+    tiles: [
+      { label: "Mail", Icon: Envelope, tone: "a" },
+      { label: "Files", Icon: Folders, tone: "b" },
+      { label: "CRM", Icon: Buildings, tone: "c" },
+      { label: "Docs", Icon: FileText, tone: "d" },
+    ],
     targetHead: "Corporate applications",
     targets: [
       { label: "Web apps", Icon: Globe },
@@ -253,10 +307,94 @@ const CASES: UseCase[] = [
   },
 ];
 
-function NodeChip({ n, big }: { n: Node; big?: boolean }) {
+/* A device MINIATURE, drawn. An icon of a laptop reads as a symbol; a
+   little laptop with a lit screen reads as a device, and this section is
+   about whose device is asking. The green tick is the posture verdict —
+   present only where the case actually verifies the device, which is why
+   the vendor and BYOD laptops do not carry one. */
+function DeviceMini({ d }: { d: Device }) {
   return (
-    <span className={`ztuc-node${big ? " is-big" : ""}`}>
-      <span className="ztuc-node-ic" aria-hidden="true">
+    <div className={`ztuc-dev is-${d.kind}`}>
+      <span className="ztuc-dev-art" aria-hidden="true">
+        {d.kind === "laptop" ? (
+          <svg viewBox="0 0 64 44">
+            <rect className="ztuc-dev-body" x="8" y="4" width="48" height="31" rx="3" />
+            <rect className="ztuc-dev-screen" x="12" y="8" width="40" height="23" rx="2" />
+            <path className="ztuc-dev-base" d="M2 38h60l-3 4H5z" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 64 44">
+            <rect className="ztuc-dev-body" x="23" y="2" width="18" height="40" rx="4" />
+            <rect className="ztuc-dev-screen" x="26" y="6" width="12" height="30" rx="1.5" />
+          </svg>
+        )}
+        {d.ok && (
+          <span className="ztuc-dev-ok">
+            <CheckCircle weight="fill" />
+          </span>
+        )}
+      </span>
+      <span className="ztuc-dev-t">
+        {d.label}
+        {d.sub && <em>{d.sub}</em>}
+      </span>
+    </div>
+  );
+}
+
+/* The portal itself. The reference's strongest move is showing an actual
+   workspace rather than a labelled box — the reader recognises a grid of
+   app tiles instantly, and "one portal, every app your role lists" stops
+   being a sentence and becomes a picture. */
+function Workspace({ head, tiles }: { head: string; tiles: Tile[] }) {
+  return (
+    <div className="ztuc-mock">
+      <span className="ztuc-mock-lock" aria-hidden="true">
+        <LockKey weight="fill" />
+      </span>
+      <div className="ztuc-mock-body">
+        <div className="ztuc-mock-side" aria-hidden="true">
+          <i /><i /><i /><i /><i />
+        </div>
+        <div className="ztuc-mock-main">
+          <span className="ztuc-mock-h">{head}</span>
+          <div className="ztuc-tiles">
+            {tiles.map((t) => (
+              <span className={`ztuc-tile is-${t.tone ?? "a"}`} key={t.label}>
+                <i aria-hidden="true">
+                  {t.logo ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={`/logos/integrations/${t.logo}.svg`} alt="" loading="lazy" />
+                  ) : (
+                    <t.Icon weight="duotone" />
+                  )}
+                </i>
+                <b>{t.label}</b>
+              </span>
+            ))}
+            <span className="ztuc-tile is-more" aria-hidden="true">
+              <i>
+                <Plus weight="bold" />
+              </i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <span className="ztuc-mock-foot">
+        <CheckCircle weight="fill" />
+        MFA + device posture
+      </span>
+    </div>
+  );
+}
+
+/* An outcome the person gets, ticked. Green, not orange: these are
+   verdicts that PASSED, and the accent is spent on the one thing doing
+   the work — the gateway. */
+function OutcomePill({ n }: { n: Node }) {
+  return (
+    <span className="ztuc-out">
+      <span className="ztuc-out-ic" aria-hidden="true">
         {n.logo ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img src={`/logos/integrations/${n.logo}.svg`} alt="" loading="lazy" />
@@ -264,10 +402,11 @@ function NodeChip({ n, big }: { n: Node; big?: boolean }) {
           <n.Icon weight="duotone" />
         ) : null}
       </span>
-      <span className="ztuc-node-t">
+      <span className="ztuc-out-t">
         {n.label}
         {n.sub && <em>{n.sub}</em>}
       </span>
+      <CheckCircle className="ztuc-out-ok" weight="fill" aria-hidden="true" />
     </span>
   );
 }
@@ -303,50 +442,59 @@ export function ZtaaUseCases() {
         <h3 className="ztuc-h">{c.title}</h3>
         <p className="ztuc-desc">{c.desc}</p>
 
-        <div className="ztuc-flow">
-          <div className="ztuc-col">
+        {/* THE SCENE.
+
+            It used to be five grid columns — source, link, gate, link,
+            target — inside a 556px stage, which left node labels 49px of
+            text box and clipped every one of them. The fix is not a font
+            size; it is that a row of five things cannot fit here. So the
+            flow turns a corner: devices and the gateway stack down the
+            left in a 196px column, the portal takes the whole remaining
+            width as an actual screen, and the outcomes run full width
+            underneath as pills. Nothing now has to fit in 49px. */}
+        <div className="ztuc-scene">
+          <div className="ztuc-lane">
             <span className="ztuc-col-h">{c.sourceHead}</span>
-            {c.sources.map((n) => (
-              <NodeChip key={n.label} n={n} big />
-            ))}
-            {c.sourceNote && <span className="ztuc-col-note">{c.sourceNote}</span>}
-          </div>
-
-          <span className="ztuc-link" aria-hidden="true">
-            <i />
-            <Lock weight="fill" />
-            <i />
-          </span>
-
-          {/* identical in every case — that is the argument */}
-          <div className="ztuc-gate">
-            <span className="ztuc-gate-h">
-              <span className="ztuc-gate-mark" aria-hidden="true">
-                <Broadcast weight="duotone" />
-              </span>
-              InstaSafe ZTNA gateway
-            </span>
-            <span className="ztuc-gate-sub">Identity · Device · Posture · Policy</span>
-            <div className="ztuc-checks">
-              {GATE_CHECKS.map((g) => (
-                <span className="ztuc-check" key={g.label}>
-                  <span aria-hidden="true">{g.Icon && <g.Icon weight="duotone" />}</span>
-                  {g.label}
-                </span>
+            <div className="ztuc-devs">
+              {c.devices.map((d) => (
+                <DeviceMini key={d.label} d={d} />
               ))}
+            </div>
+            {c.sourceNote && <span className="ztuc-col-note">{c.sourceNote}</span>}
+
+            <span className="ztuc-drop" aria-hidden="true">
+              <i />
+            </span>
+
+            {/* identical in every case — that is the argument */}
+            <div className="ztuc-gate">
+              <span className="ztuc-gate-h">
+                <span className="ztuc-gate-mark" aria-hidden="true">
+                  <Broadcast weight="duotone" />
+                </span>
+                InstaSafe ZTNA gateway
+              </span>
+              <span className="ztuc-gate-sub">Every request, every time</span>
+              <div className="ztuc-checks">
+                {GATE_CHECKS.map((g) => (
+                  <span className="ztuc-check" key={g.label}>
+                    <span aria-hidden="true">{g.Icon && <g.Icon weight="duotone" />}</span>
+                    {g.label}
+                    <Check weight="bold" aria-hidden="true" />
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
-          <span className="ztuc-link" aria-hidden="true">
-            <i />
-            <Lock weight="fill" />
-            <i />
-          </span>
+          <Workspace head={c.mockHead} tiles={c.tiles} />
+        </div>
 
-          <div className="ztuc-col">
-            <span className="ztuc-col-h">{c.targetHead}</span>
+        <div className="ztuc-outs">
+          <span className="ztuc-col-h">{c.targetHead}</span>
+          <div className="ztuc-outs-grid">
             {c.targets.map((n) => (
-              <NodeChip key={n.label} n={n} />
+              <OutcomePill key={n.label} n={n} />
             ))}
           </div>
         </div>
