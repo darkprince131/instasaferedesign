@@ -343,3 +343,68 @@
 
 /* No container, no query: a browser without container queries keeps
    every label, which is the safe direction to fail in. */
+
+/* the step-number chip on AnswerBinding's icon tiles — accent, not the
+   allow tint: a step number is an index, not a verdict */
+.iz-ans--pos .ap-num { fill: color-mix(in srgb, var(--orange) 15%, transparent); }
+
+/* ============================================================
+   AnswerPlatform (.iz-ans--plat) — deltas on the shared palette.
+   The tunnel is THE accent path of the picture; ghosts are the
+   estate the request cannot see.
+   ============================================================ */
+.iz-ans--plat .apf-tunnel {
+  stroke: var(--orange);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  fill: none;
+}
+.iz-ans--plat .apf-lock circle {
+  fill: var(--surface);
+  stroke: var(--orange);
+  stroke-width: 1.4;
+}
+.iz-ans--plat .apf-lock rect,
+.iz-ans--plat .apf-lock path {
+  stroke: var(--orange);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+/* the reached application reads a step forward from the panels */
+.iz-ans--plat .apf-dst { stroke: color-mix(in srgb, var(--orange) 40%, var(--line)); }
+.iz-ans--plat .apf-live { fill: var(--allow); }
+/* the dark estate: present, dashed, plainly not on offer */
+.iz-ans--plat .apf-ghost {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+}
+.iz-ans--plat .apf-ghost-g { opacity: 0.78; }
+
+/* ---- AnswerPlatform: the console's four bands ----
+   The rail is dark in BOTH themes — it is a product surface, not a
+   page surface, and deriving it from --tx would flip it to near-white
+   in dark (the bezel lesson from IzConsoleLaptop). */
+.iz-ans--plat .apf-rail { fill: #16181c; }
+.iz[data-theme="dark"] .iz-ans--plat .apf-rail { fill: #0d0e11; }
+.iz-ans--plat .apf-rail-ic .a-glyph { stroke: rgba(255, 255, 255, 0.42); }
+.iz-ans--plat .apf-rail-ic.is-on .a-glyph { stroke: var(--orange); }
+.iz-ans--plat .apf-rail-chip { fill: color-mix(in srgb, var(--orange) 18%, transparent); }
+
+/* the checks sit on their own ground, one step back from the panel */
+.iz-ans--plat .apf-card {
+  fill: var(--bg-2);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.iz-ans--plat .apf-rowic {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+/* the decision — the one filled orange mark inside the console, so the
+   eye lands on the verdict before it reads a single check */
+.iz-ans--plat .apf-dec-chip { fill: var(--orange); }
+.iz-ans--plat .apf-dec .a-glyph { stroke: var(--btn-ink); stroke-width: 1.7; }

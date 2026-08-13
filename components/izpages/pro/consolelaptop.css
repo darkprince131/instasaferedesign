@@ -1,0 +1,521 @@
+/* ============================================================
+   IzConsoleLaptop — the platform Outcomes visual.
+
+   The whole reference scene: users and devices wired IN on the
+   left, the isometric machine running the console in the middle,
+   the two estates wired OUT on the right — applications with a
+   green lock on the wire, the not-reachable stack with a red one —
+   and real-time posture ticking under the machine.
+
+   GEOMETRY CONTRACT: the wires are pseudo-elements whose length is
+   the grid's own column gap (--izcl-gut), so cards, wires and
+   stacks can never drift apart — resize the gutter and every wire
+   resizes with it.
+
+   The isometric pose is applied to the MACHINE as one unit, at
+   shallow angles: enough that it reads as an object in space,
+   never enough to shear the console into illegibility.
+   ============================================================ */
+
+.izcl {
+  --izcl-gut: 34px;
+  /* near-black in paper. In dark the same mix would flip to near-WHITE
+     (tx is light there), so the dark theme overrides it below — a
+     laptop bezel is charcoal in both worlds. */
+  --izcl-bezel: color-mix(in srgb, var(--tx) 90%, var(--bg));
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr) 176px;
+  column-gap: var(--izcl-gut);
+  align-items: center;
+  width: 100%;
+}
+
+.iz[data-theme="dark"] .izcl {
+  --izcl-bezel: color-mix(in srgb, var(--surface-2) 78%, var(--tx));
+}
+
+/* ---------------- shared: kickers and wires ---------------- */
+.izcl-kick {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+.izcl-kick i { font-style: normal; color: var(--orange); }
+
+/* a dashed run the width of the gutter — drawn as background, so it
+   costs no layout and cannot wrap */
+.izcl-card::after,
+.izcl-stack::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: var(--izcl-gut);
+  height: 1px;
+  background: repeating-linear-gradient(90deg, var(--line-strong) 0 4px, transparent 4px 8px);
+}
+
+/* ---------------- users & devices ---------------- */
+.izcl-col--in {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.izcl-col--in .izcl-kick { margin-bottom: var(--sp-1); }
+
+.izcl-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--inset);
+}
+.izcl-card::after { left: 100%; }
+.izcl-card-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-2xs);
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--tx-dim);
+}
+.izcl-card-t { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.izcl-card-t b {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--tx);
+  white-space: nowrap;
+}
+.izcl-card-t em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+
+/* ---------------- the machine column ---------------- */
+.izcl-mid { min-width: 0; }
+
+.izcl-pose {
+  transform: perspective(2000px) rotateX(6deg) rotateY(-7deg);
+  transform-origin: 50% 40%;
+}
+
+/* soft grounding — an object, not a sticker */
+.izcl-mid { position: relative; }
+.izcl-mid::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 30px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--tx) 15%, transparent), transparent);
+  z-index: -1;
+}
+
+/* ---- lid + screen ---- */
+.izcl-lid {
+  border: 1px solid var(--line-strong);
+  border-bottom: 0;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  background: var(--izcl-bezel);
+  padding: 7px 7px 9px;
+}
+.izcl-screen {
+  border-radius: var(--r-xs);
+  background: var(--bg);
+  overflow: hidden;
+  font-family: var(--body);
+}
+
+.izcl-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 5px var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.izcl-bar b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  color: var(--tx);
+  white-space: nowrap;
+}
+.izcl-live {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izcl-live i {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--allow);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--allow) 20%, transparent);
+}
+
+.izcl-body { display: flex; min-height: 0; }
+
+.izcl-side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-2) 5px;
+  border-right: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.izcl-side span {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-2xs);
+  color: var(--tx-dim);
+}
+.izcl-side span.on {
+  color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 12%, transparent);
+}
+
+.izcl-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+}
+
+.izcl-lab {
+  display: block;
+  margin: 2px 0 var(--sp-2);
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izcl-lab em { font-style: normal; color: var(--allow); }
+
+/* the mid column is ~350px wide in the full scene, so the counters sit
+   2×2 — four across would crush the labels */
+.izcl-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-2);
+}
+.izcl-stat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2xs);
+  background: var(--surface);
+  padding: 4px var(--sp-2);
+}
+.izcl-stat b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: 14px;
+  line-height: 1.1;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+.izcl-stat span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+  min-width: 0;
+}
+.izcl-stat svg { flex: none; }
+/* the blocked counter is the one number with a verdict in it */
+.izcl-stat:last-child b { color: var(--deny); }
+
+/* ---- session flow ---- */
+.izcl-flow {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2xs);
+  background:
+    radial-gradient(var(--dot) 1px, transparent 1px) 0 0 / 12px 12px,
+    var(--surface);
+  padding: var(--sp-1);
+}
+.izcl-flow svg { display: block; width: 100%; height: auto; }
+
+.izcl-fl-line { fill: none; stroke-width: 1.3; stroke-linecap: round; }
+.izcl-fl--ok .izcl-fl-line { stroke: color-mix(in srgb, var(--allow) 55%, transparent); }
+.izcl-fl--no .izcl-fl-line { stroke: color-mix(in srgb, var(--deny) 55%, transparent); }
+
+/* ambient flow — the one authored motion; the still underneath is
+   already complete */
+.izcl-fl-dash {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 0.045 0.13;
+  animation: izcl-run 3.4s linear infinite;
+  animation-delay: calc(var(--i, 0) * -0.55s);
+}
+.izcl-fl--ok .izcl-fl-dash { stroke: var(--allow); }
+.izcl-fl--no .izcl-fl-dash { stroke: var(--deny); }
+@keyframes izcl-run {
+  to { stroke-dashoffset: -0.35; }
+}
+
+.izcl-fl-src { fill: var(--tx-dim); opacity: 0.6; }
+.izcl-fl-dst { fill: var(--allow); }
+.izcl-fl-x circle { fill: var(--deny-bg); stroke: var(--deny); stroke-width: 1.2; }
+.izcl-fl-x path { stroke: var(--deny); stroke-width: 1.4; stroke-linecap: round; }
+.izcl-gate { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 2 5; }
+
+.izcl-legend {
+  position: absolute;
+  left: var(--sp-2);
+  bottom: var(--sp-1);
+  display: flex;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izcl-legend span { display: inline-flex; align-items: center; gap: 3px; }
+.izcl-legend i { width: 8px; height: 2px; border-radius: var(--r-pill); }
+.izcl-legend .ok i { background: var(--allow); }
+.izcl-legend .no i { background: var(--deny); }
+
+/* ---- deck + lip ---- */
+.izcl-base { position: relative; height: 40px; }
+.izcl-deck {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 76px;
+  transform: perspective(700px) rotateX(-64deg);
+  transform-origin: 50% 0;
+  background: linear-gradient(var(--surface-2), var(--surface));
+  border: 1px solid var(--line-strong);
+  border-top-color: var(--line);
+  border-radius: 0 0 18px 18px;
+  overflow: hidden;
+}
+/* KEYS, not graph paper. The first cut drew a 1px line grid, which reads
+   as a spreadsheet lying on the deck. Keys are the inverse: solid key
+   faces with the DECK showing through in the gutters — base coat is the
+   key face, and the two repeating gradients paint 3px gutters over it. */
+.izcl-keys {
+  position: absolute;
+  inset: 9px 30px 32px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 19px, var(--surface-2) 19px 22px),
+    repeating-linear-gradient(0deg, transparent 0 9px, var(--surface-2) 9px 12px),
+    var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  border-radius: 4px;
+}
+/* the spacebar row — one wide key under the field sells the whole
+   texture as a keyboard */
+.izcl-keys::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: -9px;
+  height: 5px;
+  border-radius: 2px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.izcl-pad {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  width: 104px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.izcl-lip {
+  position: absolute;
+  left: -2.4%;
+  right: -2.4%;
+  top: 32px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(var(--surface), var(--surface-2));
+  border: 1px solid var(--line-strong);
+}
+
+/* ---- posture, under the machine ---- */
+.izcl-posture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--sp-4);
+}
+.izcl-posture span {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izcl-posture svg { width: 200px; height: auto; }
+.izcl-posture-w {
+  fill: none;
+  stroke: color-mix(in srgb, var(--orange) 55%, transparent);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+.izcl-posture-d { fill: var(--orange); }
+
+/* ---------------- the two estates ---------------- */
+.izcl-col--out {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.izcl-stack { position: relative; }
+.izcl-stack::before { right: 100%; }
+.izcl-stack .izcl-kick { margin-bottom: var(--sp-2); }
+
+/* the lock rides ON the wire — the wire's own claim, encrypted or shut */
+.izcl-lockchip {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--izcl-gut) / -2 - 9px);
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  z-index: 1;
+}
+.izcl-lockchip.is-ok { color: var(--allow); box-shadow: 0 0 0 1px var(--allow); }
+.izcl-lockchip.is-no { color: var(--deny); box-shadow: 0 0 0 1px var(--deny); }
+
+.izcl-stack ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: var(--inset);
+  overflow: hidden;
+}
+.izcl-stack li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px var(--sp-3);
+  border-top: 1px solid var(--line);
+  color: var(--tx-dim);
+}
+.izcl-stack li:first-child { border-top: 0; }
+.izcl-stack li img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  display: block;
+  flex: none;
+}
+.izcl-stack li svg:first-child { flex: none; }
+.izcl-stack li b {
+  min-width: 0;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--tx);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the not-reachable rows read a step back — they exist, they are simply
+   not on offer */
+.izcl-stack--no li b { color: var(--tx-dim); }
+.izcl-stack--no li > svg:first-child { opacity: 0.7; }
+
+.izcl-ok,
+.izcl-no {
+  margin-left: auto;
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+.izcl-ok circle { fill: var(--allow-bg); stroke: var(--allow); stroke-width: 1.2; }
+.izcl-ok path { fill: none; stroke: var(--allow); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.izcl-no circle { fill: var(--deny-bg); stroke: var(--deny); stroke-width: 1.2; }
+.izcl-no path { fill: none; stroke: var(--deny); stroke-width: 1.5; stroke-linecap: round; }
+
+/* ---------------- narrow: the scene stacks ----------------
+   Wires and locks describe horizontal adjacency; once the columns
+   stack there is nothing for them to connect, so they go — the
+   check and cross marks on the rows already carry both verdicts. */
+@media (max-width: 760px) {
+  .izcl {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--sp-6);
+  }
+  .izcl-mid { order: 1; }
+  .izcl-col--in { order: 2; }
+  .izcl-col--out { order: 3; flex-direction: row; }
+  .izcl-stack { flex: 1 1 0; min-width: 0; }
+  .izcl-card::after,
+  .izcl-stack::before,
+  .izcl-lockchip { display: none; }
+  .izcl-pose { transform: none; }
+}
+@media (max-width: 520px) {
+  .izcl-col--out { flex-direction: column; gap: var(--sp-5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izcl-fl-dash { display: none; }
+}
+
+/* Brand marks are inked for light ground — AWS's navy wordmark vanishes
+   on the dark surface. In dark they sit on their own white chip, the
+   standard treatment for third-party logos that may not be recoloured.
+   Paper keeps them bare, as the reference draws them. */
+.iz[data-theme="dark"] .izcl-stack li img {
+  background: #fff;
+  border-radius: 3px;
+  padding: 1.5px;
+  box-shadow: 0 0 0 1px var(--line);
+}

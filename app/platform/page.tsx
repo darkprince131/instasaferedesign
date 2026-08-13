@@ -6,9 +6,16 @@ import type { Metadata } from "next";
 import "@/components/home2/iz-system.css";
 import "@/components/home2/home2.css";
 import "@/components/home2/izgrid.css";
+import "@/components/home2/iznewblocks.css";
+import "@/components/home2/izpanel.css";
+import "@/components/home2/consolerow.css";
+import "@/components/izoutcomes/illustrations.css";
+import "@/components/izanswer/answers.css";
 import "@/components/izpages/pro/pro.css";
 import "@/components/izpages/pro/quickscan.css";
 import "@/components/izpages/pro/outcomes.css";
+import "@/components/izpages/pro/consolelaptop.css";
+import "@/components/izpages/pro/trustengine.css";
 import "@/components/home2/izfootergrid.css";
 
 /* SEO-locked: /platform already exists as a canonical entry in

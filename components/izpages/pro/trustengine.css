@@ -1,0 +1,166 @@
+/* ============================================================
+   IzTrustEngine — the policy-gate log that sits inside the
+   platform hub's ConsoleRow.
+
+   A log, not a table: mono throughout, keys dim and values plain, so
+   the eye lands on the two verdict lines. The second run is deliberately
+   short — five inputs the first time, two the second — because the
+   argument is "one input changed", and a second full block would bury it.
+
+   No animation. The still is the finished state.
+   ============================================================ */
+
+.izte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.izte-kick {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izte-kick i {
+  color: var(--orange);
+  font-style: normal;
+}
+
+/* ---------- the log body ---------- */
+.izte-log {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  line-height: 1.5;
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* the run separator carries the whole point of the second block: same
+   inputs, re-evaluated. A rule reads as "again", which is what we want. */
+.izte-run + .izte-run {
+  padding-top: var(--sp-3);
+  border-top: var(--bw) dashed var(--line);
+}
+
+.izte-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--sp-2);
+  color: var(--tx);
+  margin: 0 0 var(--sp-2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.izte-verb {
+  color: var(--tx-dim);
+}
+
+/* ---------- the input rows ---------- */
+.izte-rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.izte-row {
+  display: grid;
+  /* fixed key column so the values form a single reading edge; minmax(0)
+     because a long value must wrap inside the cell, not widen the grid */
+  grid-template-columns: 68px minmax(0, 1fr);
+  gap: var(--sp-2);
+  padding: 2px var(--sp-2) 2px calc(var(--sp-2) + 3px);
+  border-left: 3px solid transparent;
+  border-radius: var(--r-hair);
+}
+.izte-row dt {
+  color: var(--tx-mute);
+}
+.izte-row dd {
+  margin: 0;
+  color: var(--tx);
+  overflow-wrap: anywhere;
+}
+
+/* the inputs that differ between runs — the only colour in the row list,
+   so "what changed" is answerable without reading either block */
+.izte-row.is-changed {
+  border-left-color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 9%, transparent);
+}
+/* the key goes to full --tx rather than accent: accent on its own tint
+   measures 3.68:1 at 11px, and the orange rule already marks the row */
+.izte-row.is-changed dt {
+  color: var(--tx);
+}
+
+/* ---------- the verdicts ---------- */
+/* AA NOTE — read before restyling this.
+   The obvious treatment is accent-coloured text on its own tint. It was
+   measured and it fails: --allow on --allow-bg is 3.86:1 and --orange on
+   an orange tint is 2.80:1, both under the 4.5:1 that 11px normal text
+   needs. So the semantic colour moves OFF the text and onto the rule and
+   the arrow — decorative, 3:1 territory — while the verdict itself sits
+   at full --tx. The word already says ALLOW or STEP-UP, so colour was
+   never the sole carrier of the meaning anyway. */
+.izte-verdict {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-2);
+  padding-left: calc(var(--sp-2) + 3px);
+  border-left: 3px solid var(--line-strong);
+  border-radius: var(--r-hair);
+  color: var(--tx);
+  min-width: 0;
+}
+.izte-arrow {
+  flex: none;
+  font-style: normal;
+}
+.izte-verdict b {
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+.izte-verdict em {
+  font-style: normal;
+  color: var(--tx-dim);
+}
+.izte-verdict em span {
+  color: var(--tx-mute);
+}
+
+.izte-verdict.is-allow {
+  background: var(--allow-bg);
+  border-left-color: var(--allow);
+}
+.izte-verdict.is-allow .izte-arrow {
+  color: var(--allow);
+}
+
+/* STEP-UP is not a denial — it is the engine asking for more. Orange,
+   the accent we already use for "attend to this", not the deny red. */
+.izte-verdict.is-stepup {
+  background: color-mix(in srgb, var(--orange) 10%, transparent);
+  border-left-color: var(--orange);
+}
+.izte-verdict.is-stepup .izte-arrow {
+  color: var(--orange);
+}
+
+/* narrow columns: the key column stops paying for itself below ~420px,
+   so the row recomposes to two lines rather than shrinking the values */
+@media (max-width: 460px) {
+  .izte-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
