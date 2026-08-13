@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
-import { ArrowRight, PlugsConnected } from "@phosphor-icons/react";
+import { ArrowRight, PlugsConnected, type Icon as PhosphorIcon } from "@phosphor-icons/react";
 
 /* ============================================================
    IzLogoGrid — TIER 2 SECTION  (lab 00ap)
@@ -40,9 +40,11 @@ const GRID_SM = { cols: 3, rows: 4 };
 const STRIP_ROW = 3;
 const STRIP_ROW_SM = 3;
 
-type Logo = {
-  /** file in /public/logos/integrations */
+export type IzLogoGridLogo = {
+  /** file name inside the folder given by the `dir` prop, no extension */
   file: string;
+  /** file extension — the awards artwork is mixed png/webp/svg */
+  ext?: string;
   /** alt text — these are third-party marks, so they get real names */
   label: string;
   lg: [col: number, row: number];
@@ -67,7 +69,7 @@ type Logo = {
    say the same thing twice. Google Workspace is the only overlap,
    and it earns its place as an identity provider rather than as an
    app. */
-const LOGOS: Logo[] = [
+const LOGOS: IzLogoGridLogo[] = [
   // identity + endpoint — what decides whether a session happens at all
   { file: "microsoft-entra-id", label: "Microsoft Entra ID", lg: [1, 1], sm: [1, 1] },
   { file: "microsoft-intune", label: "Microsoft Intune", lg: [3, 1], sm: [2, 1] },
@@ -89,16 +91,41 @@ const COPY = {
   tail: "still connects.",
 };
 
+/* ============================================================
+   REUSABLE AS A LATTICE, NOT JUST AS "INTEGRATIONS" (2026-08-13).
+
+   The layout — copy left, sparse logo lattice right, one copy strip
+   set into it — is the reusable idea; "integrations" was only the
+   first thing said with it. `logos`, `copy`, `dir` and `Icon` are
+   props now, so the awards-and-recognition block on
+   /why-instasafe-zero-trust runs the same component rather than a
+   near-duplicate. Omit them all and the integrations version renders
+   exactly as before.
+
+   `dir` and per-logo `ext` exist because the folders differ in more
+   than name: /logos/integrations is uniformly .svg, while the
+   recognition artwork is a mix of .svg, .png and .webp. Hardcoding
+   the extension was fine for one folder and wrong for two.
+   ============================================================ */
 export function IzLogoGrid({
   kicker = "Integrations",
   title = ["Works with the tools", "you already run."] as string[],
   sub = "Identity, device posture, cloud and SaaS. InstaSafe sits in front of what you have rather than asking you to replace it — one place to decide access, no second source of truth.",
   cta = { label: "See all integrations", href: "/solutions" },
+  logos = LOGOS,
+  copy = COPY,
+  dir = "integrations",
+  Icon = PlugsConnected,
 }: {
   kicker?: string;
   title?: string[];
   sub?: string;
   cta?: { label: string; href: string };
+  logos?: IzLogoGridLogo[];
+  copy?: { lead: string; accent: string; tail: string };
+  /** folder under /public/logos */
+  dir?: string;
+  Icon?: PhosphorIcon;
 }) {
   return (
     <section className="izlg iz-railed">
@@ -120,7 +147,7 @@ export function IzLogoGrid({
             while the copy stays above it. */}
         <div className="izlg-left">
           <span className="izlg-kicker">
-            <PlugsConnected aria-hidden="true" />
+            <Icon aria-hidden="true" />
             {kicker}
             <i aria-hidden="true">_</i>
           </span>
@@ -173,7 +200,7 @@ export function IzLogoGrid({
             />
           ))}
 
-          {LOGOS.map((l) => (
+          {logos.map((l) => (
             <span
               key={l.file}
               className={`izlg-logo${l.sm ? "" : " izlg-x-sm"}`}
@@ -187,7 +214,7 @@ export function IzLogoGrid({
               }
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/logos/integrations/${l.file}.svg`} alt={l.label} loading="lazy" decoding="async" />
+              <img src={`/logos/${dir}/${l.file}.${l.ext ?? "svg"}`} alt={l.label} loading="lazy" decoding="async" />
             </span>
           ))}
 
@@ -200,7 +227,7 @@ export function IzLogoGrid({
               } as React.CSSProperties
             }
           >
-            {COPY.lead} <mark>{COPY.accent}</mark> {COPY.tail}
+            {copy.lead} <mark>{copy.accent}</mark> {copy.tail}
           </p>
         </div>
       </div>

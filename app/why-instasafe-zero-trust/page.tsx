@@ -18,6 +18,7 @@ import "@/components/home2/izlogomarquee.css";
    plus the wall of quotes that closes reason 03 */
 import "@/components/home2/convergeflow.css";
 import "@/components/home2/izdevband.css";
+import "@/components/izpages/pro/blocks.css";
 import "@/components/izpages/pro/splitplane.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/why/whymatrix.css";

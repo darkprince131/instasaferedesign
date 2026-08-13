@@ -8,6 +8,7 @@ import {
   Fingerprint,
   Presentation,
   ShieldCheck,
+  Trophy,
 } from "@phosphor-icons/react";
 import { LogoMark } from "@/components/brand/Logo";
 import { ConvergeFlow } from "@/components/home2/ConvergeFlow";
@@ -15,6 +16,7 @@ import { IzDevBand } from "@/components/home2/IzDevBand";
 import { IzQuietBand } from "@/components/home2/IzQuestionBand";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzSplitPlane } from "@/components/izpages/pro/IzSplitPlane";
+import { IzLogoGrid, type IzLogoGridLogo } from "@/components/izpages/pro/IzLogoGrid";
 import { WhyMatrix } from "./WhyMatrix";
 import {
   CLUSTERS,
@@ -227,6 +229,27 @@ function ReasonNumbers() {
   );
 }
 
+/* The recognition lattice, drawn from /public/logos/recognition —
+   assembled from the marks the footer already ships so the two cannot
+   disagree. Three awarding bodies and three G2 badges: G2 issues
+   several, and showing more than three would make one review site
+   two-thirds of the wall.
+
+   Coordinates are sparser than the integrations set (six marks in a
+   5x5, against ten) because there are fewer real assets and padding
+   the grid with compliance seals would blur the point — ISO 27001 is
+   a certification, not a recognition, and belongs in the footer's
+   certification row rather than here. */
+const RECOGNITION_LOGOS: IzLogoGridLogo[] = [
+  { file: "gartner", label: "Gartner", lg: [1, 1], sm: [1, 1], span: 2, spanSm: 2 },
+  { file: "deloitte-fast50", ext: "png", label: "Deloitte Technology Fast 50", lg: [4, 1], sm: [3, 1] },
+  { file: "dsci", ext: "png", label: "DSCI Excellence Awards", lg: [2, 2], sm: [1, 2] },
+  // strip sits on row 3
+  { file: "high-performer", ext: "webp", label: "G2 High Performer", lg: [1, 4], sm: [3, 2] },
+  { file: "momentum-leader", ext: "webp", label: "G2 Momentum Leader", lg: [3, 4], sm: [1, 4] },
+  { file: "users-love-us", ext: "webp", label: "G2 Users Love Us", lg: [5, 5], sm: [3, 4] },
+];
+
 /* ============================================================
    03 · the record
    A timeline, NOT a second counter grid — reason 2 already spent the
@@ -256,21 +279,38 @@ function ReasonRecord() {
         ))}
       </ol>
 
-      {/* The 00ap IzLogoGrid and the WallOfLove dock that closed this
-          reason are both removed (user call, 2026-08-13).
+      {/* 00ap, now carrying RECOGNITION rather than integrations.
 
-          IzLogoGrid is the INTEGRATIONS component — its lattice holds
-          identity providers, clouds and SaaS, not customers. Retitled
-          "the estates that run on it" it claimed customers while
-          showing the tools we plug into, which is a different sentence
-          entirely and not one the logos support.
+          The first attempt pointed this component at customers, which
+          was wrong twice over: its lattice held integration marks, and
+          InstaSafe names no customers anyway. Awards fix both. These
+          are marks awarded TO us — no third party's consent is needed
+          to say a body recognised you, which is exactly why this is
+          the block that can ship while the customer wall waits.
 
-          WallOfLove is docked pending the customer-consent question:
-          InstaSafe names no customers today, so the component stays
-          built and gated (see its own header) rather than mounted.
+          Logos are the same set the footer already carries, so the
+          page and the footer cannot drift apart on what we claim.
+          Note the mixed extensions: the G2 badges arrived as rasters
+          and only one is a true vector.
 
-          What remains is the timeline — a record argument made in
-          dates, which is the part we can make unaided. */}
+          WallOfLove stays docked pending the customer-consent
+          question — built and gated, not mounted. */}
+      <div className="whyr-embed">
+        <IzLogoGrid
+          kicker="Recognition"
+          title={["Judged by people", "who had no stake in it."]}
+          sub="Analyst houses, industry bodies and the review sites where the scores come from customers rather than from us. Each one is an outside read of the same product this page describes."
+          cta={{ label: "See every award and recognition", href: "/awards" }}
+          dir="recognition"
+          Icon={Trophy}
+          logos={RECOGNITION_LOGOS}
+          copy={{
+            lead: "Recognised since 2018 —",
+            accent: "by the analysts, and by the people",
+            tail: "who actually run it.",
+          }}
+        />
+      </div>
     </section>
   );
 }
