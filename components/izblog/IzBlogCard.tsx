@@ -2,7 +2,7 @@ import { ArrowUpRight } from "@phosphor-icons/react";
 import type { BlogCard } from "@/lib/ghost";
 
 /* ============================================================
-   IzBlogCard — one post on /resources/blog.
+   IzBlogCard — one post on /blog.
 
    The card is a link OFF this site: posts still live on Ghost at
    instasafe.com/blog/<slug>/ and this phase does not rebuild them. That

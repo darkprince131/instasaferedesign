@@ -13,7 +13,7 @@ import "@/components/home2/izfootergrid.css";
 /* /resource-center is the URL the live WordPress page already occupies
    and the one the nav and footer already point at (see iz-nav-data),
    so this route takes it over rather than inventing a sibling. Unlike
-   /resources/blog there is no canonical to concede — when this ships,
+   /blog there is no canonical to concede — when this ships,
    the old page is replaced, not duplicated. */
 export const metadata: Metadata = {
   title: "Resource Center — Brochures, Whitepapers & Webinars",

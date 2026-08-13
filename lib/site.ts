@@ -487,15 +487,14 @@ const resource: PageDef[] = [
      generateStaticParams as well and collide. The two tiles it carried
      (Blog, Events & Meetups) live on in the new page's "Elsewhere"
      strip — see components/izresources/IzResourceCenter.tsx. */
-  P({
-    path: "/blog",
-    kind: "resource",
-    eyebrow: "Blog",
-    title: "Blog — Zero Trust Insights & Stories",
-    h1: "Insights From the Zero Trust Front Line.",
-    highlight: ["Zero", "Trust", "Front", "Line."],
-    sub: "Product thinking, threat analysis and migration playbooks from the InstaSafe team.",
-  }),
+  /* The blog is BESPOKE — app/blog, backed by lib/ghost.ts and the live
+     Ghost Content API. Its placeholder registry entry was removed when
+     that route landed: the stub rendered the same title and the same H1
+     with NO posts, and every "Blog" link in the nav and footers pointed
+     at it, so the real 330-post index was unreachable. Same arrangement
+     as /resource-center, /instasafe-newsroom and /awards.
+     /blog is the LIVE, INDEXED URL and it stays — the real page moved to
+     it rather than the other way round. */
 ];
 
 /* ───────────────────────── COMPANY / CONVERSION ───────────────────────── */
@@ -567,15 +566,10 @@ const company: PageDef[] = [
      lib/newsroom.ts. Its registry entry was removed when that route
      landed; leaving it here would put the path in generateStaticParams
      as well and collide. Same arrangement as /resource-center above. */
-  P({
-    path: "/awards",
-    kind: "company",
-    eyebrow: "Awards",
-    title: "Awards & Recognition",
-    h1: "Recognised for Zero Trust.",
-    highlight: ["Zero", "Trust."],
-    sub: "Gartner Representative Vendor for ZTNA, Deloitte Technology Fast 50 India, DSCI Security Product of the Year, G2 High Performer and more.",
-  }),
+  /* /awards is BESPOKE too — app/awards, backed by lib/awards.ts and the
+     certificate artwork in public/thumbs/awards. Registry entry removed
+     for the same reason as the two above: a path cannot be both a real
+     route and a generateStaticParams slug. */
   P({
     path: "/instasafe-on-gem",
     kind: "company",

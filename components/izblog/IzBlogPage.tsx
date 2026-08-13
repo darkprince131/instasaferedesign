@@ -9,7 +9,7 @@ import type { BlogIndexData } from "@/lib/ghost";
 import { IzBlogCard } from "./IzBlogCard";
 
 /* ============================================================
-   /resources/blog — the index.
+   /blog — the index.
 
    Posts are fetched whole on the server (see lib/ghost.ts) and handed
    down as one array, so filtering is a local array filter with no

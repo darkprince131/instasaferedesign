@@ -14,6 +14,8 @@ import {
   type PressKind,
 } from "@/lib/newsroom";
 import { PressPlate } from "./BookCoverArt";
+import { ThumbCover } from "./ThumbCover";
+import { PRESS_THUMBS } from "@/lib/thumbs";
 
 /* ============================================================
    /instasafe-newsroom — press and coverage.
@@ -156,7 +158,21 @@ export function IzNewsroom() {
                     chapter={p.kind}
                     title={p.headline}
                     subLabel={p.publication}
-                    coverArt={<PressPlate seed={p.id} />}
+                    coverArt={
+                      <ThumbCover
+                        id={p.id}
+                        src={PRESS_THUMBS[p.id]}
+                        alt={`${p.headline} — ${p.publication}`}
+                        art={<PressPlate seed={p.id} />}
+                        /* The supplied press set mixes article photos with
+                           bare mastheads, and the mastheads are not all
+                           named as such — `cover` beheaded The Fast Mode
+                           and Enterprise IT World. Sources sit near 1.9:1
+                           against a 16/9 face, so letterboxing everything
+                           costs a few px of bar and crops nothing. */
+                        fit="contain"
+                      />
+                    }
                     author={p.host}
                     year="↗"
                     ctaLabel={`Read on ${p.publication}`}

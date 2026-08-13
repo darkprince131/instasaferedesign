@@ -16,6 +16,8 @@ import {
   type VideoItem,
 } from "@/lib/resource-center";
 import { DocPlate } from "./BookCoverArt";
+import { ThumbCover } from "./ThumbCover";
+import { BROCHURES_THUMBS } from "@/lib/thumbs";
 import { IzVideoCard } from "./IzVideoCard";
 import { IzVideoLightbox } from "./IzVideoLightbox";
 
@@ -71,7 +73,7 @@ const ELSEWHERE = [
   {
     h: "Blog",
     p: "Zero trust, ZTNA, MFA and identity — product thinking, threat analysis and migration playbooks from the team.",
-    href: "/resources/blog",
+    href: "/blog",
     cta: "Read the blog",
   },
   {
@@ -290,7 +292,17 @@ export function IzResourceCenter() {
                       chapter={b.topic}
                       title={b.title}
                       subLabel={b.pages ? `PDF · ~${b.pages} pp` : "PDF"}
-                      coverArt={<DocPlate topic={b.topic} />}
+                      coverArt={
+                        <ThumbCover
+                          id={b.id}
+                          src={BROCHURES_THUMBS[b.id]}
+                          alt={`${b.title} — cover`}
+                          art={<DocPlate topic={b.topic} />}
+                          /* the thumbnail is a mockup of the PDF's own
+                             cover — crop it and you cut the wordmark */
+                          fit="contain"
+                        />
+                      }
                       author="InstaSafe"
                       year="↓"
                       ctaLabel="Download the PDF"

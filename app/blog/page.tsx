@@ -15,17 +15,20 @@ import "@/components/home2/izfootergrid.css";
    and is live on Ghost immediately either way. */
 export const revalidate = 3600;
 
-/* CANONICAL POINTS AT GHOST, DELIBERATELY.
-   https://instasafe.com/blog/ is the indexed, ranking blog index and it
-   still exists. This page renders the same corpus in our design system,
-   which makes it a near-duplicate — so it must concede the canonical
-   rather than compete for it. Change this only when Ghost's index is
-   actually retired. */
+/* CANONICAL IS SELF-REFERENTIAL.
+   This page IS /blog — the live, indexed URL, kept so the ranking index
+   does not move. It used to sit at /resources/blog and concede the
+   canonical to Ghost's copy; that made a second URL for the same corpus
+   and cost the equity the original path already holds. One URL now, and
+   it is the one that was always there.
+
+   Post bodies still live in Ghost and every card links to its Ghost
+   post URL (/blog/<slug>) — this route owns the INDEX only. */
 export const metadata: Metadata = {
   title: "Blog — Zero Trust Insights & Stories",
   description:
     "Product thinking, threat analysis and migration playbooks from the InstaSafe team — zero trust, ZTNA, MFA and identity, in plain language.",
-  alternates: { canonical: "https://instasafe.com/blog/" },
+  alternates: { canonical: "/blog" },
 };
 
 export default async function Page() {

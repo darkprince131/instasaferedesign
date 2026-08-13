@@ -25,3 +25,7 @@ Thumbs.db
 # third-party tooling, not site source
 /caveman/
 /.agents/skills/
+
+# raw asset drop folder — sources are copied into public/thumbs/ by lib/thumbs.ts
+# conventions; committing both doubles ~4.4MB of identical binaries
+/Thumbnails/

@@ -731,3 +731,33 @@
   .izrc-elsecard:hover .izrc-go svg { transform: none; }
   .izrc-lb { animation: none; }
 }
+
+/* ============================================================
+   ThumbCover — supplied thumbnail on a book face.
+   The face is a fixed ratio per set so a grid of cards keeps its rows
+   even, whatever the source file's aspect happens to be.
+   ============================================================ */
+.izth {
+  display: block;
+  position: relative;
+  aspect-ratio: var(--izth-ar, 16 / 9);
+  overflow: hidden;
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+}
+.izth img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* letterbox: brochure covers and certificates are documents — every
+   pixel of them is type, so nothing may be cropped off an edge */
+.izth--fit { background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.izth--fit img { object-fit: contain; object-position: center; padding: var(--sp-2); }
+
+/* a wordmark standing in for missing article art needs more air around
+   it than a document scan does */
+.izth--logo img { padding: var(--sp-6); }

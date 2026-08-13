@@ -21,6 +21,11 @@ const BESPOKE = [
   "/vpn-alternative",
   "/resource-center",
   "/instasafe-newsroom",
+  "/awards",
+  /* /blog is the live indexed index, now served by app/blog off the Ghost
+     Content API. Individual posts stay on Ghost at /blog/<slug> and are
+     not enumerated here. */
+  "/blog",
   "/book-a-demo",
   "/why-instasafe-zero-trust",
 ];
