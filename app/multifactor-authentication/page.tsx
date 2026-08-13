@@ -22,6 +22,8 @@ import "@/components/izpages/mfa/mfa.css";
    ship the deltas, so qatriptych.css has to land first */
 import "@/components/home2/qatriptych.css";
 import "@/components/izpages/mfa/mfamethods.css";
+import "@/components/home2/consolerow.css";
+import "@/components/izpages/mfa/mfaapplies.css";
 
 /* SEO-locked: this URL carries the equity of the live page. Metadata
    is unchanged from the v3 build this replaced. */

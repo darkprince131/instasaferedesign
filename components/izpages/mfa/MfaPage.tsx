@@ -13,6 +13,8 @@ import { AnswerMfa } from "@/components/izanswer/AnswerMfa";
 import { MfaEngine } from "@/components/izoutcomes/artifacts/MfaEngine";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { MfaMethods } from "./MfaMethods";
+import { MfaSaasConsole, MfaDesktopLogin } from "./MfaApplies";
+import { ConsoleRow } from "@/components/home2/ConsoleRow";
 import { MfaSimulator } from "@/components/v3/MfaSimulator";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
@@ -37,6 +39,7 @@ import { MfaHeroCells, MfaHeroScene } from "./MfaScenes";
 const ANCHORS = [
   { id: "what", label: "What is MFA", icon: Fingerprint },
   { id: "methods", label: "The six methods", icon: Fingerprint },
+  { id: "applies", label: "Where it applies", icon: SlidersHorizontal },
   { id: "signature", label: "Try the simulator", icon: SlidersHorizontal },
   { id: "outcomes", label: "Outcomes", icon: Prohibit },
 ];
@@ -170,6 +173,76 @@ export function MfaPage() {
             </p>
           </div>
           <MfaMethods />
+        </div>
+      </section>
+
+      {/* ---------------- WHERE MFA APPLIES ----------------
+          Two stacked console rows, the second reversed so the pair
+          alternates rather than reading as one long column. The two
+          visuals are deliberately NOT the same object: a SaaS app is
+          a row in an admin list, and a desktop login is a screen you
+          stand in front of. Drawing both as consoles would have said
+          they are the same surface, which is exactly the assumption
+          this section exists to correct. */}
+      <section className="mfa-sec mfa-sec--alt" id="applies">
+        <div className="iz-wrap">
+          <div className="mfa-head">
+            <span className="iz-ey">Coverage</span>
+            <h2>
+              Where MFA <em>applies</em>.
+            </h2>
+            <p>
+              Most MFA stops at the browser. These are the two surfaces that matter, and the second one is the one
+              that usually gets left out.
+            </p>
+          </div>
+
+          <div className="mfa-applies">
+            <ConsoleRow
+              eyebrow="Web and SaaS apps"
+              title={
+                <>
+                  Every app behind the login, <em>whatever it speaks</em>.
+                </>
+              }
+              body={[
+                "Anything that talks SAML 2.0, OAuth or OpenID Connect sits behind the same challenge — the SaaS suite, the internal web app, the vendor portal nobody remembers buying.",
+                "The factor is not configured in the application. It is a property of the group the person is in, which is why adding an app never means teaching it what MFA is.",
+              ]}
+              facts={[
+                ["Protocols", "SAML 2.0 · OAuth 2.0 · OpenID Connect"],
+                ["Applied by", "Auth profile on the user group"],
+                ["Coverage", "800+ business applications"],
+              ]}
+              ctaLabel="See the SSO layer"
+              ctaHref="/zero-trust-features/single-sign-on"
+            >
+              <MfaSaasConsole />
+            </ConsoleRow>
+
+            <ConsoleRow
+              reverse
+              eyebrow="Desktop login"
+              title={
+                <>
+                  The second factor at the <em>Windows sign-in</em>.
+                </>
+              }
+              body={[
+                "Not a browser pretending to be a login screen — the OS logon itself. The InstaSafe agent brings the tunnel up before anyone has signed in, which is what lets a domain login work on a laptop sitting in a hotel.",
+                "Then the machine asks for the second factor the same way the browser would: SMS, an authenticator code, or the fingerprint reader that is already in the palm rest.",
+              ]}
+              facts={[
+                ["Runs", "Before sign-in, not after"],
+                ["Factors here", "SMS OTP · TOTP · Fingerprint"],
+                ["Covers", "Windows domain and local logon"],
+              ]}
+              ctaLabel="How always-on works"
+              ctaHref="/zero-trust-features/always-on"
+            >
+              <MfaDesktopLogin />
+            </ConsoleRow>
+          </div>
         </div>
       </section>
 

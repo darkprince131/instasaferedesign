@@ -74,3 +74,14 @@
 @media (max-width: 720px) {
   .mfa-sim { padding: var(--sp-4); }
 }
+
+/* ============================================================
+   WHERE MFA APPLIES — two stacked console rows.
+   The rows alternate via ConsoleRow's own `reverse`, so all this
+   needs to own is the gap between them.
+   ============================================================ */
+.mfa-applies { display: grid; gap: var(--sp-12); min-width: 0; }
+
+@media (max-width: 900px) {
+  .mfa-applies { gap: var(--sp-10); }
+}
