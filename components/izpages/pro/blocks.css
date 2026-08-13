@@ -153,7 +153,9 @@
    weight. `contain` keeps every ratio honest inside that box. */
 .izlg-logo img {
   max-width: 100%;
-  max-height: 34px;
+  /* per-logo override for sets that mix aspect ratios widely — see the
+     `h` field's note in IzLogoGrid.tsx. 34px stays the default. */
+  max-height: var(--logo-h, 34px);
   width: auto;
   height: auto;
   object-fit: contain;
@@ -353,7 +355,11 @@
     grid-row: var(--gr-sm);
     padding: var(--sp-3);
   }
-  .izlg-logo img { max-height: 26px; }
+  /* Narrow cells cap tighter, but a per-logo `h` still wins — scaled
+     down proportionally rather than flattened back to one value, or a
+     set tuned for equal AREA loses that tuning at exactly the width
+     where the cells are smallest and it matters most. */
+  .izlg-logo img { max-height: calc(var(--logo-h, 34px) * 0.76); }
   /* logos with no phone slot — the grid is 3 wide, not 5, and a forced
      fit would cost the arrangement its gaps */
   .izlg-x-sm { display: none; }

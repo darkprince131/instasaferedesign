@@ -240,14 +240,26 @@ function ReasonNumbers() {
    the grid with compliance seals would blur the point — ISO 27001 is
    a certification, not a recognition, and belongs in the footer's
    certification row rather than here. */
+/* HEIGHTS ARE TUNED, NOT DEFAULTED. The component caps height at 34px,
+   which is correct for the integrations set (wordmarks and square
+   marks, 1:1 to 4:1). This set runs 4.40:1 down to 0.80:1 — Gartner is
+   a wide wordmark, everything else is a portrait badge — and at a flat
+   34px that rendered Gartner at 150x34 (5,100px² of ink) beside G2
+   Users Love Us at 27x34 (918px²). Gartner read as the only logo
+   present and the rest as specks.
+
+   Each `h` below is sqrt(2200 / aspectRatio), so the marks carry
+   roughly equal AREA rather than equal height. Measured ratios:
+   gartner 4.40 · deloitte 1.00 · dsci 0.86 · G2 badges 0.89/0.89/0.80.
+   Re-derive if the artwork is ever replaced. */
 const RECOGNITION_LOGOS: IzLogoGridLogo[] = [
-  { file: "gartner", label: "Gartner", lg: [1, 1], sm: [1, 1], span: 2, spanSm: 2 },
-  { file: "deloitte-fast50", ext: "png", label: "Deloitte Technology Fast 50", lg: [4, 1], sm: [3, 1] },
-  { file: "dsci", ext: "png", label: "DSCI Excellence Awards", lg: [2, 2], sm: [1, 2] },
+  { file: "gartner", label: "Gartner", lg: [1, 1], sm: [1, 1], span: 2, spanSm: 2, h: 22 },
+  { file: "deloitte-fast50", ext: "png", label: "Deloitte Technology Fast 50", lg: [4, 1], sm: [3, 1], h: 47 },
+  { file: "dsci", ext: "png", label: "DSCI Excellence Awards", lg: [2, 2], sm: [1, 2], h: 50 },
   // strip sits on row 3
-  { file: "high-performer", ext: "webp", label: "G2 High Performer", lg: [1, 4], sm: [3, 2] },
-  { file: "momentum-leader", ext: "webp", label: "G2 Momentum Leader", lg: [3, 4], sm: [1, 4] },
-  { file: "users-love-us", ext: "webp", label: "G2 Users Love Us", lg: [5, 5], sm: [3, 4] },
+  { file: "high-performer", ext: "webp", label: "G2 High Performer", lg: [1, 4], sm: [3, 2], h: 50 },
+  { file: "momentum-leader", ext: "webp", label: "G2 Momentum Leader", lg: [3, 4], sm: [1, 4], h: 50 },
+  { file: "users-love-us", ext: "webp", label: "G2 Users Love Us", lg: [5, 5], sm: [3, 4], h: 52 },
 ];
 
 /* ============================================================
@@ -449,3 +461,4 @@ export function WhyReasons() {
 /* re-exported for the page's own anchor list */
 export { REASONS };
 export type { ReasonKey };
+

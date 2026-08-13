@@ -56,6 +56,18 @@ export type IzLogoGridLogo = {
       shrunk to a sliver. Square marks never need it. */
   span?: number;
   spanSm?: number;
+  /** Max rendered height in px, overriding the 34px default.
+
+      34px is right for the integrations set, which is all wordmarks
+      and square marks between roughly 1:1 and 4:1. It is wrong for any
+      set containing PORTRAIT art: capping height alone normalises the
+      wrong dimension, so a 4.4:1 wordmark renders 150x34 (5,100px² of
+      ink) next to a 0.8:1 badge at 27x34 (918px²) — the same defect
+      this component's header describes, in the other direction.
+
+      Where a set mixes ratios that widely, tune `h` per logo so the
+      AREA lands in the same band: h = sqrt(targetArea / aspectRatio). */
+  h?: number;
 };
 
 /* Chosen for recognition AND for being on-message: an access product
@@ -210,6 +222,7 @@ export function IzLogoGrid({
                   ["--gr" as string]: l.lg[1],
                   ["--gc-sm" as string]: `${l.sm?.[0] ?? 1} / span ${l.spanSm ?? 1}`,
                   ["--gr-sm" as string]: l.sm?.[1] ?? 1,
+                  ["--logo-h" as string]: l.h ? `${l.h}px` : undefined,
                 } as React.CSSProperties
               }
             >
