@@ -385,7 +385,11 @@
 .whyr-sig-art .izsp { max-width: 760px; margin: 0 auto; }
 
 @media (max-width: 720px) {
-  .whyr-sig-art { padding: var(--sp-6) var(--sp-4); }
+  /* The phone drawing is authored near 1:1 with its rendered pixels, so
+     every px the plate takes in padding is a px off the artwork and
+     straight off the type size. Trimmed to the minimum that still reads
+     as a plate. */
+  .whyr-sig-art { padding: var(--sp-4) var(--sp-3); }
 }
 /* the rails are drawn against the PAGE gutters; inside a column they
    would run through the content rather than beside it */

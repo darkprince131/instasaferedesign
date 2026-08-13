@@ -1,0 +1,154 @@
+/* ============================================================
+   whysplitplane.css — the split-plane signature.
+
+   ▸ THE TOKEN CONTRACT, AND THE BUG IT FIXES ◂
+
+   The prototype shipped a `--illus-*` contract with hardcoded dark and
+   light palettes. Binding those literals here would give this scene
+   its own private colour scheme that drifts from the rest of the site
+   the first time a token moves. Everything below is derived from `--tx`
+   and `--bg` instead, which already flip per theme — so ONE block
+   serves both themes and there is no light-mode palette to maintain.
+
+   `--illus-fill` is the reason light mode was broken. The artwork
+   references it 264 times, as the fill of every solid, and the
+   prototype's CSS never defined it — so its fallback `#0a0c10` applied
+   unconditionally and every polygon rendered near-black. Correct by
+   accident on a dark page, black-on-cream on a paper one. It is bound
+   to the scene ground here, which is what the art actually wants: the
+   solids read as cut-outs in the surface, not as filled shapes.
+   ============================================================ */
+
+.wsp {
+  --illus-bg: var(--bg-2);
+  /* THE FIX — see the note above. Must equal the scene ground. */
+  --illus-fill: var(--bg-2);
+  --illus-line: var(--tx);
+  --illus-line-dim: color-mix(in srgb, var(--tx) 42%, transparent);
+  --illus-line-faint: color-mix(in srgb, var(--tx) 18%, transparent);
+  --illus-text: var(--tx);
+  --illus-text-dim: var(--tx-dim);
+  --illus-accent: var(--accent);
+  --illus-grid: color-mix(in srgb, var(--tx) 6%, transparent);
+  --illus-font: var(--mono);
+  /* the only value that cannot be derived: the POLICY bloom needs to
+     be softer on paper, where a glow over a light ground reads as a
+     smudge rather than as light */
+  --illus-glow: 0.22;
+
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.iz[data-theme="dark"] .wsp { --illus-glow: 0.55; }
+
+.wsp-svg { display: block; width: 100%; height: auto; }
+.wsp svg text { user-select: none; }
+
+/* The prototype carried these two rules in a <style> block INSIDE the
+   svg. That block is stripped on extraction — an inline <style> in an
+   injected fragment is global, so its `.spr` selectors would have
+   leaked to the whole document — which means the rules have to be
+   restated here. Without this one the POLICY bloom renders at full
+   opacity and the accent blows out. */
+.wsp .spr-glow { opacity: var(--illus-glow); }
+
+/* ---------- which drawing renders ----------
+   Not a scale switch: two different drawings at two aspect ratios.
+   See the component header for why the isometric scene cannot simply
+   be shrunk. */
+.wsp-tall { display: none; }
+
+@media (max-width: 720px) {
+  .wsp-wide { display: none; }
+  .wsp-tall { display: block; }
+}
+
+/* ============================================================
+   The phone scene. Tokens only — it inherits the same `--illus-*`
+   block above, so the two drawings cannot disagree on colour.
+   ============================================================ */
+
+.wsp-tall text { font-family: var(--illus-font); user-select: none; }
+
+.wsp-tag {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  fill: var(--illus-text);
+}
+.wsp-note {
+  font-size: 12.5px;
+  letter-spacing: 0.3px;
+  fill: var(--illus-text-dim);
+}
+.wsp-foot {
+  font-size: 11px;
+  letter-spacing: 2px;
+  fill: var(--illus-line-faint);
+}
+
+/* the band a plane occupies — drawn, so "two planes" is a thing you
+   can see rather than an arrangement you have to infer */
+.wsp-band {
+  fill: none;
+  stroke: var(--illus-line-faint);
+  stroke-width: 1;
+  stroke-dasharray: 5 6;
+}
+.wsp-band.is-yours { stroke-dasharray: none; }
+
+.wsp-rail {
+  stroke: var(--illus-line-dim);
+  stroke-width: 1.4;
+}
+/* the data rail is solid and full-strength: it is the one carrying
+   something that matters to the reader */
+.wsp-rail.is-data {
+  stroke: var(--illus-accent);
+  stroke-width: 1.8;
+}
+
+.wsp-ticket rect {
+  fill: var(--illus-fill);
+  stroke: var(--illus-line);
+  stroke-width: 1.3;
+}
+.wsp-ticket text {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  fill: var(--illus-text);
+}
+.wsp-ticket.is-accent rect { stroke: var(--illus-accent); }
+.wsp-ticket.is-accent text { fill: var(--illus-accent); }
+
+.wsp-crate {
+  fill: var(--illus-fill);
+  stroke: var(--illus-accent);
+  stroke-width: 1.3;
+}
+
+.wsp-node circle,
+.wsp-node rect {
+  fill: var(--illus-fill);
+  stroke: var(--illus-accent);
+  stroke-width: 1.6;
+}
+
+/* the barrier. A dashed rule plus a label, because empty space between
+   the two bands reads as "unfinished", not as "these never meet". */
+.wsp-gap line {
+  stroke: var(--illus-line);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  opacity: 0.55;
+}
+.wsp-gap-t {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  fill: var(--illus-text);
+}

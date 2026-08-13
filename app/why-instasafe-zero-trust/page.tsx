@@ -19,9 +19,9 @@ import "@/components/home2/izlogomarquee.css";
 import "@/components/home2/convergeflow.css";
 import "@/components/home2/izdevband.css";
 import "@/components/izpages/pro/blocks.css";
-import "@/components/izpages/pro/splitplane.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/why/whymatrix.css";
+import "@/components/izpages/why/whysplitplane.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/why/why.css";
 

@@ -15,9 +15,9 @@ import { ConvergeFlow } from "@/components/home2/ConvergeFlow";
 import { IzDevBand } from "@/components/home2/IzDevBand";
 import { IzQuietBand } from "@/components/home2/IzQuestionBand";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
-import { IzSplitPlane } from "@/components/izpages/pro/IzSplitPlane";
 import { IzLogoGrid, type IzLogoGridLogo } from "@/components/izpages/pro/IzLogoGrid";
 import { WhyMatrix } from "./WhyMatrix";
+import { WhySplitPlane } from "./WhySplitPlane";
 import {
   CLUSTERS,
   GLOBAL_FRAMEWORKS,
@@ -433,24 +433,30 @@ export function WhyReasons() {
           <WhyMatrix />
         </section>
 
-        {/* Storyboard 11.0 — the signature. IzSplitPlane was built for
-            the platform outcomes block and never mounted anywhere; it
-            draws exactly the claim this page is named for, so it lands
-            here rather than being redrawn. Static by design: the
-            storyboard asks for a static SVG and the argument does not
-            need motion to land. */}
+        {/* Storyboard 11.0 — the signature.
+
+            The heading states the claim in the reader's terms rather
+            than in ours: "no competitor can copy" is a sentence about
+            the competition, and what a buyer needs to know is what
+            happens to their data.
+
+            The drawing was IzSplitPlane, a three-box flowchart that
+            asserted the claim without showing anything. WhySplitPlane
+            carries the approved isometric scene, and its own portrait
+            drawing for phones — see that component's header for why
+            the wide scene cannot simply be scaled down. */}
         <section className="whyr-sec whyr-sig" id="signature">
           <div className="whyr-head">
             <span className="iz-ey">The architecture</span>
             <h2>
-              The claim no competitor <em>can copy.</em>
+              Your data never <em>travels through us.</em>
             </h2>
           </div>
           <p className="whyr-lead">
             Decisions come from us. Traffic never does. Everything above is a consequence of this one drawing.
           </p>
           <div className="whyr-sig-art">
-            <IzSplitPlane />
+            <WhySplitPlane />
           </div>
         </section>
       </div>
