@@ -75,7 +75,7 @@ const recPreview = (
       <span className="uj-rec-play"><Play weight="fill" /></span>
       <span className="uj-rec-scrub"><i style={{ width: "38%" }} /></span>
     </span>
-    <span className="uj-rec-foot">anita.r · finance-rdp · RDP · 09:24</span>
+    <span className="uj-rec-foot">alen.joseph · build-farm · RDP · 09:24</span>
   </span>
 );
 
@@ -95,16 +95,21 @@ export function UserJourney() {
       <div className="uj-field-grid">
         {/* ---------------- COLUMN 1 — faded recent access events ---------------- */}
         <div className="uj-col c1">
+          {/* App names come from Alen's own entitlements in izUsers.tsx
+              (prod-bastion · build-farm · metrics-db), not the Finance
+              set this card was built with. A journey card that names
+              apps its subject is not entitled to contradicts the very
+              thing the section is demonstrating. */}
           <Card ghost icon={DoorOpen}>
-            <div className="uj-ev-l"><span className="uj-ev-app">billing-portal</span><span className="uj-pill allow">allowed</span></div>
+            <div className="uj-ev-l"><span className="uj-ev-app">prod-bastion</span><span className="uj-pill allow">allowed</span></div>
             <span className="uj-ev-t">Today · 09:42</span>
           </Card>
           <Card ghost icon={DoorOpen}>
-            <div className="uj-ev-l"><span className="uj-ev-app">finance-rdp</span><span className="uj-pill deny">denied</span></div>
+            <div className="uj-ev-l"><span className="uj-ev-app">build-farm</span><span className="uj-pill deny">denied</span></div>
             <span className="uj-ev-t">Today · 09:44 · off-hours</span>
           </Card>
           <Card ghost icon={DoorOpen}>
-            <div className="uj-ev-l"><span className="uj-ev-app">analytics-db</span><span className="uj-pill allow">allowed</span></div>
+            <div className="uj-ev-l"><span className="uj-ev-app">metrics-db</span><span className="uj-pill allow">allowed</span></div>
             <span className="uj-ev-t">Tue · 18:02</span>
           </Card>
         </div>
@@ -132,7 +137,7 @@ export function UserJourney() {
             <div className="uj-line">
               <span className="uj-hl-static">Active Directory</span> user
             </div>
-            <span className="uj-mono-sub">CORP\anita.r</span>
+            <span className="uj-mono-sub">CORP\alen.joseph</span>
             <span className="uj-sub">Joined Oct 2, 2024</span>
           </Card>
         </div>
@@ -140,13 +145,23 @@ export function UserJourney() {
         {/* ---------------- COLUMN 3 — centre identity ---------------- */}
         <div className="uj-col c3">
           <div className="uj-id-card">
-            {/* Alen Joseph is the site's standing cast member — the same
-                person in IzAccessFlow, IzAppWindow, the console mocks and
-                the watermark line, defined once in izUsers.tsx. This card
-                used to be "Anita Rao" on a HOTLINKED randomuser.me photo:
-                a stranger's face, fetched from a third party at render
-                time, on our homepage. Now it is the local asset, cropped
-                to the plate by `object-fit: cover` in userjourney.css. */}
+            {/* THE WHOLE CARD IS ALEN JOSEPH, not just this photo.
+
+                He is the site's standing cast member — the same person in
+                IzAccessFlow, IzAppWindow, the console mocks and the
+                watermark line — defined once in izUsers.tsx. This section
+                was built around a different persona ("Anita Rao",
+                Finance), so swapping only the name and face would have
+                left an Infrastructure Engineer holding Finance-RW,
+                sitting in the Finance group and opening billing-portal.
+                Every field below now comes from Alen's own record:
+                handle, AD account, device host, entitlements, group.
+
+                The photo was also a HOTLINKED randomuser.me URL — a
+                stranger's face fetched from a third party at render time,
+                on our homepage. It is the local asset now, and the plate
+                is a circle because these portraits carry a baked-in
+                circular alpha mask (see userjourney.css). */}
             <span className="uj-photo">
               <span className="uj-photo-fallback" aria-hidden="true">AJ</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -171,8 +186,8 @@ export function UserJourney() {
         <div className="uj-col c4">
           <Card label="Access rules">
             <div className="uj-ruleset">
-              <LinkPreview href="/platform/iam" className="rule" preview={rulePreview("Finance-RW", "Read/write to finance apps for the Finance group, business hours only.")}>
-                <Key weight="fill" /> Finance-RW
+              <LinkPreview href="/platform/iam" className="rule" preview={rulePreview("Infra-RW", "Read/write to infrastructure hosts for the IT-Operations group, business hours only.")}>
+                <Key weight="fill" /> Infra-RW
               </LinkPreview>
               <LinkPreview href="/platform/iam" className="rule" preview={rulePreview("No-RDP-offhours", "Blocks RDP protocol outside 09:00–18:00 Mon–Fri.")}>
                 <Key weight="fill" /> No-RDP-offhours
@@ -190,8 +205,8 @@ export function UserJourney() {
 
           <Card label="Last app accessed">
             <div className="uj-line big">
-              <InfoTip label={<span className="uj-app-name">billing-portal</span>}>
-                <span className="uj-tip-row"><AppWindow weight="fill" /> WEB app · Finance segment</span>
+              <InfoTip label={<span className="uj-app-name">prod-bastion</span>}>
+                <span className="uj-tip-row"><AppWindow weight="fill" /> SSH host · infrastructure segment</span>
                 <span className="uj-tip-row dim">per-app tunnel · mTLS</span>
                 <span className="uj-tip-row dim">42 users today</span>
               </InfoTip>
@@ -203,9 +218,9 @@ export function UserJourney() {
         <div className="uj-col c5">
           <Card label="Devices">
             <div className="uj-devs">
-              <InfoTip label={<span className="uj-dev-trig"><Laptop weight="fill" /> WIN-FIN-114</span>}>
+              <InfoTip label={<span className="uj-dev-trig"><Laptop weight="fill" /> DESKTOP-16MTL6M</span>}>
                 <span className="uj-tip-row"><ShieldCheck weight="fill" /> Posture 25/25</span>
-                <span className="uj-tip-row dim">Windows 11 · managed</span>
+                <span className="uj-tip-row dim">Windows 11 Pro · managed</span>
                 <span className="uj-tip-row dim">last seen 2h ago</span>
               </InfoTip>
               <InfoTip label={<span className="uj-dev-trig"><DeviceMobile weight="fill" /> iPhone 15</span>}>
@@ -218,7 +233,7 @@ export function UserJourney() {
 
           <Card label="User groups">
             <div className="uj-chips">
-              {["Finance", "All-Staff", "VPN-Users"].map((g) => (
+              {["IT-Operations", "All-Staff", "VPN-Users"].map((g) => (
                 <span className="uj-chip" key={g}><UsersThree weight="fill" /> {g}</span>
               ))}
             </div>
