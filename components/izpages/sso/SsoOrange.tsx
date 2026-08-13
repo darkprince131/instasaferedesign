@@ -13,6 +13,7 @@ import { AnswerSso } from "@/components/izanswer/AnswerSso";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { SsoLogin } from "@/components/izoutcomes/artifacts/SsoLogin";
 import { OneLoginRace } from "./OneLoginRace";
+import { SsoWindowStack } from "@/components/izpages/sso/SsoWindowStack";
 import { SsoFlowDiagram } from "./SsoFlowDiagram";
 import { PasswordFatigueIz } from "./PasswordFatigueIz";
 import { SsoHeroCells, SsoHeroScene } from "./SsoScenes";
@@ -309,7 +310,7 @@ export function SsoOrange() {
         <div className="iz-wrap">
           <div className="iz-reveal iz-headblock">
             <span className="iz-ey">What you get</span>
-            <h2 className="iz-h2">One dashboard. Every door.</h2>
+            <h2 className="iz-h2">What SSO includes.</h2>
           </div>
           <div className="iz-reveal iz-cellgrid cols-3">
             {INCLUDED.map((f, i) => (
@@ -326,6 +327,34 @@ export function SsoOrange() {
                 {n}
               </span>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- ONE DASHBOARD — the window stack (00ai) ----------------
+          The page has already said "one login" in words, in a flow
+          diagram and in a stopwatch. This is the same claim shown as
+          what it actually looks like on a screen: three login screens
+          looping through forgot-password, or one portal where the only
+          password of the day was typed at 08:59. */}
+      <section className="iz-section iz-sec--railed" id="one-dashboard">
+        <span className="iz-cross iz-cross--tl" aria-hidden="true" />
+        <span className="iz-cross iz-cross--tr" aria-hidden="true" />
+        <span className="iz-cross iz-cross--bl" aria-hidden="true" />
+        <span className="iz-cross iz-cross--br" aria-hidden="true" />
+        <div className="iz-wrap">
+          <div className="iz-reveal iz-headblock">
+            <span className="iz-ey">One dashboard</span>
+            <h2 className="iz-h2">
+              Every door your role opens — behind <em>one</em> of them.
+            </h2>
+            <p className="iz-lead">
+              Flip the switch to watch the same person work without it: three apps, three sign-ins, and a reset
+              link somewhere in every one of them.
+            </p>
+          </div>
+          <div className="iz-reveal">
+            <SsoWindowStack />
           </div>
         </div>
       </section>

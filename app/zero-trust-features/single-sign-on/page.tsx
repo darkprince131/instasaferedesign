@@ -14,6 +14,7 @@ import "@/components/izpages/sso/sso.css";
 import "@/components/izpages/sso/oneloginrace.css";
 import "@/components/izpages/sso/ssoflowdiagram.css";
 import "@/components/izpages/sso/passwordfatigue.css";
+import "@/components/izpages/sso/ssowindowstack.css";
 import { SsoOrange } from "@/components/izpages/sso/SsoOrange";
 import type { Metadata } from "next";
 

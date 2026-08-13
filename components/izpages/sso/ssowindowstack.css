@@ -1,0 +1,640 @@
+/* ============================================================
+   ssowindowstack.css — the 00ai window stack, SSO edition.
+
+   ▸ ONE CLOCK, MANY PARTS ◂
+   Every moving thing in a window shares that window's duration and
+   its delay, so a cursor arriving at a field and that field lighting
+   up cannot drift apart — they are the same timeline read at
+   different percentages. Change --t and the whole scene retimes.
+
+   ▸ COORDINATES ARE PERCENTAGES OF THE WINDOW ◂
+   The cursor is absolutely positioned inside `.ssws-win`, which
+   carries an aspect-ratio. That is what lets a keyframe say "go to
+   the password field" as a number and still land on it at any width.
+
+   Every colour is a token. This block sits on a page that flips
+   theme, so there are no literal surfaces below.
+   ============================================================ */
+
+.ssws {
+  --t: 11s;            /* one full without-SSO login loop */
+  --tp: 16s;           /* one full portal loop */
+  --ease: cubic-bezier(0.65, 0.02, 0.24, 1);
+  display: grid;
+  gap: var(--sp-5);
+  min-width: 0;
+}
+
+/* ---------- the toggle ---------- */
+.ssws-togglewrap { display: flex; justify-content: center; }
+.ssws-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--tx-dim);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.ssws-toggle:hover { color: var(--tx); border-color: var(--accent); }
+.ssws-track {
+  position: relative;
+  display: block;
+  width: 34px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+  transition: background 0.24s;
+}
+.ssws-toggle.on .ssws-track { background: var(--accent); }
+.ssws-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface);
+  transition: transform 0.24s var(--ease);
+}
+.ssws-toggle.on .ssws-knob { transform: translateX(16px); }
+
+/* ---------- the stage ----------
+   Both states occupy the same grid cell, so flipping the toggle does
+   not move the page under the reader's cursor. */
+.ssws-stage { display: grid; min-width: 0; align-items: start; }
+.ssws-stack,
+.ssws-one {
+  grid-area: 1 / 1;
+  min-width: 0;
+  transition: opacity 0.32s var(--ease), transform 0.32s var(--ease);
+}
+.ssws-stack { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); }
+/* The portal is capped and centred, and not for looks: its height is
+   content-driven while its width is fluid, so a 1144px-wide box is
+   253px tall and every percentage waypoint below misses. Capping the
+   width pins the box's proportions, which is what makes the cursor
+   land on the same tile at 900px and at 1600px. */
+.ssws-one { width: 100%; max-width: 780px; margin-inline: auto; justify-self: center; }
+
+.ssws.is-on .ssws-stack { opacity: 0; transform: scale(0.985); pointer-events: none; }
+.ssws.is-off .ssws-one { opacity: 0; transform: scale(0.985); pointer-events: none; }
+
+/* ---------- the window frame, identical in both states ---------- */
+.ssws-win {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow: hidden;
+  min-width: 0;
+}
+/* Both states are content-sized. An aspect-ratio here made the login
+   windows 487px tall against a 310px portal, which left the ON state
+   floating in 177px of dead space — the two states share one grid
+   cell, so the taller one sets the row. */
+.ssws-win--login { height: max-content; }
+/* No aspect-ratio here on purpose. The portal's rows are fixed-height
+   (chrome, search bar, two tile rows), so the box is content-sized and
+   its height barely moves with width — which is exactly what the
+   cursor's percentage waypoints need to keep landing on their
+   targets. An aspect-ratio would have been overridden by that content
+   anyway, and pretending otherwise makes the numbers below lies. */
+/* And no min-height either: row 2 is `minmax(0, 1fr)`, so a min-height
+   does not raise the floor, it CROPS the portal to that number. The box
+   is exactly its content, which is what the waypoints were measured
+   against. */
+.ssws-win--portal { height: max-content; }
+
+.ssws-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 7px var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+  min-width: 0;
+}
+.ssws-dots { display: flex; gap: 4px; flex: none; }
+.ssws-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); }
+.ssws-nav { display: flex; gap: 5px; color: var(--tx-dim); flex: none; }
+.ssws-nav svg { width: 11px; height: 11px; }
+.ssws-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  min-width: 0;
+  flex: none;
+}
+.ssws-fav { display: grid; place-items: center; color: var(--allow); }
+.ssws-fav svg { width: 9px; height: 9px; }
+.ssws-tabname {
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+  white-space: nowrap;
+}
+.ssws-url {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* ============================================================
+   WITHOUT SSO — the login screen
+   ============================================================ */
+.ssws-login {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  min-width: 0;
+}
+.ssws-brand { display: grid; place-items: center; height: 24px; margin-bottom: var(--sp-1); }
+.ssws-brand img { max-width: 74px; max-height: 22px; object-fit: contain; display: block; }
+.ssws-brand.sm { height: auto; color: var(--accent); }
+.ssws-brand.sm svg { width: 18px; height: 18px; }
+.ssws-lh {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--tx);
+  text-align: center;
+  margin-bottom: var(--sp-1);
+}
+
+.ssws-field {
+  display: grid;
+  gap: 2px;
+  padding: 5px var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  min-width: 0;
+}
+.ssws-field em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.ssws-field b {
+  font-weight: 400;
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ssws-field b.dots { letter-spacing: 1px; }
+
+/* Orange is InstaSafe's. Three third-party login screens all wearing
+   our accent on their submit button reads as our product asking for
+   those passwords, which is the opposite of the argument. Their
+   buttons are neutral; only the portal's own button is accent. */
+.ssws-btn {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-radius: var(--r-sm);
+  background: var(--tx);
+  color: var(--bg);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+}
+.ssws-err {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--deny);
+  opacity: 0;
+}
+.ssws-err svg { width: 11px; height: 11px; flex: none; }
+.ssws-forgot {
+  justify-self: center;
+  font-size: 10px;
+  color: var(--tx-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ssws-sent {
+  display: block;
+  padding: 4px var(--sp-2);
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--allow) 12%, transparent);
+  font-size: 10px;
+  color: var(--allow);
+  text-align: center;
+  opacity: 0;
+}
+
+/* ============================================================
+   WITH INSTASAFE — the portal
+   ============================================================ */
+.ssws-portal { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); min-width: 0; }
+.ssws-side {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-right: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.ssws-side-me {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+}
+.ssws-side i { display: block; width: 16px; height: 4px; border-radius: 2px; background: var(--line-strong); }
+
+.ssws-main { position: relative; display: grid; align-content: start; gap: var(--sp-4); padding: var(--sp-5); min-width: 0; }
+.ssws-portal-top { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); min-width: 0; }
+.ssws-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+}
+.ssws-search svg { width: 11px; height: 11px; }
+.ssws-who { display: grid; justify-items: end; gap: 1px; text-align: right; }
+.ssws-who b { font-size: var(--fs-2xs); font-weight: 600; color: var(--tx); }
+.ssws-who em { font-style: normal; font-family: var(--mono); font-size: 9px; color: var(--allow); }
+
+.ssws-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-3); min-width: 0; }
+.ssws-tile {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  min-width: 0;
+}
+.ssws-tile img { width: 26px; height: 26px; object-fit: contain; display: block; }
+.ssws-tile b {
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--tx-dim);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* the sign-in gate — shown once per loop, and only once */
+.ssws-gate {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(2px);
+}
+.ssws-gate-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  width: min(210px, 74%);
+  padding: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.1);
+}
+.ssws-gate-card > b { font-size: var(--fs-xs); font-weight: 600; color: var(--tx); }
+.ssws-gate-card .ssws-field,
+.ssws-gate-card .ssws-btn { width: 100%; }
+.ssws-gate-card .ssws-btn { background: var(--accent); color: #fff; }
+.ssws-gate-mfa { font-style: normal; font-family: var(--mono); font-size: 9px; color: var(--tx-dim); }
+
+/* an application, opened over the portal */
+.ssws-app {
+  position: absolute;
+  inset: var(--sp-4);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+  opacity: 0;
+  transform: scale(0.96);
+  overflow: hidden;
+}
+.ssws-app-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+  min-width: 0;
+}
+.ssws-app-bar img { width: 14px; height: 14px; object-fit: contain; flex: none; }
+.ssws-app-bar b { font-size: var(--fs-2xs); font-weight: 600; color: var(--tx); flex: none; }
+.ssws-app-bar em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--allow);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ssws-app-bar svg { width: 11px; height: 11px; color: var(--tx-dim); margin-left: auto; flex: none; }
+.ssws-app-body {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  min-width: 0;
+}
+.ssws-app-tools { display: flex; gap: 6px; margin-bottom: var(--sp-2); }
+.ssws-app-tools i { display: block; height: 14px; border-radius: var(--r-pill); background: var(--bg-2); border: 1px solid var(--line); }
+.ssws-app-tools i:nth-child(1) { width: 46px; background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: transparent; }
+.ssws-app-tools i:nth-child(2) { width: 34px; }
+.ssws-app-tools i:nth-child(3) { width: 22px; }
+.ssws-app-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1.6fr) minmax(0, 1fr) 26px;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+.ssws-app-row i { display: block; height: 7px; border-radius: 3px; background: var(--line-strong); }
+.ssws-app-row .d { width: 16px; height: 16px; border-radius: var(--r-sm); background: var(--bg-2); border: 1px solid var(--line); }
+.ssws-app-row .l2 { opacity: 0.55; }
+.ssws-app-row .tag { height: 11px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--allow) 24%, transparent); }
+
+/* ============================================================
+   THE CURSOR
+   ============================================================ */
+.ssws-cur {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 13px;
+  height: 15px;
+  color: var(--tx);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.ssws-cur svg { width: 13px; height: 15px; display: block; }
+.ssws-cur svg path { fill: var(--surface); stroke: var(--tx); stroke-width: 1.4; stroke-linejoin: round; }
+.ssws-ring {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+/* ============================================================
+   CHOREOGRAPHY
+   Animations only attach once the scene has been seen AND the state
+   is actually on screen — a paused-behind-a-toggle loop is work for
+   nothing, and four of them is four times nothing.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  /* ---------- without SSO: email → password → wrong → forgot ---------- */
+  .ssws.in.is-off .c-login { animation: ssws-login-cur var(--t) var(--ease) infinite; }
+  .ssws.in.is-off .c-login .ssws-ring { animation: ssws-login-click var(--t) linear infinite; }
+  .ssws.in.is-off .f-mail { animation: ssws-focus-mail var(--t) linear infinite; }
+  .ssws.in.is-off .f-pass { animation: ssws-focus-pass var(--t) linear infinite; }
+  .ssws.in.is-off .f-submit { animation: ssws-press var(--t) linear infinite; }
+  .ssws.in.is-off .f-forgot { animation: ssws-forgot-hit var(--t) linear infinite; }
+  .ssws.in.is-off .ssws-err { animation: ssws-err var(--t) linear infinite; }
+  .ssws.in.is-off .ssws-sent { animation: ssws-sent var(--t) linear infinite; }
+
+  /* three loops out of phase, so somebody on screen is always stuck */
+  .ssws .w1 * { animation-delay: -3.7s !important; }
+  .ssws .w2 * { animation-delay: -7.4s !important; }
+
+  /* ---------- with InstaSafe: sign in once, then work ---------- */
+  .ssws.in.is-on .c-portal { animation: ssws-portal-cur var(--tp) var(--ease) infinite; }
+  .ssws.in.is-on .c-portal .ssws-ring { animation: ssws-portal-click var(--tp) linear infinite; }
+  .ssws.in.is-on .ssws-gate { animation: ssws-gate var(--tp) linear infinite; }
+  .ssws.in.is-on .g-submit { animation: ssws-press-gate var(--tp) linear infinite; }
+  .ssws.in.is-on .ssws-app { animation-duration: var(--tp); animation-timing-function: var(--ease); animation-iteration-count: infinite; }
+  .ssws.in.is-on .a0 { animation-name: ssws-app0; }
+  .ssws.in.is-on .a1 { animation-name: ssws-app1; }
+  .ssws.in.is-on .a2 { animation-name: ssws-app2; }
+  .ssws.in.is-on .t0 { animation: ssws-tile0 var(--tp) linear infinite; }
+  .ssws.in.is-on .t1 { animation: ssws-tile1 var(--tp) linear infinite; }
+  .ssws.in.is-on .t2 { animation: ssws-tile2 var(--tp) linear infinite; }
+}
+
+/* --- the login cursor's route, in % of the window box --- */
+/* Waypoints are MEASURED, not guessed: each pair is the live centre of
+   its target as a percentage of the window box. Re-measure if the login
+   form gains or loses a row. */
+@keyframes ssws-login-cur {
+  0%   { left: 74%; top: 96%; opacity: 0; }
+  4%   { left: 68%; top: 90%; opacity: 1; }
+  12%  { left: 31.8%; top: 42.1%; opacity: 1; }  /* work email */
+  22%  { left: 31.8%; top: 42.1%; }
+  29%  { left: 31.8%; top: 57.1%; }              /* password */
+  40%  { left: 31.8%; top: 57.1%; }
+  46%  { left: 31.8%; top: 69.7%; }              /* sign in */
+  57%  { left: 31.8%; top: 69.7%; }
+  63%  { left: 45.6%; top: 85.1%; }              /* forgot password */
+  80%  { left: 45.6%; top: 85.1%; opacity: 1; }
+  90%  { left: 60%; top: 94%; opacity: 0.3; }
+  100% { left: 74%; top: 96%; opacity: 0; }
+}
+@keyframes ssws-login-click {
+  0%, 13.9% { opacity: 0; transform: scale(0.3); }
+  14%       { opacity: 0.9; transform: scale(0.3); }
+  19%       { opacity: 0; transform: scale(1.15); }
+  30.9%     { opacity: 0; transform: scale(0.3); }
+  31%       { opacity: 0.9; transform: scale(0.3); }
+  36%       { opacity: 0; transform: scale(1.15); }
+  47.9%     { opacity: 0; transform: scale(0.3); }
+  48%       { opacity: 0.9; transform: scale(0.3); }
+  53%       { opacity: 0; transform: scale(1.15); }
+  64.9%     { opacity: 0; transform: scale(0.3); }
+  65%       { opacity: 0.9; transform: scale(0.3); }
+  70%, 100% { opacity: 0; transform: scale(1.15); }
+}
+@keyframes ssws-focus-mail {
+  0%, 13% { border-color: var(--line); background: var(--bg-2); }
+  15%, 28% { border-color: var(--accent); background: var(--surface); }
+  30%, 100% { border-color: var(--line); background: var(--bg-2); }
+}
+@keyframes ssws-focus-pass {
+  0%, 30% { border-color: var(--line); background: var(--bg-2); }
+  32%, 45% { border-color: var(--accent); background: var(--surface); }
+  47%, 100% { border-color: var(--line); background: var(--bg-2); }
+}
+@keyframes ssws-press {
+  0%, 47% { transform: none; filter: none; }
+  49%, 52% { transform: scale(0.97); filter: brightness(0.9); }
+  54%, 100% { transform: none; filter: none; }
+}
+@keyframes ssws-forgot-hit {
+  0%, 64% { color: var(--tx-dim); }
+  66%, 82% { color: var(--accent); }
+  84%, 100% { color: var(--tx-dim); }
+}
+@keyframes ssws-err {
+  0%, 52% { opacity: 0; }
+  55%, 78% { opacity: 1; }
+  82%, 100% { opacity: 0; }
+}
+@keyframes ssws-sent {
+  0%, 68% { opacity: 0; }
+  72%, 88% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+
+/* --- the portal cursor: one sign-in, then three apps --- */
+@keyframes ssws-portal-cur {
+  0%   { left: 52%; top: 96%; opacity: 0; }
+  3%   { left: 51%; top: 86%; opacity: 1; }
+  8%   { left: 50.8%; top: 71.6%; opacity: 1; }  /* continue */
+  13%  { left: 50.8%; top: 71.6%; }
+  18%  { left: 16.7%; top: 48.6%; }              /* tile 1 */
+  23%  { left: 16.7%; top: 48.6%; }
+  36%  { left: 30%; top: 66%; }                  /* working inside it */
+  42%  { left: 39.5%; top: 48.6%; }              /* tile 2 */
+  47%  { left: 39.5%; top: 48.6%; }
+  60%  { left: 47%; top: 66%; }
+  66%  { left: 62.3%; top: 48.6%; }              /* tile 3 */
+  71%  { left: 62.3%; top: 48.6%; }
+  84%  { left: 60%; top: 66%; }
+  94%  { left: 54%; top: 92%; opacity: 1; }
+  100% { left: 52%; top: 96%; opacity: 0; }
+}
+@keyframes ssws-portal-click {
+  0%, 8.9%   { opacity: 0; transform: scale(0.3); }
+  9%         { opacity: 0.9; transform: scale(0.3); }
+  13%        { opacity: 0; transform: scale(1.15); }
+  20.9%      { opacity: 0; transform: scale(0.3); }
+  21%        { opacity: 0.9; transform: scale(0.3); }
+  25%        { opacity: 0; transform: scale(1.15); }
+  44.9%      { opacity: 0; transform: scale(0.3); }
+  45%        { opacity: 0.9; transform: scale(0.3); }
+  49%        { opacity: 0; transform: scale(1.15); }
+  68.9%      { opacity: 0; transform: scale(0.3); }
+  69%        { opacity: 0.9; transform: scale(0.3); }
+  73%, 100%  { opacity: 0; transform: scale(1.15); }
+}
+@keyframes ssws-gate {
+  0%, 9% { opacity: 1; visibility: visible; }
+  13%    { opacity: 0; visibility: visible; }
+  14%, 95% { opacity: 0; visibility: hidden; }
+  99%, 100% { opacity: 1; visibility: visible; }
+}
+@keyframes ssws-press-gate {
+  0%, 8% { transform: none; filter: none; }
+  10%, 12% { transform: scale(0.97); filter: brightness(0.9); }
+  14%, 100% { transform: none; filter: none; }
+}
+/* each app: open on its click, work for a few seconds, close */
+@keyframes ssws-app0 {
+  0%, 21% { opacity: 0; transform: scale(0.96); }
+  24%, 36% { opacity: 1; transform: scale(1); }
+  39%, 100% { opacity: 0; transform: scale(0.96); }
+}
+@keyframes ssws-app1 {
+  0%, 45% { opacity: 0; transform: scale(0.96); }
+  48%, 60% { opacity: 1; transform: scale(1); }
+  63%, 100% { opacity: 0; transform: scale(0.96); }
+}
+@keyframes ssws-app2 {
+  0%, 69% { opacity: 0; transform: scale(0.96); }
+  72%, 84% { opacity: 1; transform: scale(1); }
+  87%, 100% { opacity: 0; transform: scale(0.96); }
+}
+/* the tile the cursor is about to hit lights up */
+@keyframes ssws-tile0 {
+  0%, 18% { border-color: var(--line); background: var(--bg-2); }
+  20%, 24% { border-color: var(--accent); background: var(--surface); }
+  26%, 100% { border-color: var(--line); background: var(--bg-2); }
+}
+@keyframes ssws-tile1 {
+  0%, 42% { border-color: var(--line); background: var(--bg-2); }
+  44%, 48% { border-color: var(--accent); background: var(--surface); }
+  50%, 100% { border-color: var(--line); background: var(--bg-2); }
+}
+@keyframes ssws-tile2 {
+  0%, 66% { border-color: var(--line); background: var(--bg-2); }
+  68%, 72% { border-color: var(--accent); background: var(--surface); }
+  74%, 100% { border-color: var(--line); background: var(--bg-2); }
+}
+
+.ssws-caption {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+  margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   Three login windows side by side stop being readable long before a
+   phone. At 900px it is two, out of phase; on a phone it is one, for
+   the height reason spelled out on the rule itself.
+
+   No aspect-ratio anywhere below. Both windows are content-sized on
+   purpose (see above) and an aspect-ratio here silently crops them —
+   it is what made the phone login window 236px tall against a form
+   that needs 358, putting every cursor waypoint in the wrong place.
+   ============================================================ */
+@media (max-width: 900px) {
+  .ssws-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ssws-win--login.w2 { display: none; }
+}
+@media (max-width: 620px) {
+  .ssws-stack { grid-template-columns: minmax(0, 1fr); }
+  /* One window on a phone, and only because of height: two stacked is
+     740px against a 399px portal, and the two states share a grid row,
+     so the ON state would sit in 340px of nothing. One window still
+     loops through forgot-password forever, which is the claim. */
+  .ssws-win--login.w1 { display: none; }
+  .ssws-app-bar em { display: none; }
+  .ssws-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ssws-portal { grid-template-columns: 32px minmax(0, 1fr); }
+  .ssws-main { padding: var(--sp-4); }
+}
