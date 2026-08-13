@@ -1,0 +1,263 @@
+/* ============================================================
+   ztaaproof.css — the three "prove everything" views.
+
+   ONE GRAMMAR ACROSS ALL THREE: a left rail that names and counts the
+   set, a right pane that shows one member of it working. Three
+   unrelated dashboards would read as three screenshots pasted into a
+   tab strip; the shared frame is what makes them one section.
+
+   Tokens only — these sit inside FeatureHub's stage, which is
+   theme-aware, so nothing here may hardcode a surface.
+   ============================================================ */
+
+.zph {
+  display: grid;
+  gap: var(--sp-4);
+  min-width: 0;
+  font-size: var(--fs-sm);
+}
+.zph--events,
+.zph--reports { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.6fr); }
+/* the exports view is source -> engine -> targets, so it needs a
+   third column for the engine to sit between the two lists */
+.zph--exports { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr); align-items: center; }
+
+/* ---------- the rail ---------- */
+.zph-rail {
+  min-width: 0;
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.zph-rail-h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.zph-dot { width: 7px; height: 7px; border-radius: var(--r-pill); background: var(--allow); flex: none; }
+
+.zph-rail ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.zph-rail li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--tx);
+  min-width: 0;
+}
+.zph-rail li:last-child { border-bottom: 0; }
+.zph-rail li b {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  color: var(--tx-dim);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+.zph-rail-plain li { justify-content: flex-start; color: var(--tx-dim); }
+.zph-rail-plain li.on { color: var(--accent); font-weight: 500; }
+.zph-rail-note {
+  display: block;
+  margin-top: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+}
+
+/* ---------- the pane ---------- */
+.zph-pane {
+  min-width: 0;
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.zph-pane-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+.zph-pane-t { font-weight: 500; color: var(--tx); }
+.zph-live,
+.zph-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 3px var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+.zph-live i { width: 6px; height: 6px; border-radius: var(--r-pill); background: var(--allow); }
+
+/* ---------- event rows ---------- */
+.zph-rows { list-style: none; margin: 0; padding: 0; }
+.zph-rows li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.1fr) minmax(0, 1.2fr) auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.zph-rows li:last-child { border-bottom: 0; }
+.zph-t {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+  font-variant-numeric: tabular-nums;
+}
+.zph-what { color: var(--tx); font-weight: 500; min-width: 0; }
+.zph-who,
+.zph-where { color: var(--tx-dim); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zph-where { font-family: var(--mono); font-size: var(--fs-2xs); }
+.zph-tag {
+  padding: 2px var(--sp-3);
+  border-radius: var(--r-pill);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  white-space: nowrap;
+}
+.zph-tag.is-allow { color: var(--allow); background: var(--allow-bg); }
+.zph-tag.is-accent { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.zph-tag.is-mute { color: var(--tx-dim); background: color-mix(in srgb, var(--tx) 7%, transparent); }
+
+/* ---------- report stats ---------- */
+.zph-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.zph-stat {
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  min-width: 0;
+}
+.zph-stat-l { font-size: var(--fs-2xs); color: var(--tx-dim); }
+.zph-stat b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+}
+.zph-delta { font-family: var(--mono); font-size: var(--fs-2xs); color: var(--allow); }
+/* a FALL in denied requests is a good outcome, so the down arrow is
+   not styled as a failure — the semantic is "improved", not "down" */
+.zph-delta.is-down { color: var(--allow); }
+
+.zph-apps-h {
+  display: block;
+  margin-bottom: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.zph-app {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  min-width: 0;
+}
+.zph-app img { width: 18px; height: 18px; object-fit: contain; display: block; }
+.zph-app-n { color: var(--tx-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zph-meter { display: block; height: 6px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--tx) 8%, transparent); overflow: hidden; }
+.zph-meter i { display: block; height: 100%; border-radius: var(--r-pill); background: var(--accent); }
+
+/* ---------- exports ---------- */
+.zph-engine {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-5) var(--sp-4);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
+  border-radius: var(--r-md);
+  background: var(--surface);
+  text-align: center;
+}
+.zph-engine-mark { display: grid; place-items: center; color: var(--accent); }
+.zph-engine-mark svg { width: 26px; height: 26px; }
+.zph-engine-t {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  line-height: 1.4;
+  color: var(--tx-dim);
+}
+
+.zph-targets { display: grid; gap: var(--sp-2); min-width: 0; }
+.zph-target {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  min-width: 0;
+}
+.zph-target-ic { display: grid; place-items: center; }
+.zph-target-ic img { width: 18px; height: 18px; object-fit: contain; display: block; }
+/* the typed placeholder that stands in for a mark we do not hold */
+.zph-target-ic b {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--tx-mute);
+}
+.zph-target-n { color: var(--tx); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zph-ext {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  padding: 1px var(--sp-2);
+  border-radius: var(--r-2xs);
+  background: color-mix(in srgb, var(--tx) 7%, transparent);
+  white-space: nowrap;
+}
+
+/* ---------- narrow ---------- */
+@media (max-width: 900px) {
+  .zph--events,
+  .zph--reports,
+  .zph--exports { grid-template-columns: minmax(0, 1fr); }
+  /* the engine sits BETWEEN the two lists in reading order once the
+     row collapses, which is the same story told vertically */
+  .zph-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .zph-rows li {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    row-gap: var(--sp-1);
+  }
+  /* the two middle columns are context, not the event — they drop
+     before the timestamp or the verdict do */
+  .zph-who,
+  .zph-where { display: none; }
+}

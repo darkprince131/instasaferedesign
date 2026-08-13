@@ -36,9 +36,9 @@ import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzTrustBar } from "@/components/home2/IzTrustBar";
 import { ZtaaSessionSplit } from "./ZtaaSessionSplit";
 import { ZTAA_PEOPLE } from "./ztaa-people";
+import { ZtaaProofHub } from "./ZtaaProofHub";
 import { IzUseCaseSwitch } from "@/components/home2/IzUseCaseSwitch";
 import { IzUserPortal } from "@/components/home2/IzUserPortal";
-import { LiveActivity } from "@/components/home2/LiveActivity";
 import { AnswerZtaa } from "@/components/izanswer/AnswerZtaa";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { ZtaaIdentity } from "@/components/izoutcomes/artifacts/ZtaaIdentity";
@@ -314,21 +314,15 @@ export function ZtaaPage() {
         </div>
       </section>
 
-      {/* ---------------- PROVE EVERYTHING ---------------- */}
-      <section className="ztaa-mech">
+      {/* ---------------- PROVE EVERYTHING ----------------
+          Was a bare LiveActivity feed under a prose lead. The claim
+          here is three numbers — 202 event types, 11 report types, 7
+          SIEM formats — and one scrolling log could only ever show the
+          first of them. 00i FeatureHub gives each number its own tab
+          and its own picture. See ZtaaProofHub. */}
+      <section className="ztaa-mech" id="prove">
         <div className="iz-wrap">
-          <div className="ztaa-mech-h">
-            <span className="iz-ey">Prove everything</span>
-            <h3>
-              Every session, <em>answerable months later</em>.
-            </h3>
-            <p>
-              202 event types — logins, failures, posture results, policy decisions, session starts and ends, in-session
-              actions. 11 built-in report types and 7 SIEM export formats, so the record leaves the platform in the shape
-              your tooling already reads.
-            </p>
-          </div>
-          <LiveActivity headless />
+          <ZtaaProofHub />
         </div>
       </section>
 

@@ -221,9 +221,9 @@ function AuditView() {
 }
 
 /* ---------- tabs ---------- */
-interface Tab { icon: Icon; title: string; desc: string; href: string; }
+export interface FeatureHubTab { icon: Icon; title: string; desc: string; href: string; }
 
-const TABS: Tab[] = [
+const TABS: FeatureHubTab[] = [
   { icon: Fingerprint, title: "Identity & access",    desc: "SSO, MFA and risk-based conditional access on every request.",                          href: "/platform/iam" },
   { icon: ShareNetwork, title: "Zero-trust controls", desc: "Dozens of access controls — device, geo, session and more — around every app.",          href: "/platform" },
   { icon: FileText,    title: "Visibility & audit",   desc: "Every access event, allowed or denied, streamed live to your SIEM.",                     href: "/zero-trust-network-access" },
@@ -231,16 +231,44 @@ const TABS: Tab[] = [
 
 const N = TABS.length;
 
-export function FeatureHub() {
-  const [tab, setTab] = useState(1);
+/* ============================================================
+   CONTENT IS INJECTABLE (2026-08-13).
+
+   The heading, the three tabs and the three views were all hardcoded,
+   so the chassis — autoplaying 3-tab showcase with a progress bar and
+   a stage above it — could only ever say the one thing it was born
+   saying. /zero-trust-application-access needs the same chassis for
+   logs, reports and exports, so all four are props now. Omit them and
+   the homepage version renders exactly as before.
+
+   `views` is an array of three nodes, indexed by tab. It is a plain
+   array rather than a render prop because the stage swaps whole scenes
+   and each one carries its own `key` — see the note on the stage.
+   ============================================================ */
+export function FeatureHub({
+  eyebrow = "One platform",
+  title,
+  lead = "Identity, device, session and audit — pick a layer to see it in action.",
+  tabs = TABS,
+  views,
+  initial = 1,
+}: {
+  eyebrow?: string;
+  title?: React.ReactNode;
+  lead?: string;
+  tabs?: FeatureHubTab[];
+  views?: [React.ReactNode, React.ReactNode, React.ReactNode];
+  initial?: number;
+} = {}) {
+  const [tab, setTab] = useState(initial);
   const [paused, setPaused] = useState(false);
 
   // Fresh TAB_MS countdown each time `tab` or `paused` changes.
   useEffect(() => {
     if (paused) return;
-    const id = setTimeout(() => setTab((t) => (t + 1) % N), TAB_MS);
+    const id = setTimeout(() => setTab((t) => (t + 1) % tabs.length), TAB_MS);
     return () => clearTimeout(id);
-  }, [tab, paused]);
+  }, [tab, paused, tabs.length]);
 
   function choose(i: number) { setTab(i); }
 
@@ -251,17 +279,19 @@ export function FeatureHub() {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="fh-head">
-        <span className="iz-ey">One platform</span>
-        <h2 className="iz-h2">Every control, <em>around every app</em>.</h2>
-        <p className="fh-lead">Identity, device, session and audit — pick a layer to see it in action.</p>
+        <span className="iz-ey">{eyebrow}</span>
+        <h2 className="iz-h2">{title ?? (<>Every control, <em>around every app</em>.</>)}</h2>
+        <p className="fh-lead">{lead}</p>
       </div>
 
       <div className="fh-stage">
-        {tab === 0 ? <IdentityView key="i" /> : tab === 2 ? <AuditView key="a" /> : <HubView key="h" />}
+        {views
+          ? <div key={`v${tab}`} className="fh-view">{views[tab]}</div>
+          : tab === 0 ? <IdentityView key="i" /> : tab === 2 ? <AuditView key="a" /> : <HubView key="h" />}
       </div>
 
       <div className="fh-groups" role="tablist" aria-label="Feature categories">
-        {TABS.map((t, i) => (
+        {tabs.map((t, i) => (
           <div
             key={t.title}
             role="tab"
