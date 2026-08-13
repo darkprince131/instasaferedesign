@@ -93,7 +93,13 @@ function DockIcon({ mouseX, item, on, onHover, reduced }: { mouseX: MotionValue<
       onClick={() => (window.location.href = item.href)}
       aria-label={item.name}
     >
-      <span className="logo">
+      {/* `data-tall` marks a PORTRAIT mark. `object-fit: contain` fits
+          the constraining axis, so a wide wordmark is capped by width
+          and lands ~16px tall while Café Coffee Day — the one mark
+          taller than it is wide — is capped by HEIGHT and filled the
+          tile at 45px, roughly three times its neighbours' optical
+          mass. The cap in walloflove.css puts it back on their scale. */}
+      <span className="logo" data-tall={item.ar < 1 || undefined}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`/logos/customers/${item.file}.svg`} alt="" aria-hidden="true" loading="lazy" />
       </span>
@@ -143,7 +149,7 @@ export function WallOfLove() {
             <span className="wt">{cur.name.toLowerCase()}.app</span>
           </div>
           <div className="wol-body" key={active}>
-            <span className="wol-logo-lg">
+            <span className="wol-logo-lg" data-tall={cur.ar < 1 || undefined}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`/logos/customers/${cur.file}.svg`} alt={cur.name} loading="lazy" />
             </span>

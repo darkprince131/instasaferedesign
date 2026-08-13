@@ -216,6 +216,10 @@ function ReasonNumbers() {
             { value: "7", label: "SIEM formats to export to" },
             { value: "11", label: "report types out of the box" },
           ]}
+          /* the component's default note reads "Trend shown is
+             illustrative" — a disclaimer on the sparkline. Removed on
+             the user's call; the line is texture, not a data claim. */
+          note=""
         />
       </div>
 
@@ -405,7 +409,10 @@ const REGULATOR_TABS: IzTabSwitchTab[] = [
 function ReasonFrameworks() {
   return (
     <section className="whyr-sec" id="reason-frameworks">
-      <Head kicker="The frameworks" title="Both columns," em="filled." />
+      {/* No <Head> (user call, 2026-08-13). "The frameworks / Both
+          columns, filled." sat directly above a tab block that carries
+          its own h2 — two headings stacked before any content. The lead
+          below still frames the section. */}
       <p className="whyr-lead">
         Indian regulators and global standards, from one platform. Most vendors are strong in one column and thin in the
         other — the combination is the part the market lacks.

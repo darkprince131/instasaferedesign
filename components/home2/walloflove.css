@@ -52,6 +52,7 @@
   box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.28);
 }
 .wol-logo-lg img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.wol-logo-lg[data-tall] img { max-height: 78%; }
 /* the marks are supplied as dark art, so on the dark theme they are
    lifted rather than recoloured — no per-logo variants to maintain */
 .iz[data-theme="dark"] .wol-logo-lg img,
@@ -91,6 +92,9 @@
 /* contain, never cover: the dock magnifies the TILE, and a mark that
    filled it would be cropped differently at every size */
 .wol-icon .logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+/* portrait marks are capped by HEIGHT so they sit on the same optical
+   scale as the wordmarks around them — see the note in WallOfLove.tsx */
+.wol-icon .logo[data-tall] img { max-height: 62%; }
 .wol-icon.on .logo { box-shadow: inset 0 0 0 1px var(--line-strong), 0 0 0 2px var(--orange), 0 6px 14px -4px rgba(0, 0, 0, 0.35); }
 .wol-tip {
   position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);

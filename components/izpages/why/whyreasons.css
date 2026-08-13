@@ -367,12 +367,24 @@
   padding-block: 0;
   background: none;
 }
+/* ConvergeFlow carries its own `max-width: 1060px`, which was fine as a
+   standalone panel and leaves it 84px narrower than every other block
+   in the column. Every embed here is measured by the section edge. */
+.whyr-embed > .cf { max-width: none; }
 /* the rails are drawn against the PAGE gutters; inside a column they
    would run through the content rather than beside it */
 .whyr-embed > .iz-railed::before,
 .whyr-embed > .iz-railed::after { display: none; }
 
-.whyr-embed .iz-wrap {
+/* `.iz-railed .iz-wrap` in izgrid.css sets
+   `padding: calc(var(--wrap-gutter) + var(--rail-inset))` and is ALSO
+   (0,2,0) — same specificity as `.whyr-embed .iz-wrap`, but later in
+   the sheet, so it won and every embedded band came out 104px narrower
+   than the section above it. Qualifying with `.iz-railed` takes this to
+   (0,3,0) and settles it. This is the rail-inset trap; it has bitten
+   this codebase before. */
+.whyr-embed .iz-wrap,
+.whyr-embed .iz-railed .iz-wrap {
   max-width: none;
   padding-inline: 0;
   margin-inline: 0;
