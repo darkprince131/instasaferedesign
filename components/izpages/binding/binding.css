@@ -1,0 +1,568 @@
+/* ============================================================
+   binding.css — /zero-trust-features/device-binding
+
+   Only this page's own sections. The hero uses the same split as the
+   other feature-deep pages (posture, SSO, MFA, IAM) so the cluster
+   reads as one template.
+
+   Everything is a token. The reference's soft drop-shadows and pill
+   chrome become hairline plates and ink-on-tint states — a shadowed
+   floating card is the one thing this design system does not do.
+   ============================================================ */
+
+.iz { --zt-nav: 66px; }
+
+/* ---------------- hero ---------------- */
+.dbg-hero { padding: var(--sp-12) 0 var(--sp-10); }
+/* same reasoning as the posture hero: the scene holds a record card
+   beside a flow column and loses the timestamp gutter at the 1200 wrap */
+.dbg-hero .iz-wrap { max-width: 1340px; }
+.dbg-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 430px) minmax(0, 1fr);
+  gap: 56px;
+  align-items: center;
+}
+.dbg-hero h1 { max-width: 14ch; }
+.dbg-hero .iz-lead { max-width: 42ch; }
+.dbg-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+/* ---------------- page rhythm ---------------- */
+.dbg-sec { padding: var(--sp-section) 0; }
+.dbg-sec--alt { background: var(--bg-2); border-block: 1px solid var(--line); }
+
+.dbg-head { max-width: 60ch; margin-bottom: var(--sp-10); }
+.dbg-head--center { margin-inline: auto; text-align: center; }
+.dbg-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.dbg-head h2 em { font-style: normal; color: var(--orange); }
+.dbg-head p {
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   BindingHeroScene — the record, and the flow that produced it
+   ============================================================ */
+.dbs {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--sp-5);
+  align-items: start;
+}
+
+/* ---- the device record ---- */
+.dbs-card,
+.dbs-flow {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  overflow: hidden;
+}
+
+/* the machine, small, in the record's header. The render is a square
+   with the laptop centred in a lot of air, so the box takes the
+   laptop's own proportion and `cover` crops the air rather than
+   letterboxing it into the row. */
+.dbs-thumb {
+  flex: none;
+  width: 60px;
+  height: 42px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.dbs-card-h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.dbs-card-t { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.dbs-card-t b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.dbs-card-t em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.dbs-badge {
+  margin-left: auto;
+  flex: none;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--allow-bg);
+  color: var(--allow);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+
+.dbs-rows { margin: 0; padding: 0; }
+.dbs-row {
+  display: grid;
+  grid-template-columns: minmax(0, 118px) minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  border-bottom: 1px solid var(--line);
+}
+.dbs-row dt {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.dbs-row dt svg { flex: none; color: var(--tx-dim); }
+.dbs-row dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx);
+  overflow-wrap: anywhere;
+}
+.dbs-row dd.is-ok { color: var(--allow); }
+
+.dbs-verdict {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--allow-bg);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.dbs-verdict svg { flex: none; margin-top: 2px; color: var(--allow); }
+.dbs-verdict b { color: var(--tx); font-weight: 500; }
+
+/* ---- the approval flow ---- */
+.dbs-flow { padding: var(--sp-5); }
+.dbs-flow-lab {
+  display: block;
+  margin-bottom: var(--sp-4);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.dbs-flow-lab i { font-style: normal; color: var(--orange); }
+.dbs-flow ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.dbs-flow li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+}
+/* the spine runs between dots, not past the last one */
+.dbs-flow li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  bottom: -50%;
+  width: 1px;
+  background: var(--line);
+}
+.dbs-flow-dot {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.dbs-flow-b { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.dbs-flow-b b {
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--tx-dim);
+  transition: color var(--dur) var(--ease);
+}
+.dbs-flow-b em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+.dbs-flow-ck {
+  margin-left: auto;
+  flex: none;
+  color: var(--allow);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+/* completed step — and the BASE of every step is the completed state
+   for anyone who never triggers the sequence */
+.dbs-flow li.is-done .dbs-flow-dot { background: var(--allow); border-color: var(--allow); }
+.dbs-flow li.is-done .dbs-flow-b b { color: var(--tx); }
+.dbs-flow li.is-done .dbs-flow-ck { opacity: 1; }
+/* the last step is the verdict, so it reads in the allow colour */
+.dbs-flow li:last-child.is-done .dbs-flow-b b { color: var(--allow); }
+
+/* ============================================================
+   BindingPillars — four properties on one bordered grid
+   ============================================================ */
+.dbp {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+.dbp-cell {
+  padding: var(--sp-6);
+  border-left: 1px solid var(--line);
+}
+.dbp-cell:first-child { border-left: 0; }
+.dbp-ic {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--orange);
+}
+.dbp-cell h3 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.dbp-cell p {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   BindingVerdicts — two machines, one difference
+   ============================================================ */
+.dbv {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-5);
+  max-width: 780px;
+  margin-inline: auto;
+}
+.dbv-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  text-align: center;
+}
+.dbv-cell.is-ok { box-shadow: inset 0 2px 0 var(--allow); }
+.dbv-cell.is-deny { box-shadow: inset 0 2px 0 var(--deny); }
+.dbv-lab {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+/* the same drawn machine in both cells — identical hardware is the
+   point, so only the verdict mark on it differs */
+.dbv-machine {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 70px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-sm) var(--r-sm) var(--r-2xs) var(--r-2xs);
+  background: var(--bg-2);
+}
+.dbv-machine i {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  width: 132px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+}
+.dbv-cell.is-ok .dbv-machine svg { color: var(--allow); }
+.dbv-cell.is-deny .dbv-machine svg { color: var(--deny); }
+.dbv-verdict {
+  margin-top: var(--sp-4);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+}
+.dbv-cell.is-ok .dbv-verdict { color: var(--allow); }
+.dbv-cell.is-deny .dbv-verdict { color: var(--deny); }
+.dbv-note {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1200px) {
+  .dbg-hero-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-10); }
+  .dbg-hero h1 { max-width: 20ch; }
+}
+@media (max-width: 1000px) {
+  .dbp { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dbp-cell:nth-child(odd) { border-left: 0; }
+  .dbp-cell:nth-child(n + 3) { border-top: 1px solid var(--line); }
+}
+@media (max-width: 860px) {
+  .dbs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 620px) {
+  .dbp { grid-template-columns: minmax(0, 1fr); }
+  .dbp-cell { border-left: 0; }
+  .dbp-cell:nth-child(n + 2) { border-top: 1px solid var(--line); }
+  .dbv { grid-template-columns: minmax(0, 1fr); }
+  .dbs-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dbs-flow-dot,
+  .dbs-flow-b b,
+  .dbs-flow-ck { transition: none; }
+}
+
+/* ============================================================
+   BindingOutcomes — "What stops_ / One machine only."
+   One large drawn map, then three numbered outcome cards. The map
+   is SVG on tokens; the ONE orange focal is the fingerprint in its
+   scan frame. Verdicts are semantic colours, never the accent.
+   ============================================================ */
+.dbo { --dbo-warn: #d98a1f; }
+
+/* NB: keep every show/hide rule at .dbo-map <selector> strength — a bare
+   class here loses to `.dbo-map svg` and the hidden variant renders too */
+.dbo-map svg { display: block; width: 100%; height: auto; }
+.dbo-map .dbo-svg--n { display: none; }
+@media (max-width: 860px) {
+  .dbo-map .dbo-svg--w { display: none; }
+  .dbo-map .dbo-svg--n { display: block; max-width: 420px; margin-inline: auto; }
+}
+
+/* ---- drawn surfaces ---- */
+.dbo-panel {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.dbo-panel--strong { stroke: var(--line-strong); }
+.dbo-hair { stroke: var(--line); stroke-width: 1; }
+.dbo-note-rail { stroke: var(--orange); stroke-width: 2; }
+
+/* the machine */
+.dbo-lap {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+.dbo-lap-in { fill: var(--bg-2); stroke: var(--line); stroke-width: 1; }
+.dbo-brk {
+  fill: none;
+  stroke: color-mix(in srgb, var(--orange) 50%, transparent);
+  stroke-width: 1.5;
+}
+.dbo-fp .a-glyph { stroke-width: 1.4; }
+
+/* Glyph strokes, declared HERE. The shared `.iz-art` scope is a trap
+   for this svg: illustrations.css hides every `.iz-art` element until
+   an `.izo.in` / `.izans-art.in` shell reveals it, and this map lives
+   in neither shell — with the class it renders permanently blank
+   (documented in answers.css; this would have been bite #6). */
+.dbo-svg .a-glyph {
+  fill: none;
+  stroke: var(--tx-dim);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dbo-svg .a-glyph--accent { stroke: var(--orange); }
+.dbo-svg .a-glyph--mute { stroke: var(--tx-mute); }
+.dbo-svg .a-glyph--allow { stroke: var(--allow); }
+.dbo-svg .a-glyph--deny { stroke: var(--deny); }
+
+/* ---- text ---- */
+.dbo-t {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  fill: var(--tx-dim);
+}
+.dbo-t--ink { fill: var(--tx); letter-spacing: 0.08em; }
+.dbo-t--mute { fill: var(--tx-dim); letter-spacing: 0.1em; }
+.dbo-t--md { font-size: 12.5px; }
+.dbo-t--xs { font-size: 9.5px; }
+
+/* ---- wires ---- */
+.dbo-dash {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+}
+.dbo-dash--ok { stroke: color-mix(in srgb, var(--allow) 60%, transparent); }
+.dbo-dash--warn { stroke: color-mix(in srgb, var(--dbo-warn) 65%, transparent); }
+.dbo-dash--no { stroke: color-mix(in srgb, var(--deny) 60%, transparent); }
+
+/* ---- dots ---- */
+.dbo-dot--ok { fill: var(--allow); }
+.dbo-dot--warn { fill: var(--dbo-warn); }
+.dbo-dot--no { fill: var(--deny); }
+.dbo-dot--accent { fill: var(--orange); }
+
+/* ---- verdict icons ---- */
+.dbo-vic circle { fill: none; stroke-width: 1.5; }
+.dbo-vic-m { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dbo-vic--ok circle { stroke: var(--allow); fill: var(--allow-bg); }
+.dbo-vic--ok .dbo-vic-m { stroke: var(--allow); }
+.dbo-vic--warn circle { stroke: var(--dbo-warn); fill: color-mix(in srgb, var(--dbo-warn) 12%, transparent); }
+.dbo-vic--warn .dbo-vic-m { stroke: var(--dbo-warn); }
+.dbo-vic--no circle { stroke: var(--deny); fill: var(--deny-bg); }
+.dbo-vic--no .dbo-vic-m { stroke: var(--deny); }
+
+/* ---- posture waveform ---- */
+.dbo-wave {
+  fill: none;
+  stroke: color-mix(in srgb, var(--orange) 55%, transparent);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+
+/* ============================================================
+   the three cards — typographic, per the call: no small art
+   ============================================================ */
+.dbo-cards {
+  list-style: none;
+  margin: var(--sp-12) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+.dbo-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-8) var(--sp-6);
+  border-left: 1px solid var(--line);
+}
+.dbo-card:first-child { border-left: 0; }
+.dbo-num {
+  font-family: var(--mono);
+  font-size: var(--fs-lead);
+  letter-spacing: 0.06em;
+  color: var(--orange);
+}
+.dbo-card h3 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  line-height: var(--lh-tight);
+  color: var(--tx);
+  text-wrap: balance;
+}
+.dbo-card p {
+  margin: var(--sp-3) 0 var(--sp-6);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+/* the figure, pinned to the card's foot so three cards share a baseline */
+.dbo-stat {
+  margin-top: auto;
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
+}
+.dbo-stat b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-stat);
+  line-height: 1;
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+.dbo-stat span {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+
+@media (max-width: 900px) {
+  .dbo-cards { grid-template-columns: minmax(0, 1fr); }
+  .dbo-card { border-left: 0; }
+  .dbo-card + .dbo-card { border-top: 1px solid var(--line); }
+}

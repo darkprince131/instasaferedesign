@@ -21,6 +21,7 @@ import { DevopsEnclosure } from "./DevopsEnclosure";
 import { PrivilegedSessionRecord } from "./PrivilegedSessionRecord";
 import { VoipSession } from "./VoipSession";
 import { HybridStack } from "./HybridStack";
+import { BoundDevices } from "./BoundDevices";
 
 /* The artifact registry.
 
@@ -55,6 +56,7 @@ export const ARTIFACTS = {
   "mfa-engine": MfaEngine, // per-page · every entry point, friction sized to risk
   "device-posture": DevicePosture, // per-page · signals in, three answers out
   "endpoint-controls": EndpointControls, // per-page · refused inside the session
+  "bound-devices": BoundDevices, // per-page · the approved-hardware roster
 } satisfies Record<string, ComponentType<ArtifactProps>>;
 
 export type ArtifactSlug = keyof typeof ARTIFACTS;

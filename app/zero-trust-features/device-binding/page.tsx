@@ -1,11 +1,28 @@
-import { Footer } from "@/components/sections/Footer";
-import { DeviceBindingContent } from "@/components/v3/device-binding/DeviceBindingContent";
-import { DeviceBindingHero } from "@/components/v3/device-binding/DeviceBindingHero";
-import { LivingBackground } from "@/components/v3/LivingBackground";
-import { NavV3 } from "@/components/v3/NavV3";
-import { SectionLine } from "@/components/v3/SectionLine";
+import { BindingPage } from "@/components/izpages/binding/BindingPage";
+
 import type { Metadata } from "next";
 
+/* .iz design system — order matters: system tokens, then base, then
+   page-specific sheets. */
+import "@/components/home2/iz-system.css";
+import "@/components/home2/home2.css";
+import "@/components/home2/izgrid.css";
+import "@/components/home2/iz-backdrops.css";
+import "@/components/home2/izpanel.css";
+import "@/components/home2/iznewblocks.css";
+import "@/components/home2/izpagekit.css";
+import "@/components/home2/chatfaq.css";
+import "@/components/home2/izlogomarquee.css";
+import "@/components/izoutcomes/illustrations.css";
+import "@/components/izanswer/answers.css";
+import "@/components/izpages/pro/sections.css";
+import "@/components/izpages/pro/outcomes.css";
+import "@/components/home2/izfootergrid.css";
+import "@/components/izpages/binding/binding.css";
+
+/* SEO-LOCKED: this URL is on the live sitemap and its metadata is
+   carried over from the v3 route this replaced, byte for byte. Only
+   the rendering below changed. */
 export const metadata: Metadata = {
   title: "Device Binding — InstaSafe ZTNA",
   description:
@@ -13,17 +30,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/zero-trust-features/device-binding" },
 };
 
-export default function DeviceBindingPage() {
-  return (
-    <>
-      <LivingBackground />
-      <NavV3 />
-      <main className="relative">
-        <DeviceBindingHero />
-        <SectionLine />
-        <DeviceBindingContent />
-      </main>
-      <Footer />
-    </>
-  );
+export default function Page() {
+  return <BindingPage />;
 }

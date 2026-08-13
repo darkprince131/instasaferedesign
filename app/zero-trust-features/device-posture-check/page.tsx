@@ -11,6 +11,7 @@ import "@/components/home2/iz-backdrops.css";
 import "@/components/home2/izpanel.css";
 import "@/components/home2/iznewblocks.css";
 import "@/components/home2/izpagekit.css";
+import "@/components/home2/chatfaq.css";
 import "@/components/home2/izlogomarquee.css";
 import "@/components/izoutcomes/illustrations.css";
 import "@/components/izanswer/answers.css";

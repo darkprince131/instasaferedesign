@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowsClockwise, Certificate, DeviceMobile, MagnifyingGlass, ShieldCheck } from "@phosphor-icons/react";
+import { ArrowsClockwise, Certificate, DeviceMobile, MagnifyingGlass, Question, ShieldCheck } from "@phosphor-icons/react";
 
+import { ChatFaq } from "@/components/home2/ChatFaq";
 import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
@@ -29,11 +30,22 @@ import { PostureDisassembly } from "./PostureDisassembly";
    Copy from docs/content/storyboards/platform-device-posture.md.
    ============================================================ */
 
+const FAQ = [
+  { q: "What is a device posture check in simple terms?", a: "A health check on the machine itself, run before it gets access and re-run while it has it. The user proved who they are; posture proves the laptop they're typing on is in a state you'd let near your applications." },
+  { q: "What exactly gets checked?", a: "25 check types — OS version and patch level, disk encryption, antivirus presence and state, firewall status, screen lock, jailbreak and root detection and more — evaluated against 144 named rules covering 1,500+ OS and device combinations." },
+  { q: "What happens when a device fails a check?", a: "Whatever your policy says. It can be blocked outright, or given a reduced set of applications until the problem is fixed — the named rule that failed is recorded, so an administrator sees why, not just that it was denied." },
+  { q: "Is posture checked once at login or continuously?", a: "Both. It is evaluated before the connection opens and re-evaluated during the session. A device that drifts out of policy — antivirus switched off mid-afternoon — loses the access it already had, without waiting for the next login." },
+  { q: "Does this work for personal (BYOD) devices?", a: "Yes. Personal devices are held to a defined bar like any other machine, and policy can give them contained access rather than full access. BYOD becomes a policy choice instead of a blind spot." },
+  { q: "Which platforms does the client cover?", a: "Windows, macOS and Linux, with the rule set spanning 1,500+ OS and device combinations — so one policy covers an estate that was never uniform to begin with." },
+  { q: "How is posture different from device binding?", a: "Binding answers which machine this is; posture answers what state it is in. A stolen credential fails binding; a compliant-yesterday laptop with its encryption turned off fails posture. Both run on every session, together." },
+];
+
 const ANCHORS = [
   { id: "what", label: "What it checks", icon: ShieldCheck },
   { id: "disassembly", label: "The disassembly", icon: MagnifyingGlass },
   { id: "signature", label: "Device tester", icon: DeviceMobile },
   { id: "outcomes", label: "Outcomes", icon: Certificate },
+  { id: "faq", label: "FAQ", icon: Question },
 ];
 
 type Theme = "dark" | "paper";
@@ -192,6 +204,17 @@ export function PosturePage() {
           ]}
         />
       </div>
+
+      {/* ---------------- FAQ ---------------- */}
+      <section className="pos-sec" id="faq">
+        <div className="iz-wrap">
+          <ChatFaq
+            items={FAQ}
+            heading={<>Posture checks, <em>answered</em>.</>}
+            sub="Tap a question — or open them all and read straight through."
+          />
+        </div>
+      </section>
 
       <IzFinalCta reveal={false} />
       <IzFooterGrid />

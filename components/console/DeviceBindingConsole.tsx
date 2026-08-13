@@ -84,7 +84,12 @@ function AdminConsole({ sel, onSel, approved, onToggle }: { sel: string; onSel: 
   const user = USERS.find((u) => u.id === sel)!;
   return (
     <ConsoleFrame title="Device Binding" active={6}>
-      <div className="grid gap-3 lg:grid-cols-[210px_1fr]">
+      {/* split on the CONSOLE's width, not the window's. `lg:` fired whenever the
+          browser was ≥1024px even when this console sat in a 450px column, which
+          left the devices card ~200px wide — every device name truncated to five
+          characters and the toggle pushed out of the card. */}
+      <div className="@container/db">
+      <div className="grid gap-3 @[520px]/db:grid-cols-[210px_1fr]">
         {/* users */}
         <div className="overflow-hidden rounded-xl border" style={{ borderColor: "var(--db-border)", background: "var(--db-surface)" }}>
           <div className="border-b px-3 py-2 font-mono text-[10px] uppercase tracking-wider" style={{ borderColor: "var(--db-border)", color: "var(--db-text-mute)" }}>Users · {USERS.length}</div>
@@ -112,12 +117,16 @@ function AdminConsole({ sel, onSel, approved, onToggle }: { sel: string; onSel: 
             <span className="text-[12px] font-semibold" style={{ color: "var(--db-text)" }}>{user.name}&apos;s bound devices</span>
             <span className="ml-auto text-[10px]" style={{ color: "var(--db-text-mute)" }}>admin approval</span>
           </div>
-          <div className="space-y-2.5 p-3">
+          {/* @container, not a viewport breakpoint: this console is dropped into
+              columns of wildly different widths (ConsoleRow gives it ~200px here),
+              so `sm:`/`lg:` fire on the window while the card stays narrow — which
+              is what pushed the toggle out through the card's right edge. */}
+          <div className="@container space-y-2.5 p-3">
             {user.devices.map((d) => {
               const ok = approved[d.id];
               const Ic = TYPE[d.type];
               return (
-                <div key={d.id} className="flex items-center gap-3 rounded-xl border p-3" style={{ borderColor: ok ? "color-mix(in srgb, var(--db-success) 35%, var(--db-border))" : "var(--db-border)", background: "var(--db-surface)" }}>
+                <div key={d.id} className="flex min-w-0 items-center gap-2.5 rounded-xl border p-3 @[300px]:gap-3" style={{ borderColor: ok ? "color-mix(in srgb, var(--db-success) 35%, var(--db-border))" : "var(--db-border)", background: "var(--db-surface)" }}>
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ background: "var(--db-surface-2)" }}>
                     <Ic size={22} weight="duotone" style={{ color: ok ? "var(--db-success)" : "var(--db-text-dim)" }} />
                   </span>
@@ -125,15 +134,19 @@ function AdminConsole({ sel, onSel, approved, onToggle }: { sel: string; onSel: 
                     <div className="truncate text-[13px] font-semibold" style={{ color: "var(--db-text)" }}>{d.name}</div>
                     <div className="truncate font-mono text-[10px]" style={{ color: "var(--db-text-mute)" }}>{d.os} · {d.bind}</div>
                   </div>
-                  <span className="hidden items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide sm:flex" style={ok ? { background: "color-mix(in srgb, var(--db-success) 16%, transparent)", color: "var(--db-success)" } : { background: "color-mix(in srgb, var(--db-warning) 16%, transparent)", color: "var(--db-warning)" }}>{ok ? "Approved" : "Pending"}</span>
+                  <span className="hidden shrink-0 items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide @[330px]:flex" style={ok ? { background: "color-mix(in srgb, var(--db-success) 16%, transparent)", color: "var(--db-success)" } : { background: "color-mix(in srgb, var(--db-warning) 16%, transparent)", color: "var(--db-warning)" }}>{ok ? "Approved" : "Pending"}</span>
                   <span className="flex shrink-0 items-center gap-2 text-[11px]" style={{ color: "var(--db-text-dim)" }}>
-                    <Switch on={ok} onClick={() => onToggle(d.id)} label={`Approve ${d.name}`} /> Approve
+                    <Switch on={ok} onClick={() => onToggle(d.id)} label={`Approve ${d.name}`} />
+                    {/* the pill already says Approved/Pending — this word is the
+                        first thing to go when the card is narrow */}
+                    <span className="hidden @[430px]:inline">Approve</span>
                   </span>
                 </div>
               );
             })}
           </div>
         </div>
+      </div>
       </div>
     </ConsoleFrame>
   );
