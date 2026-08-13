@@ -1,0 +1,288 @@
+/* ============================================================
+   posturescenarios.css — the three "how it's used" scenes.
+
+   These replace 00ao's placeholder gradient card. The card is HTML
+   with one SVG inside it, not an SVG pretending to be a card — see
+   the component header for why the ledger came back out of the
+   drawing.
+
+   ▸ COLOUR IS A VERDICT, NEVER A DECORATION ◂
+   Green means a check passed. Red means one failed. Accent means a
+   rule was waived ON PURPOSE and somebody signed it. Muted means the
+   signal could not be read at all. Four states, and nothing here is
+   coloured for any other reason — which is why the devices are drawn
+   entirely in line and surface tokens.
+   ============================================================ */
+
+.pscn {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  min-width: 0;
+  animation: izts-in var(--dur-slow) var(--ease-out) both;
+}
+
+/* ---------- the stage ---------- */
+.pscn-stage { display: grid; justify-items: center; gap: var(--sp-2); min-width: 0; }
+.pscn-art { display: block; width: 100%; height: auto; }
+.pscn-cap {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+  text-align: center;
+}
+
+/* ---------- the devices ----------
+   ▸ THE SCREEN IS A LIT OBJECT ▸
+   Dark in both page themes, with its own local ink, so everything ON
+   a screen uses --pscn-lit and never the page's --tx. */
+.pscn-dev {
+  --pscn-glass: #14121a;
+  --pscn-lit: rgba(243, 241, 239, 0.82);
+  --pscn-faint: rgba(243, 241, 239, 0.3);
+}
+.pscn-desk {
+  stroke: var(--line);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+}
+.pscn-shell {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.8;
+}
+/* somebody else's machine. Dashed is not a style — it is the single
+   most compressed way to say "this is outside the estate". */
+.pscn-shell.is-foreign {
+  fill: none;
+  stroke-dasharray: 6 4;
+}
+/* MEASURED on dark: the card resolved to rgb(14,15,18) and the glass
+   to #14121a — near-identical, so the screens had no edge at all and
+   the devices dissolved. The hairline separates them in both themes;
+   on paper it also stops a dark rectangle reading as a hole. */
+.pscn-screen {
+  fill: var(--pscn-glass);
+  stroke: color-mix(in srgb, var(--line-strong) 60%, transparent);
+  stroke-width: 1;
+}
+.pscn-base {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.pscn-stand,
+.pscn-notch {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.pscn-vent { stroke: var(--line-strong); stroke-width: 1.3; stroke-linecap: round; }
+.pscn-led { fill: var(--line-strong); }
+.pscn-led.is-ok { fill: var(--allow); }
+
+/* what is ON the screens — all of it in screen ink */
+.pscn-bar { fill: rgba(243, 241, 239, 0.12); }
+.pscn-tdot { fill: var(--pscn-faint); }
+.pscn-url { fill: rgba(243, 241, 239, 0.16); }
+.pscn-ln { stroke: var(--pscn-faint); stroke-width: 2.6; stroke-linecap: round; }
+.pscn-code { stroke: var(--pscn-lit); stroke-width: 2.8; stroke-linecap: round; opacity: 0.55; }
+/* two lines of the code block take the accent, which is all it takes
+   to read as syntax highlighting rather than as grey bars */
+.pscn-code.is-key { stroke: var(--accent); opacity: 1; }
+.pscn-prompt { stroke: var(--allow); stroke-width: 3; stroke-linecap: round; }
+.pscn-caret { fill: var(--accent); }
+.pscn-btn { fill: var(--line-strong); }
+.pscn-btn.is-ok { fill: var(--allow); }
+.pscn-btnlbl { stroke: var(--pscn-glass); stroke-width: 2.8; stroke-linecap: round; opacity: 0.75; }
+.pscn-nodl circle { fill: var(--pscn-glass); stroke: var(--deny); stroke-width: 1.8; }
+.pscn-nodl path { stroke: var(--deny); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- the ledger, in HTML ---------- */
+.pscn-ledger { display: grid; gap: var(--sp-2); min-width: 0; }
+.pscn-ledgerh {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.pscn-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.pscn-row {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 7px var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  min-width: 0;
+}
+
+/* the four verdict states, drawn on one 16px square */
+.pscn-mark {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.pscn-mark::before,
+.pscn-mark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+/* pass — a tick */
+.is-ok .pscn-mark::before {
+  width: 5px;
+  height: 9px;
+  margin: -6px 0 0 -3px;
+  border: 2px solid var(--allow);
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(42deg);
+}
+/* fail — a cross */
+.is-no .pscn-mark::before,
+.is-no .pscn-mark::after {
+  width: 13px;
+  height: 2px;
+  margin: -1px 0 0 -6.5px;
+  border-radius: 1px;
+  background: var(--deny);
+}
+.is-no .pscn-mark::before { transform: rotate(45deg); }
+.is-no .pscn-mark::after { transform: rotate(-45deg); }
+/* waived on purpose — a rule, not a verdict */
+.is-waived .pscn-mark::before {
+  width: 12px;
+  height: 2px;
+  margin: -1px 0 0 -6px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+/* never readable — an empty socket */
+.is-blank .pscn-mark::before {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--line-strong);
+}
+
+.pscn-lbl {
+  font-size: var(--fs-body-sm);
+  line-height: 1.3;
+  color: var(--tx);
+  min-width: 0;
+  text-wrap: pretty;
+}
+.pscn-note {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+
+/* a row whose signal was never available is dimmed as a whole — the
+   gap where the other twenty-one checks would be is the honest part
+   of the contractor scene, so it must not look like a normal row */
+.pscn-row.is-blank { background: none; border-style: dashed; }
+.pscn-row.is-blank .pscn-lbl { color: var(--tx-dim); }
+.pscn-row.is-no { border-color: color-mix(in srgb, var(--deny) 34%, var(--line)); }
+.pscn-row.is-waived { border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); }
+
+.pscn-foot {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  opacity: 0.85;
+}
+
+/* ---------- the verdict band ---------- */
+.pscn-verdict {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  min-width: 0;
+}
+.pscn-vdot { width: 10px; height: 10px; border-radius: 50%; background: var(--tx-dim); }
+.pscn-vtxt { display: grid; gap: 1px; min-width: 0; }
+.pscn-vtxt b {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.pscn-vtxt em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  line-height: 1.35;
+  color: var(--tx-dim);
+}
+.pscn-verdict.is-ok {
+  background: color-mix(in srgb, var(--allow) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--allow) 36%, var(--line));
+}
+.pscn-verdict.is-ok .pscn-vdot { background: var(--allow); }
+.pscn-verdict.is-part {
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line));
+}
+.pscn-verdict.is-part .pscn-vdot { background: var(--accent); }
+.pscn-verdict.is-no {
+  background: color-mix(in srgb, var(--deny) 7%, var(--surface));
+  border-color: color-mix(in srgb, var(--deny) 34%, var(--line));
+}
+.pscn-verdict.is-no .pscn-vdot { background: var(--deny); }
+
+/* On dark the card, the rows and the shells were three shades of the
+   same near-black. Lifting the card to --surface gives the scene
+   somewhere to sit and pushes the rows back down to --bg-2. */
+.iz[data-theme="dark"] .pscn { background: var(--surface); }
+.iz[data-theme="dark"] .pscn-row,
+.iz[data-theme="dark"] .pscn-verdict { background: var(--bg-2); }
+.iz[data-theme="dark"] .pscn-shell { fill: var(--bg-2); }
+
+/* MEASURED at 375px: this is the only iz-railed section on the page,
+   and the rail inset takes the wrap from 28px of gutter to 52px —
+   48px of screen spent on a decorative rule, which left the card at
+   230px. The rails are worth their width on a desktop and are not on
+   a phone, so they are stood down here.
+
+   The id gives (1,2,0) against izgrid's (0,2,0), so this cannot lose
+   to import order the way a same-specificity override would. Scoped
+   to this page: the shared component is untouched. */
+@media (max-width: 860px) {
+  #scenarios .iz-railed .iz-wrap {
+    padding-left: var(--wrap-gutter);
+    padding-right: var(--wrap-gutter);
+  }
+  #scenarios .izts-right { padding-left: 0; padding-right: 0; }
+}
+
+@media (max-width: 620px) {
+  .pscn { padding: var(--sp-4); gap: var(--sp-3); }
+  /* the drawing is the first thing to give way — it is scene-setting,
+     and the ledger below it is the content */
+  .pscn-art { max-width: 300px; }
+  .pscn-row { padding: 6px var(--sp-2); gap: var(--sp-2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pscn { animation: none; }
+}

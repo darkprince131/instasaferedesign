@@ -52,7 +52,14 @@ export type IzTabSwitchTab = {
   /** resource: the copy block that swaps with the tab */
   copy?: { kicker: string; title: string; body: string; href: string };
   /** resource: the visual's tone + who wrote it */
-  story?: { tone: "a" | "b" | "c"; author: { name: string; role: string } };
+  story?: {
+    tone: "a" | "b" | "c";
+    author: { name: string; role: string };
+    /** a real illustration for the right pane. Without it the slot
+        falls back to the abstract placeholder below, which is what
+        the lab and the original resource content still use. */
+    art?: React.ReactNode;
+  };
 };
 
 /* ---------- console variant content ---------- */
@@ -379,7 +386,7 @@ export function IzTabSwitch({
 
                   {t.story && (
                     <>
-                      <Story tone={t.story.tone} />
+                      {t.story.art ?? <Story tone={t.story.tone} />}
                       <span className="izts-byline">
                         <i className="izts-avatar" aria-hidden="true">
                           {t.story.author.name.charAt(0)}

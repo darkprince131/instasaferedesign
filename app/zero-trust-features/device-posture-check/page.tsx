@@ -18,7 +18,11 @@ import "@/components/izanswer/answers.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/home2/izfootergrid.css";
+/* order matters: the scenarios run on the 00ao chassis and only
+   ship the deltas, so tabswitch.css has to land first */
+import "@/components/izpages/pro/tabswitch.css";
 import "@/components/izpages/posture/posture.css";
+import "@/components/izpages/posture/posturescenarios.css";
 
 /* SEO-locked: this URL is on the live sitemap. Title and description
    are carried over unchanged from its scaffold registry entry, which

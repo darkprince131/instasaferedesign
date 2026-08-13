@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowsClockwise, Certificate, DeviceMobile, MagnifyingGlass, Question, ShieldCheck } from "@phosphor-icons/react";
+import { ArrowsClockwise, Certificate, DeviceMobile, MagnifyingGlass, Question, ShieldCheck, UsersThree } from "@phosphor-icons/react";
 
 import { ChatFaq } from "@/components/home2/ChatFaq";
 import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
@@ -18,6 +18,7 @@ import { izFontVars } from "@/lib/iz-fonts";
 
 import { DeviceTester, PostureHeroScene, PostureStrip } from "./PostureScenes";
 import { PostureDisassembly } from "./PostureDisassembly";
+import { PostureScenarios } from "./PostureScenarios";
 
 /* ============================================================
    /zero-trust-features/device-posture-check — SEO-locked live URL,
@@ -43,6 +44,7 @@ const FAQ = [
 const ANCHORS = [
   { id: "what", label: "What it checks", icon: ShieldCheck },
   { id: "disassembly", label: "The disassembly", icon: MagnifyingGlass },
+  { id: "scenarios", label: "How it's used", icon: UsersThree },
   { id: "signature", label: "Device tester", icon: DeviceMobile },
   { id: "outcomes", label: "Outcomes", icon: Certificate },
   { id: "faq", label: "FAQ", icon: Question },
@@ -158,6 +160,23 @@ export function PosturePage() {
 
       {/* ---------------- THE DISASSEMBLY ---------------- */}
       <PostureDisassembly />
+
+      {/* ---------------- HOW IT'S USED (00ao · resource) ----------------
+          Placed after the disassembly and before the tester. The
+          disassembly above explains what the twenty-five checks ARE;
+          the tester below lets a reader break one. Between those two
+          is the question neither answers — who is actually held to
+          which of them — and three rooms is the only honest way to
+          say "it depends" without sounding evasive. */}
+      {/* No section and no iz-wrap here. IzTabSwitch renders its OWN
+          `.izts.iz-railed > .iz-wrap`, and nesting a second wrap inside
+          the first applied the rail gutter twice — on a 375px phone
+          that took the illustration down to 174px, where an 11-unit
+          label renders at five pixels. An id-only div, the same shape
+          the outcomes block below uses. */}
+      <div id="scenarios">
+        <PostureScenarios />
+      </div>
 
       {/* ---------------- SIGNATURE ---------------- */}
       <section className="pos-sec pos-sec--alt" id="signature">
