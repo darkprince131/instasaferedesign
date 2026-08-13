@@ -35,9 +35,8 @@ import { IzSpecTable } from "@/components/home2/IzSpecTable";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzTrustBar } from "@/components/home2/IzTrustBar";
 import { ZtaaSessionSplit } from "./ZtaaSessionSplit";
-import { ZTAA_PEOPLE } from "./ztaa-people";
 import { ZtaaProofHub } from "./ZtaaProofHub";
-import { IzUseCaseSwitch } from "@/components/home2/IzUseCaseSwitch";
+import { ZtaaUseCases } from "./ZtaaUseCases";
 import { IzUserPortal } from "@/components/home2/IzUserPortal";
 import { AnswerZtaa } from "@/components/izanswer/AnswerZtaa";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
@@ -327,25 +326,29 @@ export function ZtaaPage() {
       </section>
 
       {/* ---------------- USE CASES ----------------
-          The cases are passed, not defaulted. The component ships four
-          generic ones — unmanaged devices, VPN replacement, third-party
-          access, impossible travel — which are use-case CATEGORIES. This
-          heading promises "very different people", so the four below are
-          people, and each shows what that person's portal actually
-          contains. The heading and the block agree now. */}
-      <div id="usecases">
-        <IzUseCaseSwitch
-          kicker="Where ZTAA lands"
-          title={
-            <>
-              Same portal. <mark>Very different people.</mark>
-            </>
-          }
-          sub="Employees get their whole toolkit behind one login. Contractors get two systems, recorded, until the contract ends. Neither of them gets a network."
-          cta={{ label: "See all solutions", href: "/solutions" }}
-          cases={ZTAA_PEOPLE}
-        />
-      </div>
+          Five populations, one gateway, on the 00ao tab-switch
+          mechanism in the three-column arrangement the references use.
+          Replaces IzUseCaseSwitch here: that component gives each case
+          one console panel, and these cases are about WHO is asking and
+          WHAT they reach — which needs a flow, not a key/value list.
+
+          The middle stage is identical in all five on purpose. See the
+          component header. */}
+      <section className="ztaa-mech" id="usecases">
+        <div className="iz-wrap">
+          <div className="ztaa-mech-h">
+            <span className="iz-ey">Where ZTAA lands</span>
+            <h3>
+              Same portal. <em>Very different people.</em>
+            </h3>
+            <p>
+              Employees get their whole toolkit behind one login. Contractors get two systems, recorded, until the
+              contract ends. Neither of them gets a network.
+            </p>
+          </div>
+          <ZtaaUseCases />
+        </div>
+      </section>
 
       {/* ---------------- QUICK SCAN ---------------- */}
       <section className="ztaa-sec" id="specs">

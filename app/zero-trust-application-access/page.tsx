@@ -22,7 +22,7 @@ import "@/components/home2/featuresplit.css";
 import "@/components/izpages/ztaa/ztaasession.css";
 import "@/components/home2/featurehub.css";
 import "@/components/izpages/ztaa/ztaaproof.css";
-import "@/components/home2/izusecase.css";
+import "@/components/izpages/ztaa/ztaausecases.css";
 import "@/components/izpages/pro/sections.css";
 import "@/components/izpages/pro/outcomes.css";
 import "@/components/izoutcomes/illustrations.css";

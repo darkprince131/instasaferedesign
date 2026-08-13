@@ -1,0 +1,341 @@
+/* ============================================================
+   ztaausecases.css — five populations, one gateway.
+
+   Three columns: nav rail · scene · what they get. The scene's middle
+   stage is identical in every case by design — see the component
+   header. Everything here is a token; this block sits on a page that
+   flips theme, so no literal surfaces.
+   ============================================================ */
+
+.ztuc {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr) 258px;
+  gap: var(--sp-6);
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: var(--sp-6);
+  min-width: 0;
+}
+
+/* ---------- left: the rail ---------- */
+.ztuc-rail { display: grid; gap: 1px; min-width: 0; }
+.ztuc-tab {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-4) var(--sp-3);
+  border: 0;
+  /* the marker is a left border that is TRANSPARENT when off, so
+     selecting a tab does not shift the row by 3px */
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.ztuc-tab:last-child { border-bottom: 0; }
+.ztuc-tab:hover { color: var(--tx); background: var(--bg-2); }
+.ztuc-tab.on {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+  font-weight: 500;
+}
+.ztuc-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.ztuc-tab-ic {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  color: var(--tx-mute);
+}
+.ztuc-tab-ic svg { width: 17px; height: 17px; }
+.ztuc-tab.on .ztuc-tab-ic {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+.ztuc-tab-t { min-width: 0; }
+.ztuc-tab-go { width: 13px; height: 13px; color: var(--tx-mute); flex: none; }
+.ztuc-tab.on .ztuc-tab-go { color: var(--accent); }
+
+/* ---------- middle: the scene ---------- */
+.ztuc-stage { min-width: 0; padding-inline: var(--sp-3); }
+.ztuc-h {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+}
+.ztuc-desc {
+  margin: 0 0 var(--sp-6);
+  max-width: 56ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+.ztuc-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.ztuc-col {
+  display: grid;
+  gap: var(--sp-2);
+  align-content: start;
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+  min-width: 0;
+}
+.ztuc-col-h {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  margin-bottom: var(--sp-1);
+}
+.ztuc-col-note {
+  margin-top: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+
+.ztuc-node {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  min-width: 0;
+}
+.ztuc-node.is-big { padding: var(--sp-3); }
+.ztuc-node-ic { display: grid; place-items: center; color: var(--accent); }
+.ztuc-node-ic svg { width: 18px; height: 18px; }
+.ztuc-node-ic img { width: 18px; height: 18px; object-fit: contain; display: block; }
+.ztuc-node-t {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  color: var(--tx);
+  overflow: hidden;
+}
+.ztuc-node-t em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-mute);
+}
+
+/* the encrypted hop between stages */
+.ztuc-link {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: var(--accent);
+}
+.ztuc-link i {
+  display: block;
+  width: 1px;
+  height: 14px;
+  background: repeating-linear-gradient(to bottom, currentColor 0 3px, transparent 3px 6px);
+  opacity: 0.5;
+}
+.ztuc-link svg { width: 13px; height: 13px; }
+
+/* the gateway — identical in every case */
+.ztuc-gate {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line));
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 6%, transparent);
+  min-width: 0;
+}
+.ztuc-gate-h {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.ztuc-gate-mark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  flex: none;
+}
+.ztuc-gate-mark svg { width: 15px; height: 15px; }
+.ztuc-gate-sub {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--allow);
+}
+.ztuc-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+.ztuc-check {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: var(--sp-3) var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+  text-align: center;
+}
+.ztuc-check svg { width: 16px; height: 16px; color: var(--accent); }
+
+/* ---------- the strip + closing note ---------- */
+.ztuc-strip {
+  margin-top: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--bg-2);
+}
+.ztuc-strip-h {
+  display: block;
+  margin-bottom: var(--sp-3);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.ztuc-strip-items { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3) var(--sp-5); }
+.ztuc-strip-i {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--tx);
+}
+.ztuc-strip-i svg { width: 16px; height: 16px; color: var(--accent); }
+
+.ztuc-note {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  font-size: var(--fs-body-sm);
+  color: var(--tx);
+}
+.ztuc-note svg { width: 17px; height: 17px; color: var(--accent); flex: none; }
+
+/* ---------- right: what they get ---------- */
+.ztuc-benefits {
+  display: grid;
+  gap: var(--sp-5);
+  padding-left: var(--sp-6);
+  border-left: 1px solid var(--line);
+  min-width: 0;
+}
+.ztuc-benefit { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: var(--sp-3); min-width: 0; }
+.ztuc-benefit-ic {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-pill);
+}
+.ztuc-benefit-ic svg { width: 17px; height: 17px; }
+/* four tints, so five stacked bullets do not read as one grey list.
+   Every one is a token mix — no literal colours. */
+.ztuc-benefit-ic.is-accent { background: color-mix(in srgb, var(--accent) 13%, transparent); color: var(--accent); }
+.ztuc-benefit-ic.is-allow { background: var(--allow-bg); color: var(--allow); }
+.ztuc-benefit-ic.is-info { background: color-mix(in srgb, var(--tx) 9%, transparent); color: var(--tx-dim); }
+.ztuc-benefit-ic.is-violet { background: color-mix(in srgb, var(--accent) 9%, var(--bg-2)); color: var(--accent); }
+
+.ztuc-benefit-t { display: grid; gap: 3px; min-width: 0; font-size: var(--fs-sm); line-height: 1.5; }
+.ztuc-benefit-t b { color: var(--tx); font-weight: 600; }
+.ztuc-benefit-t span { color: var(--tx-dim); }
+.ztuc-benefit-t em { font-style: normal; color: var(--accent); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  /* the benefits column moves under the scene before anything is
+     allowed to squeeze — three columns below ~1180px puts the flow
+     diagram under 300px, where its node labels start wrapping */
+  .ztuc { grid-template-columns: 210px minmax(0, 1fr); }
+  .ztuc-benefits {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-left: 0;
+    padding-top: var(--sp-5);
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 860px) {
+  .ztuc { grid-template-columns: minmax(0, 1fr); padding: var(--sp-4); }
+  /* the rail becomes a horizontal scroller: a 210px column of six
+     labels is a third of a phone screen */
+  .ztuc-rail {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: var(--sp-2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: var(--sp-2);
+    scrollbar-width: none;
+  }
+  .ztuc-rail::-webkit-scrollbar { display: none; }
+  .ztuc-tab {
+    grid-template-columns: auto auto;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-4);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    white-space: nowrap;
+  }
+  .ztuc-tab.on { border-color: var(--accent); }
+  .ztuc-tab-ic,
+  .ztuc-tab-go { display: none; }
+
+  .ztuc-stage { padding-inline: 0; }
+  /* the flow stacks: source, gateway, targets, with the connectors
+     rotated to point down rather than across */
+  .ztuc-flow { grid-template-columns: minmax(0, 1fr); }
+  .ztuc-link { transform: rotate(90deg); justify-self: center; }
+  .ztuc-benefits { grid-template-columns: minmax(0, 1fr); }
+}
