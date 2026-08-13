@@ -22,9 +22,7 @@ import {
 } from "@phosphor-icons/react";
 
 import { ChatFaq } from "@/components/home2/ChatFaq";
-import { FilterStream } from "@/components/home2/FilterStream";
 import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
-import { IzControlSurface } from "@/components/home2/IzControlSurface";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
 import { IzLogoMarquee } from "@/components/home2/IzLogoMarquee";
@@ -36,6 +34,7 @@ import { IzSideNav } from "@/components/home2/IzSideNav";
 import { IzSpecTable } from "@/components/home2/IzSpecTable";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzTrustBar } from "@/components/home2/IzTrustBar";
+import { ZtaaSessionSplit } from "./ZtaaSessionSplit";
 import { IzUseCaseSwitch } from "@/components/home2/IzUseCaseSwitch";
 import { IzUserPortal } from "@/components/home2/IzUserPortal";
 import { LiveActivity } from "@/components/home2/LiveActivity";
@@ -298,19 +297,21 @@ export function ZtaaPage() {
         </div>
       </section>
 
-      {/* ---------------- IN-SESSION CONTROL ---------------- */}
-      {/* IzControlSurface brings its own headline and lead, so this
-          section adds none — two stacked headings read as a mistake.
-          `exclude` drops the three tiles that belong to the endpoint
-          agent and the secure browser rather than to ZTAA: presenting
-          screenshot blocking, print blocking or USB blocking as ZTAA
-          session controls is exactly what the Content Master guardrail
-          forbids. Downloads are covered in prose above instead. */}
-      <section className="ztaa-mech ztaa-sec--alt" id="session">
-        <IzControlSurface exclude={["screenshot", "chrome", "usb"]} />
-      </section>
+      {/* ---------------- IN-SESSION CONTROL ----------------
+          Was IzControlSurface (an endpoint-agent tile grid) followed by
+          FilterStream (the "21 rule combinations" card). Both removed on
+          the user's call: the tile grid belongs to the endpoint agent
+          rather than to ZTAA, and FilterStream was breaking against the
+          left border here.
 
-      <FilterStream href="/zero-trust-network-access" />
+          00w FeatureSplit replaces them with the eight controls that
+          actually run for the life of a ZTAA session, each with a scene
+          instead of a JSON console. See ZtaaSessionSplit. */}
+      <section className="ztaa-mech ztaa-sec--alt" id="session">
+        <div className="iz-wrap">
+          <ZtaaSessionSplit />
+        </div>
+      </section>
 
       {/* ---------------- PROVE EVERYTHING ---------------- */}
       <section className="ztaa-mech">

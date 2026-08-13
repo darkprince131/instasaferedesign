@@ -1,0 +1,115 @@
+/* ============================================================
+   ztaasession.css — the eight in-session control scenes.
+
+   ▸ WHY THE TOKENS ARE DERIVED, NOT COPIED ◂
+
+   The prototype shipped a light-only palette: literal whites, warm
+   greys and a peach wash. Pasting those in would have produced a white
+   diagram sitting inside a dark page — the same class of failure the
+   split-plane scene had. Everything below is derived from `--tx`,
+   `--bg` and `--surface`, which already flip with the theme, so one
+   block serves both and there is no second palette to keep in sync.
+
+   The one value that is NOT derived is the accent: an illustration's
+   orange is the brand's orange, and mixing it toward the text colour
+   would drift it per theme.
+
+   ▸ DENIAL IS GREY, NEVER RED ◂
+   `--fsx-deny` is a neutral, deliberately. Across these scenes a
+   denial is a thing that did not happen — an absence — not an alarm.
+   Colouring it red would make every scene read as an error state.
+   ============================================================ */
+
+.ztss-scene {
+  --fsx-paper: var(--surface);
+  --fsx-canvas: var(--bg-2);
+  --fsx-ink: var(--tx);
+  --fsx-ink-2: var(--tx-dim);
+  --fsx-muted: var(--tx-dim);
+  --fsx-line: var(--line);
+  --fsx-line-2: var(--line-strong);
+  --fsx-fill: color-mix(in srgb, var(--tx) 8%, transparent);
+  --fsx-fill-2: color-mix(in srgb, var(--tx) 14%, transparent);
+  /* --fsx-deny draws dashed STROKES: the attempted-and-refused paths.
+     It stays light, because a denial should read as absence. */
+  --fsx-deny: color-mix(in srgb, var(--tx) 32%, transparent);
+  /* --fsx-deny-2 is TEXT — the `sv-lbl-d` annotations at 11px. The
+     prototype's value put it at 3.3:1 on white, under AA for text this
+     size. Raised to 62% (~4.9:1). It is a separate token from the
+     stroke colour precisely so legibility can be fixed here without
+     making the denials themselves louder. */
+  --fsx-deny-2: color-mix(in srgb, var(--tx) 62%, transparent);
+  --fsx-orange: var(--accent);
+  --fsx-orange-w: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  --fsx-font-mono: var(--mono);
+
+  display: block;
+  width: 100%;
+}
+.ztss-scene svg { display: block; width: 100%; height: auto; }
+.ztss-scene text { user-select: none; }
+
+/* ---------- narrow screens: scroll, do not shrink ----------
+   These scenes are authored on a 620x470 viewBox. Fitted to a phone
+   they render about 232px wide — a 0.37 scale that puts the 11px
+   labels at 4px, which is not small, it is gone. The page convention
+   for wide diagrams is to let them scroll inside their own container
+   rather than shrink the page to them, so that is what happens here:
+   the scene keeps a legible minimum and takes its own scrollbar. The
+   page itself still never scrolls sideways. */
+@media (max-width: 760px) {
+  .ztss-scene {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ztss-scene svg { min-width: 540px; }
+}
+
+/* ---------- the shared grammar ----------
+   These class names come from the prototype and are referenced by the
+   injected markup, so they cannot be renamed without re-exporting the
+   art. */
+.ztss-scene .sv-frame { fill: var(--fsx-paper); stroke: var(--fsx-line-2); stroke-width: 1.5; }
+.ztss-scene .sv-chrome { fill: var(--fsx-fill); }
+.ztss-scene .sv-bar { fill: var(--fsx-fill); }
+.ztss-scene .sv-bar-d { fill: var(--fsx-fill-2); }
+.ztss-scene .sv-hair { stroke: var(--fsx-line-2); stroke-width: 1.5; fill: none; }
+.ztss-scene .sv-deny { stroke: var(--fsx-deny); stroke-width: 1.4; fill: none; stroke-dasharray: 4 5; }
+.ztss-scene .sv-denyf { fill: var(--fsx-deny); }
+.ztss-scene .sv-o { stroke: var(--fsx-orange); stroke-width: 2; fill: none; stroke-linecap: round; }
+.ztss-scene .sv-of { fill: var(--fsx-orange); }
+.ztss-scene .sv-osoft { fill: var(--fsx-orange-w); }
+
+.ztss-scene .sv-lbl { font-family: var(--fsx-font-mono); font-size: 11px; fill: var(--fsx-ink-2); letter-spacing: 0.06em; }
+.ztss-scene .sv-lbl-o { font-family: var(--fsx-font-mono); font-size: 11px; fill: var(--fsx-orange); letter-spacing: 0.06em; font-weight: 600; }
+.ztss-scene .sv-lbl-d { font-family: var(--fsx-font-mono); font-size: 11px; fill: var(--fsx-deny-2); letter-spacing: 0.06em; }
+
+/* ---------- motion ----------
+   One animated idea per scene. Only the visible panel is mounted, so
+   nothing off-screen animates and no gating is needed. */
+@keyframes ztss-flow { to { stroke-dashoffset: -42; } }
+@keyframes ztss-play { 0% { transform: translateX(0); } 100% { transform: translateX(392px); } }
+@keyframes ztss-bump { 0%, 62% { transform: translateX(0); } 78%, 100% { transform: translateX(88px); } }
+@keyframes ztss-pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes ztss-ring { to { stroke-dashoffset: 358; } }
+@keyframes ztss-shutter { 0%, 72% { opacity: 0; } 76% { opacity: 0.85; } 92%, 100% { opacity: 0; } }
+@keyframes ztss-rise { 0% { transform: translateY(0); opacity: 0; } 18% { opacity: 1; } 100% { transform: translateY(-96px); opacity: 0; } }
+@keyframes ztss-drift { to { transform: translateY(-46px); } }
+
+.ztss-scene .an-flow { stroke-dasharray: 6 15; animation: ztss-flow 1.1s linear infinite; }
+.ztss-scene .an-play { animation: ztss-play 4.6s linear infinite; }
+.ztss-scene .an-bump { animation: ztss-bump 3.4s ease-in-out infinite; }
+.ztss-scene .an-pulse { animation: ztss-pulse 2s ease-in-out infinite; }
+.ztss-scene .an-ring { animation: ztss-ring 6s linear infinite; }
+.ztss-scene .an-shutter { animation: ztss-shutter 3.6s ease-out infinite; }
+.ztss-scene .an-rise { animation: ztss-rise 2.6s ease-out infinite; }
+.ztss-scene .an-rise-2 { animation: ztss-rise 2.6s ease-out 0.55s infinite; }
+.ztss-scene .an-rise-3 { animation: ztss-rise 2.6s ease-out 1.1s infinite; }
+.ztss-scene .an-drift { animation: ztss-drift 9s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ztss-scene *,
+  .ztss-scene *::before,
+  .ztss-scene *::after { animation: none !important; }
+}

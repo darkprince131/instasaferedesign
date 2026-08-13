@@ -267,7 +267,11 @@ export function FeatureSplit({
         </p>
         {cta && (
           <div className="fx-cta">
-            <a href="/instasafe-zero-trust-pricing" className="iz-btn iz-btn-pri iz-btn-sm">Book a demo</a>
+            {/* was /instasafe-zero-trust-pricing — a button labelled
+                "Book a demo" that landed on the pricing page. Wrong
+                destination for its own label, and pricing is not
+                something this site discloses. */}
+            <a href="/book-a-demo" className="iz-btn iz-btn-pri iz-btn-sm">Book a demo</a>
             <span className="fx-stat">25 device checks · 144 named policy rules</span>
           </div>
         )}
