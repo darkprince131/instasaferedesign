@@ -8,18 +8,18 @@
 /* ============================================================
    HeroConsole — a HINT of tilt (5deg), not a perspective stunt
    ============================================================ */
-.ztconsole { perspective: 1800px; }
-.ztconsole-tilt {
-  transform-origin: 50% 0%;
-  transform:
-    rotateX(calc((1 - var(--p, 0)) * 5deg))
-    scale(calc(0.975 + var(--p, 0) * 0.025));
-  will-change: transform;
-}
+/* tilt removed (user call 2026-08-12): the console reads better flat. Only
+   the scroll-deepening shadow of the effect remains. (The tilt was NOT what
+   caused the console's internal spacing bug — see the note below.) */
+.ztconsole-tilt { will-change: auto; }
+/* NO `display` here. This rule's child is IzAppWindow, whose root is a
+   `flex column` — forcing it to `block` took `.iaw-body` out of flex, so
+   `flex: 1` went inert, the body grew to its content instead of to the
+   window's 600px, and every `.iaw-section { min-height: 100% }` then
+   resolved against a 2800px box. That is where the acres of empty space
+   between the console's sections came from. Only the shadow belongs here;
+   IzAppWindow already owns its own radius and clipping. */
 .ztconsole-tilt > * {
-  display: block;
-  border-radius: var(--r-lg);
-  overflow: hidden;
   box-shadow: 0 calc(14px + var(--p, 0) * 18px) calc(34px + var(--p, 0) * 30px) -26px
     color-mix(in srgb, var(--tx) calc(24% + var(--p, 0) * 14%), transparent);
 }

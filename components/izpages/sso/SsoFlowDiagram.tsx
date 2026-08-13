@@ -7,33 +7,69 @@
    traveling pulse, a cycling accent glow on the active pipeline
    node. No amber — glow is accent-only via color-mix. Static
    under reduced motion (steady glow, no dashes/pulse).
+
+   ▸ REBUILT PASS 2026-08-13 ◂ the first cut shipped four basic
+   layout faults, all fixed here and none to reintroduce:
+     · the two detail cards physically OVERLAPPED (208px wide on a
+       203px column gap) and read as one grey slab — three cards
+       now, sized to the gap, one per pipeline stage;
+     · detail text was --tx-mute, which misses AA at that size —
+       quiet text is --tx-dim, per the standing rule;
+     · nothing named the three columns, so the reading order was
+       guesswork — mono kickers now sit over each column;
+     · below ~1160px the fixed 190px nodes collided on the
+       shrinking stage — container queries now step the node size
+       with the stage, and below 720px the diagram RECOMPOSES into
+       a vertical flow (real HTML, not a pan-around canvas), per
+       the IzVpnZtnaFlow precedent.
    ============================================================ */
 
 import { useEffect, useState } from "react";
-import { Buildings, Cloud, Database, Fingerprint, Key, ShieldCheck, Stack, type Icon } from "@phosphor-icons/react";
+import {
+  ArrowDown,
+  Buildings,
+  Cloud,
+  Database,
+  Fingerprint,
+  Key,
+  ShieldCheck,
+  Stack,
+  type Icon,
+} from "@phosphor-icons/react";
 
 const VW = 1200;
-const VH = 540;
+const VH = 560;
 
 const INPUTS: { x: number; y: number; name: string; Icon: Icon }[] = [
-  { x: 110, y: 140, name: "Active Directory", Icon: Database },
-  { x: 110, y: 270, name: "Google Workspace", Icon: Cloud },
-  { x: 110, y: 400, name: "Okta / your IdP", Icon: Fingerprint },
+  { x: 110, y: 150, name: "Active Directory", Icon: Database },
+  { x: 110, y: 280, name: "Google Workspace", Icon: Cloud },
+  { x: 110, y: 410, name: "Okta / your IdP", Icon: Fingerprint },
 ];
 const MID: { x: number; y: number; name: string; Icon: Icon }[] = [
-  { x: 380, y: 270, name: "Authenticate", Icon: Fingerprint },
-  { x: 600, y: 270, name: "Issue SSO token", Icon: Key },
-  { x: 820, y: 270, name: "Apply policy", Icon: ShieldCheck },
+  { x: 380, y: 280, name: "Authenticate", Icon: Fingerprint },
+  { x: 600, y: 280, name: "Issue SSO token", Icon: Key },
+  { x: 820, y: 280, name: "Apply policy", Icon: ShieldCheck },
 ];
 const OUT: { x: number; y: number; name: string; Icon: Icon }[] = [
-  { x: 1090, y: 140, name: "SaaS apps", Icon: Cloud },
-  { x: 1090, y: 270, name: "Internal apps", Icon: Buildings },
-  { x: 1090, y: 400, name: "Legacy apps", Icon: Stack },
+  { x: 1090, y: 150, name: "SaaS apps", Icon: Cloud },
+  { x: 1090, y: 280, name: "Internal apps", Icon: Buildings },
+  { x: 1090, y: 410, name: "Legacy apps", Icon: Stack },
 ];
 
+/* one card per pipeline stage — a two-card row under a three-node
+   pipeline read as unfinished, and the third stage is the one that
+   actually decides anything */
 const DETAIL_CARDS = [
-  { x: MID[0].x, title: "SAML assertion", lines: ["NameID: you@company.com", "AuthnContext: MFA", "Audience: app.example"] },
-  { x: MID[1].x, title: "Session policy", lines: ["device: trusted", "mfa: passed", "ttl: 8h"] },
+  { x: MID[0].x, title: "SAML assertion", lines: ["NameID: you@company.com", "AuthnContext: MFA"] },
+  { x: MID[1].x, title: "Session token", lines: ["device: trusted · mfa: passed", "ttl: 8h"] },
+  { x: MID[2].x, title: "Access decision", lines: ["grant: your app estate", "revoke: one click"] },
+];
+
+/* the column kickers — the reading order, named */
+const COLS = [
+  { x: 110, label: "Your directory" },
+  { x: 600, label: "InstaSafe decides" },
+  { x: 1090, label: "Your apps" },
 ];
 
 function pct(v: number, total: number) {
@@ -106,8 +142,9 @@ export function SsoFlowDiagram() {
 
   return (
     <div className={`sfd-panel${reduced ? " sfd-static" : ""}`}>
-      <div className="sfd-metric">1 login → 40+ apps unlocked</div>
+      <div className="sfd-metric">1 login → your whole app estate</div>
 
+      {/* ---------------- wide: the coordinate-locked map ---------------- */}
       <div className="sfd-scroll">
         <div className="sfd-stage">
           <svg viewBox={`0 0 ${VW} ${VH}`} className="sfd-svg" preserveAspectRatio="xMidYMid meet" aria-hidden>
@@ -129,18 +166,18 @@ export function SsoFlowDiagram() {
                 reduced={reduced}
               />
             ))}
-            {/* dashed risers to the detail cards below */}
-            {[MID[0], MID[1]].map((n, i) => (
+            {/* risers: each pipeline node down to its own detail card */}
+            {MID.map((n, i) => (
               <line
                 key={`riser-${i}`}
                 x1={n.x}
                 y1={n.y + 30}
                 x2={n.x}
-                y2={430}
+                y2={432}
                 stroke="var(--line-strong)"
                 strokeWidth={1}
                 strokeDasharray="2 5"
-                opacity={0.6}
+                opacity={0.75}
               />
             ))}
             {/* traveling pulse along the pipeline */}
@@ -155,6 +192,14 @@ export function SsoFlowDiagram() {
             )}
           </svg>
 
+          {/* column kickers — grouping, before any card is read */}
+          {COLS.map((c) => (
+            <span key={c.label} className="sfd-col" style={{ left: pct(c.x, VW) }}>
+              {c.label}
+              <i aria-hidden="true">_</i>
+            </span>
+          ))}
+
           {INPUTS.map((n, i) => (
             <NodeCard key={`i${i}`} {...n} dim />
           ))}
@@ -165,8 +210,12 @@ export function SsoFlowDiagram() {
             <NodeCard key={`m${i}`} {...n} glow={reduced ? i === 1 : glowIndex === i} />
           ))}
 
-          {DETAIL_CARDS.map((d) => (
-            <div key={d.title} className="sfd-detail" style={{ left: pct(d.x, VW), top: pct(430, VH) }}>
+          {DETAIL_CARDS.map((d, i) => (
+            <div
+              key={d.title}
+              className={`sfd-detail${!reduced && glowIndex === i ? " on" : ""}`}
+              style={{ left: pct(d.x, VW), top: pct(432, VH) }}
+            >
               <div className="sfd-detail-title">{d.title}</div>
               {d.lines.map((l) => (
                 <div key={l} className="sfd-detail-line">
@@ -175,6 +224,65 @@ export function SsoFlowDiagram() {
               ))}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ---------------- narrow: the same flow, recomposed ----------------
+          Real HTML in document flow, not a pan-around canvas. Groups keep
+          the kickers; the pipeline keeps its glow; the token detail rides
+          with its stage instead of floating. */}
+      <div className="sfd-mobile" aria-label="How SSO flows, step by step">
+        <div className="sfd-m-group">
+          <span className="sfd-m-lab">
+            Your directory<i aria-hidden="true">_</i>
+          </span>
+          <ul>
+            {INPUTS.map((n) => (
+              <li key={n.name}>
+                <n.Icon size={16} weight="duotone" aria-hidden="true" />
+                {n.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <span className="sfd-m-arrow" aria-hidden="true">
+          <ArrowDown size={15} weight="bold" />
+        </span>
+
+        <div className="sfd-m-group sfd-m-group--mid">
+          <span className="sfd-m-lab">
+            InstaSafe decides<i aria-hidden="true">_</i>
+          </span>
+          <ol>
+            {MID.map((n, i) => (
+              <li key={n.name}>
+                <n.Icon size={16} weight="duotone" aria-hidden="true" />
+                <span className="sfd-m-step">
+                  <b>{n.name}</b>
+                  <em>{DETAIL_CARDS[i].lines[0]}</em>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <span className="sfd-m-arrow" aria-hidden="true">
+          <ArrowDown size={15} weight="bold" />
+        </span>
+
+        <div className="sfd-m-group">
+          <span className="sfd-m-lab">
+            Your apps<i aria-hidden="true">_</i>
+          </span>
+          <ul>
+            {OUT.map((n) => (
+              <li key={n.name}>
+                <n.Icon size={16} weight="duotone" aria-hidden="true" />
+                {n.name}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

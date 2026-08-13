@@ -9,182 +9,243 @@
    element snaps to its own base rule — which is written to already
    be the finished state. That is what makes the still (touch,
    reduced motion, hover-out) correct without a second code path.
+
+   Every colour is a token, so both themes come free. The ink pills
+   fill with `--tx` and set text in `--bg`: near-black on paper,
+   near-white in dark, legible either way without a variant.
    ============================================================ */
 
-/* ---------- scene scaffolding ---------- */
-.iztc-scene {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  width: 100%;
-}
-.iztc-scene--two { align-items: center; }
-.iztc-fan {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-  min-width: 0;
-}
-.iztc-apps {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-}
-
-/* ---------- nodes ---------- */
-.iztc-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-1);
-  flex: none;
-}
-.iztc-node i {
+.iztc-svg {
   display: block;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  background: var(--surface);
-}
-.iztc-node--user i { border-radius: var(--r-pill); }
-.iztc-node em {
-  font-style: normal;
-  font-family: var(--mono);
-  font-size: var(--fs-2xs);
-  letter-spacing: 0.03em;
-  color: var(--tx-dim);
-  white-space: nowrap;
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
-/* ---------- tunnel ---------- */
-.iztc-tunnel {
-  position: relative;
-  flex: 1;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  min-width: 0;
+/* ---------- node cards ---------- */
+.iztc-card {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1;
 }
-.iztc-pipe {
-  position: absolute;
-  inset: 50% 0 auto 0;
-  height: 2px;
-  margin-top: -1px;
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--orange) 34%, transparent);
-  /* BASE = finished: full width, present. The keyframe grows it FROM 0. */
-  transform: scaleX(1);
-  transform-origin: left center;
+.iztc-glyph { color: var(--tx-dim); }
+.iztc-name {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  fill: var(--tx);
+  text-anchor: middle;
 }
-.iztc-packet {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 5px;
-  height: 5px;
-  margin-top: -2.5px;
-  border-radius: var(--r-pill);
-  background: var(--orange);
-  /* base: not in flight — the still shows a built tunnel, not packets
-     frozen mid-air */
+.iztc-cap {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  fill: var(--tx-dim);
+  text-anchor: middle;
+}
+/* case 3's unreachable app: present, plainly not in play */
+.iztc-node.is-dim { opacity: 0.42; }
+
+/* ---------- gate plane ---------- */
+.iztc-glass-a { stop-color: color-mix(in srgb, var(--orange) 13%, transparent); }
+.iztc-glass-b { stop-color: color-mix(in srgb, var(--orange) 2%, transparent); }
+.iztc-gate-plane {
+  fill: color-mix(in srgb, var(--orange) 9%, transparent);
+  stroke: color-mix(in srgb, var(--orange) 26%, transparent);
+  stroke-width: 1;
+}
+.iztc-gate-edge {
+  stroke: color-mix(in srgb, var(--orange) 52%, transparent);
+  stroke-width: 1.4;
+}
+
+/* ---------- wires ---------- */
+.iztc-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--orange) 55%, transparent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  /* BASE = finished: fully drawn. The keyframe runs it FROM 1 → 0.
+     pathLength=1 on the element makes this scale-independent. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+/* the severed lane's resting state IS the blocked state — that is the
+   still the reference shows, and the animation replays how it got there */
+.iztc-wire--cut .iztc-line {
+  stroke: color-mix(in srgb, var(--deny) 60%, transparent);
+  stroke-dasharray: 0.014 0.014;
+}
+.iztc-pkt {
+  fill: var(--orange);
+  offset-rotate: 0deg;
+  /* base: no packets in flight. The still is a built tunnel, not
+     traffic frozen mid-air. */
+  offset-distance: 100%;
   opacity: 0;
 }
-.iztc-lock {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--r-pill);
-  background: var(--surface);
-  box-shadow: 0 0 0 1px var(--deny);
-  color: var(--deny);
-  font-size: 10px;
-  line-height: 1;
+.iztc-wire--cut .iztc-pkt { fill: var(--deny); }
+.iztc-junction {
+  fill: var(--surface);
+  stroke: color-mix(in srgb, var(--orange) 60%, transparent);
+  stroke-width: 1.2;
 }
-/* the severed tunnel's resting state: dimmed pipe, lock shown */
-.iztc-tunnel.is-dead .iztc-pipe { background: color-mix(in srgb, var(--deny) 30%, transparent); }
+
+/* ---------- pills ---------- */
+.iztc-pill-bg { fill: var(--tx); }
+.iztc-pill-tx {
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.07em;
+  fill: var(--bg);
+}
+.iztc-pill-ic { color: var(--bg); }
+.iztc-pill--deny .iztc-pill-bg { fill: var(--deny); }
+.iztc-pill--deny .iztc-pill-tx,
+.iztc-pill--deny .iztc-pill-ic { fill: var(--bg); color: var(--bg); }
+
+/* ---------- engine ---------- */
+.iztc-ring { fill: none; }
+.iztc-ring--out {
+  stroke: color-mix(in srgb, var(--orange) 28%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.iztc-ring--mid {
+  stroke: color-mix(in srgb, var(--orange) 20%, transparent);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.iztc-ring--in {
+  fill: var(--surface);
+  stroke: color-mix(in srgb, var(--orange) 45%, transparent);
+  stroke-width: 1.2;
+}
+.iztc-shield { color: var(--orange); }
+.iztc-eng-tx {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.11em;
+  fill: var(--tx-dim);
+  text-anchor: middle;
+}
 
 /* ============================================================
    LIVE — the only place animations exist
    ============================================================ */
 
-/* pipe: grow, then breathe so it reads as alive rather than drawn once */
-.izug-cell.is-live .iztc-pipe {
-  animation: iztc-grow 620ms var(--ease), iztc-breathe 2.4s var(--ease-out) 620ms infinite;
+/* wires draw in, left to right, then hold */
+.izug-cell.is-live .iztc-line {
+  animation: iztc-draw 640ms var(--ease) both;
 }
-/* packets: continuous flow, staggered per --p */
-.izug-cell.is-live .iztc-packet {
-  animation: iztc-flow 1.9s linear infinite;
-  animation-delay: calc(var(--p) * 0.63s + 620ms);
-}
-/* tunnel 2 runs on its own clock — the point of "independent" is that the
-   two are visibly NOT in step */
-.izug-cell.is-live .iztc-tunnel--2 .iztc-packet {
-  animation-duration: 2.6s;
-  animation-delay: calc(var(--p) * 0.87s + 900ms);
+.izug-cell.is-live .iztc-wire--cut .iztc-line {
+  animation: iztc-draw 640ms var(--ease) both, iztc-sever 4.2s var(--ease) 640ms infinite;
 }
 
-/* case 3: tunnel 1 is struck, locks, stays gone a beat, then reconnects —
-   and NOTHING about tunnel 2 references this timeline */
-.izug-cell.is-live .iztc-tunnel.is-dead .iztc-pipe {
-  animation: iztc-sever 4.2s var(--ease) infinite;
+/* packets ride the real path */
+.izug-cell.is-live .iztc-pkt {
+  animation: iztc-run var(--dur, 1.9s) linear infinite;
+  animation-delay: calc(var(--delay, 0s) + 640ms);
 }
-.izug-cell.is-live .iztc-tunnel.is-dead .iztc-packet {
-  animation: iztc-flow-cut 4.2s linear infinite;
-  animation-delay: calc(var(--p) * 0.5s);
+/* on the severed lane traffic stops dead for most of the cycle */
+.izug-cell.is-live .iztc-wire--cut .iztc-pkt {
+  animation-name: iztc-run-cut;
 }
-.izug-cell.is-live .iztc-lock { animation: iztc-lock-in 4.2s var(--ease) infinite; }
 
-@keyframes iztc-grow {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+/* the engine is the one thing always running */
+.izug-cell.is-live .iztc-ring--out { animation: iztc-spin 22s linear infinite; }
+.izug-cell.is-live .iztc-ring--mid { animation: iztc-breathe 2.8s var(--ease-out) infinite; }
+
+/* pills and gates land in sequence behind the wire */
+.izug-cell.is-live .iztc-pill {
+  animation: iztc-pop 380ms var(--ease) both;
+  animation-delay: calc(320ms + var(--i, 0) * 130ms);
+}
+.izug-cell.is-live .iztc-gate-edge {
+  animation: iztc-edge 2.6s var(--ease-out) infinite;
+  animation-delay: calc(var(--i, 0) * 220ms);
+}
+
+@keyframes iztc-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes iztc-run {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+/* one burst, then the lane is shut for the rest of the cycle */
+@keyframes iztc-run-cut {
+  0% { offset-distance: 0%; opacity: 0; }
+  4% { opacity: 1; }
+  26% { offset-distance: 62%; opacity: 1; }
+  30% { offset-distance: 62%; opacity: 0; }
+  100% { offset-distance: 62%; opacity: 0; }
+}
+/* orange and whole → struck → dashed and denied, held, repeat */
+@keyframes iztc-sever {
+  0%, 22% {
+    stroke: color-mix(in srgb, var(--orange) 55%, transparent);
+    stroke-dasharray: 1;
+  }
+  30% {
+    stroke: var(--deny);
+    stroke-dasharray: 1;
+  }
+  38%, 100% {
+    stroke: color-mix(in srgb, var(--deny) 60%, transparent);
+    stroke-dasharray: 0.014 0.014;
+  }
+}
+@keyframes iztc-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 @keyframes iztc-breathe {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  50% { opacity: 0.4; }
 }
-/* travel is expressed in `left` percentages so a packet crosses the ACTUAL
-   pipe width — a transform distance would need a pixel value the CSS cannot
-   know, and every tunnel here is a different width. */
-@keyframes iztc-flow {
-  0% { left: 0%; opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
+@keyframes iztc-pop {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-/* packets stop while the tunnel is severed, resume when it returns */
-@keyframes iztc-flow-cut {
-  0% { left: 0%; opacity: 0; }
-  6% { opacity: 1; }
-  38% { left: 100%; opacity: 1; }
-  40% { opacity: 0; }
-  84% { opacity: 0; left: 0%; }
-  90% { opacity: 1; }
-  100% { left: 100%; opacity: 0; }
-}
-@keyframes iztc-sever {
-  0%, 40% { background: color-mix(in srgb, var(--orange) 34%, transparent); transform: scaleX(1); }
-  46% { background: var(--deny); }
-  52%, 78% { background: color-mix(in srgb, var(--deny) 22%, transparent); transform: scaleX(0.06); }
-  92%, 100% { background: color-mix(in srgb, var(--orange) 34%, transparent); transform: scaleX(1); }
-}
-@keyframes iztc-lock-in {
-  0%, 44% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
-  52%, 76% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  88%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+@keyframes iztc-edge {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
-/* ---------- copy ---------- */
+/* ============================================================
+   narrow — the scene keeps its structure, sheds its annotation.
+   Nothing is scaled down past reading size: labels that cannot be
+   read are removed instead, which is the honest simplification.
+   ============================================================ */
+@media (max-width: 620px) {
+  .iztc-cap { display: none; }
+  .iztc-name { font-size: 13px; }
+  .iztc-eng-tx { font-size: 9px; letter-spacing: 0.06em; }
+
+  /* label out, pill collapses to a token — a full-width lozenge holding
+     one small glyph reads as a rendering bug, not a compact state */
+  .iztc-pill-tx { display: none; }
+  .iztc-pill-bg {
+    width: 22px;
+    x: calc(var(--px) + var(--pw) / 2 - 11px);
+  }
+  .iztc-pill-ic { transform: translateX(var(--icx)); }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .izug-cell,
-  .izug-cell.is-live .iztc-pipe,
-  .izug-cell.is-live .iztc-packet,
-  .izug-cell.is-live .iztc-lock { animation: none; transition: none; }
+  .izug-cell.is-live .iztc-line,
+  .izug-cell.is-live .iztc-pkt,
+  .izug-cell.is-live .iztc-ring--out,
+  .izug-cell.is-live .iztc-ring--mid,
+  .izug-cell.is-live .iztc-pill,
+  .izug-cell.is-live .iztc-gate-edge {
+    animation: none;
+  }
 }

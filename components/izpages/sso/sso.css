@@ -193,3 +193,15 @@
     gap: var(--sp-6);
   }
 }
+
+/* ============================================================
+   "The password problem" is DESKTOP-ONLY (user call, 2026-08-13).
+   The fatigue simulator is a pointer piece, and on a phone the
+   section cost a full screen before the flow diagram answered it.
+   `display: none` also unmounts nothing — the component still
+   renders — so keep the cut at the section so its reveal hooks and
+   layout never run visually on phones.
+   ============================================================ */
+@media (max-width: 719px) {
+  #password-problem { display: none; }
+}

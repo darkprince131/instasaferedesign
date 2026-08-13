@@ -1,5 +1,11 @@
 "use client";
 
+/* The component ships its own sheet — IzAvatar renders in consoles on
+   pages that never imported izavatar.css (the ZTNA hero among them),
+   where the avatar was collapsing to a 0x0 box. Same arrangement as
+   IzSideNav: a component that can appear anywhere carries its styles. */
+import "./izavatar.css";
+
 /* ============================================================
    IzUsers — the three people the whole site talks about.
 
@@ -8,12 +14,17 @@
    every component invented its own cast (Arjun Mehta here, anita.r
    there) and the site read like four different products.
 
-   The avatar is DRAWN, not a photo and not a plain initials chip:
-   a rounded plate, the doorway-portal arch from the hero at low
-   opacity, and the monogram over it. Tints stay inside the token
-   world — accent, and two neutral steps — because three rainbow
-   avatars would break the one-orange rule on a page that already
-   spends its colour budget on the CTA.
+   The avatar is drawn by default: a rounded plate, the doorway-portal
+   arch from the hero at low opacity, and the monogram over it. Tints
+   stay inside the token world — accent, and two neutral steps —
+   because three rainbow avatars would break the one-orange rule on a
+   page that already spends its colour budget on the CTA.
+
+   A person with a `photo` shows the photograph instead, inside the
+   same plate, so a photographed person and a drawn one still sit in
+   one row without one of them looking like a different component.
+   Photos are opt-in per person; nothing breaks while the rest of the
+   cast has none.
    ============================================================ */
 
 export type IzUserApp = {
@@ -35,6 +46,11 @@ export type IzUser = {
   group: string;
   /** which avatar tint: accent | ink | mute */
   tint: "accent" | "ink" | "mute";
+  /** portrait in /public/people. Where one exists the avatar shows the
+      photograph and the drawn plate becomes its frame; without one the
+      monogram mark is unchanged, so the cast can be photographed one
+      person at a time. */
+  photo?: string;
   device: { host: string; os: string; make: string; model: string; registered: string };
   webApps: IzUserApp[];
   netApps: { name: string; kind: string }[];
@@ -51,6 +67,7 @@ export const IZ_USERS: IzUser[] = [
     role: "Infrastructure Engineer",
     group: "it-operations",
     tint: "accent",
+    photo: "/people/alen-joseph-256.webp",
     device: { host: "DESKTOP-16MTL6M", os: "Windows 11 Pro", make: "Dell Inc.", model: "Latitude 7490", registered: "2026-07-01 12:44 IST" },
     webApps: [
       { logo: "aws", name: "Amazon Web Services", kind: "SAML" },
@@ -82,6 +99,7 @@ export const IZ_USERS: IzUser[] = [
     role: "Finance Systems Lead",
     group: "finance",
     tint: "ink",
+    photo: "/people/priya-s-256.webp",
     device: { host: "DESKTOP-7EJKLOP", os: "Windows 11 Pro", make: "Dell Inc.", model: "Latitude 5411", registered: "2026-07-01 12:24 IST" },
     webApps: [
       { logo: "salesforce", name: "Salesforce", kind: "SAML" },
@@ -149,9 +167,10 @@ type AvatarProps = {
 const ARCH = "M20 44V30a12 12 0 0 1 24 0v14Z";
 
 export function IzAvatar({ user, size = 36, className }: AvatarProps) {
+  const base = `izav izav-${user.tint}${user.photo ? " izav-photo" : ""}`;
   return (
     <span
-      className={className ? `izav izav-${user.tint} ${className}` : `izav izav-${user.tint}`}
+      className={className ? `${base} ${className}` : base}
       style={{ ["--izav-size" as string]: `${size}px` }}
       title={user.name}
     >
@@ -159,7 +178,17 @@ export function IzAvatar({ user, size = 36, className }: AvatarProps) {
         <rect className="izav-plate" x="0.5" y="0.5" width="63" height="63" rx="15" />
         <path className="izav-arch" d={ARCH} transform={`rotate(${user.tint === "ink" ? 180 : user.tint === "mute" ? 90 : 0} 32 32)`} />
       </svg>
-      <span className="izav-mono">{user.initials}</span>
+      {user.photo ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        /* NOT lazy: avatars render inside nested scroll containers (the
+           console's own scrolling body), where a lazy image below the
+           inner scroll position never enters the viewport and stays a
+           blank box. Same trap as the logo marquee's clone row. */
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img className="izav-img" src={user.photo} alt="" decoding="async" />
+      ) : (
+        <span className="izav-mono">{user.initials}</span>
+      )}
     </span>
   );
 }

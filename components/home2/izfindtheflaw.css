@@ -1,0 +1,440 @@
+/* ============================================================
+   izfindtheflaw.css — 00bc · IzFindTheFlaw
+
+   Ledger grammar (mono keys, hairline rows, no wallpaper). Quiet
+   text is --tx-dim, never --tx-mute (fails AA at these sizes).
+   Accent lands on the glyph, not the words.
+
+   Spacing steps only: 1 2 3 4 5 6 8 10 12.
+   ============================================================ */
+
+.izftf {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  overflow: hidden;
+}
+
+/* ---------------- act rail ---------------- */
+.izftf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.izftf-acts {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.izftf-act {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  transition: color var(--dur) var(--ease);
+}
+.izftf-act b {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+  color: var(--tx-dim);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.izftf-act.is-done b {
+  border-color: var(--line-strong);
+  background: var(--ghost);
+  color: var(--tx);
+}
+.izftf-act.is-on { color: var(--tx); }
+.izftf-act.is-on b {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: var(--btn-ink);
+}
+
+.izftf-reset {
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  padding: var(--sp-1) var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.izftf-reset:hover:not(:disabled) { color: var(--tx); border-color: var(--line-strong); }
+.izftf-reset:disabled { opacity: 0.4; cursor: default; }
+
+/* ---------------- two panes ---------------- */
+.izftf-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+}
+.izftf-conf {
+  padding: var(--sp-6);
+  border-right: 1px solid var(--line);
+  min-width: 0;
+}
+.izftf-stage {
+  padding: var(--sp-6);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+/* ---------------- config ledger ---------------- */
+.izftf-file {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+.izftf-file i { font-style: normal; color: var(--orange); }
+
+.izftf-lines { margin: 0; padding: 0; list-style: none; }
+.izftf-lines > li { border-bottom: 1px solid var(--line); }
+
+.izftf-line {
+  display: grid;
+  /* fixed key column: a config ledger reads as a ledger only when the
+     value column starts at the same x on every row */
+  grid-template-columns: 22px 118px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-2);
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.5;
+  text-align: left;
+  color: var(--tx);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    color var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.izftf-line:disabled { cursor: default; }
+.izftf-line:hover:not(:disabled) { background: var(--surface-2); border-left-color: var(--orange); }
+.izftf-line:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+
+.izftf-n { color: var(--tx-dim); font-size: var(--fs-3xs); letter-spacing: var(--ls-mono); }
+.izftf-k { color: var(--tx); }
+.izftf-v { color: var(--tx-dim); overflow-wrap: anywhere; }
+.izftf-c {
+  grid-column: 3;
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+  letter-spacing: var(--ls-mono);
+}
+
+/* ruled out */
+.izftf-line.is-wrong { opacity: 0.44; }
+.izftf-line.is-wrong .izftf-k { text-decoration: line-through; text-decoration-thickness: 1px; }
+.izftf-line.is-note:not(.is-wrong) { background: var(--surface-2); }
+
+/* the flaw, once it is the flaw */
+.izftf-line.is-flaw {
+  opacity: 1;
+  background: var(--deny-bg);
+  border-left-color: var(--deny);
+}
+.izftf-line.is-flaw .izftf-k,
+.izftf-line.is-flaw .izftf-v { color: var(--deny); }
+.izftf-line.is-struck .izftf-k,
+.izftf-line.is-struck .izftf-v { text-decoration: line-through; text-decoration-thickness: 1px; }
+.izftf-line.is-struck { opacity: 0.7; }
+
+/* the replacement written under it in act 3 */
+.izftf-new {
+  display: grid;
+  /* fixed key column: a config ledger reads as a ledger only when the
+     value column starts at the same x on every row */
+  grid-template-columns: 22px 118px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-2);
+  border-left: 2px solid var(--allow);
+  background: var(--allow-bg);
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  line-height: 1.5;
+}
+.izftf-new .izftf-k,
+.izftf-new .izftf-v { color: var(--allow); }
+.izftf-new .izftf-n,
+.izftf-new .izftf-c { color: var(--allow); opacity: 0.8; }
+
+.izftf-hint {
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ---------------- counter ---------------- */
+.izftf-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+.izftf-count-k {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.izftf-count b {
+  white-space: nowrap;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h3);
+  font-variant-numeric: tabular-nums;
+  color: var(--tx);
+  transition: color var(--dur) var(--ease);
+}
+.izftf-count b i {
+  font-style: normal;
+  margin-left: var(--sp-1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+}
+.izftf-count b.is-bad { color: var(--deny); }
+.izftf-count b.is-held { color: var(--allow); }
+
+/* ---------------- estate map ---------------- */
+.izftf-map {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.izftf-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--sp-3) var(--sp-2);
+  background: var(--surface);
+  font-family: var(--mono);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.izftf-cell em {
+  font-style: normal;
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izftf-cell u {
+  text-decoration: none;
+  font-size: var(--fs-micro);
+  color: var(--tx-dim);
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.izftf-cell.is-named em {
+  color: var(--tx);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-mono);
+}
+
+.izftf-cell.is-client,
+.izftf-cell.is-client-hit {
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+.izftf-cell.is-client em { color: var(--tx); }
+
+.izftf-cell.is-hit,
+.izftf-cell.is-client-hit {
+  background: var(--deny-bg);
+}
+.izftf-cell.is-hit em,
+.izftf-cell.is-hit u,
+.izftf-cell.is-client-hit em,
+.izftf-cell.is-client-hit u { color: var(--deny); opacity: 1; }
+
+.izftf-cell.is-dead { opacity: 0.3; }
+.izftf-cell.is-allow {
+  background: var(--allow-bg);
+  box-shadow: inset 0 0 0 1px var(--allow);
+}
+.izftf-cell.is-allow em,
+.izftf-cell.is-allow u { color: var(--allow); opacity: 1; }
+
+/* ---------------- act 1 answer-back ---------------- */
+.izftf-note {
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-4);
+  margin-top: auto;
+}
+.izftf-note p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+.izftf-note b { color: var(--tx); }
+.izftf-note-yes b { color: var(--allow); }
+.izftf-note-no b { color: var(--tx); }
+
+/* ---------------- log tape ---------------- */
+.izftf-tape {
+  margin: auto 0 0;
+  padding: var(--sp-4) 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-height: 148px;
+}
+.izftf-tape li {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  column-gap: var(--sp-3);
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  line-height: 1.45;
+  color: var(--tx-dim);
+}
+.izftf-t { color: var(--tx-dim); opacity: 0.75; }
+.izftf-src {
+  min-width: 46px;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx);
+}
+.izftf-msg { overflow-wrap: anywhere; }
+.izftf-tape li.is-bad .izftf-src,
+.izftf-tape li.is-bad .izftf-msg { color: var(--deny); }
+.izftf-tape li.is-good .izftf-src,
+.izftf-tape li.is-good .izftf-msg { color: var(--allow); }
+
+/* ---------------- footline ---------------- */
+.izftf-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  flex-wrap: wrap;
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.izftf-status {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+.izftf-status b { color: var(--tx); }
+
+.izftf-cta { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.izftf .izftf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  border-radius: var(--r-pill);
+  padding: var(--sp-2) var(--sp-5);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--tx);
+  transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.izftf .izftf-btn--ghost:hover { border-color: var(--tx); }
+.izftf .izftf-btn--pri {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: var(--btn-ink);
+}
+.izftf .izftf-btn--pri:hover { filter: brightness(1.06); }
+.izftf .izftf-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+/* ---------------- narrow ---------------- */
+@media (max-width: 980px) {
+  .izftf-body { grid-template-columns: minmax(0, 1fr); }
+  .izftf-conf { border-right: 0; border-bottom: 1px solid var(--line); }
+  .izftf-stage { padding: var(--sp-5); }
+  .izftf-conf { padding: var(--sp-5); }
+}
+@media (max-width: 620px) {
+  .izftf-map { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* acts take the full first row, reset drops under them — three labels
+     plus a button do not fit on one 320px line */
+  .izftf-head { flex-wrap: nowrap; align-items: center; }
+  .izftf-acts { flex-wrap: nowrap; gap: var(--sp-3); }
+  .izftf-act { font-size: var(--fs-3xs); }
+  .izftf-act span { display: none; }
+  .izftf-act.is-on span { display: inline; }
+  .izftf-count { flex-direction: column; align-items: flex-start; gap: var(--sp-1); }
+  .izftf-line { grid-template-columns: 20px minmax(0, 1fr); }
+  .izftf-line .izftf-v { grid-column: 2; }
+  .izftf-c { grid-column: 2; }
+  .izftf-new { grid-template-columns: 20px minmax(0, 1fr); }
+  .izftf-new .izftf-v, .izftf-new .izftf-c { grid-column: 2; }
+  .izftf-foot { flex-direction: column; align-items: stretch; }
+  .izftf-cta .izftf-btn { flex: 1; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izftf *,
+  .izftf *::before,
+  .izftf *::after { transition-duration: 0.01ms !important; }
+}

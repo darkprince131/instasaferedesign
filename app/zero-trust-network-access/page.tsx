@@ -23,8 +23,11 @@ import "@/components/izpages/pro/outcomes.css";
 import "@/components/izoutcomes/illustrations.css";
 import "@/components/izanswer/answers.css";
 import "@/components/home2/iztunnelcards.css";
+import "@/components/home2/threatradar.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/ztna/ztna.css";
+import "@/components/home2/izminidesktop.css";
+import "@/components/izpages/ztna/contextscreens.css";
 
 /* SEO-locked: this URL and its metadata carry the equity of the live
    page. Title/description/canonical are byte-identical to the v3

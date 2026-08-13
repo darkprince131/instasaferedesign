@@ -51,6 +51,9 @@ export function IzSideNav({
   label?: string;
 }) {
   const [active, setActive] = useState(0);
+  /* false until the first anchored section is reached — the rail must not
+     sit over the hero */
+  const [shown, setShown] = useState(false);
   const [open, setOpen] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [sheet, setSheet] = useState(false);
@@ -80,6 +83,15 @@ export function IzSideNav({
         if (el && el.getBoundingClientRect().top - READ_LINE <= 0) best = i;
       });
       setActive((p) => (p === best ? p : best));
+
+      /* The rail belongs to the sectioned part of the page, not to the
+         hero. Sitting on the edge from the first frame it competed with
+         the hero's own CTAs and pointed at content the reader had not
+         reached. It appears once the FIRST anchored section crosses the
+         reading line and leaves again if they scroll back up. */
+      const first = items[0] && document.getElementById(items[0].id);
+      const started = first ? first.getBoundingClientRect().top - READ_LINE <= 0 : true;
+      setShown((p) => (p === started ? p : started));
     };
     read();
     window.addEventListener("scroll", read, { passive: true });
@@ -105,6 +117,15 @@ export function IzSideNav({
   }, [pinned]);
 
   useEffect(() => () => hold(), []);
+
+  /* scrolling back into the hero must not leave an open panel or sheet
+     floating over it */
+  useEffect(() => {
+    if (shown) return;
+    setOpen(false);
+    setPinned(false);
+    setSheet(false);
+  }, [shown]);
 
   // Escape closes everything; arrows walk the list and scroll with it
   useEffect(() => {
@@ -184,7 +205,8 @@ export function IzSideNav({
     <div ref={rootRef}>
       {/* ---------------- desktop rail ---------------- */}
       <div
-        className={`izsn izsn--${side}${open ? " is-open" : ""}${pinned ? " is-pinned" : ""}`}
+        className={`izsn izsn--${side}${open ? " is-open" : ""}${pinned ? " is-pinned" : ""}${shown ? "" : " is-away"}`}
+        aria-hidden={!shown || undefined}
         onMouseEnter={doOpen}
         onMouseLeave={doClose}
       >
@@ -230,7 +252,7 @@ export function IzSideNav({
       </div>
 
       {/* ---------------- mobile ---------------- */}
-      <div className="izsn-mob">
+      <div className={`izsn-mob${shown ? "" : " is-away"}`} aria-hidden={!shown || undefined}>
         <button
           type="button"
           className="izsn-bar"

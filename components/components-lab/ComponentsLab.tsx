@@ -60,6 +60,7 @@ import "@/components/home2/izlogomarquee.css";
 import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
 import { IzProblemCards } from "@/components/home2/IzProblemCards";
 import { IzTunnelCards } from "@/components/home2/IzTunnelCards";
+import { IzFindTheFlaw } from "@/components/home2/IzFindTheFlaw";
 import { ArrowsOutCardinal, Broadcast as BroadcastIcon, CurrencyDollar } from "@phosphor-icons/react";
 import { Certificate, UserCheck, Devices, Prohibit, LinkSimple } from "@phosphor-icons/react";
 import { IzConverge as IzConvergeVisual } from "@/components/izpages/pro/IzConverge";
@@ -1364,6 +1365,28 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
               pointerenter/leave.
             </p>
             <IzTunnelCards />
+          </section>
+
+          {/* FIND THE FLAW */}
+          <section className="izc-sec" id="findtheflaw">
+            <div className="izc-sec-h">
+              <span className="n">00bc</span> Find the error &rarr; breach &rarr; contained
+            </div>
+            <p className="izc-sec-desc">
+              A signature interactive for the ZTNA slot. Three acts on <b>one stage</b>: the visitor reads eight lines
+              of a real VPN gateway config and picks the one that turned a phished password into an estate-wide
+              incident; that line then executes across a sample estate; then the <i>same</i> config is shown rewritten
+              and the same theft replayed. The argument is the <b>diff</b> — the config never leaves the screen, so act
+              3 answers act 1 rather than introducing a second diagram.
+              <br />
+              <br />
+              <b>The decoys carry the teaching.</b> Every wrong line answers back with why it is not the flaw (MFA was
+              required <i>and satisfied</i>; the cipher was strong and the attacker was inside it), so a visitor who
+              guesses wrong twice has still learned the argument. <b>Never a gate:</b>{" "}a &ldquo;show me the
+              answer&rdquo; button sits in act 1 from the first frame. The log tape runs the <i>same timestamps</i> in
+              acts 2 and 3 — only the outcome column changes.
+            </p>
+            <IzFindTheFlaw />
           </section>
 
           {/* HERO ARCHETYPES */}

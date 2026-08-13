@@ -292,3 +292,58 @@
   .why-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .why-stat b { font-size: 28px; }
 }
+
+/* ============================================================
+   The two ends of both paths: real people, and real applications.
+
+   The people are ROUND — the source portraits are circular crops on
+   white, so a rounded square would show the photo's own circle inset
+   in a corner-cut box.
+   ============================================================ */
+.why-node-ic--photo {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+.why-node-ic--photo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  /* the source circle fills its frame — a centred crop lands on it */
+  object-position: center;
+}
+.why-node.is-tinted .why-node-ic--photo {
+  border-color: color-mix(in srgb, var(--orange) 40%, var(--line));
+}
+
+/* three real application marks, no names written out — the logo is the
+   label, and a wordmark under each would date the diagram */
+.why-apps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 100px;
+}
+.why-app {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 5px;
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.why-app img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/* the old column's estate is reached THROUGH the vendor, so its marks
+   read back a step; on the InstaSafe side they are at full strength */
+.why-app img { filter: grayscale(1); opacity: 0.55; }
+.why-node.is-tinted .why-app img { filter: none; opacity: 1; }
+.why-node.is-tinted .why-app { border-color: color-mix(in srgb, var(--orange) 26%, var(--line)); }

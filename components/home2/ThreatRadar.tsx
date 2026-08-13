@@ -50,6 +50,19 @@ const ALERT_INDICES = [8, 22, 31, 45, 57];
 /* lens radius (px) — alert reveals when dot centre enters this circle */
 const LENS_R = 120;
 
+/* ---- magnet cursor ----
+   The real cursor is hidden over the field and a drawn one takes its place,
+   so it can be *pulled*. Near an alert the drawn cursor is dragged toward it,
+   shrinks, and its easing drops — it goes heavy. Harder to move, never stuck:
+   the pull is a fraction of the gap and hard-capped in px, and the alert's hit
+   area is the whole grid cell (~114×83), so the real pointer is always well
+   inside the button the drawn cursor is sitting on. */
+const PULL_R = 150; // attraction radius
+const PULL_MAX = 0.45; // most of the gap the cursor can be dragged across
+const PULL_CAP = 28; // …but never more than this many px
+const EASE_FAR = 0.3; // light and responsive away from a threat
+const EASE_NEAR = 0.085; // heavy and reluctant on top of one
+
 const CASES: Activity[] = [
   {
     id: "device", tone: "warn", icon: DeviceMobile,
@@ -240,12 +253,28 @@ export function ThreatRadar() {
     return () => window.removeEventListener("keydown", fn);
   }, []);
 
+  /* raw pointer position in field px — written by pointermove, read by the rAF */
+  const raw = useRef({ x: 0, y: 0 });
+
+  /* magnet/scan/snap live in STATE, not classList: React owns the field's
+     className (it renders `has-card`), so any re-render silently wiped
+     imperatively-added classes — the drawn cursor died the moment the
+     dialog opened. */
+  const [magnet, setMagnet] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [snap, setSnap] = useState(false);
+  const magnetRef = useRef(false);
+
+  /* fallback for coarse pointers / reduced motion: no magnet, no drawn cursor,
+     the lens and the reveal track the pointer directly */
   function onMove(e: React.PointerEvent<HTMLDivElement>) {
     const el = fieldRef.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
     const mx = e.clientX - r.left;
     const my = e.clientY - r.top;
+    raw.current = { x: mx, y: my };
+    if (magnetRef.current) return; // the rAF owns the vars
     el.style.setProperty("--mx", `${mx}px`);
     el.style.setProperty("--my", `${my}px`);
     // reveal only alert dots whose centre falls inside the lens circle
@@ -256,6 +285,99 @@ export function ThreatRadar() {
       btn.classList.toggle("near", Math.hypot(mx - bx, my - by) <= LENS_R);
     });
   }
+
+  /* ---- the magnet ----
+     Runs only while the pointer is inside the field, only on a fine pointer,
+     and never under reduced motion (a cursor that lags is exactly the kind of
+     motion that setting asks us to drop). Alert centres are measured on enter
+     and on resize, not per frame. */
+  useEffect(() => {
+    const field = fieldRef.current;
+    if (!field) return;
+    if (reduced) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    setMagnet(true);
+    magnetRef.current = true;
+    let raf = 0;
+    let centres: { el: HTMLElement; x: number; y: number }[] = [];
+    const pos = { x: 0, y: 0 };
+
+    const measure = () => {
+      const r = field.getBoundingClientRect();
+      centres = Array.from(field.querySelectorAll<HTMLElement>("button.tr-dot.alert")).map((el) => {
+        const b = el.getBoundingClientRect();
+        return { el, x: b.left + b.width / 2 - r.left, y: b.top + b.height / 2 - r.top };
+      });
+    };
+
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const { x: rx, y: ry } = raw.current;
+
+      let best: (typeof centres)[number] | null = null;
+      let bd = Infinity;
+      for (const c of centres) {
+        const d = Math.hypot(rx - c.x, ry - c.y);
+        if (d < bd) { bd = d; best = c; }
+      }
+
+      /* 0 far away → 1 sitting on it. Curved so the pull only really bites
+         inside the last third of the radius. */
+      const t = best && bd < PULL_R ? Math.pow(1 - bd / PULL_R, 1.6) : 0;
+
+      let tx = rx;
+      let ty = ry;
+      if (best && t > 0) {
+        const k = Math.min(PULL_MAX * t, PULL_CAP / Math.max(bd, 1));
+        tx += (best.x - rx) * k;
+        ty += (best.y - ry) * k;
+      }
+
+      const ease = EASE_FAR + (EASE_NEAR - EASE_FAR) * t;
+      pos.x += (tx - pos.x) * ease;
+      pos.y += (ty - pos.y) * ease;
+
+      field.style.setProperty("--mx", `${pos.x.toFixed(1)}px`);
+      field.style.setProperty("--my", `${pos.y.toFixed(1)}px`);
+      field.style.setProperty("--pull", t.toFixed(3));
+      for (const c of centres) {
+        c.el.classList.toggle("near", Math.hypot(pos.x - c.x, pos.y - c.y) <= LENS_R);
+      }
+    };
+
+    const enter = (e: PointerEvent) => {
+      const r = field.getBoundingClientRect();
+      raw.current = { x: e.clientX - r.left, y: e.clientY - r.top };
+      pos.x = raw.current.x;
+      pos.y = raw.current.y;
+      measure();
+      setScanning(true);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    };
+    const leave = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      setScanning(false);
+      field.style.setProperty("--pull", "0");
+      centres.forEach((c) => c.el.classList.remove("near"));
+    };
+
+    field.addEventListener("pointerenter", enter);
+    field.addEventListener("pointerleave", leave);
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      field.removeEventListener("pointerenter", enter);
+      field.removeEventListener("pointerleave", leave);
+      window.removeEventListener("resize", measure);
+      magnetRef.current = false;
+      setMagnet(false);
+      setScanning(false);
+    };
+    /* re-measure when a dot resolves: the resolved button is a different node */
+  }, [reduced, done]);
 
   function openResolvedTip(e: React.MouseEvent<HTMLButtonElement>, caseIdx: number) {
     const field = fieldRef.current;
@@ -276,6 +398,23 @@ export function ThreatRadar() {
       // below: anchor via `top`
       yVal: below ? Math.round(cy + 28) : Math.round(fr.height - cy + 14),
     });
+  }
+
+  /* click on an alert: in magnet mode the lens first snaps shut on the
+     square (0.16s), and only then does the dialog open — the catch reads
+     as the cause of the investigation. Elsewhere it opens immediately. */
+  function investigate(caseIdx: number) {
+    if (magnetRef.current && !reduced) {
+      setSnap(true);
+      timers.current.push(
+        setTimeout(() => {
+          setSnap(false);
+          setOpen(caseIdx);
+        }, 170),
+      );
+      return;
+    }
+    setOpen(caseIdx);
   }
 
   function choose(c: Activity, cta: Cta) {
@@ -304,14 +443,14 @@ export function ThreatRadar() {
       </div>
 
       <div
-        className="tr-field"
+        className={`tr-field${magnet ? " magnet" : ""}${scanning ? " scan" : ""}${snap ? " snap" : ""}${cur ? " has-card" : ""}`}
         ref={fieldRef}
         onPointerMove={onMove}
-        onPointerEnter={(e) => { e.currentTarget.classList.add("scan"); onMove(e); }}
+        onPointerEnter={(e) => { setScanning(true); onMove(e); }}
         onPointerLeave={(e) => {
-          const el = e.currentTarget;
-          el.classList.remove("scan");
-          el.querySelectorAll<HTMLElement>("button.tr-dot.alert")
+          setScanning(false);
+          e.currentTarget
+            .querySelectorAll<HTMLElement>("button.tr-dot.alert")
             .forEach((btn) => btn.classList.remove("near"));
         }}
       >
@@ -350,7 +489,7 @@ export function ThreatRadar() {
                   key={idx}
                   className="tr-dot alert"
                   style={{ ["--tc" as string]: toneColor[c.tone] }}
-                  onClick={() => setOpen(caseIdx)}
+                  onClick={() => investigate(caseIdx)}
                   aria-label={`Alert ${caseIdx + 1} — click to investigate`}
                 >
                   <span className="tr-dot-core" />
@@ -368,6 +507,13 @@ export function ThreatRadar() {
 
         {/* cursor lens glow — follows --mx/--my */}
         <div className="tr-lens" aria-hidden="true" />
+
+        {/* the drawn cursor. Only visible in magnet mode, where the real one
+            is hidden; it shrinks and goes heavy as a threat pulls on it. */}
+        <span className="tr-cursor" aria-hidden="true">
+          <i className="tr-cursor-box" />
+          <i className="tr-cursor-pip" />
+        </span>
 
         <span className="tr-hint">
           <span className="tr-hint-scan">hover to reveal threats · </span>

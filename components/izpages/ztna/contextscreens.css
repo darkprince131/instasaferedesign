@@ -1,0 +1,23 @@
+/* ============================================================
+   contextscreens.css — the Control-surface endpoint screen, resized
+   for the ZTNA page's "Context controls" FeatureSplit.
+
+   The screen itself is IzMiniDesktop and brings all of its own
+   styling (`izminidesktop.css`); these rules only fit it to the
+   `.fx-window` slot, which is narrower than the control-surface
+   cell it was built for.
+   ============================================================ */
+
+.izcx {
+  width: 100%;
+  /* the desktop's chrome and toasts are sized in `em` off this, so the
+     screen scales as one piece instead of a 10px UI in a small box */
+  font-size: 10px;
+}
+
+/* `.fx-node` centres its child in a 236px-min box; the desktop is
+   16/10, so at the window's ~424px it lands ~265px tall and the panel
+   grows to it rather than clipping. */
+.izcx .izmd-screen {
+  box-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.55), var(--inset);
+}

@@ -287,7 +287,13 @@ export function IzMfaHub() {
      active one is chosen in CSS, so there is nothing to pick here. */
 
   return (
-    <div className="fh izmfa" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+    /* NO pause handler on the section root. It spans the full wrap, so a
+       cursor resting anywhere on a ~900px-tall band — including the
+       whitespace beside the copy — froze autoplay indefinitely, and at
+       this width the cursor is essentially always inside it. Pausing now
+       belongs to the tab strip alone: the one small target you are on
+       when you are actually deciding which topic to read. */
+    <div className="fh izmfa">
       {/* One rail, and it STOPS. It runs down the empty right half of the
           head block and terminates on the caption's top hairline, so it
           reads as a corner of a drawing rather than a stroke that quit.
@@ -324,7 +330,21 @@ export function IzMfaHub() {
         ))}
       </div>
 
-      <div className="fh-groups" role="tablist" aria-label="MFA topics">
+      {/* Sticky, because this strip is the only way to change the stage and
+          it sits BELOW it: click a tab here and the thing that changed is
+          off-screen above. Pinned to the viewport foot for the length of
+          the section, both stay visible together.
+          `focus-within` pauses too, so a keyboard user tabbing the strip
+          gets the same hold a hovering cursor does. */}
+      <div
+        className="fh-groups izmfa-groups"
+        role="tablist"
+        aria-label="MFA topics"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)}
+        onBlurCapture={() => setPaused(false)}
+      >
         {TABS.map((t, i) => (
           <div
             key={t.title}

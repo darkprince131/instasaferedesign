@@ -2,6 +2,17 @@
    SsoFlowDiagram — "How SSO flows". Dotted-grid panel, animated
    dash-flow connectors, cycling accent glow on the pipeline.
    Tokens only.
+
+   Layout contract (do not regress):
+   · the node grid is coordinate-locked to the svg viewBox, so the
+     stage scales as ONE unit — nodes step their fixed size DOWN
+     with the container instead of colliding on a shrinking stage;
+   · detail cards are sized to the pipeline's column gap (220 vb
+     units), never wider — 208px cards on a 203px gap is how the
+     first cut ended up overlapping;
+   · quiet text is --tx-dim; --tx-mute misses AA at these sizes;
+   · below 720px the canvas is replaced by the vertical recompose
+     in .sfd-mobile, not shrunk and not panned.
    ============================================================ */
 
 .sfd-panel {
@@ -9,7 +20,7 @@
   border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--inset), var(--panel-sh);
-  padding: var(--sp-6) var(--sp-4) var(--sp-8);
+  padding: var(--sp-6) var(--sp-4) var(--sp-6);
 }
 
 .sfd-metric {
@@ -22,10 +33,15 @@
   margin-bottom: var(--sp-4);
 }
 
+.sfd-scroll {
+  overflow-x: auto;
+  container-type: inline-size;
+}
+
 .sfd-stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 1200 / 540;
+  aspect-ratio: 1200 / 560;
   background-image: radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 20px 20px;
   border-radius: var(--r-md);
@@ -38,6 +54,21 @@
 
 .sfd-pulse { filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 70%, transparent)); }
 
+/* ---- column kickers: the reading order, named ---- */
+.sfd-col {
+  position: absolute;
+  top: 5.5%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+.sfd-col i { font-style: normal; color: var(--accent); }
+
+/* ---- nodes ---- */
 .sfd-node {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -58,24 +89,53 @@
 }
 .sfd-node svg { flex: none; color: var(--accent); }
 .sfd-node.dim { color: var(--tx-dim); }
-.sfd-node.dim svg { color: var(--tx-mute); }
+.sfd-node.dim svg { color: var(--tx-dim); }
 .sfd-node.glow {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line-strong));
   background: color-mix(in srgb, var(--accent) 7%, var(--surface));
   box-shadow: 0 0 26px -4px color-mix(in srgb, var(--accent) 55%, transparent), var(--inset);
 }
 
+/* ---- detail cards: one per pipeline stage, sized to the gap ---- */
 .sfd-detail {
   position: absolute;
   transform: translateX(-50%);
-  width: 208px;
+  width: 196px;
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   background: var(--bg-2);
   padding: var(--sp-3);
+  transition: border-color 0.5s var(--ease-out);
 }
-.sfd-detail-title { font-family: var(--mono); font-size: var(--fs-2xs); font-weight: 600; color: var(--tx); margin-bottom: 6px; }
-.sfd-detail-line { font-family: var(--mono); font-size: var(--fs-3xs); line-height: 1.7; color: var(--tx-mute); }
+/* the riser lands here — a socket, so card and node read as wired */
+.sfd-detail::before {
+  content: "";
+  position: absolute;
+  top: -3.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+}
+.sfd-detail.on { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.sfd-detail.on::before { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, var(--surface)); }
+.sfd-detail-title {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--tx);
+  margin-bottom: 6px;
+}
+.sfd-detail-line {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  line-height: 1.7;
+  color: var(--tx-dim);
+}
 
 /* reduced motion: static paths + steady glow, no dashes/pulse */
 .sfd-static .sfd-dash,
@@ -83,14 +143,97 @@
 .sfd-static .sfd-node { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .sfd-dash, .sfd-pulse { display: none; }
-  .sfd-node { transition: none; }
+  .sfd-node, .sfd-detail { transition: none; }
 }
 
-/* below the diagram's comfortable width, scroll horizontally
-   instead of relayouting — the node grid is coordinate-locked to
-   the svg viewBox, so it must scale as one unit, not restack. */
-.sfd-scroll { overflow-x: auto; }
-@media (max-width: 940px) {
+/* ---- the stage shrinks; the nodes step down WITH it ----
+   pipeline gap = container × 220/1200. Each step keeps node width
+   under that gap with breathing room. */
+@container (max-width: 1160px) {
+  .sfd-node { width: 168px; font-size: var(--fs-label); gap: 7px; }
+  .sfd-node svg { width: 15px; height: 15px; }
+  .sfd-detail { width: 170px; }
+}
+@container (max-width: 990px) {
+  /* the floor: below this the stage holds 900px and pans */
   .sfd-stage { width: 900px; }
+  .sfd-node { width: 156px; }
+  .sfd-detail { width: 158px; }
 }
 
+/* ---- narrow: recompose, don't pan ---- */
+.sfd-mobile { display: none; }
+
+@media (max-width: 719px) {
+  .sfd-scroll { display: none; }
+
+  .sfd-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-2);
+  }
+  .sfd-m-group {
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--bg-2);
+    padding: var(--sp-4);
+  }
+  .sfd-m-lab {
+    display: block;
+    margin-bottom: var(--sp-3);
+    font-family: var(--mono);
+    font-size: var(--fs-mono-xs);
+    letter-spacing: var(--ls-mono);
+    text-transform: uppercase;
+    color: var(--tx-dim);
+  }
+  .sfd-m-lab i { font-style: normal; color: var(--accent); }
+
+  .sfd-m-group ul,
+  .sfd-m-group ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .sfd-m-group li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--tx);
+  }
+  .sfd-m-group li svg { flex: none; color: var(--accent); }
+  .sfd-m-group:not(.sfd-m-group--mid) li { color: var(--tx-dim); }
+  .sfd-m-group:not(.sfd-m-group--mid) li svg { color: var(--tx-dim); }
+
+  /* the pipeline is the subject — its steps carry their detail line */
+  .sfd-m-group--mid { background: var(--surface); }
+  .sfd-m-group--mid li { align-items: flex-start; background: var(--bg-2); }
+  .sfd-m-group--mid li svg { margin-top: 2px; }
+  .sfd-m-step { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .sfd-m-step b { font-weight: 500; color: var(--tx); }
+  .sfd-m-step em {
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: var(--fs-3xs);
+    letter-spacing: 0.03em;
+    color: var(--tx-dim);
+    overflow-wrap: anywhere;
+  }
+
+  .sfd-m-arrow {
+    display: grid;
+    place-items: center;
+    color: var(--accent);
+    padding: var(--sp-1) 0;
+  }
+}

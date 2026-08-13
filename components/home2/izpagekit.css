@@ -8,74 +8,202 @@
    ============================================================ */
 
 /* ============================================================
-   00ax · IzTrustBar
+   00ax · IzTrustBar — the full-bleed proof band.
+
+   Edge to edge, seamless, no card. Three registers stacked:
+     head   the claim, on the page measure
+     grid   five capability numbers dividing the FULL page width
+     foot   where it runs, and what third parties scored it
+
+   Why full bleed rather than a contained plate: the numbers are the
+   page's structure at that point, not an object sitting on it. Cells
+   that divide the viewport cannot orphan, and the band reads as a
+   seam between the hero and what follows.
+
+   Dividers are all-or-nothing. Numbers are display weight with
+   tabular figures, so a future count-up cannot reflow the row.
    ============================================================ */
 .iztb {
-  padding: var(--sp-8) 0;
   border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+/* ---------------- head ---------------- */
+.iztb-head {
   border-bottom: 1px solid var(--line);
   background: var(--bg-2);
 }
-
-.iztb-stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.iztb-head-in {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+  padding-block: var(--sp-4);
 }
-.iztb .iztb-stat {
-  display: block;
-  padding: 0 var(--sp-6);
-  border-left: 1px solid var(--line);
-  transition: color var(--dur-fast) var(--ease-out);
-}
-.iztb .iztb-stat:first-child { border-left: 0; padding-left: 0; }
-.iztb .iztb-stat b {
-  display: block;
-  font-family: var(--disp);
-  font-weight: var(--fw-disp);
-  font-size: var(--fs-h3);
-  letter-spacing: var(--ls-h3);
-  line-height: 1.1;
-  color: var(--tx);
-  font-variant-numeric: tabular-nums;
-  transition: color var(--dur-fast) var(--ease-out);
-}
-.iztb .iztb-stat span {
-  display: block;
-  margin-top: var(--sp-1);
+.iztb-lab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
   font-family: var(--mono);
   font-size: var(--fs-mono-xs);
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
   color: var(--tx-dim);
 }
-.iztb .iztb-stat:hover b { color: var(--orange); }
-.iztb .iztb-stat:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+.iztb-lab i { font-style: normal; color: var(--orange); }
+/* a live dot, not an icon: the claim is that this is running now */
+.iztb-lab b {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--allow);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--allow) 18%, transparent);
+}
+.iztb-claim {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
 
-.iztb-second {
+/* ---------------- grid: the full page width ---------------- */
+.iztb-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.iztb .iztb-cell {
+  display: block;
+  padding: var(--sp-8) var(--sp-6);
+  border-left: 1px solid var(--line);
+  text-decoration: none;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.iztb .iztb-cell:first-child { border-left: 0; }
+.iztb .iztb-cell b {
+  display: block;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: 1;
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.iztb .iztb-cell span {
+  display: block;
+  margin-top: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.iztb .iztb-cell:hover { background: color-mix(in srgb, var(--orange) 5%, transparent); }
+.iztb .iztb-cell:hover b { color: var(--orange); }
+.iztb .iztb-cell:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+
+/* ---------------- foot ---------------- */
+.iztb-foot {
+  border-top: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.iztb-foot-in {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-6);
+  gap: var(--sp-5) var(--sp-8);
   flex-wrap: wrap;
-  margin-top: var(--sp-6);
-  padding-top: var(--sp-6);
-  border-top: 1px solid var(--line);
+  padding-block: var(--sp-4);
 }
-.iztb-logos {
+
+.iztb-sectors {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2) var(--sp-5);
+  align-items: center;
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+  margin-right: auto;
 }
-.iztb-logos li {
+.iztb-sectors li { display: flex; }
+.iztb .iztb-sectors a {
+  display: block;
+  padding: var(--sp-1) var(--sp-4);
+  border-right: 1px solid var(--line);
   font-family: var(--mono);
-  font-size: var(--fs-mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.03em;
+  color: var(--tx-dim);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.iztb-sectors li:first-child a { padding-left: 0; }
+.iztb-sectors li:last-child a { border-right: 0; }
+.iztb .iztb-sectors a:hover { color: var(--orange); }
+
+/* ratings: score first and largest, stars beside it. No redrawn
+   third-party roundels — an approximated mark reads as less
+   trustworthy than plain type, and the platforms' terms forbid it. */
+.iztb-ratings {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.iztb .iztb-ratings a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  color: var(--tx-dim);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.iztb .iztb-ratings b {
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h3);
+  line-height: 1;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-h3);
+}
+.iztb .iztb-ratings .src { color: var(--tx); }
+.iztb .iztb-ratings i {
+  font-style: normal;
+  color: var(--tx-dim);
+  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.iztb .iztb-ratings a:hover .src { color: var(--orange); }
+.iztb .iztb-ratings a:hover i { color: var(--orange); transform: translate(2px, -2px); }
+.iztb .iztb-ratings a:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+/* ---- stars ---- */
+.iztb-stars { display: inline-flex; align-items: center; gap: 1px; }
+.iztb-star { width: 13px; height: 13px; display: block; }
+/* amber, not brand orange: a review star is a review star, and tinting
+   it with our accent implies we drew the score */
+.iztb-star-bg { fill: var(--ghost); }
+.iztb-star-fill { fill: #f5b638; }
+
+.iztb-attrib {
+  margin: 0;
+  padding-block: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
   letter-spacing: 0.04em;
   color: var(--tx-dim);
 }
-.iztb-ratings { margin-left: auto; }
 
 /* ============================================================
    00ay · IzStatRibbon — indexed data ribbon (00am rail grammar)
@@ -204,8 +332,12 @@
    RESPONSIVE
    ============================================================ */
 @media (max-width: 1000px) {
-  .iztb-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-5) 0; }
-  .iztb .iztb-stat:nth-child(odd) { border-left: 0; padding-left: 0; }
+  /* folds to 3 + 2; every cell keeps a hairline on the sides that still
+     have a neighbour, so the rule stays all-or-nothing */
+  .iztb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .iztb .iztb-cell { border-left: 1px solid var(--line); padding: var(--sp-6) var(--sp-5); }
+  .iztb .iztb-cell:nth-child(3n + 1) { border-left: 0; }
+  .iztb .iztb-cell:nth-child(n + 4) { border-top: 1px solid var(--line); }
   .izsr-list { grid-auto-flow: row; grid-auto-columns: auto; }
   .izsr-item { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .izsr-item:first-child { border-top: 0; }
@@ -215,14 +347,29 @@
 }
 
 @media (max-width: 620px) {
-  .iztb-stats { grid-template-columns: minmax(0, 1fr); }
-  .iztb .iztb-stat { border-left: 0; padding-left: 0; }
-  .iztb-ratings { margin-left: 0; }
+  .iztb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .iztb .iztb-cell:nth-child(3n + 1) { border-left: 1px solid var(--line); }
+  .iztb .iztb-cell:nth-child(odd) { border-left: 0; }
+  .iztb .iztb-cell:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  /* the fifth cell has no partner, so it takes the full width rather
+     than leaving a hole beside it */
+  .iztb .iztb-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+  .iztb-head-in { gap: var(--sp-3); }
+  .iztb-foot-in { align-items: stretch; flex-direction: column; gap: var(--sp-4); }
+  .iztb-sectors { margin-right: 0; }
+  .iztb .iztb-sectors a { padding: var(--sp-1) var(--sp-3) var(--sp-1) 0; border-right: 0; }
+  /* ratings become full-width rows with hairlines */
+  .iztb-ratings { flex-direction: column; align-items: stretch; gap: 0; }
+  .iztb-ratings li { border-top: 1px solid var(--line); }
+  .iztb .iztb-ratings a { padding: var(--sp-3) 0; width: 100%; }
+  .iztb .iztb-ratings i { margin-left: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .iztb .iztb-stat,
-  .iztb .iztb-stat b { transition: none; }
+  .iztb .iztb-cell,
+  .iztb .iztb-cell b,
+  .iztb .iztb-ratings i { transition: none; }
 }
 
 /* IzSideNav (00bb) now ships its own sheet: components/home2/izsidenav.css,

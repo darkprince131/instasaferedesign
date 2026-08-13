@@ -55,3 +55,25 @@
   fill: color-mix(in srgb, var(--accent) 8%, var(--surface-2));
   stroke: color-mix(in srgb, var(--accent) 28%, var(--line-strong));
 }
+
+/* ---------- photographed people ----------
+   The source portraits are already circular crops sitting on white, so
+   the avatar goes ROUND for them: a rounded square would show the
+   photo's own circle inset in a corner-cut box, which reads as a
+   mistake. The drawn plate goes round with it and stays underneath as
+   the frame — and as the fallback the moment a file 404s, which is what
+   keeps a broken portrait from ever rendering as a torn-page box. */
+.izav-photo,
+.izav-photo .izav-plate { border-radius: 50%; }
+.izav-photo svg { border-radius: 50%; overflow: hidden; }
+.izav-photo .izav-plate { rx: 50%; ry: 50%; }
+.izav-photo .izav-img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  /* the source circle fills its frame, so a centred cover crop lands
+     exactly on it — no vertical nudge, which would clip the chin */
+  object-position: center;
+}

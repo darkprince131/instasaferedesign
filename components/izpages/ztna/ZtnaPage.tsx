@@ -1,6 +1,6 @@
 "use client";
 
-import { BreachSimulator } from "@/components/interactives/breach-simulator/BreachSimulator";
+import { ThreatRadar } from "@/components/home2/ThreatRadar";
 import { ConsoleRow } from "@/components/home2/ConsoleRow";
 import { DeviceBindingDemo } from "@/components/console/DeviceBindingConsole";
 import { DeviceCheckBuilder } from "@/components/console/DeviceCheckBuilder";
@@ -48,6 +48,7 @@ import {
   Warning,
 } from "@phosphor-icons/react";
 import { AlwaysOnBoot, BlackeningScene, HeroConsole, OutcomesOrbit } from "./ZtnaScenes";
+import { ExpiryScreen, GeoScreen, IpScreen, TimeScreen } from "./ContextScreens";
 
 /* ============================================================
    /zero-trust-network-access — A1 PLATFORM DEEP.
@@ -59,7 +60,7 @@ import { AlwaysOnBoot, BlackeningScene, HeroConsole, OutcomesOrbit } from "./Ztn
 const ANCHORS = [
   { id: "what", label: "What is ZTNA", icon: Compass },
   { id: "problem", label: "The problem", icon: Warning },
-  { id: "signature", label: "Breach simulator", icon: CursorClick },
+  { id: "signature", label: "Threat radar", icon: CursorClick },
   { id: "how", label: "How it works", icon: Path },
   { id: "specs", label: "Quick scan", icon: ListChecks },
   { id: "outcomes", label: "Outcomes", icon: Target },
@@ -76,30 +77,34 @@ const FAQ = [
   { q: "Can attackers scan our gateways?", a: "Scans receive no response — drop-all plus Single Packet Authorization means the gateway only ever answers pre-authenticated callers." },
 ];
 
+/* Each condition shows the console panel that enforces it, not the JSON
+   that configures it. A blob proves the setting exists; the screen shows
+   two real sessions hitting the rule and only one getting through, which
+   is what "evaluated together, per session" actually means. */
 const CONTEXT_FEATURES = [
   {
     id: "geo",
     icon: GlobeHemisphereEast,
     title: "Geolocation",
-    viz: { kind: "json" as const, file: "policy.geo.json", lines: [`{`, `  "group": "contractors-in",`, `  "country": ["IN"],`, `  "outside": "deny"`, `}`] },
+    viz: { kind: "node" as const, file: "policy.geo", node: <GeoScreen /> },
   },
   {
     id: "ip",
     icon: Stack,
     title: "IP range",
-    viz: { kind: "json" as const, file: "policy.ip.json", lines: [`{`, `  "group": "finance",`, `  "allow_cidr": ["10.4.0.0/16"],`, `  "else": "step_up_mfa"`, `}`] },
+    viz: { kind: "node" as const, file: "policy.ip", node: <IpScreen /> },
   },
   {
     id: "time",
     icon: ClockCounterClockwise,
     title: "Time window",
-    viz: { kind: "json" as const, file: "policy.time.json", lines: [`{`, `  "window": "09:00-18:00",`, `  "tz": "Asia/Kolkata",`, `  "outside": "deny"`, `}`] },
+    viz: { kind: "node" as const, file: "policy.time", node: <TimeScreen /> },
   },
   {
     id: "expiry",
     icon: Prohibit,
     title: "Contract expiry",
-    viz: { kind: "json" as const, file: "policy.expiry.json", lines: [`{`, `  "expires": "2026-09-30",`, `  "on_expiry": "revoke_all"`, `}`] },
+    viz: { kind: "node" as const, file: "policy.expiry", node: <ExpiryScreen /> },
   },
 ];
 
@@ -144,7 +149,7 @@ export function ZtnaPage() {
               </a>
             </Magnetic>
             <a href="#signature" className="iz-btn iz-btn-ghost">
-              See the Breach Simulator ↓
+              Spot the threat ↓
             </a>
           </div>
         </div>
@@ -227,17 +232,9 @@ export function ZtnaPage() {
       {/* ---------------- SIGNATURE ---------------- */}
       <section className="ztna-sec" id="signature">
         <div className="iz-wrap">
-          <div className="ztna-head">
-            <span className="iz-ey">Signature interactive</span>
-            <h2>
-              Steal a credential. <em>Watch where it gets you.</em>
-            </h2>
-            <p>
-              The same stolen password, run against both architectures. On the VPN it spreads. On ZTNA it stops at the
-              one session it was issued for.
-            </p>
-          </div>
-          <BreachSimulator />
+          {/* ThreatRadar ships its own header — a page-written one would
+              stack two headings on the same block */}
+          <ThreatRadar />
         </div>
       </section>
 

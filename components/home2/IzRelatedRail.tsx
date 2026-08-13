@@ -145,7 +145,7 @@ export function IzRelatedRail({
                 <i aria-hidden="true">_</i>
               </p>
               {c.links.map((l) => (
-                <a key={l.href} href={l.href} className="izrr-line">
+                <a key={`${l.href}|${l.title}`} href={l.href} className="izrr-line">
                   <span>{l.title}</span>
                   <i aria-hidden="true">→</i>
                 </a>
@@ -155,8 +155,12 @@ export function IzRelatedRail({
         </div>
       ) : (
         <div className="izrr-cards">
+          {/* keyed on href+title, not href alone: one rail linking twice to
+              the same target is legitimate (the lab's fallback demo points
+              all four cards at #relatedrail to show the three thumb states),
+              and `key={l.href}` made those four collide. */}
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="izrr-card">
+            <a key={`${l.href}|${l.title}`} href={l.href} className="izrr-card">
               <Thumb link={l} />
               <span className="izrr-body">
                 <span className="izrr-title">

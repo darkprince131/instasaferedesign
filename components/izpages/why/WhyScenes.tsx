@@ -10,7 +10,6 @@ import {
   Lock,
   MagnifyingGlass,
   ShieldCheck,
-  UserRectangle,
   type Icon,
 } from "@phosphor-icons/react";
 import { LogoMark } from "@/components/brand/Logo";
@@ -40,22 +39,63 @@ const VENDOR_OPS: { label: string; Icon: Icon }[] = [
   { label: "Routing", Icon: ArrowsSplit },
 ];
 
-function Node({ label, Icon: I, tinted }: { label: string; Icon: Icon; tinted?: boolean }) {
-  return (
-    <div className={`why-node${tinted ? " is-tinted" : ""}`}>
-      <span className="why-node-ic">
-        <I size={20} weight="regular" />
-      </span>
-      <span className="why-node-t">{label}</span>
-    </div>
-  );
-}
-
 function LockChip({ accent }: { accent?: boolean }) {
   return (
     <span className={`why-lock${accent ? " is-accent" : ""}`} aria-hidden="true">
       <Lock size={11} weight="fill" />
     </span>
+  );
+}
+
+/* The person is a photograph, not a glyph — and the two columns show
+   TWO DIFFERENT PEOPLE, not the same face twice. One face repeated
+   reads as a rendering slip; two people read as "this is what happens
+   to your workforce either way", which is the claim.
+
+   Round, because the source portraits are already circular crops on
+   white. A rounded square would show the photo's own circle inset in a
+   corner-cut box. */
+const PEOPLE = {
+  old: { src: "/people/alen-joseph-640.webp", name: "User" },
+  ours: { src: "/people/priya-s-640.webp", name: "User" },
+} as const;
+
+function PersonNode({ who, tinted }: { who: keyof typeof PEOPLE; tinted?: boolean }) {
+  const p = PEOPLE[who];
+  return (
+    <div className={`why-node${tinted ? " is-tinted" : ""}`}>
+      <span className="why-node-ic why-node-ic--photo">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={p.src} alt="" decoding="async" />
+      </span>
+      <span className="why-node-t">{p.name}</span>
+    </div>
+  );
+}
+
+/* Three real application marks, no names written out. The logos say
+   what the estate is; a text label under each would put third-party
+   wordmarks in an architecture diagram and add nothing the mark does
+   not already carry. Three is also the count the column holds without
+   the node growing and breaking the two panels' matching heights. */
+/* Square-ish marks only. `google-workspace.svg` is a 3993x512 wordmark
+   and collapses to a hairline in a 26px tile; `google.svg` is the same
+   brand at 268x274 and survives the size. */
+const APPS = ["microsoft-365", "google", "slack"];
+
+function AppsNode({ tinted }: { tinted?: boolean }) {
+  return (
+    <div className={`why-node${tinted ? " is-tinted" : ""}`}>
+      <span className="why-apps" aria-hidden="true">
+        {APPS.map((a) => (
+          <span className="why-app" key={a}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/logos/integrations/${a}.svg`} alt="" decoding="async" />
+          </span>
+        ))}
+      </span>
+      <span className="why-node-t">Your applications</span>
+    </div>
   );
 }
 
@@ -70,7 +110,7 @@ export function WhyCompare() {
         </div>
 
         <div className="why-panel">
-          <Node label="User" Icon={UserRectangle} />
+          <PersonNode who="old" />
 
           <span className="why-wire">
             <LockChip />
@@ -92,7 +132,7 @@ export function WhyCompare() {
             <LockChip />
           </span>
 
-          <Node label="Your applications" Icon={CloudArrowUp} />
+          <AppsNode />
         </div>
       </div>
 
@@ -106,7 +146,7 @@ export function WhyCompare() {
         </div>
 
         <div className="why-panel is-ours">
-          <Node label="User" Icon={UserRectangle} tinted />
+          <PersonNode who="ours" tinted />
 
           <span className="why-wire is-accent">
             <LockChip accent />
@@ -133,7 +173,7 @@ export function WhyCompare() {
           </span>
 
           <div className="why-end">
-            <Node label="Your applications" Icon={CloudArrowUp} tinted />
+            <AppsNode tinted />
             <span className="why-direct">
               <CheckCircle size={14} weight="fill" />
               Direct &amp; private connection

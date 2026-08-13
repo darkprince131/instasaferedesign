@@ -51,6 +51,7 @@ import "@/components/home2/izproofgrid.css";
 import "@/components/home2/iznewblocks.css";
 import "@/components/home2/izpagekit.css";
 import "@/components/home2/iztunnelcards.css";
+import "@/components/home2/izfindtheflaw.css";
 import "@/components/components-lab/lab.css";
 import { izFontVars } from "@/lib/iz-fonts";
 import type { Metadata } from "next";

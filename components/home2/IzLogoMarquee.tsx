@@ -67,7 +67,10 @@ const LOGOS: CustomerLogo[] = [
 
 type Props = {
   logos?: CustomerLogo[];
-  /** mono label above the rail; pass null to drop it */
+  /** mono label above the rail. Defaults to null — the customer slider
+      carries NO eyebrow (user call, 2026-08-12). The logos are the claim;
+      a strapline over them just re-states it in smaller type. Only pass a
+      string if a page has a specific reason to caption the strip. */
   label?: string | null;
   /** scroll speed in pixels per second */
   speed?: number;
@@ -76,7 +79,7 @@ type Props = {
 
 export function IzLogoMarquee({
   logos = LOGOS,
-  label = "Trusted across BFSI, government, logistics and IT",
+  label = null,
   speed = 44,
   className,
 }: Props) {

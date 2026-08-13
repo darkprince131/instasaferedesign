@@ -33,12 +33,16 @@
   min-width: 0; min-height: 0;
 }
 
+/* squares, not dots — a field of cells reads as infrastructure being
+   watched; a field of circles reads as decoration */
 .tr-dot-core {
-  width: 13px; height: 13px; border-radius: 50%;
+  width: 12px; height: 12px; border-radius: 2px;
   background: var(--tx-mute); opacity: 0.22;
   display: grid; place-items: center;
   transition: background var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out),
-              width var(--dur) var(--ease-out), height var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+              width var(--dur) var(--ease-out), height var(--dur) var(--ease-out),
+              border-radius var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out),
+              transform var(--dur) var(--ease-out);
 }
 
 /* ---- alert dot button ---- */
@@ -48,15 +52,21 @@ button.tr-dot.alert {
   cursor: pointer; background: none; border: 0; padding: 0;
 }
 button.tr-dot.alert:focus-visible {
-  outline: 2px solid var(--orange); outline-offset: 6px; border-radius: 50%;
+  outline: 2px solid var(--orange); outline-offset: 6px; border-radius: var(--r-2xs);
+}
+/* a keyboard user gets the same reveal the cursor gets */
+button.tr-dot.alert:focus-visible:not(.resolved) .tr-dot-core {
+  background: var(--tc); opacity: 1;
+  width: 15px; height: 15px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tc) 18%, transparent);
 }
 
 /* ring — hidden until scan state */
 .tr-dot-ring {
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
-  width: 13px; height: 13px; border-radius: 50%;
-  border: 2px solid var(--tc, var(--orange));
+  width: 12px; height: 12px; border-radius: 2px;
+  border: 1.5px solid var(--tc, var(--orange));
   opacity: 0; pointer-events: none;
 }
 
@@ -68,7 +78,7 @@ button.tr-dot.alert:focus-visible {
 /* ---- SCAN state: reveal only dots under the lens (JS adds .near) ---- */
 .tr-field.scan .tr-dot.alert.near:not(.resolved) .tr-dot-core {
   background: var(--tc); opacity: 1;
-  width: 15px; height: 15px;
+  width: 15px; height: 15px; border-radius: 3px;
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--tc) 18%, transparent),
               0 0 18px -2px var(--tc);
 }
@@ -83,7 +93,7 @@ button.tr-dot.alert:focus-visible {
 /* ---- RESOLVED dot — always visible, green ---- */
 .tr-dot.alert.resolved .tr-dot-core {
   background: var(--allow); opacity: 1;
-  width: 20px; height: 20px;
+  width: 20px; height: 20px; border-radius: var(--r-2xs);
   box-shadow: 0 0 0 5px color-mix(in srgb, var(--allow) 16%, transparent),
               0 0 16px -4px var(--allow);
 }
@@ -103,6 +113,59 @@ button.tr-dot.alert:focus-visible {
   transition: opacity var(--dur) var(--ease-out);
 }
 .tr-field.scan .tr-lens { opacity: 1; }
+/* the lens tightens as a threat takes hold — at full pull the 260px circle
+   has closed to ~80px, visibly clamped onto the square it caught.
+   Scale, not width: --pull changes every rAF frame, so this must stay
+   compositor-only — animating the box would relayout at 60fps. */
+.tr-field.magnet .tr-lens {
+  transform: translate(-50%, -50%) scale(calc(1 - var(--pull, 0) * 0.692));
+  border-color: color-mix(in srgb, var(--orange) calc(35% + var(--pull, 0) * 45%), transparent);
+}
+/* click: the circle snaps shut on the square (260px → ~34px), THEN the
+   dialog opens */
+.tr-field.magnet.snap .tr-lens {
+  transform: translate(-50%, -50%) scale(0.13);
+  transition: transform 0.16s var(--ease-out), opacity var(--dur) var(--ease-out);
+}
+
+/* ---- drawn cursor (magnet mode only) ---- */
+.tr-field.magnet { cursor: none; }
+/* dialog open: the field is a form again, not a hunt — real cursor back,
+   drawn cursor and lens gone (the backdrop already dims them, this removes
+   them outright so nothing orange floats behind the blur) */
+.tr-field.magnet.has-card { cursor: auto; }
+.tr-field.magnet.has-card .tr-cursor,
+.tr-field.magnet.has-card .tr-lens { display: none; }
+.tr-cursor {
+  position: absolute; left: 0; top: 0; z-index: 6;
+  width: 32px; height: 32px;
+  display: none; place-items: center;
+  pointer-events: none;
+  transform: translate3d(var(--mx, -100px), var(--my, -100px), 0) translate(-50%, -50%);
+  will-change: transform;
+  transition: opacity var(--dur) var(--ease-out);
+}
+.tr-field.magnet .tr-cursor { display: grid; }
+/* both marks share one grid cell, so `place-items: center` centres them
+   without a second translate fighting the box's rotate */
+.tr-cursor i { grid-area: 1 / 1; display: block; }
+
+/* outline square: 26px at rest, squeezed to 11px on a threat */
+.tr-cursor-box {
+  width: calc(26px - var(--pull, 0) * 15px);
+  height: calc(26px - var(--pull, 0) * 15px);
+  border: 1.5px solid color-mix(in srgb, var(--orange) calc(55% + var(--pull, 0) * 45%), transparent);
+  border-radius: 3px;
+  transform: rotate(calc(var(--pull, 0) * 45deg));
+}
+/* the pip stays put, so the shrink reads as the box being drawn in */
+.tr-cursor-pip {
+  width: 3px; height: 3px; border-radius: 1px;
+  background: var(--orange);
+  opacity: calc(0.55 + var(--pull, 0) * 0.45);
+}
+.tr-field.magnet.scan .tr-cursor { opacity: 1; }
+.tr-field.magnet:not(.scan) .tr-cursor { opacity: 0; }
 
 /* ---- hint text ---- */
 .tr-hint {
@@ -224,24 +287,36 @@ button.tr-dot.alert:focus-visible {
 .tr-dot-tip b { display: block; font-family: var(--disp); font-weight: 600; font-size: var(--fs-label); color: var(--tx); margin-bottom: 4px; }
 .tr-dot-tip span { display: block; font-size: var(--fs-mono); line-height: 1.55; color: var(--tx-dim); }
 
-/* tone tint on left border */
-.tr-dot-tip-ok  { border-left: 3px solid var(--allow); }
-.tr-dot-tip-warn { border-left: 3px solid #d98a1f; }
+/* Tone carried the way .tr-alertline and .tr-resolve already carry it —
+   a tinted ground and a tinted hairline, all four sides. It used to be a
+   3px slab on the left edge, which is both off-grammar for this component
+   and the single most generic card treatment there is. */
+.tr-dot-tip-ok {
+  border-color: color-mix(in srgb, var(--allow) 34%, var(--line-strong));
+  background: color-mix(in srgb, var(--allow) 8%, var(--bg-2));
+}
+.tr-dot-tip-warn {
+  border-color: color-mix(in srgb, #d98a1f 34%, var(--line-strong));
+  background: color-mix(in srgb, #d98a1f 9%, var(--bg-2));
+}
 
 /* arrow pointing toward the dot */
 .tr-dot-tip::after {
   content: ''; position: absolute; left: 50%; bottom: -5px;
   transform: translateX(-50%) rotate(45deg);
   width: 9px; height: 9px;
-  background: var(--bg-2);
-  border-right: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
+  /* inherit so the arrow follows whichever tone tint the tooltip took */
+  background: inherit;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  border-color: inherit;
 }
 .tr-dot-tip.below::after {
   bottom: auto; top: -5px;
   border-right: none; border-bottom: none;
-  border-left: 1px solid var(--line-strong);
-  border-top: 1px solid var(--line-strong);
+  border-left: 1px solid;
+  border-top: 1px solid;
+  border-color: inherit;
 }
 
 /* ---- resolution toast ---- */
@@ -287,6 +362,10 @@ button.tr-dot.alert:focus-visible {
 
 /* ---- reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
+  /* the magnet never mounts under reduced motion, but belt-and-braces:
+     no drawn cursor means the real one must be back */
+  .tr-field { cursor: crosshair !important; }
+  .tr-cursor { display: none !important; }
   .tr-dot-ring { animation: none !important; opacity: 0 !important; }
   .tr-lens { transition: none; }
   .tr-bubble, .tr-graph, .tr-bar, .tr-ctarow, .tr-resolve, .tr-card, .tr-toast { animation: none; }

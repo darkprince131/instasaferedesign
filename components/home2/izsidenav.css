@@ -296,3 +296,39 @@
   .izsn-spine i,
   .izsn-prog i { transition: none; }
 }
+
+/* ============================================================
+   Off-duty over the hero.
+   The rail navigates the SECTIONED part of the page. On the edge from
+   the first frame it competed with the hero's own CTAs and pointed at
+   content the reader had not reached yet, so it slides out of the
+   viewport until the first anchored section crosses the reading line
+   — and slides back if they scroll up into the hero again.
+   Transformed and made inert rather than `display: none`, so the
+   arrival is a movement rather than a pop.
+   ============================================================ */
+.izsn.is-away,
+.izsn-mob.is-away {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
+    visibility 0s linear var(--dur);
+}
+.izsn--left.is-away { transform: translateY(-50%) translateX(-100%); }
+.izsn--right.is-away { transform: translateY(-50%) translateX(100%); }
+.izsn-mob.is-away { transform: translateY(140%); }
+
+/* the visible state animates back in on the same curve */
+.izsn,
+.izsn-mob {
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease),
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .izsn,
+  .izsn-mob,
+  .izsn.is-away,
+  .izsn-mob.is-away { transition: none; }
+}
