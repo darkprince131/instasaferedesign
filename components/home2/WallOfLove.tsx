@@ -11,32 +11,55 @@ import {
 } from "framer-motion";
 
 /* ============================================================
-   C32 · Mac Dock Nav — "Wall of love" / trusted-by section.
-   Magnify-on-hover floating dock of customer logos (the macOS
-   dock effect). Hovering a logo swaps the app-window preview
-   above and shows a tooltip. Logos are PLACEHOLDERS — swap the
-   LOGOS array (name / grad / initial / href) later.
+   C32 · Mac Dock Nav — the trusted-by section.
+   Magnify-on-hover floating dock (the macOS dock effect). Hovering a
+   logo swaps the window preview above it.
+
+   ▸ REAL LOGOS, AND ONLY THE ONES THAT FIT ◂ (2026-08-13)
+
+   This shipped with nine invented brands — Northwind, Volta, Meridian
+   and so on — drawn as gradient tiles with an initial, each carrying
+   INVENTED STATISTICS: "48,000 endpoints", "212 sites", "TCO cut 40%".
+   Fictional numbers on fictional companies are merely placeholder;
+   the same numbers behind a REAL company's mark are a false claim
+   about a named third party. They are gone and are not coming back
+   without a source.
+
+   WHICH LOGOS: the dock tile is square-ish, so selection is by aspect
+   ratio, measured from each SVG's viewBox rather than guessed. The
+   nine below are every customer mark at or under ~2.5:1. The other
+   ten in /public/logos/customers are wordmarks running to 6.9:1
+   (Mirae Asset Sharekhan, Siemens, Samsonite, Asian Paints…) — in a
+   square tile those either clip or shrink to an illegible sliver, so
+   they stay in IzLogoMarquee, which is built for that shape.
+
+   `detail` is the slot the invented stats vacated. It is deliberately
+   empty pending publicly-attributable copy per customer; the preview
+   renders without it and shows the sector alone.
    ============================================================ */
 
 interface Brand {
   name: string;
-  initial: string;
-  grad: string;
+  /** file in /public/logos/customers, without the .svg */
+  file: string;
   sector: string;
-  stats: { label: string; value: string }[];
+  /** measured width/height of the source viewBox — drives tile fit */
+  ar: number;
+  /** awaiting approved, publicly-available copy. No invented figures. */
+  detail?: string;
   href: string;
 }
 
 const LOGOS: Brand[] = [
-  { name: "Northwind", initial: "N", grad: "linear-gradient(135deg,#0EA5E9,#2563EB)", sector: "Banking · BFSI", stats: [{ label: "endpoints", value: "48,000" }, { label: "regions", value: "5" }], href: "/case-studies" },
-  { name: "Volta", initial: "V", grad: "linear-gradient(135deg,#22C55E,#0F766E)", sector: "Energy · Utilities", stats: [{ label: "sites", value: "212" }, { label: "VPN boxes", value: "0" }], href: "/case-studies" },
-  { name: "Meridian", initial: "M", grad: "linear-gradient(135deg,#F59E0B,#EA580C)", sector: "Logistics", stats: [{ label: "users", value: "65,000" }, { label: "deploy", value: "5 days" }], href: "/case-studies" },
-  { name: "Cobalt", initial: "C", grad: "linear-gradient(135deg,#6366F1,#9333EA)", sector: "Government · PSU", stats: [{ label: "on-prem", value: "100%" }, { label: "incidents", value: "0" }], href: "/case-studies" },
-  { name: "Lumen", initial: "L", grad: "linear-gradient(135deg,#EC4899,#BE123C)", sector: "Healthcare", stats: [{ label: "devices", value: "31,500" }, { label: "checks", value: "25" }], href: "/case-studies" },
-  { name: "Orbit", initial: "O", grad: "linear-gradient(135deg,#14B8A6,#0891B2)", sector: "IT · ITES", stats: [{ label: "apps", value: "340" }, { label: "lateral moves", value: "0" }], href: "/case-studies" },
-  { name: "Vertex", initial: "X", grad: "linear-gradient(135deg,#8B5CF6,#4F46E5)", sector: "Manufacturing", stats: [{ label: "plants", value: "47" }, { label: "uptime", value: "99.99%" }], href: "/case-studies" },
-  { name: "Pulse", initial: "P", grad: "linear-gradient(135deg,#F97316,#DC2626)", sector: "NBFC", stats: [{ label: "users", value: "18,200" }, { label: "TCO cut", value: "40%" }], href: "/case-studies" },
-  { name: "Cirrus", initial: "S", grad: "linear-gradient(135deg,#3B82F6,#1E40AF)", sector: "Real Estate", stats: [{ label: "branches", value: "120" }, { label: "MFA", value: "built-in" }], href: "/case-studies" },
+  { name: "Tata", file: "tata", ar: 1.14, sector: "Conglomerate", href: "/case-studies" },
+  { name: "NHPC", file: "nhpc", ar: 1.74, sector: "Power · PSU", href: "/case-studies" },
+  { name: "Aditya Birla Group", file: "aditya-birla", ar: 1.81, sector: "Conglomerate", href: "/case-studies" },
+  { name: "Haldiram's", file: "haldirams", ar: 1.88, sector: "FMCG", href: "/case-studies" },
+  { name: "Allcargo Logistics", file: "allcargo", ar: 1.9, sector: "Logistics", href: "/case-studies" },
+  { name: "Pidilite", file: "pidilite", ar: 1.98, sector: "Manufacturing", href: "/case-studies" },
+  { name: "Café Coffee Day", file: "cafe-coffee-day", ar: 0.69, sector: "Retail · F&B", href: "/case-studies" },
+  { name: "Bajaj General Insurance", file: "bajaj-allianz", ar: 2.39, sector: "Insurance", href: "/case-studies" },
+  { name: "Jana Small Finance Bank", file: "jana-bank", ar: 2.49, sector: "Banking · BFSI", href: "/case-studies" },
 ];
 
 const IcHeart = (
@@ -70,8 +93,9 @@ function DockIcon({ mouseX, item, on, onHover, reduced }: { mouseX: MotionValue<
       onClick={() => (window.location.href = item.href)}
       aria-label={item.name}
     >
-      <span className="logo" style={{ background: item.grad }}>
-        {item.initial}
+      <span className="logo">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`/logos/customers/${item.file}.svg`} alt="" aria-hidden="true" loading="lazy" />
       </span>
       <AnimatePresence>
         {on && (
@@ -98,10 +122,13 @@ export function WallOfLove() {
 
   return (
     <div className="wol">
+      {/* "Wall of love" was the LAB's name for the pattern, not copy for
+          a page — it says nothing about who these companies are and
+          reads as a developer's label left in the build. */}
       <div className="wol-head">
-        <span className="wol-pill">{IcHeart} Wall of love</span>
+        <span className="wol-pill">{IcHeart} In production</span>
         <h2 className="wol-h">
-          Trusted by the world&apos;s <em>most regulated enterprises</em>.
+          Running where access decisions are <em>audited hardest</em>.
         </h2>
       </div>
 
@@ -116,18 +143,16 @@ export function WallOfLove() {
             <span className="wt">{cur.name.toLowerCase()}.app</span>
           </div>
           <div className="wol-body" key={active}>
-            <span className="wol-logo-lg" style={{ background: cur.grad }}>
-              {cur.initial}
+            <span className="wol-logo-lg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`/logos/customers/${cur.file}.svg`} alt={cur.name} loading="lazy" />
             </span>
             <span className="wol-name">{cur.name}</span>
             <span className="wol-sector">{cur.sector}</span>
-            <div className="wol-stats">
-              {cur.stats.map((s) => (
-                <span className="wol-stat" key={s.label}>
-                  <b>{s.value}</b> {s.label}
-                </span>
-              ))}
-            </div>
+            {/* The stats row that sat here carried invented figures. It
+                renders only when there is real, attributable copy to
+                put in it — an empty row beats a made-up one. */}
+            {cur.detail && <p className="wol-detail">{cur.detail}</p>}
             <span className="wol-badge">{IcShield} Protected by InstaSafe ZTNA</span>
           </div>
         </div>

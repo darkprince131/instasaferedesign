@@ -2,16 +2,31 @@
 
 import { useEffect, useState } from "react";
 
+import { ArrowsSplit, Bank, Certificate, ChartBar, Question, ShieldCheck } from "@phosphor-icons/react";
+
 import { ChatFaq } from "@/components/home2/ChatFaq";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
 import { IzNav } from "@/components/home2/IzNav";
+import { IzSideNav } from "@/components/home2/IzSideNav";
 import { IzVpnZtnaFlow } from "@/components/home2/IzVpnZtnaFlow";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
 
 import { WhyCompare, WhyProof } from "./WhyScenes";
 import { WhyReasons } from "./WhyReasons";
+
+/* Ids match the `#reason-*` anchors WhyReasons renders, plus the two
+   sections this file owns. Labels are the rail's, shortened — a side
+   nav item is a signpost, not a summary. */
+const ANCHORS = [
+  { id: "reason-path", label: "Not in your data path", icon: ArrowsSplit },
+  { id: "reason-numbers", label: "Numbers we publish", icon: ChartBar },
+  { id: "reason-record", label: "Track record", icon: Certificate },
+  { id: "reason-frameworks", label: "India and global", icon: Bank },
+  { id: "compare", label: "VPN comparison", icon: ShieldCheck },
+  { id: "faq", label: "FAQ", icon: Question },
+];
 
 /* ============================================================
    /why-instasafe-zero-trust — SEO-locked live URL, promoted from the
@@ -104,6 +119,13 @@ export function WhyPage() {
           <WhyProof />
         </div>
       </header>
+
+      {/* The four reasons used to carry their own sticky rail. It moved
+          here, to the site-wide IzSideNav every other page uses — one
+          nav pattern instead of two, and the reasons get the full wrap
+          width back. Ids match the `#reason-*` anchors WhyReasons
+          renders, so existing deep links still resolve. */}
+      <IzSideNav items={ANCHORS} />
 
       {/* ---------------- THE FOUR REASONS ---------------- */}
       <WhyReasons />

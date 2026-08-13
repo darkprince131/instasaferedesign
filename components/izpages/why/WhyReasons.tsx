@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -30,70 +29,37 @@ import {
 import "./whyreasons.css";
 
 /* ============================================================
-   WhyReasons — the four reasons, as one numbered set.
+   WhyReasons — the four reasons, full width.
 
-   THE RAIL IS THE POINT. Four bands stacked with their own headings
-   read as four unrelated sections; a sticky rail carrying 01–04 with
-   the active one lit makes them a single argument you are moving
-   through. It also gives sales a deep-link surface — every reason has
-   a stable id, so "reason 4" is a URL you can paste into an email.
+   NAVIGATION IS NOT THIS FILE'S JOB ANY MORE (2026-08-13). There used
+   to be a sticky in-page rail here carrying 01–04 with its own
+   scroll-spy — a second nav pattern, maintained twice, sitting beside
+   the reasons and costing them 232px plus a gutter. The site-wide
+   IzSideNav does the same work on every other page, so WhyPage mounts
+   that and the reasons take the whole wrap.
+
+   The deep-link surface survives the change: every reason keeps its
+   `#reason-*` id, so "reason 4" is still a URL sales can paste.
 
    EACH REASON GETS A DIFFERENT VISUAL LANGUAGE, deliberately. Reason
    2 is a number grid, so reason 3 must NOT be: two counter bands in a
    row and the page reads as a dump with both halves weakened. Three
-   is a timeline resolving into a logo row.
+   is a timeline resolving into logos and testimony.
    ============================================================ */
 
-function useActiveReason() {
-  const [active, setActive] = useState<ReasonKey>(REASONS[0].key);
-  useEffect(() => {
-    const read = () => {
-      let best = REASONS[0].key;
-      for (const r of REASONS) {
-        const el = document.getElementById(`reason-${r.key}`);
-        /* the last section whose top has crossed the reading line —
-           true for sections of any length, unlike a mid-viewport band */
-        if (el && el.getBoundingClientRect().top - 220 <= 0) best = r.key;
-      }
-      setActive((p) => (p === best ? p : best));
-    };
-    read();
-    window.addEventListener("scroll", read, { passive: true });
-    window.addEventListener("resize", read);
-    return () => {
-      window.removeEventListener("scroll", read);
-      window.removeEventListener("resize", read);
-    };
-  }, []);
-  return active;
-}
+/* The in-page rail and its scroll-spy used to live here. Both are gone
+   (user call, 2026-08-13): navigation moved to the site-wide IzSideNav,
+   which WhyPage mounts, so this file no longer owns a second nav
+   pattern and the reasons get the full wrap width instead of an
+   864px column beside a 232px rail.
 
-function Rail({ active }: { active: ReasonKey }) {
-  return (
-    <nav className="whyr-rail" aria-label="The four reasons">
-      <span className="whyr-rail-h">Why InstaSafe</span>
-      <ol>
-        {REASONS.map((r) => (
-          <li key={r.key}>
-            <a
-              href={`#reason-${r.key}`}
-              className={r.key === active ? "is-on" : undefined}
-              aria-current={r.key === active ? "true" : undefined}
-            >
-              <b>{r.n}</b>
-              <span>{r.label}</span>
-            </a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
-function Head({ n, kicker, title, em }: { n: string; kicker: string; title: string; em?: string }) {
+   The 01–04 numerals that sat above each eyebrow went with it. They
+   were doing the rail's job — telling you where in the set you were —
+   and with the rail gone they read as decoration stacked on top of a
+   kicker that already says what the section is. */
+function Head({ kicker, title, em }: { kicker: string; title: string; em?: string }) {
   return (
     <div className="whyr-head">
-      <span className="whyr-n">{n}</span>
       <span className="iz-ey">{kicker}</span>
       <h2>
         {title} {em && <em>{em}</em>}
@@ -125,7 +91,7 @@ function PlaneNode({ label, sub, tone }: { label: string; sub: string; tone: "ou
 function ReasonPath() {
   return (
     <section className="whyr-sec" id="reason-path">
-      <Head n="01" kicker="The data path" title="We are not" em="in it." />
+      <Head kicker="The data path" title="We are not" em="in it." />
       <p className="whyr-lead">
         Most Zero Trust vendors terminate your sessions on their own infrastructure — which means decrypting your
         traffic to inspect it, then re-encrypting it and sending it on. That is the usual premise. Ours splits the two
@@ -194,7 +160,7 @@ function ReasonPath() {
 function ReasonNumbers() {
   return (
     <section className="whyr-sec" id="reason-numbers">
-      <Head n="02" kicker="The numbers" title="Every figure here has a page" em="behind it." />
+      <Head kicker="The numbers" title="Every figure here has a page" em="behind it." />
       <p className="whyr-lead">
         Enumerable controls are the difference between a security posture and a security story. Each cluster below links
         to the page that proves it — because a number nobody can check is marketing.
@@ -268,7 +234,7 @@ function ReasonNumbers() {
 function ReasonRecord() {
   return (
     <section className="whyr-sec" id="reason-record">
-      <Head n="03" kicker="The record" title="Not new here," em="and not new at this." />
+      <Head kicker="The record" title="Not new here," em="and not new at this." />
       <p className="whyr-lead">
         Zero Trust became a category around us rather than the other way round. The dates matter because architecture
         decisions taken early are the ones that are expensive to reverse later.
@@ -439,7 +405,7 @@ const REGULATOR_TABS: IzTabSwitchTab[] = [
 function ReasonFrameworks() {
   return (
     <section className="whyr-sec" id="reason-frameworks">
-      <Head n="04" kicker="The frameworks" title="Both columns," em="filled." />
+      <Head kicker="The frameworks" title="Both columns," em="filled." />
       <p className="whyr-lead">
         Indian regulators and global standards, from one platform. Most vendors are strong in one column and thin in the
         other — the combination is the part the market lacks.
@@ -471,7 +437,15 @@ function ReasonFrameworks() {
         />
       </div>
 
-      <div className="whyr-matrix whyr-matrix--single">
+      {/* BOTH COLUMNS ARE BACK (user call, 2026-08-13). The India list
+          was pulled out when the tab block landed, on the reasoning that
+          DPDP/RBI/SEBI would then appear twice in one section. The
+          side-by-side matrix is the section's actual argument — "both
+          columns, filled" is what the heading says — so it returns, and
+          the tabs stay above it as the depth behind the India side.
+          Whether both survive is the user's next call. */}
+      <div className="whyr-matrix">
+        <FrameworkList head="India" sub="The regulators your auditor cites" items={INDIA_FRAMEWORKS} accent />
         <FrameworkList head="Global" sub="The standards your board cites" items={GLOBAL_FRAMEWORKS} />
       </div>
 
@@ -488,17 +462,13 @@ function ReasonFrameworks() {
    ============================================================ */
 
 export function WhyReasons() {
-  const active = useActiveReason();
   return (
     <div className="whyr">
-      <div className="iz-wrap whyr-in">
-        <Rail active={active} />
-        <div className="whyr-body">
-          <ReasonPath />
-          <ReasonNumbers />
-          <ReasonRecord />
-          <ReasonFrameworks />
-        </div>
+      <div className="iz-wrap whyr-body">
+        <ReasonPath />
+        <ReasonNumbers />
+        <ReasonRecord />
+        <ReasonFrameworks />
       </div>
     </div>
   );

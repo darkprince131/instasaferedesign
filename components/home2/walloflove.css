@@ -36,7 +36,34 @@
 .wol-bar .wt { flex: 1; text-align: center; font-family: var(--mono); font-size: var(--fs-label); color: var(--tx-mute); }
 .wol-body { padding: 40px 28px; min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: wol-in 0.4s var(--ease-out); }
 @keyframes wol-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.wol-logo-lg { width: 62px; height: 62px; border-radius: var(--r-lg); display: grid; place-items: center; font-family: var(--disp); font-weight: 600; font-size: 26px; color: #fff; box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.5); }
+/* A LOGO PLATE, not a gradient chip. These held a coloured gradient
+   and a white initial; they now hold the customer's actual mark, so
+   the plate is a neutral card and the art is `object-fit: contain`
+   with padding — a real wordmark must never be cropped or stretched
+   to fill a square, which is the whole reason the dock only carries
+   the marks measured at or under ~2.5:1. */
+.wol-logo-lg {
+  width: 96px; height: 62px;
+  border-radius: var(--r-lg);
+  display: grid; place-items: center;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.28);
+}
+.wol-logo-lg img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+/* the marks are supplied as dark art, so on the dark theme they are
+   lifted rather than recoloured — no per-logo variants to maintain */
+.iz[data-theme="dark"] .wol-logo-lg img,
+.iz[data-theme="dark"] .wol-icon .logo img { filter: invert(1) grayscale(1) brightness(1.6); }
+
+.wol-detail {
+  max-width: 46ch;
+  margin: 18px auto 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--tx-dim);
+}
 .wol-name { font-family: var(--disp); font-weight: 500; font-size: var(--fs-h3); color: var(--tx); margin-top: 18px; letter-spacing: -0.01em; }
 .wol-sector { font-family: var(--mono); font-size: var(--fs-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--tx-mute); margin-top: 6px; }
 .wol-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
@@ -56,11 +83,15 @@
 .wol-icon { position: relative; flex: none; background: none; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center; }
 .wol-icon .logo {
   width: 100%; height: 100%; border-radius: var(--r-lg); display: grid; place-items: center;
-  font-family: var(--disp); font-weight: 600; color: #fff; font-size: 0.42em;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12), 0 4px 10px -4px rgba(0, 0, 0, 0.4);
+  padding: 18%;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line), 0 4px 10px -4px rgba(0, 0, 0, 0.25);
   transition: box-shadow var(--dur-fast) var(--ease-out);
 }
-.wol-icon.on .logo { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 0 0 2px var(--orange), 0 6px 14px -4px rgba(0, 0, 0, 0.5); }
+/* contain, never cover: the dock magnifies the TILE, and a mark that
+   filled it would be cropped differently at every size */
+.wol-icon .logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.wol-icon.on .logo { box-shadow: inset 0 0 0 1px var(--line-strong), 0 0 0 2px var(--orange), 0 6px 14px -4px rgba(0, 0, 0, 0.35); }
 .wol-tip {
   position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
   background: var(--tx); color: var(--bg); font-family: var(--body); font-size: var(--fs-label); font-weight: 600;

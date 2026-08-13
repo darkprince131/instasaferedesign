@@ -6,99 +6,16 @@
    timeline and a logo row rather than a second grid.
    ============================================================ */
 
+/* The `.whyr-in` two-column grid (232px rail + body) is gone: the rail
+   moved to the site-wide IzSideNav, so `.whyr-body` IS the wrap now and
+   the reasons run its full width. */
 .whyr { padding: var(--sp-section) 0; }
-.whyr-in {
-  display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
-  gap: var(--sp-12);
-  /* NO `align-items: start` here. A sticky child sticks within its
-     grid area, and `start` collapses that area to the rail's own
-     height — so the rail had nothing to travel inside and never
-     stuck. Stretch (the default) gives it the full row. */
-}
-
-/* ---------- the sticky rail ---------- */
-.whyr-rail {
-  position: sticky;
-  /* clears the 66px nav with air to spare */
-  top: 108px;
-}
-.whyr-rail-h {
-  display: block;
-  font-family: var(--mono);
-  font-size: var(--fs-mono-xs);
-  font-weight: 500;
-  letter-spacing: var(--ls-mono);
-  text-transform: uppercase;
-  color: var(--tx-dim);
-  padding-bottom: var(--sp-4);
-  border-bottom: 1px solid var(--line);
-}
-.whyr-rail ol { list-style: none; margin: 0; padding: 0; }
-.whyr-rail a {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
-  gap: var(--sp-2);
-  align-items: baseline;
-  padding: var(--sp-4) 0;
-  border-bottom: 1px solid var(--line);
-  color: var(--tx-dim);
-  transition: color var(--dur-fast) var(--ease-out);
-}
-.whyr-rail a b {
-  font-family: var(--mono);
-  font-size: var(--fs-mono);
-  font-weight: 500;
-  letter-spacing: var(--ls-mono);
-  color: var(--tx-mute);
-  transition: color var(--dur-fast) var(--ease-out);
-}
-.whyr-rail a span { font-size: var(--fs-sm); font-weight: 500; line-height: 1.35; }
-.whyr-rail a:hover { color: var(--tx); }
-.whyr-rail a.is-on { color: var(--orange); }
-.whyr-rail a.is-on b { color: var(--orange); }
-.whyr-rail a:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
-
-/* Below the split the rail becomes a horizontal chip row pinned under
-   the nav — a 232px column of numbers is not worth a third of a phone
-   screen. */
-@media (max-width: 1080px) {
-  .whyr-in { grid-template-columns: minmax(0, 1fr); gap: var(--sp-8); }
-  .whyr-rail {
-    top: 66px;
-    z-index: 20;
-    margin: 0 calc(var(--wrap-gutter) * -1);
-    padding: var(--sp-3) var(--wrap-gutter);
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-  }
-  .whyr-rail-h { display: none; }
-  .whyr-rail ol { display: flex; gap: var(--sp-2); overflow-x: auto; scrollbar-width: none; }
-  .whyr-rail ol::-webkit-scrollbar { display: none; }
-  .whyr-rail a {
-    grid-template-columns: auto auto;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 13px;
-    border: 1px solid var(--line-strong);
-    border-radius: var(--r-pill);
-    white-space: nowrap;
-  }
-  .whyr-rail a.is-on { border-color: var(--orange); }
-}
 
 /* ---------- section furniture ---------- */
 .whyr-body { display: grid; gap: var(--sp-section); min-width: 0; }
 .whyr-sec { scroll-margin-top: 108px; min-width: 0; }
 
 .whyr-head { display: grid; gap: var(--sp-3); margin-bottom: var(--sp-5); }
-.whyr-n {
-  font-family: var(--mono);
-  font-size: var(--fs-mono);
-  font-weight: 500;
-  letter-spacing: var(--ls-mono);
-  color: var(--tx-mute);
-}
 .whyr-head h2 {
   margin: 0;
   font-family: var(--disp);
@@ -371,9 +288,21 @@
 .whyr-fw.is-accent .whyr-fw-h b { color: var(--orange); }
 .whyr-fw-h span { font-size: var(--fs-sm); color: var(--tx-dim); }
 .whyr-fw ul { list-style: none; margin: 0; padding: 0; }
+/* FIXED badge column, not `auto`.
+
+   `auto` sizes the column to the widest badge IN THAT LIST, so the two
+   framework columns resolved to different widths and their text started
+   at different x — "NIST SP 800-207" is roughly three times the width
+   of "RBI", which pushed the whole global column's copy right while
+   India's stayed left. Side by side that read as a broken grid, which
+   is exactly what it was.
+
+   A fixed track makes every row in BOTH lists align, and the one badge
+   that cannot fit on a line is allowed to wrap rather than setting the
+   width for fifteen others. */
 .whyr-fw li {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: 92px minmax(0, 1fr);
   gap: var(--sp-4);
   padding: var(--sp-4) var(--sp-5);
 }
@@ -388,7 +317,9 @@
   font-size: var(--fs-3xs);
   font-weight: 500;
   letter-spacing: var(--ls-mono);
-  white-space: nowrap;
+  /* wraps instead of forcing the track wider — see the note above */
+  text-align: center;
+  line-height: 1.35;
 }
 .whyr-fw-t { display: grid; gap: 3px; min-width: 0; }
 .whyr-fw-t b { font-size: var(--fs-sm); font-weight: 600; letter-spacing: -0.01em; }
@@ -447,12 +378,6 @@
   margin-inline: 0;
 }
 
-/* One column of frameworks, not two: reason 04 moved the Indian
-   regulators into the tab block above, so the matrix carries only the
-   global list and a 2-up grid would leave half of it empty. */
-.whyr-matrix--single { grid-template-columns: minmax(0, 1fr); }
-
 @media (prefers-reduced-motion: reduce) {
-  .whyr-rail a,
   .whyr-cell { transition: none; }
 }
