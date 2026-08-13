@@ -1,30 +1,46 @@
 "use client";
 
-import { ArrowSquareOut, ChartBar, ShareNetwork } from "@phosphor-icons/react";
+import {
+  ArrowSquareOut,
+  ChartBar,
+  CheckCircle,
+  Clock,
+  Cursor,
+  DownloadSimple,
+  FileText,
+  Fingerprint,
+  Play,
+  Question,
+  ShareNetwork,
+  ShieldCheck,
+  SignIn,
+  SignOut,
+  Stop,
+  WarningCircle,
+  type Icon,
+} from "@phosphor-icons/react";
 
 import { FeatureHub, type FeatureHubTab } from "@/components/home2/FeatureHub";
+import { IzTabSwitch, type IzTabSwitchTab } from "@/components/izpages/pro/IzTabSwitch";
 
 /* ============================================================
    ZtaaProofHub — the "prove everything" section, on 00i FeatureHub.
 
-   Replaces a bare LiveActivity feed. The section's claim is three
-   numbers — 202 event types, 11 report types, 7 SIEM formats — and a
-   single scrolling log could only ever show the first of them. The hub
-   chassis has one tab per number, so each claim gets the picture that
-   actually demonstrates it.
+   Four tabs, one per claim the section makes: the events, the reports,
+   the exports, and — because a record nobody can interrogate is not
+   evidence — the questions you can put to it.
 
-   ▸ THE THREE VIEWS SHARE A GRAMMAR ◂
-   Left rail names the set and counts it; right pane shows one member of
-   that set doing its job. Keep that if a fourth is ever added — three
-   unrelated dashboards would be three screenshots, not one section.
+   ▸ ALL FOUR VIEWS SHARE A GRAMMAR ◂
+   Left rail names and counts the set; right pane shows one member of
+   it working. Keep that if a fifth is added: four unrelated dashboards
+   would be four screenshots in a tab strip, not one section.
 
    ▸ LOGOS ◂
-   Real marks where the repo has them (Google Workspace, AWS, GitHub,
-   Microsoft 365). Splunk, Elastic, ArcSight and Jira are NOT in
-   /public/logos/integrations, so those slots render a typed
-   placeholder rather than an invented mark — drawing a rough Splunk
-   logo is worse than not drawing one. Drop the real SVG into that
-   folder and add its filename to `logo` below; nothing else changes.
+   Real marks only, from /public/logos/integrations. Splunk, Elastic,
+   ArcSight and Jira are not in that folder, so those rows carry a
+   typed placeholder — an approximated Splunk mark misrepresents a
+   third party's brand, and is worse than no mark. Drop the real SVG in
+   and set `logo` on the row; nothing else changes.
    ============================================================ */
 
 const TABS: FeatureHubTab[] = [
@@ -46,29 +62,40 @@ const TABS: FeatureHubTab[] = [
     desc: "Feed Splunk-class tooling in the shape it already reads.",
     href: "/platform",
   },
+  {
+    icon: Question,
+    title: "Answer the question",
+    desc: "The record only counts if it settles an argument. Put an auditor's question to it.",
+    href: "/platform/trust-engine",
+  },
 ];
 
-/* ---------------- 1 · the event stream ---------------- */
+/* ============================================================
+   1 · the event stream
+   Every kind carries its own icon, and so does every row — an event
+   log read as a wall of timestamps is exactly the thing this tab is
+   arguing against.
+   ============================================================ */
 
-const EVENT_KINDS = [
-  { label: "Logins", n: 34 },
-  { label: "Failures", n: 28 },
-  { label: "Posture results", n: 26 },
-  { label: "Policy decisions", n: 31 },
-  { label: "Session starts / ends", n: 24 },
-  { label: "In-session actions", n: 59 },
+const EVENT_KINDS: { label: string; n: number; Icon: Icon; tone: string }[] = [
+  { label: "Logins", n: 34, Icon: SignIn, tone: "allow" },
+  { label: "Failures", n: 28, Icon: WarningCircle, tone: "deny" },
+  { label: "Posture results", n: 26, Icon: Fingerprint, tone: "accent" },
+  { label: "Policy decisions", n: 31, Icon: ShieldCheck, tone: "accent" },
+  { label: "Session starts / ends", n: 24, Icon: Play, tone: "mute" },
+  { label: "In-session actions", n: 59, Icon: Cursor, tone: "mute" },
 ];
 
 /* Demo rows, same convention as the other consoles on the site. The
-   counts above sum to 202 deliberately — a reader who adds them up
+   counts above add to exactly 202 — a reader who totals the rail
    should land on the number in the tab. */
-const EVENT_ROWS = [
-  { t: "10:24:31", what: "Login success", who: "alen.joseph", where: "Browser", tag: "Allowed", tone: "allow" },
-  { t: "10:24:18", what: "Posture check", who: "Device compliant", where: "Windows 11", tag: "Passed", tone: "allow" },
-  { t: "10:24:07", what: "Policy decision", who: "erp-core access", where: "Zero Trust", tag: "Allowed", tone: "allow" },
-  { t: "10:23:58", what: "Session started", who: "finance dashboard", where: "Web app", tag: "Active", tone: "accent" },
-  { t: "10:23:41", what: "File download", who: "Q4_report.xlsx", where: "In-session", tag: "Logged", tone: "mute" },
-  { t: "10:23:12", what: "Logout", who: "alen.joseph", where: "Browser", tag: "Ended", tone: "mute" },
+const EVENT_ROWS: { t: string; what: string; who: string; where: string; tag: string; tone: string; Icon: Icon }[] = [
+  { t: "10:24:31", what: "Login success", who: "alen.joseph", where: "Browser", tag: "Allowed", tone: "allow", Icon: SignIn },
+  { t: "10:24:18", what: "Posture check", who: "Device compliant", where: "Windows 11", tag: "Passed", tone: "allow", Icon: Fingerprint },
+  { t: "10:24:07", what: "Policy decision", who: "erp-core access", where: "Zero Trust", tag: "Allowed", tone: "allow", Icon: ShieldCheck },
+  { t: "10:23:58", what: "Session started", who: "finance dashboard", where: "Web app", tag: "Active", tone: "accent", Icon: Play },
+  { t: "10:23:41", what: "File download", who: "Q4_report.xlsx", where: "In-session", tag: "Logged", tone: "mute", Icon: DownloadSimple },
+  { t: "10:23:12", what: "Logout", who: "alen.joseph", where: "Browser", tag: "Ended", tone: "mute", Icon: SignOut },
 ];
 
 function EventsView() {
@@ -79,7 +106,10 @@ function EventsView() {
         <ul>
           {EVENT_KINDS.map((k) => (
             <li key={k.label}>
-              <span>{k.label}</span>
+              <span className={`zph-kic is-${k.tone}`} aria-hidden="true">
+                <k.Icon weight="duotone" />
+              </span>
+              <span className="zph-kl">{k.label}</span>
               <b>{k.n}</b>
             </li>
           ))}
@@ -97,6 +127,9 @@ function EventsView() {
         <ul className="zph-rows">
           {EVENT_ROWS.map((r) => (
             <li key={r.t}>
+              <span className={`zph-ric is-${r.tone}`} aria-hidden="true">
+                <r.Icon weight="fill" />
+              </span>
               <span className="zph-t">{r.t}</span>
               <span className="zph-what">{r.what}</span>
               <span className="zph-who">{r.who}</span>
@@ -110,24 +143,44 @@ function EventsView() {
   );
 }
 
-/* ---------------- 2 · the reports ---------------- */
+/* ============================================================
+   2 · the reports
+   ============================================================ */
 
 const REPORT_STATS = [
-  { label: "Total logins", value: "48,392", d: "+12%", up: true },
-  { label: "Unique users", value: "4,218", d: "+8%", up: true },
-  { label: "Devices", value: "2,731", d: "+14%", up: true },
-  { label: "Denied requests", value: "328", d: "-26%", up: false },
+  { label: "Total logins", value: "48,392", d: "+12%", spark: [8, 12, 10, 16, 14, 20, 24], hue: "allow" },
+  { label: "Unique users", value: "4,218", d: "+8%", spark: [10, 9, 13, 12, 17, 16, 21], hue: "accent" },
+  { label: "Devices", value: "2,731", d: "+14%", spark: [6, 9, 8, 14, 13, 18, 22], hue: "info" },
+  { label: "Denied requests", value: "328", d: "−26%", spark: [22, 19, 20, 14, 12, 9, 7], hue: "deny" },
 ];
 
 const REPORT_KINDS = ["Overview", "Access", "Devices", "Users", "Authentication"];
 
 /* Real marks only — see the logo note in the header. */
 const TOP_APPS = [
-  { name: "Google Workspace", logo: "google-workspace", pct: 92 },
-  { name: "AWS Console", logo: "aws", pct: 68 },
-  { name: "GitHub", logo: "github", pct: 44 },
-  { name: "Microsoft 365", logo: "microsoft-365", pct: 27 },
+  { name: "Google Workspace", logo: "google-workspace", pct: 92, n: "18.4K" },
+  { name: "AWS Console", logo: "aws", pct: 68, n: "12.1K" },
+  { name: "GitHub", logo: "github", pct: 44, n: "7.6K" },
+  { name: "Microsoft 365", logo: "microsoft-365", pct: 33, n: "5.2K" },
+  { name: "Salesforce", logo: "salesforce", pct: 24, n: "4.3K" },
+  { name: "Slack", logo: "slack", pct: 18, n: "3.1K" },
 ];
+
+/* A sparkline from a small integer series. Drawn rather than imported:
+   seven points do not justify a charting dependency, and this way the
+   stroke is a token like everything else. */
+function Spark({ points, hue }: { points: number[]; hue: string }) {
+  const max = Math.max(...points);
+  const d = points
+    .map((p, i) => `${i === 0 ? "M" : "L"}${(i / (points.length - 1)) * 100},${28 - (p / max) * 24}`)
+    .join(" ");
+  return (
+    <svg className={`zph-spark is-${hue}`} viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+      <path d={`${d} L100,30 L0,30 Z`} className="zph-spark-fill" />
+      <path d={d} className="zph-spark-line" />
+    </svg>
+  );
+}
 
 function ReportsView() {
   return (
@@ -137,6 +190,7 @@ function ReportsView() {
         <ul className="zph-rail-plain">
           {REPORT_KINDS.map((k, i) => (
             <li key={k} className={i === 0 ? "on" : undefined}>
+              <FileText weight={i === 0 ? "fill" : "regular"} aria-hidden="true" />
               {k}
             </li>
           ))}
@@ -147,7 +201,10 @@ function ReportsView() {
       <div className="zph-pane">
         <div className="zph-pane-h">
           <span className="zph-pane-t">Report overview</span>
-          <span className="zph-chip">Last 30 days</span>
+          <span className="zph-chip">
+            <Clock weight="regular" aria-hidden="true" />
+            Last 30 days
+          </span>
         </div>
 
         <div className="zph-stats">
@@ -155,7 +212,10 @@ function ReportsView() {
             <div className="zph-stat" key={s.label}>
               <span className="zph-stat-l">{s.label}</span>
               <b>{s.value}</b>
-              <span className={`zph-delta${s.up ? "" : " is-down"}`}>{s.d}</span>
+              {/* every delta here is an improvement, including the fall
+                  in denials — so none of them is styled as a failure */}
+              <span className="zph-delta">{s.d}</span>
+              <Spark points={s.spark} hue={s.hue} />
             </div>
           ))}
         </div>
@@ -170,6 +230,7 @@ function ReportsView() {
               <span className="zph-meter" aria-hidden="true">
                 <i style={{ width: `${a.pct}%` }} />
               </span>
+              <span className="zph-app-c">{a.n}</span>
             </div>
           ))}
         </div>
@@ -178,12 +239,23 @@ function ReportsView() {
   );
 }
 
-/* ---------------- 3 · the exports ---------------- */
+/* ============================================================
+   3 · the exports
+   The flow is DRAWN, not implied by adjacency. Seven sources fan into
+   one engine and out to seven formats; three columns of boxes with no
+   connectors would just be three lists side by side.
+   ============================================================ */
 
-const EXPORT_SOURCES = ["User login", "Login failure", "Device posture", "Policy decision", "Session start", "Session end", "In-session action"];
+const EXPORT_SOURCES: { label: string; Icon: Icon; tone: string }[] = [
+  { label: "User login", Icon: SignIn, tone: "allow" },
+  { label: "Login failure", Icon: WarningCircle, tone: "deny" },
+  { label: "Device posture", Icon: Fingerprint, tone: "accent" },
+  { label: "Policy decision", Icon: ShieldCheck, tone: "accent" },
+  { label: "Session start", Icon: Play, tone: "mute" },
+  { label: "Session end", Icon: Stop, tone: "mute" },
+  { label: "In-session action", Icon: Cursor, tone: "mute" },
+];
 
-/* `logo: null` means the repo has no mark for it — the row falls back
-   to its extension chip alone rather than to an approximated logo. */
 const EXPORT_TARGETS: { name: string; ext: string; logo: string | null; abbr: string }[] = [
   { name: "Splunk", ext: ".json", logo: null, abbr: "SPL" },
   { name: "Elastic Common Schema", ext: ".ecs", logo: null, abbr: "ECS" },
@@ -193,6 +265,27 @@ const EXPORT_TARGETS: { name: string; ext: string; logo: string | null; abbr: st
   { name: "Syslog", ext: ".log", logo: null, abbr: "SYS" },
   { name: "NDJSON", ext: ".ndjson", logo: null, abbr: "NDJ" },
 ];
+
+/* The connector layer. Rows are evenly spaced, so the y of row i is
+   derived rather than hand-placed — add an eighth source and the fan
+   still lands on the right rows. */
+function Fan({ n, dir }: { n: number; dir: "in" | "out" }) {
+  const H = 100;
+  const mid = H / 2;
+  const paths = Array.from({ length: n }, (_, i) => {
+    const y = ((i + 0.5) / n) * H;
+    return dir === "in"
+      ? `M0,${y} C34,${y} 62,${mid} 100,${mid}`
+      : `M0,${mid} C38,${mid} 66,${y} 100,${y}`;
+  });
+  return (
+    <svg className={`zph-fan is-${dir}`} viewBox={`0 0 100 ${H}`} preserveAspectRatio="none" aria-hidden="true">
+      {paths.map((d, i) => (
+        <path key={i} d={d} className="zph-fan-p" style={{ ["--i" as string]: i }} />
+      ))}
+    </svg>
+  );
+}
 
 function ExportsView() {
   return (
@@ -204,10 +297,17 @@ function ExportsView() {
         </span>
         <ul className="zph-rail-plain">
           {EXPORT_SOURCES.map((e) => (
-            <li key={e}>{e}</li>
+            <li key={e.label}>
+              <span className={`zph-kic is-${e.tone}`} aria-hidden="true">
+                <e.Icon weight="duotone" />
+              </span>
+              {e.label}
+            </li>
           ))}
         </ul>
       </div>
+
+      <Fan n={EXPORT_SOURCES.length} dir="in" />
 
       <div className="zph-engine" aria-hidden="true">
         <span className="zph-engine-mark">
@@ -220,6 +320,8 @@ function ExportsView() {
         </span>
       </div>
 
+      <Fan n={EXPORT_TARGETS.length} dir="out" />
+
       <div className="zph-targets">
         {EXPORT_TARGETS.map((t) => (
           <div className="zph-target" key={t.name}>
@@ -228,10 +330,8 @@ function ExportsView() {
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={`/logos/integrations/${t.logo}.svg`} alt="" loading="lazy" />
               ) : (
-                /* No approximated marks — see the logo note in the header.
-                   `abbr` is written out per target rather than sliced from
-                   the extension: slicing gave "JSO" for Splunk and "LEE"
-                   for LEEF, which is worse than no mark at all. */
+                /* `abbr` is written out per target, not sliced from the
+                   extension — slicing gave "JSO" for Splunk. */
                 <b>{t.abbr}</b>
               )}
             </span>
@@ -240,6 +340,113 @@ function ExportsView() {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   4 · answer the question — 00ao IzTabSwitch
+
+   The other three tabs show the record being produced. None of them
+   shows it being USED, and an audit trail nobody can interrogate is
+   storage, not evidence. Each tab here is a question an auditor
+   actually asks, with the query and the answer as its two outcomes.
+
+   Sanitised demo payloads, same convention as the other consoles.
+   ============================================================ */
+
+const AUDIT_TABS: IzTabSwitchTab[] = [
+  {
+    id: "who",
+    label: "Who reached it",
+    Icon: Fingerprint,
+    json: {
+      outcomes: ["The question", "The answer"],
+      payloads: [
+        `{
+  "ask": "who opened erp-core in Q3",
+  "scope": "2026-07-01 .. 2026-09-30",
+  "app": "erp-core"
+}`,
+        `{
+  "sessions": 412,
+  "principals": 27,
+  "outside_entitlement": 0,
+  "every_session": {
+    "identity": "verified",
+    "device": "bound + posture checked",
+    "recorded": true
+  },
+  "export": "cef"
+}`,
+      ],
+    },
+  },
+  {
+    id: "did",
+    label: "What they did",
+    Icon: Cursor,
+    json: {
+      outcomes: ["The question", "The answer"],
+      payloads: [
+        `{
+  "ask": "what happened inside session sx_9F2ke6",
+  "principal": "contractor.42"
+}`,
+        `{
+  "opened": "10:23:58",
+  "actions": ["view", "edit", "download"],
+  "download": {
+    "file": "Q4_report.xlsx",
+    "policy": "allowed_in_session",
+    "logged": true
+  },
+  "recording": "session-2f9a.mp4",
+  "closed": "10:41:02"
+}`,
+      ],
+    },
+  },
+  {
+    id: "prove",
+    label: "Prove it was them",
+    Icon: CheckCircle,
+    json: {
+      outcomes: ["The question", "The answer"],
+      payloads: [
+        `{
+  "ask": "could anyone else have used this session",
+  "session": "sx_9F2ke6"
+}`,
+        `{
+  "device_certificate": "matched at every check",
+  "revalidated_mid_session": 14,
+  "watermark": "principal + ip + minute",
+  "shared_credential_possible": false,
+  "network_reachable_by_principal": false
+}`,
+      ],
+    },
+  },
+];
+
+function AuditView() {
+  return (
+    <div className="zph zph--audit">
+      <IzTabSwitch
+        tabs={AUDIT_TABS}
+        initial={0}
+        head={
+          <>
+            <h2 className="izts-title">
+              Put a question to <mark>the record</mark>
+            </h2>
+            <p className="izts-sub">
+              202 event types are only worth the questions they settle. Pick one an auditor actually asks.
+            </p>
+          </>
+        }
+      />
     </div>
   );
 }
@@ -255,7 +462,7 @@ export function ZtaaProofHub() {
       }
       lead="Logs, reports and exports — built in. No add-ons. No gaps."
       tabs={TABS}
-      views={[<EventsView key="e" />, <ReportsView key="r" />, <ExportsView key="x" />]}
+      views={[<EventsView key="e" />, <ReportsView key="r" />, <ExportsView key="x" />, <AuditView key="a" />]}
       initial={0}
     />
   );

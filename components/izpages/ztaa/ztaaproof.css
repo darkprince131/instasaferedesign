@@ -20,7 +20,14 @@
 .zph--reports { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.6fr); }
 /* the exports view is source -> engine -> targets, so it needs a
    third column for the engine to sit between the two lists */
-.zph--exports { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr); align-items: center; }
+/* source list · fan · engine · fan · target list. The two fan columns
+   are narrow and fixed: they carry connectors, not content, and letting
+   them flex would stretch the curves out of shape. */
+.zph--exports {
+  grid-template-columns: minmax(0, 1fr) 46px auto 46px minmax(0, 1.1fr);
+  align-items: center;
+  gap: var(--sp-2);
+}
 
 /* ---------- the rail ---------- */
 .zph-rail {
@@ -260,4 +267,140 @@
      before the timestamp or the verdict do */
   .zph-who,
   .zph-where { display: none; }
+}
+
+
+/* ============================================================
+   ICONS — added 2026-08-13.
+
+   The rail and the stream were type-only, which made an event log read
+   as a wall of timestamps: the exact thing this section argues the
+   product prevents. Every kind and every row carries its own mark now,
+   toned by what the event MEANS rather than decoratively — an allow is
+   green, a failure is the deny colour, a decision is the accent, and
+   routine traffic stays neutral so the meaningful ones can be found by
+   scanning.
+   ============================================================ */
+.zph-kic,
+.zph-ric {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.zph-kic svg { width: 17px; height: 17px; }
+.zph-ric svg { width: 15px; height: 15px; }
+.zph-kl { flex: 1 1 auto; min-width: 0; }
+
+.zph-kic.is-allow, .zph-ric.is-allow { color: var(--allow); }
+.zph-kic.is-deny, .zph-ric.is-deny { color: var(--deny); }
+.zph-kic.is-accent, .zph-ric.is-accent { color: var(--accent); }
+.zph-kic.is-mute, .zph-ric.is-mute { color: var(--tx-mute); }
+
+/* the stream gains an icon column ahead of the timestamp */
+.zph-rows li { grid-template-columns: auto auto minmax(0, 1.1fr) minmax(0, 1.2fr) auto auto; }
+
+.zph-rail-plain li { gap: var(--sp-3); }
+.zph-rail-plain li svg { width: 15px; height: 15px; flex: none; color: var(--tx-mute); }
+.zph-rail-plain li.on svg { color: var(--accent); }
+.zph-chip svg { width: 13px; height: 13px; }
+
+/* ============================================================
+   SPARKLINES — a shape per stat, so four numbers stop being four
+   identical cards. Seven points do not justify a charting library;
+   the stroke is a token like everything else.
+   ============================================================ */
+.zph-stat { position: relative; overflow: hidden; }
+.zph-spark {
+  display: block;
+  width: 100%;
+  height: 26px;
+  margin-top: var(--sp-2);
+}
+.zph-spark-line { fill: none; stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.zph-spark-fill { stroke: none; opacity: 0.14; }
+
+.zph-spark.is-allow .zph-spark-line, .zph-spark.is-allow .zph-spark-fill { stroke: var(--allow); fill: var(--allow); }
+.zph-spark.is-deny .zph-spark-line, .zph-spark.is-deny .zph-spark-fill { stroke: var(--deny); fill: var(--deny); }
+.zph-spark.is-accent .zph-spark-line, .zph-spark.is-accent .zph-spark-fill { stroke: var(--accent); fill: var(--accent); }
+/* NOT --accent-d: that is the DARK theme's accent, so on a paper page
+   it resolved to a second, slightly different orange sitting next to
+   the real one — two muddled hues rather than a distinct series. A
+   device count carries no verdict, so it takes the neutral. */
+.zph-spark.is-info .zph-spark-line, .zph-spark.is-info .zph-spark-fill { stroke: var(--tx-dim); fill: var(--tx-dim); }
+
+/* every delta on this panel is an improvement, including the FALL in
+   denied requests — so none of them is coloured as a failure */
+.zph-delta { color: var(--allow); }
+
+.zph-app { grid-template-columns: 20px minmax(0, 1fr) minmax(0, 1fr) auto; }
+.zph-app-c {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   FLOW CONNECTORS — the exports view.
+
+   Seven sources fanning into one engine and out to seven formats is a
+   FLOW, and three columns of boxes sitting next to each other only
+   imply it. The curves are drawn from row geometry, so adding a source
+   re-fans automatically rather than needing hand-placed paths.
+
+   preserveAspectRatio="none" plus non-scaling-stroke: the fan is
+   stretched to whatever height the lists resolve to, and without the
+   vector-effect the strokes would be stretched with it.
+   ============================================================ */
+.zph-fan {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  overflow: visible;
+}
+.zph-fan-p {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 42%, transparent);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 3 5;
+  animation: zph-flow 2.4s linear infinite;
+  animation-delay: calc(var(--i, 0) * -0.18s);
+}
+@keyframes zph-flow { to { stroke-dashoffset: -32; } }
+
+.zph-engine {
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zph-fan-p { animation: none; }
+}
+
+/* ============================================================
+   4 · the audit tab hosts IzTabSwitch, which is authored as a
+   full-bleed page section. Inside the hub stage it must fill the
+   stage instead of re-centring at its own wrap width — the same
+   rail-inset trap documented in whyreasons.css, so the override is
+   qualified with `.iz-railed` to beat it on specificity.
+   ============================================================ */
+.zph--audit { display: block; }
+.zph--audit .izts { padding-block: 0; background: none; }
+.zph--audit .iz-railed::before,
+.zph--audit .iz-railed::after { display: none; }
+.zph--audit .iz-wrap,
+.zph--audit .iz-railed .iz-wrap {
+  max-width: none;
+  padding-inline: 0;
+  margin-inline: 0;
+}
+
+@media (max-width: 900px) {
+  /* the fans carry no content, so they go rather than stack as two
+     empty strips between the lists */
+  .zph-fan { display: none; }
+  .zph--exports { grid-template-columns: minmax(0, 1fr); }
+  .zph-rows li { grid-template-columns: auto auto minmax(0, 1fr) auto; }
 }

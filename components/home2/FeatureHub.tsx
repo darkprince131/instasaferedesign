@@ -257,7 +257,9 @@ export function FeatureHub({
   title?: React.ReactNode;
   lead?: string;
   tabs?: FeatureHubTab[];
-  views?: [React.ReactNode, React.ReactNode, React.ReactNode];
+  /* an array, not a 3-tuple: the chassis is driven by `tabs.length`,
+     so a caller with four tabs needs four views */
+  views?: React.ReactNode[];
   initial?: number;
 } = {}) {
   const [tab, setTab] = useState(initial);
