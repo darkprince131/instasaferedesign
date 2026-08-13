@@ -248,7 +248,12 @@ export function Home2() {
 
       {/* ---------------- PLATFORM ROWS ---------------- */}
       {/* no rails — the rows already draw their own horizontals */}
-      <section className="iz-section alt iz-irail" style={{ ["--ir-b" as string]: "62%" }}>
+      {/* No `iz-irail` here (user call, 2026-08-13). It carried
+          `--ir-b: 62%`, which dropped a dotted vertical straight down
+          the middle of the rows and the stat band — through content,
+          labelling nothing. The rows already draw their own horizontals;
+          a vertical on top of them is one grid too many. */}
+      <section className="iz-section alt">
         <div className="iz-wrap iz-stitch" style={{ paddingTop: 12, paddingBottom: 12 }}>
           <div className="iz-reveal">
             <span className="iz-ey">All in one place</span>
@@ -452,7 +457,10 @@ export function Home2() {
       </section>
 
       {/* ---------------- COMPARISON ---------------- */}
-      <section className="iz-section alt iz-irail" style={{ ["--ir-a" as string]: "30%", ["--ir-b" as string]: "70%" }}>
+      {/* No `iz-irail` here either — it was `--ir-a: 30%` / `--ir-b: 70%`,
+          two dotted verticals running down through the comparison table's
+          own column rules. A table is already a grid. */}
+      <section className="iz-section alt">
         <div className="iz-wrap">
           <div className="iz-reveal">
             <span className="iz-ey">The short version</span>

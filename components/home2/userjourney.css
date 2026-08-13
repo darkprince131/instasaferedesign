@@ -82,12 +82,23 @@
   background: var(--surface);
   box-shadow: var(--inset), 0 26px 60px -26px rgba(0, 0, 0, 0.55);
 }
+/* CIRCLE, not a rounded square (2026-08-13).
+
+   The asset in /public/people is a portrait with a CIRCULAR alpha mask
+   baked in — the corners of the PNG are transparent. Dropped into a
+   rounded-square plate that showed as four wedges of --surface-2 around
+   the head, which is the whitespace the user was seeing. Matching the
+   plate to the mask the image already carries removes it exactly, with
+   no re-crop and no scaling the face up to cover the corners.
+
+   If a full-bleed square portrait ever replaces the masked one, this
+   can go back to `--r-lg` and nothing else needs to change. */
 .uj-photo {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
   max-width: 200px;
-  border-radius: var(--r-lg);
+  border-radius: 50%;
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--surface-2);

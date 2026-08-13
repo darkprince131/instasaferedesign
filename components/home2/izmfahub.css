@@ -256,21 +256,17 @@
 }
 
 /* ============================================================
-   Category strip — ABOVE the stage, never pinned.
+   Category strip — below the stage, in normal flow.
 
-   This was `position: sticky; bottom: 0`: the strip detached and rode
-   the foot of the viewport for the length of the section, with the
-   stage scrolling behind it. It was solving a real problem — the
-   control sat under the thing it controlled — but a bar that follows
-   the reader down the page reads as site furniture, not as part of
-   the section, and it covered the stage on short viewports.
+   This carried `position: sticky; bottom: 0`: the strip detached and
+   rode the foot of the viewport for the length of the section, with
+   the stage scrolling behind it, and it covered the stage outright on
+   short viewports.
 
-   Removed on the user's call (2026-08-13). The component now renders
-   the strip BEFORE the caption and the stage, which fixes the original
-   complaint at the source: you choose, then you see what you chose,
-   in reading order. Nothing here needs to pin, so nothing does.
+   Only the PINNING was wrong (user call, 2026-08-13). The strip's
+   position in the section — last, under the stage — is what it has
+   always been and stays. It just scrolls with everything else now.
    ============================================================ */
 .izmfa .izmfa-groups {
-  margin-top: var(--sp-6);
-  margin-bottom: var(--sp-2);
+  margin-top: var(--sp-10);
 }

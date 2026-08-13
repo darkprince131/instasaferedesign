@@ -364,6 +364,28 @@
   .izf-seg-l { font-size: 13px; min-width: 0; }
 }
 
+/* ---- narrow phones (<=400px) ----
+   At 360px the two-up nodes are ~122px wide. Minus 16px padding either
+   side that leaves a 90px content box, and "Controller" — one word that
+   cannot wrap — needs 76px on top of the icon and gap, so the label
+   crossed the card's right border. `min-width: 0` on the node does not
+   help: the overflow is the FLEX CHILD, whose own min-width is `auto`.
+
+   Trimming the padding, the gap and the label a step each buys enough
+   room for the longest word to sit inside the border without ever
+   breaking mid-word, which is what `overflow-wrap: anywhere` would have
+   done ("Contro / ller" reads as a rendering fault). */
+@media (max-width: 400px) {
+  .izf-node {
+    padding: var(--sp-3);
+    gap: var(--sp-2);
+  }
+  .izf-node b {
+    font-size: var(--fs-sm);
+    min-width: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .izf-rail-fill,
   .izf-node,

@@ -302,20 +302,42 @@ export function IzMfaHub() {
           or duplicate the page's own outer rail. */}
       <Head />
 
-      {/* CONTROL FIRST (user call, 2026-08-13).
+      {/* All three captions and all three stage views are rendered and
+          stacked in one cell, with only the active one visible. The
+          block is therefore always as tall as its TALLEST member, so
+          switching tabs cannot change the section's height — which is
+          what was shunting the whole page every six seconds as autoplay
+          advanced. A min-height would have needed a magic number per
+          breakpoint; this needs none and can never drift out of date. */}
+      <div className="izmfa-cap">
+        {TABS.map((t, i) => (
+          <div className={i === tab ? "izmfa-capitem on" : "izmfa-capitem"} key={t.title} aria-hidden={i !== tab}>
+            <h3 className="izmfa-cap-h">{t.headline}</h3>
+            <div className="izmfa-cap-b">
+              {t.body.map((p, j) => (
+                <p key={j}>{p}</p>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
 
-          This strip used to be the last child and was pinned with
-          `position: sticky; bottom: 0` — the stage scrolled behind it and
-          it rode the foot of the viewport for the length of the section.
-          The reason was sound (the control sat below the thing it
-          controlled, so clicking a tab changed something off-screen) but
-          the cure was worse: a bar that detaches and follows you reads as
-          site furniture, not as part of the section.
+      <div className="fh-stage izmfa-stage-stack">
+        {VIEWS.map((V, i) => (
+          <div className={i === tab ? "izmfa-panel on" : "izmfa-panel"} key={TABS[i].title} aria-hidden={i !== tab}>
+            <V />
+          </div>
+        ))}
+      </div>
 
-          Moving it ABOVE the caption and the stage fixes the original
-          problem outright — control, then what it changes, in reading
-          order — and needs no pinning at all. Same arrangement as
-          IzVpnZtnaFlow's mode switch.
+      {/* The strip stays BELOW the stage, where it has always been
+          (user call, 2026-08-13 — it was briefly moved above, which was
+          the wrong reading of the complaint).
+
+          What was actually wrong was the PINNING: this carried
+          `position: sticky; bottom: 0`, so it detached and rode the foot
+          of the viewport for the length of the section with the stage
+          scrolling behind it. That is gone; the strip is in normal flow.
 
           `focus-within` pauses autoplay too, so a keyboard user tabbing
           the strip gets the same hold a hovering cursor does. */}
@@ -351,33 +373,6 @@ export function IzMfaHub() {
         ))}
       </div>
 
-      {/* All three captions and all three stage views are rendered and
-          stacked in one cell, with only the active one visible. The
-          block is therefore always as tall as its TALLEST member, so
-          switching tabs cannot change the section's height — which is
-          what was shunting the whole page every six seconds as autoplay
-          advanced. A min-height would have needed a magic number per
-          breakpoint; this needs none and can never drift out of date. */}
-      <div className="izmfa-cap">
-        {TABS.map((t, i) => (
-          <div className={i === tab ? "izmfa-capitem on" : "izmfa-capitem"} key={t.title} aria-hidden={i !== tab}>
-            <h3 className="izmfa-cap-h">{t.headline}</h3>
-            <div className="izmfa-cap-b">
-              {t.body.map((p, j) => (
-                <p key={j}>{p}</p>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="fh-stage izmfa-stage-stack">
-        {VIEWS.map((V, i) => (
-          <div className={i === tab ? "izmfa-panel on" : "izmfa-panel"} key={TABS[i].title} aria-hidden={i !== tab}>
-            <V />
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

@@ -22,6 +22,15 @@
 .izcta {
   --izcta-mod: clamp(84px, 8.5vw, 132px);
   position: relative;
+  /* z-index + an opaque ground so the PAGE rails (`.iz-rails`, the two
+     dotted verticals at the wrap gutters that run the full height of
+     `.iz`) stop at this block. This panel draws its own lattice, and
+     two grids crossing each other at different pitches read as a
+     rendering fault. `.iz-section` already gets this treatment in
+     izgrid.css §9a; the CTA is not an `.iz-section`, so it never did.
+     User call, 2026-08-13. */
+  z-index: 1;
+  background: var(--bg);
   isolation: isolate;
   overflow: hidden;
   padding: var(--sp-section-lg) 0;
