@@ -218,37 +218,3 @@
     transition: none;
   }
 }
-
-/* ============================================================
-   IzSplitPlane — the Outcomes visual. Everything is on --il-*
-   tokens, so one file serves both themes (see the illustration
-   README's rules for hand-recreated SVG).
-   ============================================================ */
-.izsp {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-.izsp text {
-  font-family: var(--mono);
-  fill: var(--il-chip);
-}
-.izsp .izsp-tag {
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  fill: var(--il-chip);
-}
-.izsp .izsp-lbl {
-  font-size: 10px;
-  fill: var(--il-ink);
-}
-.izsp .izsp-note {
-  font-size: 8.5px;
-  letter-spacing: 0.04em;
-  fill: var(--il-chip);
-}
-.izsp .izsp-accent {
-  font-size: 9px;
-  letter-spacing: 0.06em;
-  fill: var(--il-accent);
-}

@@ -24,6 +24,8 @@ const ANCHORS = [
   { id: "reason-numbers", label: "Numbers we publish", icon: ChartBar },
   { id: "reason-record", label: "Track record", icon: Certificate },
   { id: "reason-frameworks", label: "India and global", icon: Bank },
+  { id: "matrix", label: "Line by line", icon: ChartBar },
+  { id: "signature", label: "The architecture", icon: ArrowsSplit },
   { id: "compare", label: "VPN comparison", icon: ShieldCheck },
   { id: "faq", label: "FAQ", icon: Question },
 ];

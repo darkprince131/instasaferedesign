@@ -1,0 +1,121 @@
+/* ============================================================
+   whymatrix.css — the comparison matrix (storyboard 10.0).
+
+   Ledger grammar, same family as IzSpecTable: mono keys, hairline
+   rules, tabular values, no card chrome. Our column is the only one
+   that carries any fill, and it carries very little — a comparison
+   that shouts on its own column reads as a sales sheet.
+   ============================================================ */
+
+.whym { min-width: 0; }
+
+.whym-head { display: grid; gap: var(--sp-3); margin-bottom: var(--sp-8); }
+.whym-lead {
+  max-width: 62ch;
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+
+/* ---------- the table ---------- */
+.whym-scroll { min-width: 0; }
+
+.whym-t {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-body-sm);
+}
+
+.whym-t thead th {
+  padding: 0 var(--sp-4) var(--sp-4);
+  text-align: left;
+  vertical-align: bottom;
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  border-bottom: 1px solid var(--line-strong);
+}
+.whym-t thead th.is-ours { color: var(--accent); }
+.whym-crit-h { color: var(--tx-mute); }
+
+.whym-t tbody th {
+  padding: var(--sp-4) var(--sp-4) var(--sp-4) 0;
+  text-align: left;
+  font-weight: 500;
+  color: var(--tx);
+  border-bottom: 1px solid var(--line);
+}
+.whym-t tbody td {
+  padding: var(--sp-4);
+  color: var(--tx-dim);
+  border-bottom: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+/* our column: a tint so faint it reads as emphasis rather than a
+   highlighted sales column, plus the value in full-strength ink */
+.whym-t tbody td.is-ours {
+  color: var(--tx);
+  font-weight: 500;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.whym-t thead th.is-ours { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+
+/* the architectural marker — the same ▸ IzSpecTable's versus variant
+   uses, so the two blocks teach one vocabulary */
+.whym-mark {
+  margin-right: var(--sp-2);
+  font-style: normal;
+  color: var(--accent);
+}
+
+.whym-foot {
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+.whym-foot b { color: var(--accent); }
+
+/* ---------- column picker: phone only ---------- */
+.whym-pick { display: none; }
+
+@media (max-width: 860px) {
+  /* Four columns do not fit, and a scrolling table loses the criterion
+     column — a value with no visible label says nothing. So the reader
+     picks ONE comparison column and it sits beside ours. */
+  .whym-pick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-5);
+  }
+  .whym-pick-b {
+    padding: var(--sp-2) var(--sp-4);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    background: transparent;
+    font-family: var(--mono);
+    font-size: var(--fs-mono-xs);
+    letter-spacing: var(--ls-mono);
+    color: var(--tx-dim);
+    cursor: pointer;
+  }
+  .whym-pick-b.on {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .whym-pick-b:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .whym-t th[data-col]:not([data-active]),
+  .whym-t td[data-col]:not([data-active]) { display: none; }
+
+  .whym-t { font-size: var(--fs-sm); }
+  .whym-t thead th,
+  .whym-t tbody th,
+  .whym-t tbody td { padding-inline: var(--sp-3); }
+  .whym-t tbody th { padding-left: 0; }
+}

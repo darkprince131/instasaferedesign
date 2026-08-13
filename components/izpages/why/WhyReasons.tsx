@@ -12,8 +12,10 @@ import {
 import { LogoMark } from "@/components/brand/Logo";
 import { ConvergeFlow } from "@/components/home2/ConvergeFlow";
 import { IzDevBand } from "@/components/home2/IzDevBand";
-import { WallOfLove } from "@/components/home2/WallOfLove";
-import { IzLogoGrid } from "@/components/izpages/pro/IzLogoGrid";
+import { IzQuietBand } from "@/components/home2/IzQuestionBand";
+import { IzStatRibbon } from "@/components/home2/IzStatRibbon";
+import { IzSplitPlane } from "@/components/izpages/pro/IzSplitPlane";
+import { WhyMatrix } from "./WhyMatrix";
 import {
   CLUSTERS,
   GLOBAL_FRAMEWORKS,
@@ -254,28 +256,21 @@ function ReasonRecord() {
         ))}
       </ol>
 
-      {/* 00ap IzLogoGrid REPLACES the marquee that closed this reason.
-          Both are logo displays, so running them together would have
-          been the same proof twice; the grid is the stronger of the two
-          because its gaps stop it reading as a logo wall, and one cell
-          is a copy strip set into the lattice rather than a mark. */}
-      <div className="whyr-embed">
-        <IzLogoGrid
-          kicker="Where that has landed"
-          title={["The estates that", "run on it."]}
-          sub="Banks, insurers, manufacturers and IT services — the organisations whose access decisions are audited hardest. The architecture arguments above are what they bought."
-          cta={{ label: "Read the case studies", href: "/case-studies" }}
-        />
-      </div>
+      {/* The 00ap IzLogoGrid and the WallOfLove dock that closed this
+          reason are both removed (user call, 2026-08-13).
 
-      {/* …and the quotes, which the timeline and the lattice cannot give:
-          the people who ran the migration, in their own words. A third
-          visual language for one reason is deliberate — the section is
-          making a record argument, and a record is dates, logos AND
-          testimony. */}
-      <div className="whyr-embed">
-        <WallOfLove />
-      </div>
+          IzLogoGrid is the INTEGRATIONS component — its lattice holds
+          identity providers, clouds and SaaS, not customers. Retitled
+          "the estates that run on it" it claimed customers while
+          showing the tools we plug into, which is a different sentence
+          entirely and not one the logos support.
+
+          WallOfLove is docked pending the customer-consent question:
+          InstaSafe names no customers today, so the component stays
+          built and gated (see its own header) rather than mounted.
+
+          What remains is the timeline — a record argument made in
+          dates, which is the part we can make unaided. */}
     </section>
   );
 }
@@ -348,9 +343,64 @@ export function WhyReasons() {
     <div className="whyr">
       <div className="iz-wrap whyr-body">
         <ReasonPath />
+      </div>
+
+      {/* Storyboard 5.0 — the interstitial between reasons 1 and 2. It
+          states the claim reason 2 then spends its whole grid proving,
+          which is the only job an interstitial has. Full-bleed, so it
+          sits outside the wrap. */}
+      <IzQuietBand
+        kicker="What that buys you"
+        statement="A vendor breach"
+        emphasis="is not"
+        tail="your breach."
+      />
+
+      <div className="iz-wrap whyr-body">
         <ReasonNumbers />
+      </div>
+
+      {/* Storyboard 8.0 — the data ribbon. The storyboard specifies
+          FilterStream; IzStatRibbon is the standard treatment for this
+          slot site-wide (see its own header). Same three numbers the
+          storyboard asks for. */}
+      <IzStatRibbon
+        items={[
+          { value: "144", label: "named policy rules" },
+          { value: "25", label: "device check types" },
+          { value: "202", label: "event log types" },
+        ]}
+      />
+
+      <div className="iz-wrap whyr-body">
         <ReasonRecord />
         <ReasonFrameworks />
+
+        {/* Storyboard 10.0 — the comparison matrix. */}
+        <section className="whyr-sec" id="matrix">
+          <WhyMatrix />
+        </section>
+
+        {/* Storyboard 11.0 — the signature. IzSplitPlane was built for
+            the platform outcomes block and never mounted anywhere; it
+            draws exactly the claim this page is named for, so it lands
+            here rather than being redrawn. Static by design: the
+            storyboard asks for a static SVG and the argument does not
+            need motion to land. */}
+        <section className="whyr-sec whyr-sig" id="signature">
+          <div className="whyr-head">
+            <span className="iz-ey">The architecture</span>
+            <h2>
+              The claim no competitor <em>can copy.</em>
+            </h2>
+          </div>
+          <p className="whyr-lead">
+            Decisions come from us. Traffic never does. Everything above is a consequence of this one drawing.
+          </p>
+          <div className="whyr-sig-art">
+            <IzSplitPlane />
+          </div>
+        </section>
       </div>
     </div>
   );
