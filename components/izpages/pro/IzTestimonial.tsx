@@ -33,7 +33,7 @@ export function IzTestimonial({
   strip = {
     text: "See how the group retired its VPN one application at a time.",
     label: "Read the case study",
-    href: "/resources",
+    href: "/resource-center",
   },
 }: {
   customer?: string;

@@ -162,7 +162,7 @@ const RESOURCE_TABS: IzTabSwitchTab[] = [
       kicker: "Case study:",
       title: "Retiring a VPN across 40 sites without a maintenance window",
       body: "A manufacturer moved 2,400 people off an always-on tunnel one application at a time. Nobody filed a ticket, and the quarterly access review went from a fortnight to an afternoon.",
-      href: "/resources",
+      href: "/resource-center",
     },
     story: { tone: "a", author: { name: "Priya Menon", role: "Head of Infrastructure" } },
   },
@@ -174,7 +174,7 @@ const RESOURCE_TABS: IzTabSwitchTab[] = [
       kicker: "Tutorial:",
       title: "Publish your first application in ten minutes",
       body: "Install a connector, point it at an app, and write one policy. No inbound port, no DMZ, no change to how the application authenticates its own users.",
-      href: "/docs/deploy",
+      href: "/platform",
     },
     story: { tone: "b", author: { name: "Arjun Rao", role: "Solutions Engineer" } },
   },
@@ -186,7 +186,7 @@ const RESOURCE_TABS: IzTabSwitchTab[] = [
       kicker: "Guide:",
       title: "Contractor and third-party access, without standing privilege",
       body: "Vendors need one application for one window, and an auditor needs to see exactly that six months later. This guide covers scoping, approval and expiry.",
-      href: "/resources",
+      href: "/resource-center",
     },
     story: { tone: "c", author: { name: "Evelyn Chea", role: "Head of Content" } },
   },
@@ -274,11 +274,11 @@ export function IzTabSwitch({
         Engineering and IT teams read the same signals we enforce on — every decision is an API call you can replay.
       </p>
       <span className="izts-ctas">
-        <a className="izts-btn izts-btn--primary" href="/docs">
+        <a className="izts-btn izts-btn--primary" href="/resource-center">
           Documentation
           <ArrowUpRight weight="bold" aria-hidden="true" />
         </a>
-        <a className="izts-btn" href="/contact">
+        <a className="izts-btn" href="/contact-us">
           Request API key
         </a>
       </span>

@@ -232,14 +232,14 @@ const SECTIONS: AcaSec[] = [
     id: "audit",
     label: "Visibility & Audit",
     desc:  "Every session logged and searchable. Investigate from user to event to session replay in seconds.",
-    href:  "/zero-trust-features/session-recording",
+    href:  "/solutions/privileged-access-management",
     Left: AuditLeft, Right: AuditRight,
   },
   {
     id: "policy",
     label: "Smart Access Rules",
     desc:  "Rules that adapt to identity, device health, geo, time and live risk score — no VPN admin needed.",
-    href:  "/zero-trust-features/access-policies",
+    href:  "/platform/contextual-access",
     Left: PolicyLeft, Right: PolicyRight,
   },
   {

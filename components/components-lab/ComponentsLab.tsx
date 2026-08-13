@@ -1429,7 +1429,7 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
                   </>
                 }
                 sub="Access is pinned to enrolled hardware and re-checked on every request, so stolen credentials stop at the door."
-                primary={{ label: "Talk to sales", href: "/contact" }}
+                primary={{ label: "Talk to sales", href: "/contact-us" }}
                 visual={illustrationCity}
               />
             </Spec>
@@ -1443,8 +1443,8 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
                   </>
                 }
                 sub="Office, home, contractor laptop, unmanaged phone. Same rules, same audit trail, one place to change them."
-                primary={{ label: "Start free trial", href: "/free-trial" }}
-                secondary={{ label: "Read the docs", href: "/docs" }}
+                primary={{ label: "Start free trial", href: "/book-a-demo" }}
+                secondary={{ label: "Read the docs", href: "/resource-center" }}
               />
             </Spec>
 

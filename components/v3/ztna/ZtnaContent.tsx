@@ -186,7 +186,7 @@ export function ZtnaContent() {
               ))}
             </div>
             <Reveal delay={0.1}>
-              <a href="/compare/vpn" className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-blue-light)]">
+              <a href="/zero-trust-vs-vpn" className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-blue-light)]">
                 See the full Zero Trust vs VPN comparison
                 <ArrowRight weight="bold" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>

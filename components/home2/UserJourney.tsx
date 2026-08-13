@@ -126,7 +126,7 @@ export function UserJourney() {
           <Card label="Last session" icon={VideoCamera}>
             <div className="uj-line">
               Recording{" "}
-              <LinkPreview href="/zero-trust-features/session-recording" preview={recPreview}>
+              <LinkPreview href="/solutions/privileged-access-management" preview={recPreview}>
                 session-2f9a
               </LinkPreview>
             </div>

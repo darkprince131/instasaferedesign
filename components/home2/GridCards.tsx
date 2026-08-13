@@ -232,7 +232,7 @@ const TEXT_GRID: GridCardProps[] = [
 const MEDIA_GRID: GridCardProps[] = [
   { variant: "media-top", tag: "<AccessConsole/>", desc: "Every request allowed or denied per app — exposed ports zero.", href: "/zero-trust-network-access", media: { kind: "node", node: <AccessConsole /> } },
   { variant: "media-top-cta", title: "Score risk live", desc: "Continuous risk scoring on every session — swap this animated SVG slot for your own.", cta: { label: "Book a demo", href: "/instasafe-zero-trust-pricing" }, media: { kind: "node", node: <ThreatPulse /> } },
-  { variant: "media-top", title: "Recorded sessions", desc: "Privileged sessions recorded and replayable — RDP, SSH, VNC, DB.", href: "/zero-trust-features/session-recording", media: { kind: "node", node: <SessionReplay /> } },
+  { variant: "media-top", title: "Recorded sessions", desc: "Privileged sessions recorded and replayable — RDP, SSH, VNC, DB.", href: "/solutions/privileged-access-management", media: { kind: "node", node: <SessionReplay /> } },
 ];
 
 /* Grid of 2 — the wide animated graphics (isometric deck + detailed-filters marquee). */

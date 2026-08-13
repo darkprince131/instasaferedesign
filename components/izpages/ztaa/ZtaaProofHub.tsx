@@ -3,14 +3,12 @@
 import {
   ArrowSquareOut,
   ChartBar,
-  CheckCircle,
   Clock,
   Cursor,
   DownloadSimple,
   FileText,
   Fingerprint,
   Play,
-  Question,
   ShareNetwork,
   ShieldCheck,
   SignIn,
@@ -21,19 +19,17 @@ import {
 } from "@phosphor-icons/react";
 
 import { FeatureHub, type FeatureHubTab } from "@/components/home2/FeatureHub";
-import { IzTabSwitch, type IzTabSwitchTab } from "@/components/izpages/pro/IzTabSwitch";
 
 /* ============================================================
    ZtaaProofHub — the "prove everything" section, on 00i FeatureHub.
 
-   Four tabs, one per claim the section makes: the events, the reports,
-   the exports, and — because a record nobody can interrogate is not
-   evidence — the questions you can put to it.
+   Three tabs, one per claim the section makes: the events, the reports
+   and the exports.
 
-   ▸ ALL FOUR VIEWS SHARE A GRAMMAR ◂
+   ▸ ALL THREE VIEWS SHARE A GRAMMAR ◂
    Left rail names and counts the set; right pane shows one member of
-   it working. Keep that if a fifth is added: four unrelated dashboards
-   would be four screenshots in a tab strip, not one section.
+   it working. Keep that if a fourth is added: unrelated dashboards
+   would be screenshots in a tab strip, not one section.
 
    ▸ LOGOS ◂
    Real marks only, from /public/logos/integrations. Splunk, Elastic,
@@ -61,12 +57,6 @@ const TABS: FeatureHubTab[] = [
     title: "7 SIEM export formats",
     desc: "Feed Splunk-class tooling in the shape it already reads.",
     href: "/platform",
-  },
-  {
-    icon: Question,
-    title: "Answer the question",
-    desc: "The record only counts if it settles an argument. Put an auditor's question to it.",
-    href: "/platform/trust-engine",
   },
 ];
 
@@ -344,113 +334,6 @@ function ExportsView() {
   );
 }
 
-/* ============================================================
-   4 · answer the question — 00ao IzTabSwitch
-
-   The other three tabs show the record being produced. None of them
-   shows it being USED, and an audit trail nobody can interrogate is
-   storage, not evidence. Each tab here is a question an auditor
-   actually asks, with the query and the answer as its two outcomes.
-
-   Sanitised demo payloads, same convention as the other consoles.
-   ============================================================ */
-
-const AUDIT_TABS: IzTabSwitchTab[] = [
-  {
-    id: "who",
-    label: "Who reached it",
-    Icon: Fingerprint,
-    json: {
-      outcomes: ["The question", "The answer"],
-      payloads: [
-        `{
-  "ask": "who opened erp-core in Q3",
-  "scope": "2026-07-01 .. 2026-09-30",
-  "app": "erp-core"
-}`,
-        `{
-  "sessions": 412,
-  "principals": 27,
-  "outside_entitlement": 0,
-  "every_session": {
-    "identity": "verified",
-    "device": "bound + posture checked",
-    "recorded": true
-  },
-  "export": "cef"
-}`,
-      ],
-    },
-  },
-  {
-    id: "did",
-    label: "What they did",
-    Icon: Cursor,
-    json: {
-      outcomes: ["The question", "The answer"],
-      payloads: [
-        `{
-  "ask": "what happened inside session sx_9F2ke6",
-  "principal": "contractor.42"
-}`,
-        `{
-  "opened": "10:23:58",
-  "actions": ["view", "edit", "download"],
-  "download": {
-    "file": "Q4_report.xlsx",
-    "policy": "allowed_in_session",
-    "logged": true
-  },
-  "recording": "session-2f9a.mp4",
-  "closed": "10:41:02"
-}`,
-      ],
-    },
-  },
-  {
-    id: "prove",
-    label: "Prove it was them",
-    Icon: CheckCircle,
-    json: {
-      outcomes: ["The question", "The answer"],
-      payloads: [
-        `{
-  "ask": "could anyone else have used this session",
-  "session": "sx_9F2ke6"
-}`,
-        `{
-  "device_certificate": "matched at every check",
-  "revalidated_mid_session": 14,
-  "watermark": "principal + ip + minute",
-  "shared_credential_possible": false,
-  "network_reachable_by_principal": false
-}`,
-      ],
-    },
-  },
-];
-
-function AuditView() {
-  return (
-    <div className="zph zph--audit">
-      <IzTabSwitch
-        tabs={AUDIT_TABS}
-        initial={0}
-        head={
-          <>
-            <h2 className="izts-title">
-              Put a question to <mark>the record</mark>
-            </h2>
-            <p className="izts-sub">
-              202 event types are only worth the questions they settle. Pick one an auditor actually asks.
-            </p>
-          </>
-        }
-      />
-    </div>
-  );
-}
-
 export function ZtaaProofHub() {
   return (
     <FeatureHub
@@ -462,7 +345,7 @@ export function ZtaaProofHub() {
       }
       lead="Logs, reports and exports — built in. No add-ons. No gaps."
       tabs={TABS}
-      views={[<EventsView key="e" />, <ReportsView key="r" />, <ExportsView key="x" />, <AuditView key="a" />]}
+      views={[<EventsView key="e" />, <ReportsView key="r" />, <ExportsView key="x" />]}
       initial={0}
     />
   );

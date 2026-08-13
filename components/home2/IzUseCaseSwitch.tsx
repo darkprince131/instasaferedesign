@@ -203,7 +203,7 @@ export function IzUseCaseSwitch({
     </>
   ),
   sub = "One gate in front of every application. Less friction for the people who belong. No route at all for anyone who doesn't.",
-  cta = { label: "See all use cases", href: "/use-cases" },
+  cta = { label: "See all use cases", href: "/solutions" },
 }: {
   cases?: IzUseCase[];
   kicker?: string;

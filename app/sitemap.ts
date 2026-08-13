@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { PAGES } from "@/lib/site";
+import { REDIRECT_SOURCES } from "@/lib/redirects";
 
 const SITE_URL = "https://www.instasafe.com";
 
@@ -44,7 +45,11 @@ const PRIORITY: Record<string, number> = {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const seen = new Set<string>(["/"]);
+  /* Seeded with the redirect sources as well as "/", so a path that
+     answers 308 can never be published as a canonical URL. The page
+     registry still carries the old /platform/* paths on purpose — they
+     are what the redirects are FROM. */
+  const seen = new Set<string>(["/", ...REDIRECT_SOURCES]);
 
   const rows: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },

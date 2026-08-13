@@ -28,10 +28,10 @@ type Link = { label: string; href: string; Icon: Icon };
 type Stat = { value: string; label: string; Icon?: Icon };
 
 const LINKS: Link[] = [
-  { label: "Deployment guide", href: "/docs/deploy", Icon: BookOpen },
-  { label: "Policy reference", href: "/docs/policy", Icon: Code },
-  { label: "Request API key", href: "/contact", Icon: Key },
-  { label: "CLI & automation", href: "/docs/cli", Icon: Terminal },
+  { label: "Deployment guide", href: "/platform", Icon: BookOpen },
+  { label: "Policy reference", href: "/platform/trust-engine", Icon: Code },
+  { label: "Request API key", href: "/contact-us", Icon: Key },
+  { label: "CLI & automation", href: "/platform", Icon: Terminal },
 ];
 
 const STATS: Stat[] = [

@@ -1,14 +1,14 @@
 import type { NextConfig } from "next";
 
+import { REDIRECTS } from "./lib/redirects";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async redirects() {
-    return [
-      // Old build paths → canonical sitemap URLs (SEO-locked).
-      { source: "/platform/ztna", destination: "/zero-trust-network-access", permanent: true },
-      { source: "/platform/sso", destination: "/zero-trust-features/single-sign-on", permanent: true },
-      { source: "/features/device-binding", destination: "/zero-trust-features/device-binding", permanent: true },
-    ];
+    /* Declared in lib/redirects.ts so app/sitemap.ts can exclude the same
+       sources. Listing a redirect in the sitemap publishes a 308 as if it
+       were a canonical page. */
+    return REDIRECTS;
   },
 };
 
