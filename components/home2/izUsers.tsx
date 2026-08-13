@@ -138,7 +138,7 @@ export const IZ_USERS: IzUser[] = [
       { logo: "miro", name: "Miro", kind: "SAML" },
       { logo: "notion", name: "Notion", kind: "OIDC" },
       { logo: "dropbox", name: "Dropbox", kind: "SAML" },
-      { logo: "google-workspace", name: "Google Workspace", kind: "SAML" },
+      { logo: "google", name: "Google Workspace", kind: "SAML" },
       { logo: "workday", name: "Workday", kind: "SAML" },
     ],
     netApps: [{ name: "asset-store", kind: "SMB · 445" }],

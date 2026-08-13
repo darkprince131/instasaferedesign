@@ -32,11 +32,15 @@ import { FeatureHub, type FeatureHubTab } from "@/components/home2/FeatureHub";
    would be screenshots in a tab strip, not one section.
 
    ▸ LOGOS ◂
-   Real marks only, from /public/logos/integrations. Splunk, Elastic,
-   ArcSight and Jira are not in that folder, so those rows carry a
-   typed placeholder — an approximated Splunk mark misrepresents a
-   third party's brand, and is worse than no mark. Drop the real SVG in
-   and set `logo` on the row; nothing else changes.
+   Real marks only, from /public/logos/integrations — Splunk, Elastic,
+   ArcSight and Syslog are supplied now. CEF, LEEF and NDJSON keep the
+   typed abbreviation permanently: they are wire formats, not products,
+   so there is no vendor mark to hold and none is coming.
+
+   The marks are dark-ink artwork, so on the dark theme they sit on a
+   light plate rather than being recoloured — see ztaaproof.css. That
+   also matches the reference, where each export row carries a light
+   tile.
    ============================================================ */
 
 const TABS: FeatureHubTab[] = [
@@ -148,7 +152,7 @@ const REPORT_KINDS = ["Overview", "Access", "Devices", "Users", "Authentication"
 
 /* Real marks only — see the logo note in the header. */
 const TOP_APPS = [
-  { name: "Google Workspace", logo: "google-workspace", pct: 92, n: "18.4K" },
+  { name: "Google Workspace", logo: "google", pct: 92, n: "18.4K" },
   { name: "AWS Console", logo: "aws", pct: 68, n: "12.1K" },
   { name: "GitHub", logo: "github", pct: 44, n: "7.6K" },
   { name: "Microsoft 365", logo: "microsoft-365", pct: 33, n: "5.2K" },
@@ -246,13 +250,17 @@ const EXPORT_SOURCES: { label: string; Icon: Icon; tone: string }[] = [
   { label: "In-session action", Icon: Cursor, tone: "mute" },
 ];
 
+/* Four of these now have real marks. CEF, LEEF and NDJSON are wire
+   FORMATS rather than products — there is no vendor logo to hold, so
+   they keep the typed abbreviation permanently rather than waiting on
+   an asset that does not exist. */
 const EXPORT_TARGETS: { name: string; ext: string; logo: string | null; abbr: string }[] = [
-  { name: "Splunk", ext: ".json", logo: null, abbr: "SPL" },
-  { name: "Elastic Common Schema", ext: ".ecs", logo: null, abbr: "ECS" },
+  { name: "Splunk", ext: ".json", logo: "splunk", abbr: "SPL" },
+  { name: "Elastic Common Schema", ext: ".ecs", logo: "elastic", abbr: "ECS" },
   { name: "CEF", ext: ".cef", logo: null, abbr: "CEF" },
   { name: "LEEF", ext: ".leef", logo: null, abbr: "LEEF" },
-  { name: "ArcSight", ext: ".arc", logo: null, abbr: "ARC" },
-  { name: "Syslog", ext: ".log", logo: null, abbr: "SYS" },
+  { name: "ArcSight", ext: ".arc", logo: "arcsight", abbr: "ARC" },
+  { name: "Syslog", ext: ".log", logo: "syslog", abbr: "SYS" },
   { name: "NDJSON", ext: ".ndjson", logo: null, abbr: "NDJ" },
 ];
 

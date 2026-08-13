@@ -221,7 +221,14 @@
 .zph-targets { display: grid; gap: var(--sp-2); min-width: 0; }
 .zph-target {
   display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) auto;
+  /* 52px, not 26px. Four of these are WORDMARKS — Splunk 3.4:1, Syslog
+     3.9:1, Elastic 2.9:1 — and object-fit: contain letterboxes inside
+     whichever axis binds first. In a square 26px slot they rendered
+     about 18x5px: legible as pixels, useless as logos, and the same
+     defect the Google Workspace wordmark had elsewhere on the site. A
+     wide slot lets the wordmarks fill it while ArcSight, which is 1:1,
+     is capped by height instead. */
+  grid-template-columns: 52px minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--sp-3);
   padding: var(--sp-2) var(--sp-3);
@@ -231,7 +238,23 @@
   min-width: 0;
 }
 .zph-target-ic { display: grid; place-items: center; }
-.zph-target-ic img { width: 18px; height: 18px; object-fit: contain; display: block; }
+/* both axes capped: width for the wordmarks, height for the square
+   marks, so neither ends up three times the optical weight of the other */
+/* 24px, not 17px. The wordmarks are WIDTH-bound in a 52px slot, so they
+   cannot grow past ~15px tall whatever this says; raising it only lets
+   the one square mark (ArcSight, 1:1) fill the slot properly. At 17px it
+   carried a third of the wordmarks' optical area. */
+.zph-target-ic img { max-width: 100%; max-height: 24px; width: auto; height: auto; object-fit: contain; display: block; }
+/* The supplied artwork is dark ink. On the dark theme it sits on a light
+   plate rather than being recoloured — a filter would wreck Elastic and
+   Syslog, which are multi-colour. This also matches the reference, where
+   every export row carries a light tile. */
+.iz[data-theme="dark"] .zph-target-ic img {
+  padding: 3px 5px;
+  border-radius: var(--r-2xs);
+  background: color-mix(in srgb, #fff 92%, transparent);
+  box-sizing: content-box;
+}
 /* the typed placeholder that stands in for a mark we do not hold */
 .zph-target-ic b {
   font-family: var(--mono);

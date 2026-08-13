@@ -48,7 +48,7 @@ const CHECKS: Check[] = [
 type App = { name: string; logo?: string; Icon?: Icon };
 const APPS: App[] = [
   { name: "AWS Console", logo: "aws" },
-  { name: "Google Workspace", logo: "google-workspace" },
+  { name: "Google Workspace", logo: "google" },
   { name: "GitHub", logo: "github" },
   { name: "Salesforce", logo: "salesforce" },
   { name: "Slack", logo: "slack" },

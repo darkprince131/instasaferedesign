@@ -83,7 +83,7 @@ const RPT_ROWS = [
   { logo: "azure", what: "VM updated", n: "4" },
   { logo: "salesforce", what: "Opportunity", n: "9" },
   { logo: "sap", what: "Report run", n: "3" },
-  { logo: "google-workspace", what: "Doc opened", n: "27" },
+  { logo: "google", what: "Doc opened", n: "27" },
 ];
 const RPT_ROW_Y = [164, 208, 252, 296, 340];
 

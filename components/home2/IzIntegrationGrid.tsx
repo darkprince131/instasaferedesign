@@ -35,7 +35,12 @@ export type Integration = {
 const INTEGRATIONS: Integration[] = [
   // Productivity & Collaboration
   { name: "Microsoft 365", group: "Productivity & Collaboration", logo: "microsoft-365" },
-  { name: "Google Workspace", group: "Productivity & Collaboration", logo: "google-workspace" },
+  /* The Google mark, not the Workspace wordmark. This grid caps logos at
+     21px (.izig-logo img), and google-workspace.svg is 3993x512 — 7.8:1 —
+     so it rendered 21x2.7px: a hairline, not a logo. The name sits beside
+     it, so the square mark identifies the product. The wordmark is kept
+     where it has the room: IzLogoGrid, where it measures 201x26. */
+  { name: "Google Workspace", group: "Productivity & Collaboration", logo: "google" },
   { name: "Slack", group: "Productivity & Collaboration", logo: "slack" },
   { name: "Microsoft Teams", group: "Productivity & Collaboration", logo: "microsoft-teams" },
   { name: "Zoom", group: "Productivity & Collaboration", logo: "zoom" },

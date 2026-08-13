@@ -182,7 +182,7 @@ export const SLIDES: Slide[] = [
           { logo: "salesforce", name: "Salesforce" },
           { logo: "workday", name: "Workday" },
           { logo: "github", name: "GitHub" },
-          { logo: "google-workspace", name: "Google Workspace" },
+          { logo: "google", name: "Google Workspace" },
           { logo: "zoom", name: "Zoom" },
         ],
       },
@@ -196,7 +196,7 @@ export const SLIDES: Slide[] = [
       { logo: "active-directory.svg", name: "Active Directory" },
       { logo: "openldap.webp", name: "OpenLDAP" },
       { logo: "azure.svg", name: "Azure AD" },
-      { logo: "google-workspace.svg", name: "Google Workspace" },
+      { logo: "google.svg", name: "Google Workspace" },
       { logo: "microsoft-365.svg", name: "Microsoft 365" },
     ],
     floats: [
