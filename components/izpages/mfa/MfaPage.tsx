@@ -14,6 +14,7 @@ import { MfaEngine } from "@/components/izoutcomes/artifacts/MfaEngine";
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { MfaMethods } from "./MfaMethods";
 import { MfaSaasConsole, MfaDesktopLogin } from "./MfaApplies";
+import { MfaNetworkHub } from "./MfaNetworkHub";
 import { ConsoleRow } from "@/components/home2/ConsoleRow";
 import { MfaSimulator } from "@/components/v3/MfaSimulator";
 import { Magnetic } from "@/components/v2/Magnetic";
@@ -241,6 +242,33 @@ export function MfaPage() {
               ctaHref="/zero-trust-features/always-on"
             >
               <MfaDesktopLogin />
+            </ConsoleRow>
+
+            {/* Third surface, and the one the hero has been promising
+                since "web apps, desktops, servers and network
+                equipment". Not reversed: the rows now read
+                console-right, screen-left, diagram-right, so no two
+                adjacent rows put their visual on the same side. */}
+            <ConsoleRow
+              eyebrow="Network equipment"
+              title={
+                <>
+                  The switch console asks <em>the same question</em>.
+                </>
+              }
+              body={[
+                "Routers, switches, firewalls and VPN concentrators do not hold their own MFA — they ask something else. InstaSafe answers on RADIUS and TACACS+, which is the language that gear has spoken for thirty years.",
+                "So the engineer who opens a privileged CLI at 2am gets the same challenge as the person opening a SaaS app at 10am, and the same line in the same log.",
+              ]}
+              facts={[
+                ["Protocols", "RADIUS · TACACS+"],
+                ["Reaches", "Router · switch · firewall · VPN"],
+                ["Granularity", "Per-command authorisation on TACACS+"],
+              ]}
+              ctaLabel="Talk to us about your estate"
+              ctaHref="/book-a-demo"
+            >
+              <MfaNetworkHub />
             </ConsoleRow>
           </div>
         </div>

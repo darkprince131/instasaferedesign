@@ -1,0 +1,259 @@
+/* ============================================================
+   mfanetworkhub.css — four devices, one hub, one ground plane.
+
+   ▸ THE RENDERS ARE NEVER TRANSFORMED ◂
+   No rotate, no scaleX(-1), no skew anywhere in this file. Each of
+   the four is a baked render with a baked contact shadow and printed
+   lettering on its plinth; rotating tips the shadow off the floor,
+   and mirroring reverses both the lighting and the words ROUTER,
+   SWITCH and VPN. Layout works around the images, not on them.
+
+   ▸ THE SPOKE LAYER IS 1:1 WITH THE BOX ◂
+   Its viewBox is the box's measured pixel size, so one SVG unit is
+   one pixel and a hairline is the same weight whichever way it runs.
+   Every spoke carries pathLength="100", which is what lets a single
+   dash animation travel all four at the same speed even though the
+   diagonals are not the same length.
+   ============================================================ */
+
+.mfnh {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4) 22%;
+  padding: var(--sp-2) 0 var(--sp-4);
+  min-width: 0;
+  isolation: isolate;
+}
+
+/* ---------- the spokes ---------- */
+.mfnh-wires {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.mfnh-wire {
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+  /* in pathLength units: 40 dashes across every spoke, whatever its
+     real length, so the four read as one material */
+  stroke-dasharray: 1.4 1.4;
+}
+/* the request travelling in — a short lit segment sliding along the
+   same path, so it cannot drift off the wire it belongs to */
+.mfnh-pulse {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 7 100;
+  stroke-dashoffset: 0;
+  opacity: 0;
+}
+.mfnh.is-live .mfnh-pulse {
+  opacity: 1;
+  animation: mfnh-run 5.2s linear infinite;
+  animation-delay: calc(var(--i) * 1.3s);
+}
+/* device → hub. The direction is the argument: network gear does not
+   hold its own MFA, it asks. */
+@keyframes mfnh-run {
+  0% { stroke-dashoffset: 0; opacity: 0; }
+  6% { opacity: 1; }
+  24% { stroke-dashoffset: -100; opacity: 1; }
+  30%, 100% { stroke-dashoffset: -107; opacity: 0; }
+}
+
+/* ---------- a device ---------- */
+.mfnh-dev {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+.mfnh-dev.at-nw { grid-area: 1 / 1; }
+.mfnh-dev.at-ne { grid-area: 1 / 2; }
+.mfnh-dev.at-sw { grid-area: 2 / 1; }
+.mfnh-dev.at-se { grid-area: 2 / 2; }
+
+.mfnh-dev img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  display: block;
+  /* the renders carry their own contact shadow; this only deepens it
+     enough to survive the darker page theme */
+  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.16));
+}
+
+.mfnh-dev figcaption {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  text-align: center;
+  min-width: 0;
+}
+.mfnh-dev figcaption b {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.mfnh-proto {
+  padding: 1px 8px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-mono);
+}
+.mfnh-dev figcaption em {
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  color: var(--tx-dim);
+}
+
+/* ---------- the hub ----------
+   Drawn in the pedestals' own idiom rather than as a diagram node: a
+   white slab, a soft contact shadow, a small label plate. It has to
+   look like a fifth object standing on the same floor as the other
+   four, not like a sticker over a photograph. */
+.mfnh-hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  width: min(178px, 21%);
+  pointer-events: none;
+}
+/* ▸ WHY THIS IS A SHADOW AND NOT A SLAB ▸
+   The first attempt drew the hub a white pedestal to match the four
+   renders. It failed twice over: white-on-paper made it invisible,
+   and — worse — a flat front-facing rounded rectangle is the wrong
+   projection. The four pedestals are seen in three-quarter view from
+   the lower left; a CSS box cannot be, so it read as a sticker lying
+   on top of the picture rather than an object inside it.
+
+   A contact shadow has no projection to get wrong. It is the one
+   cue that puts an object on a floor without claiming a shape, so
+   the hub is a puck with a shadow under it rather than a fake slab. */
+.mfnh-plinth {
+  position: absolute;
+  left: 50%;
+  top: 46px;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 15px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.26), rgb(0 0 0 / 0.10) 62%, transparent 100%);
+  filter: blur(2px);
+  z-index: -1;
+}
+
+/* Lit from the upper left, like all four renders. The gradient is
+   what stops it reading as a flat disc next to four shaded objects. */
+.mfnh-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(120% 120% at 32% 22%, #ffffff 0%, #f4f2f0 52%, #e2dedb 100%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 40%, var(--line)),
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 14px 22px -14px rgb(0 0 0 / 0.45);
+}
+/* The mark inside is pinned to the light variant in the component —
+   a filter cannot fix it, because LogoMark swaps the asset rather
+   than recolouring one. */
+/* the answer going back out — one ring, on the same 5.2s clock as the
+   spokes so the reply always follows an arrival */
+.mfnh-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  opacity: 0;
+  transform: scale(0.7);
+}
+.mfnh.is-live .mfnh-ring { animation: mfnh-ping 1.3s var(--ease-out) infinite; }
+@keyframes mfnh-ping {
+  0% { opacity: 0.55; transform: scale(0.7); }
+  70%, 100% { opacity: 0; transform: scale(1.35); }
+}
+
+.mfnh-tag {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 6px 14px -8px rgb(0 0 0 / 0.3);
+  white-space: nowrap;
+}
+.mfnh-tag b { font-size: var(--fs-2xs); font-weight: 600; color: var(--tx); }
+.mfnh-tag em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+
+/* ============================================================
+   RESPONSIVE
+   Below the point where the hub would sit on top of the devices, the
+   spokes come out entirely and the hub becomes a bar above the four.
+   A hub-and-spoke drawing whose spokes are 20px long is not a
+   simplified diagram, it is a smaller mess.
+   ============================================================ */
+@media (max-width: 860px) {
+  .mfnh { gap: var(--sp-4); padding-top: 72px; }
+  .mfnh-wires { display: none; }
+  .mfnh-hub {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    grid-auto-flow: column;
+    justify-items: center;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .mfnh-plinth { display: none; }
+  .mfnh-core { width: 46px; height: 46px; }
+  .mfnh-tag { margin-top: 0; }
+}
+
+@media (max-width: 520px) {
+  .mfnh { grid-template-columns: minmax(0, 1fr); }
+  .mfnh-dev.at-nw { grid-area: 1 / 1; }
+  .mfnh-dev.at-ne { grid-area: 2 / 1; }
+  .mfnh-dev.at-sw { grid-area: 3 / 1; }
+  .mfnh-dev.at-se { grid-area: 4 / 1; }
+  .mfnh-dev img { max-width: 210px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mfnh.is-live .mfnh-pulse,
+  .mfnh.is-live .mfnh-ring { animation: none; }
+  /* the wires stay, the traffic stops — the diagram still says what
+     is connected to what, which is the part that carries the point */
+  .mfnh-pulse { opacity: 0; }
+}
