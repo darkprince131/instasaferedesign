@@ -1,0 +1,249 @@
+/* ============================================================
+   integrations.css — the catalogue page.
+
+   Twingate's structure, our surfaces. Two things carry the design:
+   a sticky category rail that tracks the section in view, and a card
+   whose logo tile is a fixed square so 60-odd marks of wildly
+   different proportions line up down the grid.
+   ============================================================ */
+
+/* ---------------- hero ---------------- */
+.itg-hero {
+  position: relative;
+  padding: var(--sp-12) 0 var(--sp-10);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.itg-hero-in { display: grid; gap: var(--sp-5); max-width: 62ch; }
+.itg-hero .iz-lead { max-width: 58ch; }
+
+.itg-stats {
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4) var(--sp-8);
+}
+.itg-stats li { display: grid; gap: 2px; }
+.itg-stats b {
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: var(--fs-h2);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+}
+.itg-stats em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+}
+
+/* ---------------- the two columns ---------------- */
+.itg-body { padding: var(--sp-10) 0 var(--sp-12); background: var(--bg); }
+.itg-cols {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: var(--sp-10);
+  align-items: start;
+}
+
+/* ---------------- the jump rail ----------------
+   Seven categories and sixty products is a long page, and the reason
+   somebody opens it is to find one name. The rail sticks and tracks
+   the section in view, which is the difference between a catalogue
+   and a scroll. */
+.itg-rail {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 1px;
+  align-content: start;
+  min-width: 0;
+}
+.itg-rail-h {
+  padding-bottom: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.itg-rail a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: 9px var(--sp-3);
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.itg-rail a:hover { color: var(--tx); background: var(--bg-2); }
+.itg-rail a.on {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  color: var(--tx);
+  font-weight: 600;
+}
+.itg-rail a i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  color: var(--tx-dim);
+}
+.itg-rail-note {
+  margin: var(--sp-4) 0 0;
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-2xs);
+  line-height: 1.5;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ---------------- categories ---------------- */
+.itg-cats { display: grid; gap: var(--sp-12); min-width: 0; }
+.itg-cat { display: grid; gap: var(--sp-5); min-width: 0; scroll-margin-top: 96px; }
+.itg-cat-h { display: grid; gap: var(--sp-2); max-width: 68ch; }
+.itg-cat-h h2 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: var(--fs-h2);
+  line-height: 1.15;
+  letter-spacing: var(--ls-h2);
+  color: var(--tx);
+}
+.itg-cat-h p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+.itg-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.itg-card {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  min-width: 0;
+  transition: border-color var(--dur) var(--ease), transform var(--dur-fast) var(--ease-out);
+}
+.itg-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  transform: translateY(-2px);
+}
+
+/* A FIXED SQUARE TILE. Sixty marks of wildly different proportions
+   have to line up down a grid; the tile is the constant and the mark
+   is CONTAINED inside it, never cropped and never stretched, so a
+   wide wordmark simply sits shorter than a square glyph. */
+.itg-logo {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.itg-logo img {
+  max-width: 26px;
+  max-height: 26px;
+  object-fit: contain;
+  display: block;
+}
+.itg-logo.is-mono b {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--tx-dim);
+}
+
+/* the ink-on-white pair — see the component */
+.itg-img.is-dark { display: none; }
+.iz[data-theme="dark"] .itg-img.is-light { display: none; }
+.iz[data-theme="dark"] .itg-img.is-dark { display: block; }
+
+.itg-txt { display: grid; gap: 3px; min-width: 0; }
+.itg-txt b {
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+.itg-txt em {
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  line-height: 1.45;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   RESPONSIVE
+   The rail is the first thing to change: sticky vertical nav becomes
+   a horizontal chip scroller above the content, because a 232px
+   column of seven labels is most of a phone screen.
+   ============================================================ */
+@media (max-width: 1000px) {
+  .itg-cols { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); }
+  .itg-rail {
+    position: static;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    gap: var(--sp-2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: var(--sp-2);
+    scrollbar-width: none;
+  }
+  .itg-rail::-webkit-scrollbar { display: none; }
+  .itg-rail-h,
+  .itg-rail-note { display: none; }
+  .itg-rail a {
+    border-left: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    padding: 7px var(--sp-4);
+    white-space: nowrap;
+    font-size: var(--fs-2xs);
+  }
+  .itg-rail a.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
+  .itg-cats { gap: var(--sp-10); }
+}
+
+@media (max-width: 620px) {
+  .itg-hero { padding: var(--sp-10) 0 var(--sp-8); }
+  .itg-stats { gap: var(--sp-4) var(--sp-6); }
+  .itg-grid { grid-template-columns: minmax(0, 1fr); }
+  .itg-card { padding: var(--sp-3); gap: var(--sp-3); grid-template-columns: 40px minmax(0, 1fr); }
+  .itg-logo { width: 40px; height: 40px; }
+  .itg-logo img { max-width: 22px; max-height: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itg-card:hover { transform: none; }
+}

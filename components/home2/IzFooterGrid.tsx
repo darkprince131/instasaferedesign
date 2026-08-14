@@ -30,6 +30,8 @@ const COLUMNS: Column[] = [
       { label: "Secure Enterprise Browser", href: "/secure-enterprise-browser" },
       { label: "Privileged Access", href: "/solutions/privileged-access-management" },
       { label: "Data Loss Prevention", href: "/solutions/data-loss-prevention" },
+      /* the catalogue is otherwise an orphan — nothing else links to it */
+      { label: "Integrations", href: "/integrations" },
     ],
   },
   {

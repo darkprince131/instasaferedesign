@@ -30,6 +30,7 @@ const BESPOKE = [
   "/blog",
   "/book-a-demo",
   "/why-instasafe-zero-trust",
+  "/integrations",
 ];
 
 const PRIORITY: Record<string, number> = {
