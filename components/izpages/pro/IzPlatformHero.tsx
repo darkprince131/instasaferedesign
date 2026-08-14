@@ -260,6 +260,11 @@ export function IzPlatformHero() {
                     Access flow <i>(live)</i>
                   </span>
                   <div className="iph-flowbox">
+                    {/* the map, the curves and the two end columns share
+                        one positioned box; the legend sits BELOW it in
+                        normal flow rather than floating over the map,
+                        which is what made it collide with the dots. */}
+                    <div className="iph-mapwrap">
                     <WorldMap />
                     <svg className="iph-flow" viewBox="0 0 410 160" preserveAspectRatio="none">
                       {FLOWS.map((f, i) => (
@@ -280,6 +285,7 @@ export function IzPlatformHero() {
                         </i>
                       ))}
                     </span>
+                    </div>
                     <span className="iph-legend">
                       <b className="ok">Authorised</b>
                       <b className="no">Blocked</b>

@@ -20,6 +20,14 @@
   overflow: hidden;
 }
 
+/* THE HERO BREAKS THE 1200 WRAP, like the MFA and SSO heroes before
+   it. At 1200 this one is worse off than either of those, because it
+   carries a third column they do not — the reachability panels — so
+   the console was being squeezed to pay for them. 1400 rather than
+   their 1340 for exactly that reason. Nothing else on the page is
+   widened. */
+.iph .iz-wrap { max-width: 1400px; }
+
 /* MEASURED, twice. Giving the stage 1.14fr left the console 362px
    once the panels took their column, and every activity row ellipsised
    — a dashboard hero whose log lines are cut off is arguing against
@@ -27,8 +35,11 @@
    near 480px, which is where the rows stop clipping. */
 .iph-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.24fr);
-  gap: var(--sp-8);
+  /* the house hero proportion: a fixed copy column, the visual takes
+     the rest. Fractional columns made the copy grow with the viewport
+     and the console never got the benefit. */
+  grid-template-columns: minmax(0, 470px) minmax(0, 1fr);
+  gap: 56px;
   align-items: center;
   min-width: 0;
 }
@@ -134,7 +145,7 @@
 .iph-stage {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 40px 186px;
+  grid-template-columns: minmax(0, 1fr) 44px 208px;
   align-items: center;
   min-width: 0;
 }
@@ -275,15 +286,21 @@
 .iph-kpi svg { width: 14px; height: 14px; color: var(--tx-dim); flex: none; }
 
 /* ---------------- the map + flows ---------------- */
+/* MEASURED PROBLEM, FIXED STRUCTURALLY: the legend was absolutely
+   placed over the bottom of the map and collided with the dots. It is
+   a normal row under the map now, so it cannot overlap anything no
+   matter how the box resizes. */
 .iph-flowbox {
-  position: relative;
+  display: grid;
+  gap: 6px;
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--bg-2);
-  padding: 12px 0;
+  padding: 12px 0 9px;
   margin-bottom: var(--sp-2);
   overflow: hidden;
 }
+.iph-mapwrap { position: relative; }
 .iph-map { display: block; width: 100%; height: auto; }
 /* MEASURED: --line-strong is itself rgba(20,18,12,0.17) — correct for
    a hairline, far too faint for a field of 415 dots that is supposed
@@ -347,11 +364,9 @@
 .iph-ends svg { width: 13px; height: 13px; }
 
 .iph-legend {
-  position: absolute;
-  left: 12px;
-  bottom: 6px;
   display: flex;
-  gap: var(--sp-4);
+  gap: var(--sp-5);
+  padding: 0 14px;
 }
 .iph-legend b {
   display: flex;
@@ -479,8 +494,8 @@
   box-shadow: 0 0 0 1px var(--line), 0 6px 14px -8px rgb(0 0 0 / 0.4);
 }
 .iph-node svg { width: 15px; height: 15px; }
-.iph-node.is-ok { left: calc(100% - 186px - 40px); top: 30%; transform: translateX(5px); color: var(--allow); box-shadow: 0 0 0 1px color-mix(in srgb, var(--allow) 45%, var(--line)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
-.iph-node.is-no { left: calc(100% - 186px - 40px); bottom: 26%; transform: translateX(5px); color: var(--deny); box-shadow: 0 0 0 1px color-mix(in srgb, var(--deny) 45%, var(--line)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
+.iph-node.is-ok { left: calc(100% - 208px - 44px); top: 30%; transform: translateX(7px); color: var(--allow); box-shadow: 0 0 0 1px color-mix(in srgb, var(--allow) 45%, var(--line)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
+.iph-node.is-no { left: calc(100% - 208px - 44px); bottom: 26%; transform: translateX(7px); color: var(--deny); box-shadow: 0 0 0 1px color-mix(in srgb, var(--deny) 45%, var(--line)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
 
 /* ---------------- the pillar strip ---------------- */
 .iph-strip {
