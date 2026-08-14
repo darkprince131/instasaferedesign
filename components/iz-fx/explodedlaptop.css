@@ -292,8 +292,13 @@
   background: color-mix(in srgb, var(--bg, #0a0b0d) 88%, transparent);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  --in: clamp(0, calc((var(--progress, 0) - var(--a)) / 0.02), 1);
-  --out: clamp(0, calc((var(--progress, 0) - var(--b)) / 0.02), 1);
+  /* The fade-out finishes AT --b, where the next row's fade-in starts,
+     so exactly one family is ever on screen. Fading out AFTER --b (the
+     first pass) meant both rows were partly visible for 0.02 of the
+     scrub — about 4vh of a 200vh pin, long enough to stop on, and it
+     printed two family names on top of each other. */
+  --in: clamp(0, calc((var(--progress, 0) - var(--a)) / 0.015), 1);
+  --out: clamp(0, calc((var(--progress, 0) - (var(--b) - 0.015)) / 0.015), 1);
   opacity: calc(var(--in) - var(--out));
 }
 .xl-tick-n {
@@ -344,9 +349,31 @@
     display: none;
   }
   .xl {
-    width: 235%;
+    /* 235 -> 205. At 235 the drawing ran edge to edge with the lid and
+       the base plate touching both sides of the phone; 205 leaves a
+       margin without giving back much size, and it widens the visible
+       slice of the sheet from 766 viewBox units to 878, which is what
+       lets the stamp back in. */
+    width: 205%;
     max-width: none;
     max-height: none;
+  }
+
+  /* THE STAMP WAS OUTSIDE THE WINDOW ON TWO SIDES. Measured: its box is
+     1130-1479 in sheet units against a visible slice of 517-1283, and
+     its top sits at y -63, i.e. above the canvas entirely. It is parked
+     for a 1640-wide desktop render where both are fine.
+
+     Nudged into the visible slice rather than re-authored: -155 in x
+     puts the box at 975-1324 inside the new 461-1339 window, and +90 in
+     y brings its top from -63 to 27. `transform-box: view-box` so the
+     translate is in sheet units, matching every other transform here. */
+  .xl-stamp {
+    transform-box: view-box;
+    /* -190, not -155: at -155 the ring cleared the right edge by 6px,
+       which is inside-the-window but still reads as touching. -190
+       leaves it about 35. */
+    transform: translate(-190px, 90px);
   }
   .xl-ticker {
     display: grid;
