@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   description:
     "An interactive walkthrough of InstaSafe ZTNA: Zero Trust access, live device trust, privileged session control and endpoint management in one console.",
   alternates: { canonical: "/v2" },
+  /* The v2 archive index was answering `index, follow` while every
+     page UNDER it is noindexed — so the one page that lists them all
+     was the crawlable way in. Archives are kept for reference, not
+     for search. */
+  robots: { index: false, follow: false },
 };
 
 export default function V3Page() {
