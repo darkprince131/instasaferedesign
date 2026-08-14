@@ -1,0 +1,68 @@
+# ============================================================
+# Netlify deploy config for the exported site.
+#
+# The build does NOT run on Netlify. gitlab.instasafe.io is a
+# self-hosted GitLab and Netlify's git integration only speaks to
+# gitlab.com, so deploys are pushed from a machine that has the repo:
+#
+#   npm run deploy:preview   → a draft URL, for internal review
+#   npm run deploy:live      → production
+#
+# Both build `out/` first. See package.json.
+# ============================================================
+
+[build]
+  publish = "out"
+
+# ---------- headers ----------
+# next.config.ts's headers() cannot survive a static export, so the
+# caching rule it applies in the server build is restated here.
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+[[headers]]
+  for = "/*.avif"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+
+# ---------- THE BLOG STAYS ON GHOST ----------
+# This app owns the blog INDEX only. Every post body still lives in
+# Ghost at /blog/<slug>, and those URLs are indexed — losing them is
+# the single biggest risk in the cutover.
+#
+# No `force`, deliberately: Netlify serves a matching static file
+# BEFORE consulting redirects, so `/blog/` finds our exported
+# index.html and is served locally, while `/blog/anything-else/` has
+# no file and falls through to the proxy below. Adding `force = true`
+# would break that and send the index to Ghost as well.
+#
+# ▸ REPLACE THE HOST BELOW before the first production deploy. It must
+#   be the origin that actually serves Ghost today — NOT instasafe.com,
+#   or the site proxies to itself and loops.
+# [[redirects]]
+#   from = "/blog/*"
+#   to = "https://GHOST-ORIGIN-HERE/blog/:splat"
+#   status = 200
+
+# ---------- 404 ----------
+[[redirects]]
+  from = "/*"
+  to = "/404/index.html"
+  status = 404
