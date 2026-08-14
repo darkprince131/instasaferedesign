@@ -110,7 +110,23 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ConsentProvider>
-          {children}
+          {/* SKIP LINK — WCAG 2.4.1. Every page opens with the same nav;
+              without this a keyboard or screen-reader user tabs through
+              all of it on every single page before reaching content.
+              Visually hidden until focused (see globals `.skip-link`). */}
+          <a href="#main" className="skip-link">
+            Skip to content
+          </a>
+          {/* THE MAIN LANDMARK, added once here rather than in twelve page
+              components. Audited: not one page had it, so "jump to main
+              content" did nothing site-wide.
+
+              The page shells render their own nav and footer INSIDE
+              children, so both end up nested in <main>. `<nav>` keeps its
+              role when nested; `<footer>` does NOT — it silently drops to
+              generic. That is why IzFooter and IzFooterGrid now carry an
+              explicit `role="contentinfo"`. Do not remove it. */}
+          <main id="main">{children}</main>
           <IzHelpWidget />
         </ConsentProvider>
       </body>

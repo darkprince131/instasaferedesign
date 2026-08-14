@@ -405,3 +405,35 @@ body {
 [data-theme="light"] .logo-on-dark {
   display: none;
 }
+
+/* ---------- skip link (WCAG 2.4.1) ----------
+   Off-screen until focused, then a real, visible target at the top-left.
+   `clip-path` + 1px box rather than `display:none` — a hidden element is
+   not focusable, so `display:none` would make the link unreachable by
+   the exact users it exists for. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  padding: 12px 18px;
+  border-radius: 0 0 10px 0;
+  background: #f2480a;
+  color: #fff;
+  font: 600 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+  text-decoration: none;
+}
+.skip-link:focus-visible,
+.skip-link:focus {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}

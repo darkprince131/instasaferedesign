@@ -28,13 +28,15 @@ import { useEffect, useRef, useState } from "react";
    address. Do not add an entry until its target actually exists.
    ============================================================ */
 
+/* Real destinations, supplied by the user 2026-08-15. The docs and
+   support links leave the site, so they open in a new tab and carry
+   `rel="noopener"` — see the render below. */
 const LINKS = [
   {
-    // NOTE: InstaSafe has no /docs route yet. Resource Center is the
-    // closest real page — repoint if a docs site ships.
     label: "Read the docs",
-    href: "/resource-center",
+    href: "https://docs.instasafe.com/",
     Icon: BookOpen,
+    external: true,
   },
   {
     label: "Talk to sales",
@@ -43,8 +45,9 @@ const LINKS = [
   },
   {
     label: "Contact support",
-    href: "/contact-us",
+    href: "https://support.instasafe.com/portal/en/home",
     Icon: LifebuoyIcon,
+    external: true,
   },
 ];
 
@@ -166,11 +169,18 @@ export function IzHelpWidget() {
         <p className="izhw-sub">Get help with using InstaSafe.</p>
 
         <ul className="izhw-list">
-          {LINKS.map(({ label, href, Icon }) => (
+          {LINKS.map(({ label, href, Icon, external }) => (
             <li key={label}>
-              <a href={href} className="izhw-row">
+              <a
+                href={href}
+                className="izhw-row"
+                {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              >
                 <Icon size={16} weight="duotone" aria-hidden="true" />
                 {label}
+                {/* the destination is another host, and a link that
+                    silently leaves the site is a small trust cost */}
+                {external && <span className="izhw-ext" aria-label="(opens in a new tab)">↗</span>}
               </a>
             </li>
           ))}

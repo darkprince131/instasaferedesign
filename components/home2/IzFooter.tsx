@@ -9,7 +9,7 @@ import { ConsentTrigger } from "@/components/consent/ConsentTrigger";
 
 export function IzFooter() {
   return (
-    <footer className="iz-foot">
+    <footer role="contentinfo" className="iz-foot">
       <div className="iz-wrap">
         <div className="iz-foot-grid">
           <div>

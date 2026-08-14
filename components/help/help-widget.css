@@ -190,6 +190,8 @@ html[data-theme="light"] {
   transition: background-color 0.16s ease-out, border-color 0.16s ease-out;
 }
 .izhw-row svg { color: var(--help-accent); flex: none; }
+/* the "leaves the site" mark — pushed to the right edge of the row */
+.izhw-ext { margin-left: auto; font-size: 11px; color: var(--help-text-secondary); }
 .izhw-row:hover,
 .izhw-row:focus-visible {
   background: var(--help-hover-bg);

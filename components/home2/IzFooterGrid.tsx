@@ -118,7 +118,7 @@ function Rail() {
 
 export function IzFooterGrid() {
   return (
-    <footer className="izfg">
+    <footer role="contentinfo" className="izfg">
       <div className="iz-wrap">
         <p className="izfg-corner">Footer</p>
 
