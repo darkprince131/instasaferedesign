@@ -58,6 +58,7 @@ function CellRow({ c }: { c: Cell }) {
 }
 
 function PaneBody({ pane }: { pane: Pane }) {
+  if (!pane.cols) return null;
   return (
     <>
       {pane.cols.map((col, i) => (
@@ -109,16 +110,18 @@ function PaneBody({ pane }: { pane: Pane }) {
         </div>
       ))}
 
-      <div className="izmm-strip">
-        <span className="izmm-strip-t">{pane.strip.note}</span>
-        <span className="izmm-strip-a">
-          {pane.strip.links.map((l) => (
-            <a className="iz-btn iz-btn-ghost iz-btn-sm" key={l.href} href={l.href}>
-              {l.label}
-            </a>
-          ))}
-        </span>
-      </div>
+      {pane.strip && (
+        <div className="izmm-strip">
+          <span className="izmm-strip-t">{pane.strip.note}</span>
+          <span className="izmm-strip-a">
+            {pane.strip.links.map((l) => (
+              <a className="iz-btn iz-btn-ghost iz-btn-sm" key={l.href} href={l.href}>
+                {l.label}
+              </a>
+            ))}
+          </span>
+        </div>
+      )}
     </>
   );
 }
@@ -222,22 +225,29 @@ export function IzNav({
             <span
               key={p.key}
               className={`iz-navitem${menu === p.key ? " is-open" : ""}`}
-              onMouseEnter={() => openMenu(p.key)}
+              /* A pane-less item must also CLOSE whatever is open —
+                 hovering from Platform onto Solutions should not leave
+                 the Platform panel hanging over the page. */
+              onMouseEnter={() => (p.cols ? openMenu(p.key) : closeMenu())}
             >
               <a className="iz-navlink" href={p.href}>
                 {p.label}
               </a>
-              <button
-                type="button"
-                className="iz-navcaret"
-                data-pane={p.key}
-                aria-expanded={menu === p.key}
-                aria-controls="iz-mega"
-                aria-label={`${menu === p.key ? "Close" : "Open"} the ${p.label} menu`}
-                onClick={() => (menu === p.key ? setMenu(null) : openMenu(p.key))}
-              >
-                <CaretDown size={11} weight="bold" aria-hidden="true" />
-              </button>
+              {/* no panel, no caret — a disclosure control that discloses
+                  nothing is a promise the nav does not keep */}
+              {p.cols && (
+                <button
+                  type="button"
+                  className="iz-navcaret"
+                  data-pane={p.key}
+                  aria-expanded={menu === p.key}
+                  aria-controls="iz-mega"
+                  aria-label={`${menu === p.key ? "Close" : "Open"} the ${p.label} menu`}
+                  onClick={() => (menu === p.key ? setMenu(null) : openMenu(p.key))}
+                >
+                  <CaretDown size={11} weight="bold" aria-hidden="true" />
+                </button>
+              )}
             </span>
           ))}
         </nav>
@@ -294,7 +304,16 @@ export function IzNav({
       </div>
 
       <div id="iz-mobile-menu" className="iz-sheet" hidden={!open}>
-        {PANES.map((p) => (
+        {PANES.map((p) =>
+          /* pane-less items are one row, not a disclosure that opens onto
+             a single link to the page the heading already names */
+          !p.cols ? (
+            <div className="iz-sheet-group" key={p.key}>
+              <a className="iz-sheet-head" href={p.href} onClick={() => setOpen(false)}>
+                {p.label}
+              </a>
+            </div>
+          ) : (
           <div className="iz-sheet-group" key={p.key} data-open={group === p.key}>
             <button
               type="button"
@@ -324,14 +343,15 @@ export function IzNav({
                     ))
                   : null
               )}
-              {p.strip.links.map((l) => (
+              {p.strip?.links.map((l) => (
                 <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
                   {l.label}
                 </a>
               ))}
             </div>
           </div>
-        ))}
+          )
+        )}
         <a href="/book-a-demo" className="iz-btn iz-btn-pri iz-sheet-cta" onClick={() => setOpen(false)}>
           Book a demo
         </a>

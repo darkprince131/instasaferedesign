@@ -363,7 +363,10 @@
 /* ---- link columns (plain, not a table) ---- */
 .izfg-links {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* column count comes from the data, not from this file — the footer
+     has been three columns and four within a week, and a hardcoded 4
+     leaves a visible empty track the day one is removed */
+  grid-template-columns: repeat(var(--izfg-cols, 4), minmax(0, 1fr));
   gap: var(--sp-8) var(--sp-6);
   padding: var(--sp-10) 0 var(--sp-8);
   border-top: 1px solid var(--line);

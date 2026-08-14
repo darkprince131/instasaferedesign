@@ -133,7 +133,11 @@ export function IzFooterGrid() {
              start. Plain stacked lists under a quiet mono heading is
              the ordinary footer grammar, and it lets the drawn lattice
              above stay the thing that's drawn. */}
-        <nav className="izfg-links" aria-label="Footer">
+        <nav
+          className="izfg-links"
+          aria-label="Footer"
+          style={{ ["--izfg-cols" as string]: FOOTER_COLUMNS.length }}
+        >
           {FOOTER_COLUMNS.map((col) => (
             <div key={col.head} className="izfg-col">
               <span className="izfg-colhead">{col.head}</span>

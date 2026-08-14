@@ -18,7 +18,7 @@ export function IzFooter() {
   return (
     <footer role="contentinfo" className="iz-foot">
       <div className="iz-wrap">
-        <div className="iz-foot-grid">
+        <div className="iz-foot-grid" style={{ ["--izf-cols" as string]: FOOTER_COLUMNS.length }}>
           <div>
             <a href="/" className="iz-mark">
               <Logo height={24} />

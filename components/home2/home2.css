@@ -640,7 +640,7 @@
 .iz-final h2 em { font-style: normal; font-weight: inherit; color: var(--orange); }
 .iz-final .iz-hero-cta { justify-content: center; }
 .iz-foot { border-top: 1px solid var(--line); padding: 54px 0 var(--sp-10); }
-.iz-foot-grid { display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); gap: 28px; }
+.iz-foot-grid { display: grid; grid-template-columns: 1.6fr repeat(var(--izf-cols, 4), 1fr); gap: 28px; }
 .iz-foot h4 { font-family: var(--mono); font-size: var(--fs-label); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tx-mute); margin: 0 0 14px; }
 .iz-foot a { display: block; font-size: var(--fs-body-sm); color: var(--tx-dim); padding: var(--sp-1) 0; transition: color var(--dur-fast) var(--ease-out); }
 .iz-foot a.iz-mark { display: inline-flex; align-items: center; padding: 0; }

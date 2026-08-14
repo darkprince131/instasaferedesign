@@ -2,12 +2,24 @@
    Footer link columns — the single source for BOTH footers
    (IzFooterGrid on the homepage, IzFooter everywhere else).
 
-   ▸ THE FOOTER IS NOW THE MAP ◂ The nav was cut back to the
-   Platform pane alone, so this is the only site-wide route to
-   Solutions, Resources and Company. Everything the removed
-   mega-menu panes used to carry lives here — including the three
-   comparison pages and /security, which rank and would otherwise
-   have been left with nothing linking to them at all.
+   ▸ THE FOOTER MIRRORS THE NAV, NOTHING MORE ◂ Per the user's
+   direction: whatever the nav carries, the footer carries, and the
+   extras are gone. Platform is the mega-menu's own list; Resources
+   is its four; Solutions and Why InstaSafe are the two plain nav
+   links, grouped under Company because a column of one reads as a
+   mistake.
+
+   ▸ WHAT THIS COSTS, recorded so it is a decision and not an
+   accident. These indexed, ranking pages now have NO internal link
+   anywhere on the site: /contact-us, /careers, /about-us,
+   /partners, /instasafe-zero-trust-pricing, /case-studies,
+   /glossary, /what-is-zero-trust, /the-state-of-zero-trust-security-2023,
+   /security, /craft-a-zero-trust-strategy, the three comparison
+   pages, and every /solutions/* and secure-*-access detail page.
+   They still resolve and stay in the sitemap, so they will not
+   404 and are not de-indexed — but an indexed page nothing links
+   to loses authority over time. Re-adding any of them is one line
+   each here.
 
    ▸ URLS ARE SEO-LOCKED ◂ every href is a path lib/indexable.ts
    would advertise. `lib/scripts/audit-links.mjs` runs as prebuild
@@ -21,68 +33,34 @@ export type FooterColumn = { head: string; links: FooterLink[] };
 export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     head: "Platform",
-    /* mirrors the Platform mega-menu pane, in its order */
+    /* the Platform mega-menu pane, in its order, plus the strip link */
     links: [
-      { label: "Identity & Access", href: "/platform/iam" },
       { label: "Multi-Factor Authentication", href: "/multifactor-authentication" },
       { label: "Single Sign-On", href: "/zero-trust-features/single-sign-on" },
       { label: "Device Binding", href: "/zero-trust-features/device-binding" },
       { label: "Device Posture Check", href: "/zero-trust-features/device-posture-check" },
       { label: "Zero Trust Network Access", href: "/zero-trust-network-access" },
       { label: "Zero Trust Application Access", href: "/zero-trust-application-access" },
-      { label: "Always-On Connectivity", href: "/zero-trust-features/always-on" },
-      { label: "Secure Enterprise Browser", href: "/secure-enterprise-browser" },
-      { label: "Privileged Access", href: "/solutions/privileged-access-management" },
+      { label: "Platform Overview", href: "/platform" },
       { label: "Integrations", href: "/integrations" },
     ],
   },
   {
-    head: "Solutions",
-    /* everything the Solutions pane carried */
-    links: [
-      { label: "VPN Alternative", href: "/vpn-alternative" },
-      { label: "Secure Remote Access", href: "/secure-remote-access" },
-      { label: "Clientless Access", href: "/clientless-remote-access" },
-      { label: "VDI & Digital Workspace", href: "/solutions/vdi-secure-digital-workspace" },
-      { label: "Domain Joining", href: "/domain-joining" },
-      { label: "Cloud Applications", href: "/secure-cloud-applications" },
-      { label: "DevOps Access", href: "/secure-devops-access" },
-      { label: "Secure VoIP Access", href: "/secure-voip-access" },
-      { label: "Data Loss Prevention", href: "/solutions/data-loss-prevention" },
-      { label: "Secure Web Gateway", href: "/solutions/instasafe-secure-web-gateway" },
-    ],
-  },
-  {
     head: "Resources",
-    /* the Resources pane, plus the four comparison pages and the
-       strategy guide that the Why pane used to be the only route to */
+    /* the Resources pane, exactly */
     links: [
-      { label: "What Is Zero Trust", href: "/what-is-zero-trust" },
-      { label: "Glossary", href: "/glossary" },
-      { label: "Blog", href: "/blog" },
       { label: "Resource Center", href: "/resource-center" },
-      { label: "Case Studies", href: "/case-studies" },
-      { label: "State of Zero Trust", href: "/the-state-of-zero-trust-security-2023" },
-      { label: "Craft a Zero Trust Strategy", href: "/craft-a-zero-trust-strategy" },
-      { label: "Zero Trust vs VPN", href: "/zero-trust-vs-vpn" },
-      { label: "vs Zscaler Private Access", href: "/instasafe-zero-trust-vs-zscaler-private-access" },
-      { label: "vs Fortinet VPN", href: "/instasafe-zero-trust-vs-fortinet-vpn" },
-      { label: "Events & Meetups", href: "https://meetups.instasafe.com/events" },
+      { label: "Blog", href: "/blog" },
+      { label: "Awards", href: "/awards" },
+      { label: "Newsroom", href: "/instasafe-newsroom" },
     ],
   },
   {
     head: "Company",
+    /* the two plain nav links */
     links: [
-      { label: "About Us", href: "/about-us" },
+      { label: "Solutions", href: "/solutions" },
       { label: "Why InstaSafe", href: "/why-instasafe-zero-trust" },
-      { label: "Security & Certifications", href: "/security" },
-      { label: "Awards", href: "/awards" },
-      { label: "Partners", href: "/partners" },
-      { label: "Newsroom", href: "/instasafe-newsroom" },
-      { label: "Pricing", href: "/instasafe-zero-trust-pricing" },
-      { label: "Careers", href: "/careers", badge: "We're hiring" },
-      { label: "Contact Us", href: "/contact-us" },
-      { label: "Book a Demo", href: "/book-a-demo" },
     ],
   },
 ];

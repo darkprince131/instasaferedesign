@@ -120,7 +120,12 @@
 .izmm-pane[data-pane="platform"]  { grid-template-columns: 1fr 1fr 0.82fr; }
 .izmm-pane[data-pane="solutions"] { grid-template-columns: 1fr 1fr 0.72fr; }
 .izmm-pane[data-pane="why"]       { grid-template-columns: 1fr 1fr 0.9fr; }
-.izmm-pane[data-pane="resources"] { grid-template-columns: 1fr 1fr 0.9fr; }
+/* Resources carries four links in two columns, not the six-to-eight the
+   three-column panes were sized for. Held to the left half of the wrap so
+   the panel reads as a short menu rather than a wide one with a hole in
+   it — `1fr 1fr` across the full width would set two columns adrift in
+   whitespace. */
+.izmm-pane[data-pane="resources"] { grid-template-columns: 0.5fr 0.5fr 1fr; }
 
 .izmm-col {
   border-right: 1px solid var(--line);
