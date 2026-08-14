@@ -147,7 +147,25 @@
 .iaw-btn-ghost svg { width: 14px; height: 14px; }
 
 /* ---- shared table ---- */
-.iaw-table { border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; }
+/* `overflow: hidden` was doing two jobs and only one of them is wanted.
+   It clips the rows to the rounded corner — keep that. But it also meant
+   that whenever a row was wider than the table (a long hostname, a table
+   that is not the `--compact` variant, any width the column sets were
+   not tuned for), the surplus was SLICED OFF WITH NO WAY TO REACH IT:
+   measured on a phone at 297–400px of row inside a 223px table, and
+   swiping did nothing because `hidden` does not scroll.
+
+   `overflow-x: auto` keeps the same clip and makes it recoverable —
+   the crop becomes a swipe. `hidden` stays on the block axis so the
+   corner radius still cuts the last row. */
+.iaw-table {
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
 .iaw-thead { background: var(--surface-2); color: var(--tx-mute); font-size: var(--fs-2xs); letter-spacing: 0.04em; text-transform: uppercase; font-family: var(--mono); }
 .iaw-tr { display: grid; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); align-items: center; }
 .iaw-tr:last-child { border-bottom: none; }

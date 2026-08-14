@@ -335,9 +335,38 @@
   container-type: inline-size;
 }
 
+/* ---------- narrow containers: SWAP the labels, don't delete them ----------
+   `an-opt` alone was a one-way door. At 319px of container the 720-wide
+   sheets scale to 0.44, so a 13px `an-xs` label renders at about 6px —
+   correctly judged unreadable, and hidden. But hiding every one of them
+   left illustrations that are pure icon: the ZTNA answer came out as
+   three blank chips over an unlabelled gateway over three blank tiles,
+   which is not a simplified diagram, it is an empty one.
+
+   So a sheet can now ship a SECOND label — `an-tight` — that is short
+   enough to be set large in the same box. `an-opt` still hides the full
+   wording; `an-tight` takes its place at a size that survives the
+   scale. A sheet with no `an-tight` labels behaves exactly as before. */
+.iz-ans .an-tight {
+  display: none;
+}
+
 @container (max-width: 430px) {
   .iz-ans .an-opt {
     display: none;
+  }
+  .iz-ans .an-tight {
+    display: block;
+  }
+  /* 24px against a 0.44 scale lands near 10.5px on a phone — the floor
+     for mono at this weight. Anything smaller is decoration. */
+  .iz-art.iz-ans .an-tight {
+    font-size: 24px;
+  }
+  /* the sheet's own standing lines are not optional and were riding the
+     same scale down; they get the same floor */
+  .iz-art.iz-ans .an-sm {
+    font-size: 22px;
   }
 }
 

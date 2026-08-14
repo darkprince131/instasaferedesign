@@ -29,10 +29,15 @@ const VB_H = 780;
 const MID = 360;
 
 /* ---------- step 2 · what is checked, before anything opens ---------- */
+/* `tight` is the narrow-container label (see `an-tight` in answers.css).
+   It is set at 24px inside a 200-wide chip that already spends 60 on the
+   glyph, so it has about nine characters to work with — "device
+   posture" does not fit and "device" does. Centred under the glyph
+   rather than beside it, since at that size there is no room beside. */
 const CHECKS = [
-  { id: "who", label: "identity", glyph: "person" as GlyphName },
-  { id: "device", label: "device posture", glyph: "laptop" as GlyphName },
-  { id: "ctx", label: "context", glyph: "clock" as GlyphName },
+  { id: "who", label: "identity", tight: "identity", glyph: "person" as GlyphName },
+  { id: "device", label: "device posture", tight: "device", glyph: "laptop" as GlyphName },
+  { id: "ctx", label: "context", tight: "context", glyph: "clock" as GlyphName },
 ];
 const CHK_W = 200;
 const CHK_X = [40, 260, 480];
@@ -101,6 +106,9 @@ export function AnswerZtna() {
           <text x={CHK_X[i] + 60} y={CHK_Y + 38} className="a-text an-xs a-mute an-opt">
             {c.label}
           </text>
+          <text x={CHK_X[i] + 66} y={CHK_Y + 41} className="a-text a-mute an-tight">
+            {c.tight}
+          </text>
         </g>
       ))}
       <path
@@ -129,7 +137,15 @@ export function AnswerZtna() {
       <text x={GW_X + 74} y={GW_Y + 66} className="a-text an-xs a-mute an-opt">
         drops everything it was not expecting
       </text>
+      <text x={GW_X + 74} y={GW_Y + 74} className="a-text a-mute an-tight">
+        drops the rest
+      </text>
       <text x={GW_X + GW_W - 18} y={GW_Y + 40} textAnchor="end" className="a-text an-xs a-accent an-opt">
+        0 ports
+      </text>
+      {/* short already, so the tight version is the same words at the
+          readable size rather than a different phrase */}
+      <text x={GW_X + GW_W - 18} y={GW_Y + 42} textAnchor="end" className="a-text a-accent an-tight">
         0 ports
       </text>
 
@@ -178,6 +194,17 @@ export function AnswerZtna() {
               className={`a-text an-xs ${granted ? "a-ink" : "a-mute"} an-opt`}
             >
               {granted ? "the one app asked for" : "not visible"}
+            </text>
+            {/* the tile is 200 wide and the label is centred, so "the one
+                app asked for" has to become the two words that carry the
+                claim — the tile it sits under is already the picture */}
+            <text
+              x={RES_X[i] + RES_W / 2}
+              y={RES_Y + 80}
+              textAnchor="middle"
+              className={`a-text ${granted ? "a-ink" : "a-mute"} an-tight`}
+            >
+              {granted ? "granted" : "unseen"}
             </text>
           </g>
         );

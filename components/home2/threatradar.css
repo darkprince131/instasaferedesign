@@ -345,7 +345,19 @@ button.tr-dot.alert:focus-visible:not(.resolved) .tr-dot-core {
 /* ---- responsive ---- */
 @media (max-width: 640px) {
   .tr-field { height: 420px; }
-  .tr-grid { grid-template-columns: repeat(5, 1fr); }
+  /* THE ROWS HAD TO MOVE WITH THE COLUMNS. Dropping to 5 columns left
+     `grid-template-rows: repeat(6, 1fr)` in place, so 60 dots needed 12
+     rows and got 6 explicit ones — the other six were IMPLICIT, sized to
+     content instead of to a fraction of the field, and piled up in a
+     compressed band along the bottom. That is the clump in the review.
+
+     6 x 10 rather than 5 x 12: same 60 dots, no index moves (so the five
+     alert positions are untouched), and a cell of roughly 55 x 40 in a
+     420px field reads as a field rather than as a column. */
+  .tr-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+  }
   .tr-hint-scan { display: none; }
   .tr-card { width: calc(100% - 24px); }
 

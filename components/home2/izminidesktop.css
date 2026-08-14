@@ -336,6 +336,29 @@
 }
 
 /* ---- reduced motion: no cursor travel, no flash, no loop ---- */
+/* ---- phone: only the icons the scene actually uses ----
+   The taskbar is three absolutely-positioned groups — a centred pinned
+   row, a tray at right:58 and a clock at right:8. At full width they
+   clear each other; at phone width the centred row is wider than the
+   space between the clock and the left edge, so the pinned icons ran
+   straight under the tray and the date. The seven-icon row became one
+   illegible swarm, which is what the review saw.
+
+   Only three of them carry meaning here: Start (this is Windows), the
+   pinned InstaSafe agent (the whole point — it is always running), and
+   whatever app the scene has open. Search, Explorer, Mail and the two
+   tray glyphs are set dressing, and set dressing is the first thing to
+   go when it starts colliding with the subject. */
+@media (max-width: 640px) {
+  .izmd-tb-center { gap: 4px; }
+  .izmd-tb-btn:not(.start):not(.agent):not(.run) {
+    display: none;
+  }
+  .izmd-tray {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .izmd-cursor { transition: none; }
   .izmd-cursor.click::after { animation: none; }
