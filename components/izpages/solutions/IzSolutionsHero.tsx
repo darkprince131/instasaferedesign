@@ -265,12 +265,15 @@ export function IzSolutionsHero() {
             is who&apos;s asking and what they&apos;re reaching for.
           </p>
 
+          {/* `.iz-btn`, the shared chassis every other page hero uses —
+              not the local `.izsh-btn` this hero had, which is what made
+              these the only square CTAs on the site. */}
           <div className="izsh-ctas">
-            <a className="izsh-btn izsh-btn-pri" href="/book-a-demo">
+            <a className="iz-btn iz-btn-pri" href="/book-a-demo">
               Book a demo
               <ArrowRight weight="bold" aria-hidden="true" />
             </a>
-            <a className="izsh-btn izsh-btn-ghost" href="/platform">
+            <a className="iz-btn iz-btn-ghost" href="/platform">
               See the platform
               <ArrowRight weight="bold" aria-hidden="true" />
             </a>

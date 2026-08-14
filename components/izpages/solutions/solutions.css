@@ -3,9 +3,16 @@
    All values are iz-system.css tokens.
    ============================================================ */
 
+/* `--sp-12 / --sp-10` is the house hero padding, not a value picked for
+   this page: .iph (platform), .iam-hero, .mfa-hero, .pos-hero,
+   .dbg-hero and .itg-hero all carry exactly this. This hero was the one
+   outlier at `--sp-section` (clamp 96–140px) over `--sp-12`, which is
+   two to three times the top padding every other hero has — the reason
+   the page looked like it belonged to a different site despite sharing
+   the design system. */
 .izsh {
   position: relative;
-  padding: var(--sp-section) 0 var(--sp-12);
+  padding: var(--sp-12) 0 var(--sp-10);
   background: var(--bg);
 }
 
@@ -81,37 +88,26 @@
   gap: var(--sp-3);
   margin-top: var(--sp-2);
 }
-.izsh-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-3) var(--sp-5);
-  border: var(--bw) solid transparent;
-  border-radius: var(--r-sm);
-  font-size: var(--fs-body-sm);
-  font-weight: 600;
-  text-decoration: none;
-  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+/* THE BUTTONS ARE `.iz-btn` NOW, not a local `.izsh-btn`.
+
+   This block used to restate the whole button — its own padding, its own
+   border, its own hover, and `border-radius: var(--r-sm)` where the
+   system's is `--r-pill`. That is why these two CTAs were the only
+   square-ish buttons on the site: nothing was overriding the design
+   system, the hero simply never used it. Every other page hero
+   (IamPage, MfaPage, PosturePage, BindingPage) writes
+   `className="iz-btn iz-btn-pri"` and inherits the pill, the weight and
+   the lift for free.
+
+   All that is left here is the arrow, which `.iz-btn` does not style
+   because most callers do not have one. */
+.izsh-ctas .iz-btn svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
-.izsh-btn svg {
-  width: 14px;
-  height: 14px;
-  transition: transform var(--dur) var(--ease);
-}
-.izsh-btn:hover svg { transform: translateX(3px); }
-.izsh-btn-pri {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--btn-ink);
-}
-.izsh-btn-pri:hover { background: color-mix(in srgb, var(--accent) 88%, var(--tx)); }
-.izsh-btn-ghost {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: transparent;
-}
-.izsh-btn-ghost:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
-.izsh-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.izsh-ctas .iz-btn:hover svg { transform: translateX(3px); }
 
 /* ---------- right: the map ----------
    Aspect-locked so the cards (placed in %) and the connectors (drawn
@@ -454,7 +450,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .izsh-eyebrow i { animation: none; }
-  .izsh-btn svg { transition: none; }
+  .izsh-ctas .iz-btn svg { transition: none; }
+  .izsh-ctas .iz-btn:hover svg { transform: none; }
   /* The cycle is already suppressed in JS; this covers the transitions
      that would still fire on the last-set pair. */
   .izsh-wire,
