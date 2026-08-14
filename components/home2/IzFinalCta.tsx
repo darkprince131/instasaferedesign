@@ -35,7 +35,31 @@ const Arrow = () => (
    hook must pass reveal={false} — otherwise this block renders at opacity 0
    forever, which is exactly what happened on the ZTNA page. Content must
    never depend on an optional hook to become visible. */
-export function IzFinalCta({ reveal = true }: { reveal?: boolean } = {}) {
+/* COPY IS INJECTABLE (2026-08-14). The panel — lattice, deflection
+   fields, eyebrow, button pair, tertiary link — is the close every page
+   should get; only the two lines in the middle are page-specific. The
+   SSO page had been closing on a bare heading and one button on a plain
+   band, which is why it read as unfinished next to its siblings.
+   Omitted, every existing caller renders exactly as before. */
+export function IzFinalCta({
+  reveal = true,
+  eyebrow = "Ready when you are",
+  title,
+  sub = "Runs alongside the VPN you have, app by app, until there is nothing left to switch off. Nothing to rack, no network to re-architect.",
+  secondaryLabel = "See pricing",
+  secondaryHref = "/instasafe-zero-trust-pricing",
+  tertiaryLabel = "Regulated, air-gapped, or on-premise? See deployment options",
+  tertiaryHref = "/why-instasafe-zero-trust",
+}: {
+  reveal?: boolean;
+  eyebrow?: string;
+  title?: React.ReactNode;
+  sub?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+  tertiaryLabel?: string;
+  tertiaryHref?: string;
+} = {}) {
   return (
     <section className="izcta">
       <div className="izcta-lattice" aria-hidden="true" />
@@ -46,19 +70,19 @@ export function IzFinalCta({ reveal = true }: { reveal?: boolean } = {}) {
         <div className={`izcta-inner${reveal ? " iz-reveal" : ""}`}>
           <p className="izcta-eyebrow">
             <span className="izcta-slash">//</span>
-            Ready when you are
+            {eyebrow}
             <span className="izcta-slash">//</span>
           </p>
 
           <h2 className="izcta-h">
-            Ditch the VPN. <em>Keep your apps invisible.</em>
+            {title ?? (
+              <>
+                Ditch the VPN. <em>Keep your apps invisible.</em>
+              </>
+            )}
           </h2>
 
-          <p className="izcta-sub">
-            Runs alongside the VPN you have, app by app, until there is
-            nothing left to switch off. Nothing to rack, no network to
-            re-architect.
-          </p>
+          <p className="izcta-sub">{sub}</p>
 
           <div className="izcta-actions">
             <Magnetic>
@@ -66,13 +90,13 @@ export function IzFinalCta({ reveal = true }: { reveal?: boolean } = {}) {
                 Book a demo <Arrow />
               </a>
             </Magnetic>
-            <a href="/instasafe-zero-trust-pricing" className="iz-btn iz-btn-ghost">
-              See pricing
+            <a href={secondaryHref} className="iz-btn iz-btn-ghost">
+              {secondaryLabel}
             </a>
           </div>
 
-          <a href="/why-instasafe-zero-trust" className="izcta-tertiary">
-            Regulated, air-gapped, or on-premise? See deployment options <Chevron />
+          <a href={tertiaryHref} className="izcta-tertiary">
+            {tertiaryLabel} <Chevron />
           </a>
         </div>
 

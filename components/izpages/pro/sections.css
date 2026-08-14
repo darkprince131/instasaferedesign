@@ -160,6 +160,23 @@
   color: var(--accent);
 }
 
+/* The chip floats off the mock's bottom-right corner, which works while
+   the mock is wider than the chip. On a phone it is not: the chip is
+   `white-space: nowrap` at ~230px against a ~290px mock, so hanging it
+   14px past the right edge pushed it back over the mock's own last row
+   — it landed on "not required for this group" in the MFA card. Below
+   720px it stops floating and sits under the mock, centred, where it
+   cannot cover anything. */
+@media (max-width: 720px) {
+  .izm-verdict {
+    position: static;
+    align-self: center;
+    margin-top: var(--sp-3);
+    white-space: normal;
+    text-align: center;
+  }
+}
+
 .izm-foot {
   justify-content: space-between;
   padding: var(--sp-2) var(--sp-3);

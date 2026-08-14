@@ -184,10 +184,27 @@
 /* ============================================================
    The four claims
    ============================================================ */
+/* The band stays full-bleed — the hairlines between the four claims are
+   meant to run edge to edge. What was wrong is that the TEXT did too:
+   "One identity" started at 24px while every other block on the page
+   starts at the wrap's content edge (143px at 1440), so the row read as
+   though it belonged to a different page.
+
+   The inset is the wrap's own edge minus the cell's padding, so the
+   first cell's text lands exactly on the content column and the last
+   one ends on it, while the background and the border keep running the
+   full width. */
 .ssoh-cells {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
+  /* `.iz-wrap` is `min(100%, --wrap-max)` centred with `--wrap-gutter`
+     of padding, so its CONTENT edge is `(100% - wrap-max)/2` clamped at
+     zero, plus the gutter. Subtracting the cell's own padding lands the
+     first cell's text exactly there. The rails' own
+     `max(gutter, 50% - wrap-max/2)` is the wrap's BOX edge, one gutter
+     short of this — using it is what left the text 28px out. */
+  padding-inline: calc(max(0px, (100% - var(--wrap-max)) / 2) + var(--wrap-gutter) - var(--sp-6));
   background: var(--line);
   border-block: 1px solid var(--line);
 }

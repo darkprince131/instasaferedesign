@@ -628,13 +628,51 @@
 }
 @media (max-width: 620px) {
   .ssws-stack { grid-template-columns: minmax(0, 1fr); }
-  /* One window on a phone, and only because of height: two stacked is
-     740px against a 399px portal, and the two states share a grid row,
-     so the ON state would sit in 340px of nothing. One window still
-     loops through forgot-password forever, which is the claim. */
-  .ssws-win--login.w1 { display: none; }
+
+  /* THREE WINDOWS, ONE AT A TIME. Stacking them vertically is what the
+     height budget forbids — two is 740px against a 399px portal, and
+     both states share a grid row, so the ON state would sit in 340px of
+     nothing. But showing only Salesforce, which is what this used to do,
+     loses the argument: sprawl is THREE unrelated logins, and one login
+     screen looping forever just reads as one slow app.
+
+     So all three occupy the same cell and swipe through on one shared
+     clock — the same doctrine as the rest of this component, no timers
+     and nothing to drift. 13.5s total, negative delays to phase them,
+     so each is on screen for a third of the loop and the set reads as
+     "and another one, and another one". */
+  /* `.w1` / `.w2` are named explicitly: the 900px block above hides w2
+     with `.ssws-win--login.w2` (0,2,0), which outranks a bare
+     `.ssws-win--login` here no matter that this block comes later. */
+  .ssws-win--login,
+  .ssws-win--login.w1,
+  .ssws-win--login.w2 {
+    grid-area: 1 / 1;
+    display: block;
+  }
   .ssws-app-bar em { display: none; }
   .ssws-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ssws-portal { grid-template-columns: 32px minmax(0, 1fr); }
   .ssws-main { padding: var(--sp-4); }
+}
+
+@media (max-width: 620px) and (prefers-reduced-motion: no-preference) {
+  .ssws-win--login {
+    animation: ssws-swipe 13.5s var(--ease) infinite;
+  }
+  .ssws-win--login.w1 { animation-delay: -9s; }
+  .ssws-win--login.w2 { animation-delay: -4.5s; }
+}
+
+@keyframes ssws-swipe {
+  0% { opacity: 0; transform: translateX(24%); }
+  4%, 29% { opacity: 1; transform: none; }
+  33%, 100% { opacity: 0; transform: translateX(-24%); }
+}
+
+/* Reduced motion keeps the old single-window behaviour: no swipe means
+   three windows would sit stacked on top of each other. */
+@media (max-width: 620px) and (prefers-reduced-motion: reduce) {
+  .ssws-win--login.w1,
+  .ssws-win--login.w2 { display: none; }
 }

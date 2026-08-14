@@ -168,11 +168,9 @@
   font-size: var(--fs-body-sm);
 }
 
-/* ---------- final CTA sub-line (Home2's .iz-final has no lead by default) ---------- */
-.izsso-final-sub {
-  margin: 18px auto 0;
-  text-align: center;
-}
+/* The `.izsso-final-sub` rule went with the hand-rolled `.iz-final`
+   band this page used to close on — it now closes on the shared
+   IzFinalCta panel, which brings its own `.izcta-sub`. */
 
 /* ---------- responsive ---------- */
 @media (max-width: 940px) {

@@ -19,23 +19,40 @@
 }
 
 .izig-facts { list-style: none; margin: var(--sp-6) 0 0; padding: 0; max-width: 48ch; }
-.izig-facts li {
+/* THE NUMBER COLUMN IS SHARED, and it has to be: the track was a flat
+   `28px`, which fits "3" and "1" and does not fit "800+" — 24px display
+   type needs about 62px for four glyphs, so the value overflowed its own
+   track and printed straight through the label beside it. Both themes,
+   both breakpoints; it is in the desktop screenshot too.
+
+   `display: contents` puts every li's cells into the PARENT grid, so all
+   three rows share one `auto` column sized to the widest value and the
+   labels still line up. The row rules move to the cells, since an
+   element with `display: contents` generates no box to draw a border
+   on — that is the one thing this technique costs. */
+.izig-facts {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: var(--sp-3);
-  align-items: baseline;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--sp-4);
+}
+.izig-facts li {
+  display: contents;
+}
+.izig-facts li > * {
+  align-self: baseline;
   padding: var(--sp-3) 0;
   border-top: 1px solid var(--line);
   font-size: var(--fs-body-sm);
   color: var(--tx);
 }
-.izig-facts li:last-child { border-bottom: 1px solid var(--line); }
+.izig-facts li:last-child > * { border-bottom: 1px solid var(--line); }
 .izig-facts b {
   font-family: var(--disp);
   font-weight: var(--fw-disp);
   font-size: var(--fs-h3);
   line-height: 1;
   color: var(--orange);
+  white-space: nowrap;
 }
 
 .izig-cta {

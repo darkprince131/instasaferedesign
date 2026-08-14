@@ -156,15 +156,19 @@ export function IzIntegrationGrid({
           Here the identity decision and the network decision are the same decision, because they&apos;re made by the
           same platform.
         </p>
+        {/* The label is a <span>, not a bare text node: the list shares one
+            grid so the number column can size to its widest value (see
+            izintegrationgrid.css), and `display: contents` only promotes
+            ELEMENT children into that grid. */}
         <ul className="izig-facts">
           <li>
-            <b>1</b> login, then every application they&apos;re entitled to
+            <b>1</b> <span>login, then every application they&apos;re entitled to</span>
           </li>
           <li>
-            <b>1</b> action removes a leaver from everything
+            <b>1</b> <span>action removes a leaver from everything</span>
           </li>
           <li>
-            <b>8</b> auth profiles, assigned per user group
+            <b>8</b> <span>auth profiles, assigned per user group</span>
           </li>
         </ul>
         <a href="/solutions/idam-single-sign-on" className="izig-cta">

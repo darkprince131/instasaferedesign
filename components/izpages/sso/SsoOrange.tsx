@@ -18,6 +18,14 @@ import { IzAgentCards } from "@/components/izpages/pro/IzAgentCards";
 import { AggregateStack } from "@/components/home2/AggregateStack";
 import { IzIntegrationGrid } from "@/components/home2/IzIntegrationGrid";
 import type { AgentCard } from "@/components/izpages/pro/sections.config";
+import { OneLoginRace } from "./OneLoginRace";
+import "./oneloginrace.css";
+import { IzQuickScan, type Spec } from "@/components/izpages/pro/IzQuickScan";
+import "@/components/izpages/pro/quickscan.css";
+import { IzFinalCta } from "@/components/home2/IzFinalCta";
+/* `.izcta-*` lives in izfootergrid.css — the CTA panel and the lattice
+   footer share one sheet. Without this the panel renders unstyled. */
+import "@/components/home2/izfootergrid.css";
 import { SsoFlowDiagram } from "./SsoFlowDiagram";
 import { PasswordFatigueIz } from "./PasswordFatigueIz";
 import { SsoHeroCells, SsoHeroScene } from "./SsoScenes";
@@ -99,6 +107,29 @@ const SSO_CARDS: AgentCard[] = [
 ];
 
 
+/* Quick scan — the block the content master (Vol 1 · /platform/sso) and
+   the storyboard both list for this page and the build had dropped.
+
+   Rows are the master's five, expanded to the grouped shape the sibling
+   pages use, and every value is a fact this page or the site already
+   states — no new claims. The master's sixth row is `Pricing
+   $[X]/user/month [PLACEHOLDER]`; per-user pricing is not published
+   anywhere on this site, so it is deliberately absent rather than
+   carried over as a placeholder. */
+const SSO_SPECS: Spec[] = [
+  { group: "Protocols", label: "Protocols", value: "SAML 2.0, OAuth 2.0, OpenID Connect — IdP- and SP-initiated" },
+  { group: "Protocols", label: "Applications", value: "800+ SAML, OAuth and OIDC business applications" },
+  { group: "Protocols", label: "Legacy estate", value: "RADIUS and TACACS+ for consoles that never learned SAML" },
+  { group: "Identity", label: "IdP role", value: "Native IdP, or SP behind the identity provider you already run" },
+  { group: "Identity", label: "Directory sync", value: "AD, LDAP, Azure AD, Google Workspace, O365" },
+  { group: "Identity", label: "Provisioning", value: "Group membership is provisioning; disable the user to offboard everywhere" },
+  { group: "Security", label: "MFA", value: "Built into the login — 6 methods, required set chosen per group" },
+  { group: "Security", label: "Device trust", value: "Optional binding and posture check at the same login" },
+  { group: "Security", label: "Revocation", value: "One action ends every application and every open session" },
+  { group: "Audit", label: "Logging", value: "Who, what, when and from where — one line per application login" },
+  { group: "Audit", label: "Export", value: "Reportable in the console; SIEM export in 7 formats" },
+];
+
 const FAQ: QA[] = [
   {
     q: "What is SSO in one sentence?",
@@ -125,6 +156,8 @@ const FAQ: QA[] = [
 export function SsoOrange() {
   const [theme, setTheme] = useState<Theme>("paper");
   const [system, setSystem] = useState<DesignSystem>("orange");
+  /* the race is opt-in and stays on this page — see the note at #race */
+  const [raceOpen, setRaceOpen] = useState(false);
 
   // theme bootstrap — identical pattern to Home2 (key = is-theme)
   useEffect(() => {
@@ -303,36 +336,49 @@ export function SsoOrange() {
               Six app logins, timed side by side — with a password-reset detour thrown in for realism.
             </p>
           </div>
-          {/* THE RACE MOVED OUT (2026-08-14).
+          {/* THE RACE RUNS HERE (user call, 2026-08-14 — reverting the
+              move to its own page).
 
-              It used to mount here behind a "Watch it run" button. The
-              button was the right call — a 13-second looping animation
-              does not belong unasked on the page that has to explain
-              SSO in the first fold — but "behind a button, on a page
-              about something else" is a bad home for the one asset here
-              somebody might actually send a colleague. It has its own
-              page now, and this stays as the still frame that earns the
-              click: the two numbers, and nothing moving. */}
+              The button used to navigate to
+              /single-sign-on/login-race. On a phone that route change is
+              invisible: the nav and the footer are identical, so the
+              reader lands on a page with almost no content, does not
+              register that they left, and reads the sparseness as the
+              page being broken. That is a worse failure than the one the
+              split was solving.
+
+              The still frame and the button stay, because the original
+              reasoning about the animation still holds — a 13-second
+              loop does not belong unasked on the page that has to
+              explain SSO. It now REVEALS the race in place instead of
+              navigating, so the two numbers are still what earns the
+              click and nothing moves until it is asked for. The
+              standalone page is untouched and still linkable. */}
           <div className="iz-reveal">
-            <div className="iz-gridcell izsso-race-still">
-              <div className="izsso-race-row">
-                <div className="izsso-race-stat">
-                  <span className="izsso-race-label">Without SSO</span>
-                  <span className="izsso-race-num deny">01:47</span>
+            {raceOpen ? (
+              <OneLoginRace />
+            ) : (
+              <div className="iz-gridcell izsso-race-still">
+                <div className="izsso-race-row">
+                  <div className="izsso-race-stat">
+                    <span className="izsso-race-label">Without SSO</span>
+                    <span className="izsso-race-num deny">01:47</span>
+                  </div>
+                  <span className="izsso-race-vs">vs</span>
+                  <div className="izsso-race-stat">
+                    <span className="izsso-race-label">With InstaSafe</span>
+                    <span className="izsso-race-num allow">0:09</span>
+                  </div>
                 </div>
-                <span className="izsso-race-vs">vs</span>
-                <div className="izsso-race-stat">
-                  <span className="izsso-race-label">With InstaSafe</span>
-                  <span className="izsso-race-num allow">0:09</span>
-                </div>
+                <button
+                  type="button"
+                  className="iz-btn iz-btn-pri izsso-race-btn"
+                  onClick={() => setRaceOpen(true)}
+                >
+                  Watch it run <Arrow />
+                </button>
               </div>
-              <a
-                className="iz-btn iz-btn-pri izsso-race-btn"
-                href="/zero-trust-features/single-sign-on/login-race"
-              >
-                Watch it run <Arrow />
-              </a>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -472,15 +518,18 @@ export function SsoOrange() {
                     writing down — a non-standard assertion, a desktop client, a legacy console that never learned
                     SAML at all.
                   </p>
+                  {/* Labels are <span>s so they become grid items — see the
+                      note in izintegrationgrid.css. "800+" is exactly the
+                      value that broke the old fixed 28px column. */}
                   <ul className="izig-facts">
                     <li>
-                      <b>800+</b> SAML, OAuth and OIDC applications
+                      <b>800+</b> <span>SAML, OAuth and OIDC applications</span>
                     </li>
                     <li>
-                      <b>3</b> protocols cover almost all of them
+                      <b>3</b> <span>protocols cover almost all of them</span>
                     </li>
                     <li>
-                      <b>1</b> login in front of every one
+                      <b>1</b> <span>login in front of every one</span>
                     </li>
                   </ul>
                   <a href="/solutions/idam-authentication-protocols" className="izig-cta">
@@ -526,6 +575,26 @@ export function SsoOrange() {
         />
       </div>
 
+      {/* ---------------- QUICK SCAN ----------------
+          Mandated by the content master ("a Plain answer section for
+          readers new to the concept + a Quick scan spec block for
+          experts — both are mandatory on every product page") and
+          listed in the storyboard; this page had shipped without it.
+          Placed after the outcomes and before the FAQ, which is where
+          MfaPage and PosturePage put theirs. */}
+      <div id="quickscan">
+        <IzQuickScan
+          specs={SSO_SPECS}
+          subject="InstaSafe SSO"
+          title={
+            <>
+              Single sign-on, <em>as a checklist</em>.
+            </>
+          }
+          lead="Tick what your evaluation actually needs and copy the shortlist straight into your ticket. Filtering hides rows; it never clears a tick."
+        />
+      </div>
+
       {/* ---------------- FAQ ---------------- */}
       <section className="iz-section iz-sec--open">
         <div className="iz-wrap">
@@ -544,23 +613,25 @@ export function SsoOrange() {
         </div>
       </section>
 
-      {/* ---------------- FINAL CTA ---------------- */}
-      <section className="iz-final iz-sec--band">
-        <div className="iz-wrap iz-reveal">
-          <h2>Give your team one door.</h2>
-          <p className="iz-lead izsso-final-sub">
-            SSO with MFA and device trust layered in at the login. See it on your own apps in 30
-            minutes.
-          </p>
-          <div className="iz-hero-cta">
-            <Magnetic>
-              <a href="/book-a-demo" className="iz-btn iz-btn-pri">
-                Book a demo <Arrow />
-              </a>
-            </Magnetic>
-          </div>
-        </div>
-      </section>
+      {/* ---------------- FINAL CTA ----------------
+          The shared lattice panel, with this page's copy. It used to be
+          a hand-rolled `.iz-final` band — a heading, a line and one
+          button on flat ground — which is why the page ended flat while
+          every sibling closes on the drawn panel. Same component, same
+          chassis; only the two lines in the middle are SSO's. */}
+      <IzFinalCta
+        reveal={false}
+        title={
+          <>
+            Give your team <em>one door.</em>
+          </>
+        }
+        sub="SSO with MFA and device trust layered into the login itself. See it running on your own applications in 30 minutes."
+        secondaryLabel="Identity & Access"
+        secondaryHref="/platform/iam"
+        tertiaryLabel="Already have an IdP? InstaSafe runs as SP behind it"
+        tertiaryHref="/why-instasafe-zero-trust"
+      />
 
       {/* ---------------- FOOTER ---------------- */}
       <IzFooter />
