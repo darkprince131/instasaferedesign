@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BookOpen,
   Briefcase,
@@ -413,7 +413,59 @@ function OutcomePill({ n }: { n: Node }) {
 
 export function ZtaaUseCases() {
   const [open, setOpen] = useState(0);
+  const [mobile, setMobile] = useState(false);
   const c = CASES[open];
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 860px)");
+    const sync = () => setMobile(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
+
+  /* PHONE: AN ACCORDION, NOT A TAB STRIP (user call).
+
+     The strip put six pills in a horizontal scroller above a panel. Two
+     things were wrong with it and neither is fixable by hiding more of
+     the panel. The pills past the third were off-screen, so the section
+     looked like it had three use cases; and the answer to the pill you
+     tapped appeared BELOW the strip, so on a short screen you tapped a
+     control and the thing it changed was already scrolled past.
+
+     An accordion puts the answer directly under the question that asked
+     it, and shows all six labels at once — which is the actual job of
+     this section: let a reader find the row that is them. */
+  if (mobile) {
+    return (
+      <div className="ztuc ztuc--acc">
+        {CASES.map((u, i) => {
+          const on = i === open;
+          return (
+            <div className={on ? "ztuc-acc on" : "ztuc-acc"} key={u.id}>
+              <button
+                type="button"
+                className="ztuc-acc-h"
+                aria-expanded={on}
+                onClick={() => setOpen(on ? -1 : i)}
+              >
+                <span className="ztuc-acc-ic" aria-hidden="true">
+                  <u.Icon weight={on ? "fill" : "regular"} />
+                </span>
+                <span className="ztuc-acc-t">{u.label}</span>
+                <CaretRight className="ztuc-acc-go" weight="bold" aria-hidden="true" />
+              </button>
+              {on && (
+                <div className="ztuc-acc-b">
+                  <p>{CASES[i].desc}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="ztuc">

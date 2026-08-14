@@ -183,6 +183,59 @@
 .fh-group .learn svg { width: 15px; height: 15px; transition: transform var(--dur-fast) var(--ease-out); }
 .fh-group:hover .learn svg { transform: translateX(3px); }
 
+/* ---- the phone card form (see the note in FeatureHub.tsx) ----
+   One card per tab: its visual, its name, its sentence, its link. No
+   stage, no strip, no autoplay — so nothing the reader changes can end
+   up behind them, and nothing rewrites itself mid-sentence. */
+.fh-cards {
+  display: grid;
+  gap: var(--sp-5);
+  margin-top: var(--sp-8);
+}
+.fh-card {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--inset), var(--panel-sh);
+  min-width: 0;
+}
+.fh-card-vis {
+  min-width: 0;
+  /* the views are authored for a wide stage; inside a card they get
+     the card's width and keep whatever internal responsive rules they
+     already carry */
+  margin-bottom: var(--sp-2);
+}
+.fh-card-ey {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.fh-card-ey svg { width: 15px; height: 15px; color: var(--orange); }
+.fh-card-d {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.55;
+  color: var(--tx-dim);
+}
+.fh-card .learn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--orange);
+}
+.fh-card .learn svg { width: 15px; height: 15px; }
+
 /* ---- responsive ---- */
 @media (max-width: 900px) {
   .fh-hub { grid-template-columns: repeat(4, 1fr); }

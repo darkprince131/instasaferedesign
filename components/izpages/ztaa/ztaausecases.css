@@ -456,6 +456,72 @@
   }
 }
 
+/* ---------- phone: the accordion form ----------
+   See the note in ZtaaUseCases.tsx. Rows share one hairline register so
+   the six read as a list you scan, not six cards you compare. */
+.ztuc--acc {
+  display: block;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--surface);
+}
+.ztuc-acc + .ztuc-acc { border-top: 1px solid var(--line); }
+.ztuc-acc-h {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-4);
+  background: none;
+  border: 0;
+  border-left: 2px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--tx);
+}
+.ztuc-acc.on .ztuc-acc-h {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+.ztuc-acc-ic {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  color: var(--tx-dim);
+}
+.ztuc-acc.on .ztuc-acc-ic { color: var(--accent); }
+.ztuc-acc-ic svg { width: 16px; height: 16px; }
+.ztuc-acc-go {
+  width: 14px;
+  height: 14px;
+  color: var(--tx-mute);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.ztuc-acc.on .ztuc-acc-go { transform: rotate(90deg); color: var(--accent); }
+.ztuc-acc-b {
+  padding: 0 var(--sp-4) var(--sp-5) calc(var(--sp-4) + 30px + var(--sp-3));
+}
+.ztuc-acc-b p {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  line-height: 1.6;
+  color: var(--tx-dim);
+}
+.ztuc-acc-h:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ztuc-acc-go { transition: none; }
+}
+
 @media (max-width: 860px) {
   .ztuc { grid-template-columns: minmax(0, 1fr); padding: var(--sp-4); }
 

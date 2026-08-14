@@ -264,15 +264,69 @@ export function FeatureHub({
 } = {}) {
   const [tab, setTab] = useState(initial);
   const [paused, setPaused] = useState(false);
+  const [mobile, setMobile] = useState(false);
+
+  /* THE TAB FORM IS A DESKTOP COMPOSITION — the same finding IzMfaHub
+     wrote up when it hit this on the homepage, now moved onto the
+     chassis so every hub gets it instead of one of them.
+
+     The stage sits ABOVE the strip that drives it. Stacked into one
+     column that inverts: you scroll past the visual to reach the
+     control, tap, and the thing you changed is off-screen behind you.
+     Autoplay makes it worse — the section rewrites itself while you are
+     reading it, which reads as a glitch rather than a feature.
+
+     So below 900px the same tabs become plain cards, each carrying its
+     own visual, copy and link. Nothing is hidden and nothing moves on
+     its own. */
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const sync = () => setMobile(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
 
   // Fresh TAB_MS countdown each time `tab` or `paused` changes.
   useEffect(() => {
-    if (paused) return;
+    if (mobile || paused) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = setTimeout(() => setTab((t) => (t + 1) % tabs.length), TAB_MS);
     return () => clearTimeout(id);
-  }, [tab, paused, tabs.length]);
+  }, [tab, paused, mobile, tabs.length]);
 
   function choose(i: number) { setTab(i); }
+
+  const head = (
+    <div className="fh-head">
+      <span className="iz-ey">{eyebrow}</span>
+      <h2 className="iz-h2">{title ?? (<>Every control, <em>around every app</em>.</>)}</h2>
+      <p className="fh-lead">{lead}</p>
+    </div>
+  );
+
+  if (mobile) {
+    return (
+      <div className="fh fh--cards">
+        {head}
+        <div className="fh-cards">
+          {tabs.map((t, i) => (
+            <article className="fh-card" key={t.title}>
+              {views?.[i] && <div className="fh-card-vis">{views[i]}</div>}
+              <span className="fh-card-ey">
+                <t.icon weight="fill" aria-hidden="true" />
+                {t.title}
+              </span>
+              <p className="fh-card-d">{t.desc}</p>
+              <a href={t.href} className="learn">
+                Learn more {Arrow}
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -280,11 +334,7 @@ export function FeatureHub({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="fh-head">
-        <span className="iz-ey">{eyebrow}</span>
-        <h2 className="iz-h2">{title ?? (<>Every control, <em>around every app</em>.</>)}</h2>
-        <p className="fh-lead">{lead}</p>
-      </div>
+      {head}
 
       <div className="fh-stage">
         {views

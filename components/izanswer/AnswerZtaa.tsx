@@ -50,18 +50,22 @@ const P_W = 608;
 const P_H = 218;
 const BAR_H = 36;
 
-type Tile = { label: string; glyph: GlyphName; on: boolean };
+type Tile = { label: string; tight: string; glyph: GlyphName; on: boolean };
 /* Six provisioned, two not. The order interleaves them so the absent
    ones do not read as a trailing row that ran out of content. */
 const TILES: Tile[] = [
-  { label: "web app", glyph: "tiles", on: true },
-  { label: "remote desktop", glyph: "laptop", on: true },
-  { label: "ssh", glyph: "terminal", on: true },
-  { label: "finance", glyph: "board", on: false },
-  { label: "database", glyph: "database", on: true },
-  { label: "file share", glyph: "folder", on: true },
-  { label: "code", glyph: "code", on: true },
-  { label: "hr records", glyph: "doc", on: false },
+  /* `tight` is the narrow-container label (`an-tight` in answers.css).
+     The tile is 136 wide and the tight type is 24px, so it has about
+     eight centred characters — "remote desktop" and "file share" do not
+     fit and their first word does. */
+  { label: "web app", tight: "web app", glyph: "tiles", on: true },
+  { label: "remote desktop", tight: "desktop", glyph: "laptop", on: true },
+  { label: "ssh", tight: "ssh", glyph: "terminal", on: true },
+  { label: "finance", tight: "finance", glyph: "board", on: false },
+  { label: "database", tight: "database", glyph: "database", on: true },
+  { label: "file share", tight: "files", glyph: "folder", on: true },
+  { label: "code", tight: "code", glyph: "code", on: true },
+  { label: "hr records", tight: "hr", glyph: "doc", on: false },
 ];
 const T_W = 136;
 const T_H = 68;
@@ -149,6 +153,9 @@ export function AnswerZtaa() {
       <text x={P_X + P_W - 22} y={P_Y + 24} textAnchor="end" className="a-text an-xs a-mute an-opt">
         6 of 8 provisioned
       </text>
+      <text x={P_X + P_W - 22} y={P_Y + 28} textAnchor="end" className="a-text a-mute an-tight">
+        6 of 8
+      </text>
 
       {TILES.map((t, i) => {
         const x = T_X[i % 4];
@@ -183,6 +190,14 @@ export function AnswerZtaa() {
               className={`a-text an-xs ${t.on ? "a-ink" : "a-mute"} an-opt`}
             >
               {t.on ? t.label : "not provisioned"}
+            </text>
+            <text
+              x={x + T_W / 2}
+              y={y + 58}
+              textAnchor="middle"
+              className={`a-text ${t.on ? "a-ink" : "a-mute"} an-tight`}
+            >
+              {t.on ? t.tight : "blocked"}
             </text>
           </g>
         );
