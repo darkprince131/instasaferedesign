@@ -147,28 +147,32 @@ export async function getBlogIndex(): Promise<BlogIndexData> {
     return { posts: [], tags: [] };
   }
 
-  /* ▸ THE SITE MUST NOT ASK ITSELF FOR THE BLOG ▸
-     GHOST_API_URL defaulted to https://instasafe.com/blog back when the
-     apex was the old site and nginx reverse-proxied /blog to Ghost. The
-     moment this app started serving the apex, that default began pointing
-     at THIS BUILD: the request went out to our own /blog/ghost/api/…,
-     hit the catch-all, came back as a 404 page of HTML, and the JSON
-     parse failed into the soft-fail below — an empty index and nothing
-     that said why.
+  /* ▸ WARN, DO NOT REFUSE ▸
+     https://instasafe.com/blog is the correct value or a self-reference
+     depending on infrastructure state, and the code cannot tell which
+     from the string alone. It worked for months: the apex was the old
+     site, nginx reverse-proxied everything under /blog to Ghost, and a
+     build anywhere on the internet could read the Content API over that
+     public path. When this app took over the apex WITHOUT that proxy in
+     front of it, the same URL started returning our own 404 markup.
 
-     The value has to be the Ghost ORIGIN, which is not public: on the
-     EC2 box that is http://127.0.0.1:2368/blog. A build that cannot
-     reach that origin (Netlify, or a laptop) will have an empty index,
-     and that is expected rather than broken. */
+     Restore the proxy — including /blog/ghost/api/* and not only the
+     post slugs — and this value becomes correct again for every build
+     host. So the check flags it and still makes the request; the
+     content-type test below is what actually distinguishes "Ghost" from
+     "our own 404", and it does so from evidence rather than a guess.
+
+     The always-safe value on the app server itself is the local origin,
+     http://127.0.0.1:2368/blog, which needs no proxy at all — but Ghost
+     does not listen off that box, so an external build host cannot use
+     it. */
   if (SITE_HOSTS.some((h) => base.includes(h))) {
-    console.error(
-      `[ghost] GHOST_API_URL is ${base}, which is THIS SITE, not Ghost. ` +
-        "The app would be asking itself for the Content API and getting " +
-        "its own 404 page back. Point it at the Ghost origin — on the " +
-        "app server that is http://127.0.0.1:2368/blog — and note that " +
-        "Ghost is not reachable from an external build host."
+    console.warn(
+      `[ghost] GHOST_API_URL (${base}) is a host this app serves. That is ` +
+        "only correct while the web server proxies /blog/ghost/api/* " +
+        "through to Ghost ahead of this app. Trying it — if the response " +
+        "is HTML rather than JSON, that proxy is missing."
     );
-    return { posts: [], tags: [] };
   }
 
   const url =
