@@ -68,8 +68,11 @@ import { IzTrustEngine } from "./IzTrustEngine";
 
    Storyboard row 15.0 asks for an IzLogTape interstitial (a sanitised
    console log strip). That component does not exist, and a third log
-   surface would be the page's fourth console. IzMechanismBand takes
-   the slot instead — see its own note for why it earns it.
+   surface would be the page's fourth console. The slot stays EMPTY:
+   IzFinalCta closes the page directly. IzMechanismBand used to fill it
+   and has moved up against the decision layer it describes (user call,
+   2026-08-14) — fifteen sections apart the two read as unrelated
+   banners; together they are a claim and its picture.
    ============================================================ */
 
 type Theme = "dark" | "paper";
@@ -288,6 +291,16 @@ export function IzPlatformPage() {
         <IzTrustEngine />
       </div>
 
+      {/* ---------------- THE ENGINE, AS AN OBJECT ----------------
+          Moved up out of the pre-footer slot (user call). It belongs
+          against the decision layer it describes: that row states what
+          the engine decides and links to the deep dive, and this states
+          the same thing as one movement rather than as a console. Read
+          fifteen sections apart they were two unrelated banners; read
+          together they are a claim and its picture. The pre-footer slot
+          is empty now by design — IzFinalCta closes the page. */}
+      <IzMechanismBand />
+
       {/* ---------------- INTERSTITIAL (9.0) ----------------
           The storyboard's data ribbon quotes 144 / 25 / 202. It can't:
           the trust bar under the hero already carries all three, and the
@@ -415,9 +428,6 @@ export function IzPlatformPage() {
           />
         </div>
       </section>
-
-      {/* ---------------- PRE-FOOTER BAND (15.0 slot) ---------------- */}
-      <IzMechanismBand />
 
       <IzFinalCta reveal={false} />
       <IzFooterGrid />

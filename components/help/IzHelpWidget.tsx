@@ -2,7 +2,7 @@
 
 import { LogoMark } from "@/components/brand/Logo";
 import { useConsent } from "@/components/consent/ConsentProvider";
-import { BookOpen, ChatCircleDots, LifebuoyIcon, X } from "@phosphor-icons/react";
+import { ArrowUp, BookOpen, ChatCircleDots, LifebuoyIcon, X } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 /* ============================================================
@@ -85,6 +85,7 @@ function useEffectiveTheme(): "dark" | "light" {
 
 export function IzHelpWidget() {
   const [open, setOpen] = useState(false);
+  const [showTop, setShowTop] = useState(false);
   const theme = useEffectiveTheme();
   const { bannerOpen } = useConsent();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -118,6 +119,31 @@ export function IzHelpWidget() {
   useEffect(() => {
     if (open) panelRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
   }, [open]);
+
+  /* Back to top — appears once the reader is a screen and a half down,
+     stacked directly above the launcher. These pages run long (the
+     platform page is fifteen sections), and on a phone the alternative
+     is a very long swipe back to the nav.
+
+     `passive: true` because this listener runs on every scroll frame and
+     never calls preventDefault; without it the browser has to wait for
+     it before it can scroll. The threshold is read once per event and
+     compared against current state, so setState is only called on the
+     two frames where the answer actually changes. */
+  useEffect(() => {
+    const onScroll = () => {
+      const past = window.scrollY > window.innerHeight * 1.5;
+      setShowTop((v) => (v === past ? v : past));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const toTop = () => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+  };
 
   /* Stay out of the way until the consent decision is made. On a phone the
      banner fills the bottom of the screen and the launcher lands directly on
@@ -154,6 +180,15 @@ export function IzHelpWidget() {
           {PRIMARY.label}
         </a>
       </div>
+
+      {/* Hidden while the help panel is open: the panel already occupies
+          the stack above the launcher, and a third object wedged between
+          them reads as part of the card. */}
+      {showTop && !open && (
+        <button type="button" className="izhw-top" onClick={toTop} aria-label="Back to top">
+          <ArrowUp size={18} weight="bold" aria-hidden="true" />
+        </button>
+      )}
 
       <button
         ref={btnRef}

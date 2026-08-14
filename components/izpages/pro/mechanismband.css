@@ -112,15 +112,20 @@
 .izmb .izmb-link:hover i { transform: translateX(3px); }
 .izmb .izmb-link:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
 
-/* ---- tablet / phone ---- */
+/* ---- tablet / phone ----
+   Stacked, the emblem stops being a column beside the copy and becomes
+   the plate the copy sits under — so it takes the full content width and
+   centres, rather than sitting small and left with the rest of the row's
+   width left empty beside it. `--sp-10` of gap under a 46vw emblem left
+   a visible dead band; the emblem now fills that space instead. */
 @media (max-width: 900px) {
   .izmb-wrap {
     grid-template-columns: minmax(0, 1fr);
-    justify-items: start;
-    gap: var(--sp-10);
+    justify-items: stretch;
+    gap: var(--sp-8);
   }
-  .izmb-art { justify-content: flex-start; }
-  .izmb .izmb-emblem { width: clamp(180px, 46vw, 260px); }
+  .izmb-art { justify-content: center; }
+  .izmb .izmb-emblem { width: min(100%, 420px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

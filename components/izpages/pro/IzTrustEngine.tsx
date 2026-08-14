@@ -61,8 +61,12 @@ export function IzTrustEngine() {
   return (
     <section className="iz-section" id="trust-engine">
       <div className="iz-wrap">
+        {/* No "platform_ 05" prefix on the eyebrow. Nothing else on the
+            page is numbered, so a lone 05 promised a series that does
+            not exist — same rule as the stat ribbon's dropped indices
+            (docs/no-index-numbers-rule.md). */}
         <ConsoleRow
-          eyebrow="platform_ 05 — the decision layer"
+          eyebrow="the decision layer"
           title={
             <>
               One engine decides. <em>Every session.</em>

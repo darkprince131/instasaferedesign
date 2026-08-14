@@ -13,11 +13,17 @@
    the stepper already taught the reader.
 
    Every page uses this in that slot. Pass `items`; nothing else.
+
+   NO INDEX NUMBERS. The cells used to be prefixed 01 / 02 / 03, which
+   put a two-digit mono number immediately before a value that is itself
+   a number — "01" then "4 layers verified per request" reads as "014
+   layers", and the same collision hit every ribbon on every page. The
+   index carried no meaning either: these are three facts, not three
+   steps, and nothing refers back to "item 02". Do not reintroduce them.
+   The rule is general — see docs/no-index-numbers-rule.md.
    ============================================================ */
 
 export type RibbonItem = { value: string; label: string };
-
-const pad = (i: number) => String(i + 1).padStart(2, "0");
 
 export function IzStatRibbon({
   items,
@@ -29,12 +35,12 @@ export function IzStatRibbon({
   return (
     <section className={className ? `izsr ${className}` : "izsr"} aria-label="Key numbers">
       <div className="iz-wrap">
-        <ol className="izsr-list">
-          {items.map((it, i) => (
+        {/* ul, not ol: with the indices gone these are three unordered
+            facts, and an ordered list would still announce "1 of 3" to a
+            screen reader after the visible numbering was removed. */}
+        <ul className="izsr-list">
+          {items.map((it) => (
             <li key={it.label} className="izsr-item">
-              <span className="izsr-i" aria-hidden="true">
-                {pad(i)}
-              </span>
               <span className="izsr-body">
                 <b>{it.value}</b>
                 <span className="izsr-label">
@@ -44,7 +50,7 @@ export function IzStatRibbon({
               </span>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   );

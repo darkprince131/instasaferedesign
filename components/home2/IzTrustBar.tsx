@@ -185,9 +185,10 @@ export function IzTrustBar({ stats, sectors, ratings = RATINGS, className }: Pro
           </ul>
         )}
 
-        {rows.length > 0 && (
-          <p className="iztb-attrib">Scores from G2, Gartner Peer Insights and Capterra.</p>
-        )}
+        {/* The source line ("Scores from G2, Gartner Peer Insights and
+            Capterra") is gone — user call. Each row already carries the
+            mark it came from, so the sentence was captioning logos that
+            caption themselves. */}
       </div>
     </section>
   );

@@ -224,6 +224,41 @@ html[data-theme="light"] {
   outline-offset: 2px;
 }
 
+/* ---------- back to top ----------
+   Stacked directly above the launcher, in the same flex column. It is
+   deliberately SMALLER (44 vs 56) and carries the neutral border rather
+   than the brand accent: the launcher is the one branded object in the
+   corner, and two accent circles would read as a pair of equal choices
+   instead of a utility parked above the real one. */
+.izhw-top {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--help-btn-bg);
+  border: 1px solid var(--help-border-strong);
+  color: var(--help-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: var(--help-shadow);
+  animation: izhw-top-in 0.18s ease-out;
+  transition: transform 0.18s ease-out, color 0.18s ease-out, border-color 0.18s ease-out;
+}
+.izhw-top:hover {
+  transform: translateY(-2px);
+  color: var(--help-accent);
+  border-color: var(--help-accent);
+}
+.izhw-top:focus-visible {
+  outline: 2px solid var(--help-accent);
+  outline-offset: 3px;
+}
+@keyframes izhw-top-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (max-width: 480px) {
   .izhw { right: 14px; bottom: 14px; }
   .izhw-panel { width: min(268px, calc(100vw - 28px)); }
@@ -232,7 +267,10 @@ html[data-theme="light"] {
 @media (prefers-reduced-motion: reduce) {
   .izhw-btn,
   .izhw-row,
+  .izhw-top,
   .izhw-primary { transition: none; }
-  .izhw-btn:hover { transform: none; }
+  .izhw-btn:hover,
+  .izhw-top:hover { transform: none; }
+  .izhw-top { animation: none; }
   .izhw-panel { animation: none; }
 }

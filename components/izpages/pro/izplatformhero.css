@@ -571,9 +571,36 @@
   .iph-app { display: none; }
 }
 
+/* MEASURED at 375px: the map renders 254 x 97. The two end columns are
+   pinned `top: 0; bottom: 0`, so they are exactly as tall as the map —
+   but four 25px chips with 12px gaps need 136px. `align-content: center`
+   then centres 136px of content in a 97px box, overflowing ~19px at each
+   end, and `.iph-flowbox`'s `overflow: hidden` cuts straight through the
+   top and bottom chip. That is the clipping in the phone screenshot.
+
+   Both chips and gaps come down a step so the column fits the map rather
+   than the map being asked to fit the column. All four stay: the left
+   column is the four things checked and the right is two destinations
+   plus the two blocked ones the red curves land on — dropping any of
+   them would leave the legend describing something not shown. */
+@media (max-width: 760px) {
+  .iph-ends { gap: 5px; }
+  .iph-ends i { width: 18px; height: 18px; }
+  .iph-ends svg { width: 10px; height: 10px; }
+  .iph-ends.is-left { left: 6px; }
+  .iph-ends.is-right { right: 6px; }
+}
+
 @media (max-width: 520px) {
   .iph-strip { grid-template-columns: minmax(0, 1fr); }
   .iph-body { grid-template-columns: 38px minmax(0, 1fr); }
   .iph-rail span { width: 26px; height: 26px; }
   .iph-main { padding: var(--sp-3); }
+}
+
+/* Narrow phones take the map to ~76px, below what 18px chips fit in. */
+@media (max-width: 400px) {
+  .iph-ends { gap: 3px; }
+  .iph-ends i { width: 14px; height: 14px; }
+  .iph-ends svg { width: 9px; height: 9px; }
 }
