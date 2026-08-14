@@ -19,7 +19,16 @@ import { Glyph } from "@/components/izoutcomes/artifacts/DrawnGlyphs";
    near 13px, 15px near 11px, 13px near 9px. */
 
 const VB_W = 720;
-const VB_H = 900;
+/* 900 -> 950. THE VIEWBOX WAS SHORTER THAN THE DRAWING. The closing note
+   is placed off `F_Y`, which is itself derived from the checklist's row
+   count — so the card lands at y 860 and runs to 924, and its second
+   line ("A device that drifts out of policy loses the access it already
+   had.") sits on baseline 910. Against a 900 box, that line was simply
+   outside the canvas: the card looked cropped and the sentence it
+   carries had never been visible on any screen size. Anything derived
+   from the row count has to be checked against this number when a check
+   is added — seven rows is what pushed it over. */
+const VB_H = 950;
 const MID = 360;
 
 /* ---------- the device ---------- */
