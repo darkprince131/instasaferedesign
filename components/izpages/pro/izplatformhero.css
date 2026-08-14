@@ -1,0 +1,564 @@
+/* ============================================================
+   izplatformhero.css — the console hero for /platform.
+
+   No images and no canvas anywhere in here. The map is a dot grid
+   from a land mask, the flow curves are one small SVG, and the rest
+   is markup — so it stays crisp at any zoom, flips with the theme,
+   and costs nothing to load on the page whose LCP it is.
+
+   ▸ THE CONSOLE IS THEME-AWARE, THE RAIL IS NOT ◂
+   Everything in the window follows the page, because an admin console
+   is a document. The icon rail alone is pinned dark in both themes —
+   that is how the real product looks and it is the one element that
+   gives the window a spine on a paper page.
+   ============================================================ */
+
+.iph {
+  position: relative;
+  padding: var(--sp-12) 0 var(--sp-10);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* MEASURED, twice. Giving the stage 1.14fr left the console 362px
+   once the panels took their column, and every activity row ellipsised
+   — a dashboard hero whose log lines are cut off is arguing against
+   itself. The stage takes 1.24fr and a tighter gap; the console lands
+   near 480px, which is where the rows stop clipping. */
+.iph-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1.24fr);
+  gap: var(--sp-8);
+  align-items: center;
+  min-width: 0;
+}
+
+/* ---------------- left column ---------------- */
+.iph-copy { display: grid; align-content: center; gap: var(--sp-5); min-width: 0; }
+
+.iph-ey {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.iph-ey i { display: grid; place-items: center; }
+
+.iph-h1 {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: clamp(34px, 3.7vw, 52px);
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  color: var(--tx);
+  text-wrap: balance;
+}
+.iph-h1 em { font-style: normal; color: var(--accent); }
+
+.iph-lead {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+.iph-ctas { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.iph-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 15px var(--sp-6);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--tx);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: border-color var(--dur) var(--ease), transform var(--dur-fast) var(--ease-out);
+}
+.iph-btn svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.iph-btn:hover { border-color: var(--accent); }
+.iph-btn:hover svg { transform: translateX(3px); }
+.iph-btn.is-pri {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.iph-btn.is-pri:hover { transform: translateY(-1px); }
+.iph-btn:not(.is-pri):hover svg { transform: translateY(3px); }
+
+.iph-bullets {
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-6);
+}
+.iph-bullets li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-2xs);
+  line-height: 1.3;
+  color: var(--tx-dim);
+}
+.iph-bullets svg { width: 19px; height: 19px; color: var(--accent); flex: none; }
+.iph-bullets span { display: grid; }
+.iph-bullets em { font-style: normal; }
+
+/* ---------------- right: the stage ---------------- */
+/* MEASURED: the panels were absolutely placed against the stage's
+   right edge with the console filling the whole stage, so they sat ON
+   TOP of it by 110px and covered the activity list. They are a real
+   column now — console, a 44px channel for the connector nodes, then
+   the panels — so nothing overlaps and the nodes have somewhere to
+   live. */
+.iph-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px 186px;
+  align-items: center;
+  min-width: 0;
+}
+
+.iph-win {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: 0 34px 70px -40px rgb(0 0 0 / 0.42), var(--inset);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.iph-top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.iph-brand { display: flex; align-items: center; gap: 9px; }
+.iph-brand b { font-size: var(--fs-body-sm); font-weight: 600; color: var(--tx); }
+.iph-bell { position: relative; margin-left: auto; display: grid; place-items: center; color: var(--tx-dim); }
+.iph-bell svg { width: 17px; height: 17px; }
+.iph-bell i {
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-style: normal;
+}
+.iph-user {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--line);
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+}
+.iph-user i {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-style: normal;
+  color: var(--tx-dim);
+}
+
+.iph-body { display: grid; grid-template-columns: 46px minmax(0, 1fr); min-width: 0; }
+
+/* the one element pinned dark in both themes — see the header */
+.iph-rail {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 3px;
+  padding: var(--sp-3) 0;
+  background: #17161a;
+}
+.iph-rail span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  color: rgba(243, 241, 239, 0.42);
+}
+.iph-rail span.on { background: rgba(243, 241, 239, 0.12); color: #fff; }
+.iph-rail svg { width: 16px; height: 16px; }
+
+.iph-main { display: grid; align-content: start; gap: 7px; padding: var(--sp-4); min-width: 0; }
+.iph-lbl {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.iph-lbl i { font-style: normal; color: var(--accent); }
+
+.iph-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: var(--sp-2);
+}
+.iph-kpi {
+  display: grid;
+  gap: 3px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  min-width: 0;
+}
+/* MEASURED: "Blocked attempts" clipped at this column width. The label
+   wraps to two lines instead of being shortened — the tiles are a
+   fixed grid so a second line costs the row nothing, and truncating a
+   real metric name to fit is the wrong trade. */
+.iph-kpi em {
+  font-style: normal;
+  font-size: 9.5px;
+  line-height: 1.25;
+  color: var(--tx-dim);
+  min-height: 2.5em;
+}
+.iph-kpi b {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+}
+.iph-kpi svg { width: 14px; height: 14px; color: var(--tx-dim); flex: none; }
+
+/* ---------------- the map + flows ---------------- */
+.iph-flowbox {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  padding: 12px 0;
+  margin-bottom: var(--sp-2);
+  overflow: hidden;
+}
+.iph-map { display: block; width: 100%; height: auto; }
+/* MEASURED: --line-strong is itself rgba(20,18,12,0.17) — correct for
+   a hairline, far too faint for a field of 415 dots that is supposed
+   to read as a map. Mixed from --tx instead, so it lands at a real
+   grey on paper and a real light dot on dark. */
+.iph-land circle { fill: color-mix(in srgb, var(--tx) 26%, transparent); }
+
+.iph-flow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.iph-curve {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 5 240;
+  stroke-dashoffset: 0;
+}
+.iph-curve.is-ok { stroke: var(--allow); }
+.iph-curve.is-no { stroke: var(--deny); }
+@media (prefers-reduced-motion: no-preference) {
+  /* one lit segment per route, staggered — the map is a live view and
+     a still one would be a screenshot of a live view */
+  .iph-curve {
+    animation: iph-run 4.6s linear infinite;
+    animation-delay: calc(var(--i) * 0.7s);
+  }
+}
+@keyframes iph-run {
+  0% { stroke-dashoffset: 0; opacity: 0; }
+  8% { opacity: 1; }
+  56% { stroke-dashoffset: -245; opacity: 1; }
+  64%, 100% { stroke-dashoffset: -250; opacity: 0; }
+}
+
+/* the identity column and the destination column */
+.iph-ends {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+}
+.iph-ends.is-left { left: 10px; }
+.iph-ends.is-right { right: 10px; }
+.iph-ends i {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--tx-dim);
+}
+.iph-ends i.no { border-color: color-mix(in srgb, var(--deny) 45%, var(--line)); color: var(--deny); }
+.iph-ends svg { width: 13px; height: 13px; }
+
+.iph-legend {
+  position: absolute;
+  left: 12px;
+  bottom: 6px;
+  display: flex;
+  gap: var(--sp-4);
+}
+.iph-legend b {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 400;
+  font-size: 9.5px;
+  color: var(--tx-dim);
+}
+.iph-legend b::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.iph-legend b.ok::before { background: var(--allow); }
+.iph-legend b.no::before { background: var(--deny); }
+
+/* ---------------- recent activity ---------------- */
+.iph-acts { display: grid; gap: 1px; min-width: 0; }
+.iph-act {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.1fr) 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  min-width: 0;
+}
+.iph-act:first-child { border-top: 0; }
+.iph-act em,
+.iph-who,
+.iph-app {
+  font-style: normal;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.iph-act em { font-family: var(--mono); color: var(--tx-dim); }
+.iph-who { color: var(--tx); }
+.iph-app { color: var(--tx-dim); }
+.iph-arw { width: 14px; height: 14px; fill: none; stroke: var(--line-strong); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.iph-act b {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.iph-act b.ok { color: var(--allow); }
+.iph-act b.no { color: var(--deny); }
+
+/* ---------------- the reachability split ---------------- */
+.iph-side {
+  grid-column: 3;
+  z-index: 3;
+  display: grid;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+.iph-panel {
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 18px 38px -26px rgb(0 0 0 / 0.4);
+}
+.iph-panel-h {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 var(--sp-2) var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.dot.ok { background: var(--allow); }
+.dot.no { background: var(--deny); }
+
+.iph-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 6px var(--sp-2);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-2xs);
+  color: var(--tx);
+  min-width: 0;
+}
+.iph-row.is-off { color: var(--tx-dim); }
+.iph-logo {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--tx-dim);
+}
+/* contained, never cropped — these mix square glyphs with wordmarks */
+.iph-logo img { width: 14px; height: 14px; object-fit: contain; display: block; }
+.iph-logo svg { width: 13px; height: 13px; }
+.iph-row span,
+.iph-row { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.iph-row b.x { display: grid; place-items: center; color: var(--deny); }
+.iph-row b.x svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+
+/* the two gates the connectors pass through */
+.iph-node {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), 0 6px 14px -8px rgb(0 0 0 / 0.4);
+}
+.iph-node svg { width: 15px; height: 15px; }
+.iph-node.is-ok { left: calc(100% - 186px - 40px); top: 30%; transform: translateX(5px); color: var(--allow); box-shadow: 0 0 0 1px color-mix(in srgb, var(--allow) 45%, var(--line)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
+.iph-node.is-no { left: calc(100% - 186px - 40px); bottom: 26%; transform: translateX(5px); color: var(--deny); box-shadow: 0 0 0 1px color-mix(in srgb, var(--deny) 45%, var(--line)), 0 6px 14px -8px rgb(0 0 0 / 0.4); }
+
+/* ---------------- the pillar strip ---------------- */
+.iph-strip {
+  margin: var(--sp-10) 0 0;
+  padding: var(--sp-6) 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-6);
+}
+.iph-strip li { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.iph-strip-ic { color: var(--accent); }
+.iph-strip-ic svg { width: 23px; height: 23px; }
+.iph-strip b {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx);
+}
+.iph-strip em {
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  line-height: 1.5;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   RESPONSIVE
+   The floating panels are the first thing to come in from the
+   overhang, then under the console, then away entirely — by the time
+   there is no room for two columns they are repeating what the
+   activity list already says.
+   ============================================================ */
+@media (max-width: 1180px) {
+  .iph-grid { grid-template-columns: minmax(0, 1fr); gap: var(--sp-8); }
+  .iph-lead { max-width: 60ch; }
+  .iph-stage { grid-template-columns: minmax(0, 1fr); }
+  .iph-side {
+    grid-column: 1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: var(--sp-4);
+  }
+  .iph-node { display: none; }
+  .iph-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-5); }
+}
+
+@media (max-width: 860px) {
+  /* MEASURED at 375px: the rail inset takes the wrap from 28px of
+     gutter to 52px, leaving the hero 271px of content. The rails earn
+     their width on a desktop and do not on a phone — and this is the
+     LCP block, so it is the worst place to spend 48px on a rule.
+     Scoped to this section; the grid system is untouched. */
+  .iph.iz-railed .iz-wrap {
+    padding-left: var(--wrap-gutter);
+    padding-right: var(--wrap-gutter);
+  }
+}
+
+@media (max-width: 760px) {
+  .iph { padding-top: var(--sp-10); }
+  .iph-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .iph-side { grid-template-columns: minmax(0, 1fr); }
+  .iph-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* the timestamp and the destination go first: on a phone the row has
+     to say who and whether, and the rest is detail */
+  .iph-act { grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-2); }
+  .iph-act em,
+  .iph-arw,
+  .iph-app { display: none; }
+}
+
+@media (max-width: 520px) {
+  .iph-strip { grid-template-columns: minmax(0, 1fr); }
+  .iph-body { grid-template-columns: 38px minmax(0, 1fr); }
+  .iph-rail span { width: 26px; height: 26px; }
+  .iph-main { padding: var(--sp-3); }
+}

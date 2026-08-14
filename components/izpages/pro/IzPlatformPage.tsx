@@ -35,7 +35,10 @@ import { izFontVars } from "@/lib/iz-fonts";
 import { IzConsoleLaptop } from "./IzConsoleLaptop";
 import { IzMechanismBand } from "./IzMechanismBand";
 import { IzOutcomes } from "./IzOutcomes";
-import { IzProHero } from "./IzProHero";
+/* IzProHero — the design-canvas hero (00am) — is KEPT, not deleted.
+   It is going on another page in v2, so the import stays even though
+   the platform page no longer renders it. */
+import { IzPlatformHero } from "./IzPlatformHero";
 import { IzProStack } from "./IzProStack";
 import { IzTrustEngine } from "./IzTrustEngine";
 
@@ -196,7 +199,7 @@ export function IzPlatformPage() {
   return (
     <div className={`iz ${izFontVars}`} data-theme={theme} data-system="orange">
       <IzNav theme={theme} onThemeChange={onThemeChange} />
-      <IzProHero />
+      <IzPlatformHero />
 
       {/* ---------------- PROOF ---------------- */}
       <IzLogoMarquee />

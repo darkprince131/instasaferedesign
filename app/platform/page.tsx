@@ -22,6 +22,7 @@ import "@/components/izpages/pro/consolelaptop.css";
 import "@/components/izpages/pro/trustengine.css";
 import "@/components/izpages/pro/mechanismband.css";
 import "@/components/home2/izfootergrid.css";
+import "@/components/izpages/pro/izplatformhero.css";
 
 /* SEO-locked: /platform already exists as a canonical entry in
    lib/site.ts (kind "platform"), rendered until now through the
