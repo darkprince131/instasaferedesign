@@ -460,3 +460,13 @@
   background-position: var(--ir-a, -100px) 0, var(--ir-b, -100px) 0;
 }
 .iz-irail > * { position: relative; z-index: 1; }
+
+/* An inner rail only reads as structure when there is a COLUMN either
+   side of it. On a phone every section is one column, so the rail lands
+   straight down the middle of the paragraph it was supposed to bound —
+   which is what it was doing on the MFA head block (--ir-b: 63%) and on
+   the live-visitor section (--ir-a: 55%). The outer rails still run, so
+   the page keeps its drawn edges; only the interior stroke goes. */
+@media (max-width: 900px) {
+  .iz-irail::before { display: none; }
+}

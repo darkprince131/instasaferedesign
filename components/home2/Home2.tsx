@@ -299,7 +299,11 @@ export function Home2() {
       {/* one rail + a dashed top rule — no field texture */}
       {/* One full viewport: heading, diagram and steps all in frame, so the
           walkthrough never asks you to scroll away from what it describes. */}
-      <section className="iz-section iz-framed izf-section" id="how" style={{ ["--fr-t" as string]: "7%", ["--fr-b" as string]: "7%" }}>
+      {/* The frame insets live in izaccessflow.css, not inline: they have
+          to change at the phone breakpoint (a % inset of a very tall
+          stacked section put the panel edge on top of the first line and
+          under the last), and an inline style outranks a media query. */}
+      <section className="iz-section iz-framed izf-section" id="how">
         <div className="iz-wrap">
           <div className="iz-reveal izf-head">
             <span className="iz-ey dim">How it works</span>

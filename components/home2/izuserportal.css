@@ -81,7 +81,19 @@
 .iup-me-role { font-family: var(--mono); font-size: var(--fs-micro); color: var(--tx-mute); }
 
 /* ---- content ---- */
-.iup-content { flex: 1; min-width: 0; overflow-y: auto; padding: var(--sp-4); }
+/* Same thin scrollbar the ZTNA console uses (`.iaw-content`). Left to
+   the platform default this was a full-width OS bar cutting a grey
+   channel down a mock product window, which is the one thing in the
+   screenshot that is obviously browser chrome rather than product. */
+/* Deliberately NOT `scrollbar-width: thin`. In Chromium the standard
+   property WINS and switches the ::-webkit-* rules off entirely, so
+   setting both gave a 10px bar here against the ZTNA console's 5px —
+   the two windows sit two sections apart and have to match. */
+.iup-content {
+  flex: 1; min-width: 0; overflow-y: auto; padding: var(--sp-4);
+}
+.iup-content::-webkit-scrollbar { width: 5px; }
+.iup-content::-webkit-scrollbar-thumb { background: var(--ghost); border-radius: var(--r-2xs); }
 
 /* ---- user switcher ---- */
 .iup-switch {

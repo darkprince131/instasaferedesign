@@ -189,10 +189,29 @@
   .izrw-col[data-col="3"] { display: none; }
   .izrw-stars svg { width: 16px; height: 16px; }
 }
+/* One column of quotes left, so the badge has to get out of their way.
+   Stacked (score over stars over count over mark) it was ~200px tall and
+   covered three cards at once — the wall it is supposed to be scored
+   against stopped being readable. Compressed to a single row of score ·
+   one star · mark, it reads at a glance and clears the column. The other
+   four stars and the review count are dropped, not shrunk: at this size
+   a five-star row is a texture rather than a rating, and the count is
+   already stated in the section copy. */
 @media (max-width: 520px) {
   .izrw-wall { grid-template-columns: minmax(0, 1fr); }
   .izrw-col[data-col="2"] { display: none; }
-  .iz a.izrw-badge { flex-direction: column; gap: var(--sp-3); text-align: center; }
+  .iz a.izrw-badge {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+  }
+  .izrw-score { font-size: 28px; }
+  .izrw-badge-mid { gap: 0; }
+  .izrw-stars svg { width: 18px; height: 18px; }
+  .izrw-stars svg:nth-child(n + 2) { display: none; }
+  .izrw-count { display: none; }
+  .izrw-g2 img { width: 26px; height: 26px; }
 }
 
 /* Reduced motion: the wall stops and becomes a plain readable list.

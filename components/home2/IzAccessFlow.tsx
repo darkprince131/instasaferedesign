@@ -217,6 +217,12 @@ const IcReplay = (
 const IcCheck = (
   <svg viewBox="0 0 24 24" {...sIc} strokeWidth={3} aria-hidden="true"><path d="M20 6L9 17l-5-5" /></svg>
 );
+const IcPrev = (
+  <svg viewBox="0 0 24 24" {...sIc} strokeWidth={2.2} aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
+);
+const IcNext = (
+  <svg viewBox="0 0 24 24" {...sIc} strokeWidth={2.2} aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+);
 
 const STEP_MS = 1250;
 const arr = <T,>(v: T | T[]): T[] => (Array.isArray(v) ? v : [v]);
@@ -482,6 +488,26 @@ export function IzAccessFlow() {
             </button>
             <button className="izf-btn" onClick={restart} aria-label="Restart walkthrough">
               {IcReplay} Restart
+            </button>
+          </div>
+          {/* Phone-only step controls — CSS hides this above 1000px, where
+              the tab rail above the diagram already does the job. */}
+          <div className="izf-nav">
+            <button
+              className="izf-btn"
+              onClick={() => goPhase(phase - 1)}
+              disabled={phase === 0}
+              aria-label="Previous phase"
+            >
+              {IcPrev} Back
+            </button>
+            <button
+              className="izf-btn"
+              onClick={() => goPhase(phase + 1)}
+              disabled={phase === PHASES.length - 1}
+              aria-label="Next phase"
+            >
+              Next {IcNext}
             </button>
           </div>
         </div>

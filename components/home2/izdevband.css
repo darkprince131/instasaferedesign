@@ -269,6 +269,15 @@
 }
 
 @media (max-width: 900px) {
+  /* The band is a solid panel, not text, so it does not need the
+     `--rail-inset` breathing room `.iz-railed .iz-wrap` hands every wrap.
+     On a phone that inset cost it 24px a side and the band read as
+     visibly narrower than the sections above and below it. Flush to the
+     wrap gutter puts its edges exactly where every other section's
+     content starts. */
+  .izdb.iz-railed .iz-wrap {
+    padding-inline: var(--wrap-gutter);
+  }
   .izdb-inner {
     padding: var(--sp-8) var(--sp-6) var(--sp-6);
   }

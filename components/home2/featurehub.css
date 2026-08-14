@@ -53,8 +53,13 @@
 }
 .fh-hero .mk { flex: none; width: 32px; height: 32px; border-radius: var(--r-pill); background: var(--orange); display: grid; place-items: center; }
 .fh-hero .mk svg { width: 18px; height: 18px; color: var(--btn-ink); }
-.fh-hero .ht { font-family: var(--disp); font-weight: 600; font-size: var(--fs-body); color: var(--tx); letter-spacing: -0.01em; }
-.fh-hero .hs { font-family: var(--mono); font-size: var(--fs-3xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tx-mute); margin-top: 3px; }
+/* Both are spans, and neither was ever taken out of the inline flow —
+   so "InstaSafe" and "assigned per group" ran together on one line with
+   no space between them and the `margin-top: 3px` below did nothing
+   (vertical margins are inert on inline boxes). They are the two lines
+   of the core node's label and have to be blocks to stack. */
+.fh-hero .ht { display: block; font-family: var(--disp); font-weight: 600; font-size: var(--fs-body); color: var(--tx); letter-spacing: -0.01em; }
+.fh-hero .hs { display: block; font-family: var(--mono); font-size: var(--fs-3xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tx-mute); margin-top: 3px; }
 
 /* ============================================================
    LEFT · identity stack (status cards — hover interactive)

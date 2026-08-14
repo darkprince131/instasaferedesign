@@ -285,14 +285,46 @@
 .izf-btn.pri:hover { color: var(--btn-ink); filter: brightness(1.06); }
 .izf-btn:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 
+/* prev/next — phone only (see the 1000px block). On desktop the four-up
+   tab rail is right there above the diagram and a second way to change
+   phase would just be two more buttons to read. */
+.izf-nav {
+  display: none;
+  gap: var(--sp-3);
+}
+.izf-nav .izf-btn {
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+.izf-nav .izf-btn[disabled] {
+  opacity: 0.42;
+  cursor: default;
+}
+.izf-nav .izf-btn[disabled]:hover {
+  border-color: var(--line-strong);
+  color: var(--tx);
+}
+
 /* ============================================================
    Section shell — one viewport, heading over the diagram
    ============================================================ */
+/* `.iz` qualifier is load-bearing, not decoration. The frame insets are
+   declared by `.iz-framed` in izgrid.css, which is a class of the same
+   weight ON THE SAME ELEMENT — and izgrid.css loads after this file, so a
+   bare `.izf-section` here loses the tie and the insets silently stayed
+   at the 0px default. Two classes (0,2,0) settles it regardless of order.
+   Same trap the `.iz a.izrw-badge` comment in izreviewwall.css describes. */
+.iz .izf-section {
+  /* was inline on the section in Home2.tsx; moved here so the phone
+     breakpoint can override it */
+  --fr-t: 7%;
+  --fr-b: 7%;
+}
 .izf-section {
   min-height: 100svh;
   display: grid;
   align-content: center;
-  padding-block: clamp(var(--sp-6), 4.5vh, var(--sp-section));
 }
 .izf-head { margin-bottom: clamp(var(--sp-4), 2.2vh, var(--sp-8)); }
 .izf-head .iz-h2 { margin: var(--sp-3) 0 0; }
@@ -302,7 +334,34 @@
    ============================================================ */
 @media (max-width: 1000px) {
   .izf-body { grid-template-columns: 1fr; }
-  .izf-section { min-height: 0; display: block; }
+
+  /* PERCENTAGE INSETS DO NOT SURVIVE THE STACK. On desktop this section
+     is one viewport tall, so 7% is ~63px — comfortably inside the
+     section's own 96px padding, and the filled panel reads as a plate
+     the content sits on. Stacked on a phone the same section runs to
+     ~1420px, so 7% became ~99px against that unchanged 96px padding: the
+     panel's top rule landed 3px BELOW the eyebrow and its bottom rule 3px
+     ABOVE the buttons. That is the "no padding at top, sticking out at
+     the bottom" in the review — the content was outside the plate at both
+     ends. A fixed inset cannot drift with section height. */
+  .iz .izf-section {
+    --fr-t: 32px;
+    --fr-b: 32px;
+  }
+  .izf-section {
+    min-height: 0;
+    display: block;
+  }
+
+  /* Prev/next appear below the controls. The 2x2 tab rail can still jump
+     to any phase, but stepping one at a time is the gesture a phone
+     reader reaches for, and it has to be a thumb-sized target rather
+     than a quarter of a four-up strip. */
+  .izf-nav {
+    display: flex;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--line);
+  }
 }
 
 @media (max-width: 900px) {

@@ -489,8 +489,22 @@
   .izcta-corner {
     display: none;
   }
-  .izfg-proof {
-    grid-template-columns: minmax(0, 1fr);
+  /* The compliance and recognition marks STAY two-up on a phone (user
+     call). Ten cells in one column is a 900px-tall ladder of logos, and
+     the marks are small enough that half a phone width still reads —
+     the cells lose their padding a step so the artwork keeps its size
+     rather than the box keeping its air. */
+  .izfg-badge {
+    padding: var(--sp-3) var(--sp-3);
+    min-height: 78px;
+  }
+  /* The two written stats are sentences, not marks — half a phone width
+     wraps "re-evaluated during the session, not just at login" to four
+     lines. They take the full row; only the artwork pairs up. */
+  .izfg-stat {
+    grid-column: 1 / -1;
+    padding: var(--sp-5);
+    min-height: 0;
   }
   .izfg-links {
     grid-template-columns: minmax(0, 1fr);
