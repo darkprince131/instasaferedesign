@@ -113,7 +113,18 @@ export function IzQuickScan({
   const n = ticked.size;
 
   return (
-    <div className="izqs">
+    /* IT CARRIES ITS OWN SECTION NOW. This used to render a bare
+       `<div class="izqs">` with no `<section>` and no `.iz-wrap`, and all
+       three callers (MfaPage, PosturePage, BindingPage) drop it in as
+       `<div id="quickscan"><IzQuickScan /></div>` — so on every one of
+       them the sheet ran flush to the viewport edge with no gutter and
+       no vertical rhythm against the sections above and below it.
+
+       Fixing the three callers would have left the fourth to get it
+       wrong; the chrome belongs to the component. */
+    <section className="izqs-sec">
+      <div className="iz-wrap">
+        <div className="izqs">
       <div className="izqs-head">
         <span className="iz-ey">Quick scan</span>
         <h2 className="iz-h2">
@@ -179,10 +190,17 @@ export function IzQuickScan({
         })}
       </ul>
 
+      {/* `specs`, not `SPECS`. The foot was still counting the module's
+          default platform sheet after the content became injectable, so
+          a page passing its own rows reported someone else's total. It
+          only looked right on the MFA page because both arrays happen to
+          be twelve long. */}
       <p className="izqs-foot" aria-live="polite">
-        {n === 0 ? `${SPECS.length} specs · none selected` : `${n} of ${SPECS.length} selected`}
+        {n === 0 ? `${specs.length} specs · none selected` : `${n} of ${specs.length} selected`}
         {filter && ` · showing ${filter}`}
       </p>
-    </div>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -228,13 +228,6 @@
   text-transform: uppercase;
 }
 .mfah-way span { font-size: var(--fs-sm); line-height: 1.5; color: var(--tx-dim); }
-.mfah-ways-note {
-  margin: var(--sp-5) 0 0;
-  max-width: 82ch;
-  font-size: var(--fs-sm);
-  line-height: 1.6;
-  color: var(--tx-dim);
-}
 
 @media (max-width: 1100px) {
   .mfah-ways-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

@@ -1,0 +1,53 @@
+/* ============================================================
+   mfasimulator.css — the one thing Tailwind's fixed widths cannot
+   express here, kept with the component so every page that mounts
+   it gets the fix (MFA page, MfaHero, /console).
+
+   THE CROP had two causes stacked, and only the second is the one
+   that looks like the bug.
+
+   1. THE GRID ITEMS HAD NO MIN-WIDTH. `grid-cols-[minmax(0,…)]` is
+      declared at `lg` only; below that the grid falls back to one
+      implicit `minmax(auto, 1fr)` column, and `auto` as a minimum
+      means a panel may not shrink below its own max-content. The
+      flow panel measured 1510px wide inside a 318px card. Nothing
+      showed because the card is `overflow-hidden` — it was quietly
+      slicing everything past 318px off the right edge.
+
+   2. THE OTP ROW WAS FIXED-WIDTH. Six `w-9` boxes with `gap-2`
+      need 6x36 + 5x8 = 256px, against 247px of panel content at
+      375px. Even with (1) fixed this is nine pixels over.
+
+   A fixed width one step smaller would only move the failure to a
+   narrower phone. The row divides the width it actually has
+   instead: `flex: 1 1 0` with `min-width: 0` makes six equal cells
+   of whatever is available, so it fits at 320px and at 430px and
+   at anything between.
+
+   The HEIGHT is deliberately left to Tailwind's `h-11`. An
+   `aspect-ratio` here looks tidier and is a trap: with `flex-basis:
+   0` the width comes from the flex line and the height from the
+   width, and the resolution went circular — measured cells came out
+   240x293 on a row 1470px wide.
+   ============================================================ */
+
+/* (1) — unconditional, not in a media query: a grid item that cannot
+   shrink below its content is wrong at every width, and at `lg` the
+   explicit `minmax(0, …)` track already says so. */
+.mfasim-grid > * {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .mfasim-otp {
+    width: 100%;
+    max-width: 100%;
+    gap: 6px;
+  }
+  .mfasim-otp-cell {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    font-size: 1rem;
+  }
+}

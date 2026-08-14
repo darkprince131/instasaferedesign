@@ -3,6 +3,14 @@
    Scoped .izqs; tokens from .iz.
    ============================================================ */
 
+/* The section chrome the component now ships with — see the note in
+   IzQuickScan.tsx. `--sp-section` is the same vertical rhythm the
+   sibling sections on all three host pages use, so the sheet no longer
+   butts straight against the block above it. */
+.izqs-sec {
+  padding: var(--sp-section) 0;
+}
+
 .izqs-head {
   max-width: 60ch;
 }

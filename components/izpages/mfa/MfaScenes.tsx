@@ -192,11 +192,10 @@ export function MfaHeroCells() {
             </div>
           ))}
         </div>
-        <p className="mfah-ways-note">
-          Continuous facial verification is the one that does not stop at the door: for designated high-sensitivity
-          applications the camera re-checks liveness roughly every 30 seconds, so a session someone walked away from
-          logs itself out.
-        </p>
+        {/* The continuous-facial-verification note is removed (user
+            call). The six cells above already name the methods; a
+            paragraph singling out one of them turned a clean rank of six
+            into five plus a footnote. */}
       </div>
     </div>
   );

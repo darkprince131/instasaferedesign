@@ -1,5 +1,8 @@
 "use client";
 
+/* Imported here rather than from the page, so the OTP row's fix travels
+   with the component to every page that mounts it. */
+import "./mfasimulator.css";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowClockwise,
@@ -192,7 +195,7 @@ function OtpBoxes({
 
   return (
     <motion.div
-      className="flex gap-2"
+      className="mfasim-otp flex gap-2"
       animate={status === "error" ? { x: [0, -7, 7, -5, 5, 0] } : { x: 0 }}
       transition={{ duration: 0.35 }}
       aria-label="One-time passcode, 6 digits"
@@ -214,7 +217,7 @@ function OtpBoxes({
           autoComplete="one-time-code"
           maxLength={1}
           aria-label={`Digit ${i + 1} of 6`}
-          className="h-11 w-9 rounded-lg border text-center text-lg font-semibold outline-none transition-colors sm:h-12 sm:w-10"
+          className="mfasim-otp-cell h-11 w-9 rounded-lg border text-center text-lg font-semibold outline-none transition-colors sm:h-12 sm:w-10"
           style={{
             background: "var(--db-surface-2)",
             color: "var(--db-text)",
@@ -831,7 +834,15 @@ export function MfaSimulator() {
       {/* notification toasts */}
       <AnimatePresence>{toast && <NotificationToast toast={toast} />}</AnimatePresence>
 
-      <div className="grid gap-px lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]" style={{ background: "var(--db-border)" }}>
+      {/* `mfasim-grid` exists to give the CHILDREN `min-width: 0`. The
+          `minmax(0, …)` above only guards the two-column desktop track;
+          below `lg` the grid falls back to a single implicit
+          `minmax(auto, 1fr)` column, whose `auto` minimum lets a panel
+          size to its content instead of to the track. Measured on a
+          phone the flow panel came out 1510px wide inside a 318px card
+          — invisible only because the card is `overflow-hidden`, which
+          is what was slicing the OTP row. */}
+      <div className="mfasim-grid grid gap-px lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]" style={{ background: "var(--db-border)" }}>
         {/* -------- left: identity + method picker -------- */}
         <div className="p-5" style={{ background: "var(--db-bg)" }}>
           <div className="flex items-center gap-3">

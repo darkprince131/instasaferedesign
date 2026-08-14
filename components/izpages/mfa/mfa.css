@@ -71,8 +71,19 @@
   padding: var(--sp-6);
   overflow: hidden;
 }
+/* On a phone this was a bordered card holding a bordered card: the
+   simulator draws its own `rounded-2xl border`, so `.mfa-sim`'s frame
+   and padding were 34px of a 375px screen spent drawing a second edge
+   1px outside the first. Handing that width to the simulator is what
+   the review meant by "use the whitespace around it" — the flow inside
+   gets 321px instead of 287. */
 @media (max-width: 720px) {
-  .mfa-sim { padding: var(--sp-4); }
+  .mfa-sim {
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
 }
 
 /* ============================================================
