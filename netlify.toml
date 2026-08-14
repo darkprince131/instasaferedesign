@@ -1,18 +1,47 @@
 # ============================================================
-# Netlify deploy config for the exported site.
+# Netlify build config. The site is git-connected to the GitHub
+# repo, so a push to `main` builds and deploys automatically —
+# there is nothing to run by hand.
 #
-# The build does NOT run on Netlify. gitlab.instasafe.io is a
-# self-hosted GitLab and Netlify's git integration only speaks to
-# gitlab.com, so deploys are pushed from a machine that has the repo:
+# ▸ THE COMMAND IS NOT OPTIONAL ◂ `out/` is gitignored, because it
+#   is 31MB of generated files. Without `command` below, Netlify
+#   finds no publish directory, fails the deploy, and quietly keeps
+#   serving the previous build — which looks exactly like "my
+#   changes didn't go out".
 #
-#   npm run deploy:preview   → a draft URL, for internal review
-#   npm run deploy:live      → production
-#
-# Both build `out/` first. See package.json.
+# `build:static` sets NEXT_EXPORT=1 and calls the normal build, so
+# `prebuild` still runs and a dead link still fails the deploy. It
+# is the INDEXABLE build; `build:preview` is the noindex one and is
+# deliberately not used here.
 # ============================================================
 
 [build]
+  command = "npm run build:static"
   publish = "out"
+
+[build.environment]
+  # Next 16 needs a modern Node; Netlify's default image lags.
+  NODE_VERSION = "22"
+  # Keep devDependencies — the build needs TypeScript and Tailwind.
+  NPM_FLAGS = "--include=dev"
+
+# ---------- THE BLOG NEEDS TWO ENVIRONMENT VARIABLES ----------
+# Set in Netlify → Site configuration → Environment variables:
+#
+#   GHOST_API_URL       https://instasafe.com/blog
+#   GHOST_CONTENT_KEY   the Ghost CONTENT key (read-only)
+#
+# NOT the Admin API key — that grants write access to the whole
+# publication and nothing in this build needs it.
+#
+# Without them /blog renders as an empty index. That is deliberate:
+# lib/ghost.ts fails soft, because an unreachable third-party API
+# once took all 153 unrelated pages offline with it. Check the build
+# log for a `[ghost]` line to tell "not configured" from "worked".
+#
+# Blog POST bodies are not in this build at all — every card links
+# out to Ghost's own absolute URL on instasafe.com, so posts keep
+# working from a Netlify deploy without any proxying.
 
 # ---------- headers ----------
 # next.config.ts's headers() cannot survive a static export, so the
@@ -42,28 +71,15 @@
   [headers.values]
     Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
 
-# ---------- THE BLOG STAYS ON GHOST ----------
-# This app owns the blog INDEX only. Every post body still lives in
-# Ghost at /blog/<slug>, and those URLs are indexed — losing them is
-# the single biggest risk in the cutover.
-#
-# No `force`, deliberately: Netlify serves a matching static file
-# BEFORE consulting redirects, so `/blog/` finds our exported
-# index.html and is served locally, while `/blog/anything-else/` has
-# no file and falls through to the proxy below. Adding `force = true`
-# would break that and send the index to Ghost as well.
-#
-# ▸ PROBED 2026-08-14: Ghost has NO public origin. /blog/<slug>/ answers
-#   200 with `X-Powered-By: Express` from behind the nginx on the apex
-#   (3.108.204.3) — i.e. Ghost is reverse-proxied on that box and is not
-#   reachable from outside it. blog.instasafe.com is a different Laravel
-#   app and 404s. So this rule CANNOT be filled in until infra exposes
-#   Ghost on its own public hostname with a certificate.
-#
-#   Which is why the apex is NOT being cut over to Netlify: serving the
-#   new site from the existing nginx keeps the /blog proxy that already
-#   works. This file stays for internal preview deploys, and for the day
-#   Ghost does get its own hostname.
+# ---------- if this site ever serves the apex ----------
+# PROBED 2026-08-14: Ghost has NO public origin. /blog/<slug>/ answers
+# 200 with `X-Powered-By: Express` from behind the nginx on the apex
+# (3.108.204.3) — Ghost is reverse-proxied on that box and is not
+# reachable from outside it. blog.instasafe.com is a different Laravel
+# app and 404s. So this rule cannot be filled in until infra exposes
+# Ghost on its own public hostname with a certificate, and until then
+# instasafe.com must NOT be pointed at Netlify: every one of the 330
+# blog posts would 404.
 #
 # [[redirects]]
 #   from = "/blog/*"
