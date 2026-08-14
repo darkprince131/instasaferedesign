@@ -13,9 +13,15 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
-import { CheckCircle, Desktop, DeviceMobile, DeviceMobileCamera, DeviceTablet, Laptop, PlugsConnected, ShieldCheck, Watch, XCircle, type Icon } from "@phosphor-icons/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDown, CheckCircle, Desktop, DeviceMobile, DeviceMobileCamera, DeviceTablet, Laptop, PlugsConnected, ShieldCheck, Watch, XCircle, type Icon } from "@phosphor-icons/react";
 import { ConsoleFrame } from "./ConsoleFrame";
+
+/* The "now go and connect it" hint is dismissible FOR GOOD, because the
+   people it annoys are exactly the people who least need it: anyone
+   flipping toggles to see what happens gets it on every flip. localStorage,
+   so the choice survives the page. */
+const HINT_KEY = "iz-binding-hint-off";
 
 type DType = "laptop" | "phone" | "tablet" | "desktop" | "watch" | "rugged";
 type Device = { id: string; name: string; type: DType; os: string; bind: string; approved: boolean };
@@ -229,12 +235,48 @@ export function DeviceBindingDemo({ consoleOnly = false }: { consoleOnly?: boole
   const [approved, setApproved] = useState<Record<string, boolean>>(initApproved);
   const [result, setResult] = useState<Record<string, "ok" | "denied">>({});
 
+  /* the hint, and the mute that survives the session */
+  const [hint, setHint] = useState(false);
+  const [muted, setMuted] = useState(true); // assume muted until localStorage says otherwise, so it can never flash on first paint
+  const devicesRef = useRef<HTMLDivElement>(null);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    try {
+      setMuted(localStorage.getItem(HINT_KEY) === "1");
+    } catch {
+      setMuted(false);
+    }
+  }, []);
+  useEffect(() => () => { if (hintTimer.current) clearTimeout(hintTimer.current); }, []);
+
   const user = USERS.find((u) => u.id === sel)!;
   const toggle = (id: string) => {
     setApproved((a) => ({ ...a, [id]: !a[id] }));
     setResult((r) => { const n = { ...r }; delete n[id]; return n; }); // re-test after change
+    /* Toggling is the moment the connect step becomes relevant, and on a
+       phone the devices panel is a screen and a half below — without
+       this the reader approves something, sees nothing happen, and
+       leaves. Re-armed on every toggle, hence the timer reset. */
+    if (!muted && !consoleOnly) {
+      setHint(true);
+      if (hintTimer.current) clearTimeout(hintTimer.current);
+      hintTimer.current = setTimeout(() => setHint(false), 9000);
+    }
   };
-  const connect = (id: string) => setResult((r) => ({ ...r, [id]: approved[id] ? "ok" : "denied" }));
+  const connect = (id: string) => {
+    setResult((r) => ({ ...r, [id]: approved[id] ? "ok" : "denied" }));
+    setHint(false); // they found it; stop pointing at it
+  };
+  const goToDevices = () => {
+    devicesRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setHint(false);
+  };
+  const muteHint = () => {
+    setHint(false);
+    setMuted(true);
+    try { localStorage.setItem(HINT_KEY, "1"); } catch {}
+  };
 
   const lastDenied = user.devices.find((d) => result[d.id] === "denied");
 
@@ -243,11 +285,56 @@ export function DeviceBindingDemo({ consoleOnly = false }: { consoleOnly?: boole
   }
 
   return (
-    <div className="space-y-6">
+    <div className="@container/dbd space-y-6">
       <AdminConsole sel={sel} onSel={setSel} approved={approved} onToggle={toggle} />
 
+      {/* Sits directly under the console, which is where the eye already
+          is after a toggle — a corner toast would be one more thing to
+          notice. "Not again" is a real preference, not a close button:
+          see HINT_KEY. */}
+      <AnimatePresence>
+        {hint && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            role="status"
+            className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border px-3.5 py-3 text-[12px]"
+            style={{ background: "color-mix(in srgb, var(--db-accent) 10%, var(--db-bg))", borderColor: "color-mix(in srgb, var(--db-accent) 34%, var(--db-border))", color: "var(--db-text)" }}
+          >
+            <ArrowDown size={16} weight="bold" className="shrink-0" style={{ color: "var(--db-accent)" }} />
+            {/* `basis-full` until the block is wide enough for both: the
+                buttons do not shrink, so on one line they left the
+                sentence about 60px wide and it wrapped a word per line. */}
+            <span className="min-w-0 flex-1 basis-[calc(100%-2rem)] font-semibold @[460px]/dbd:basis-auto">
+              Approval saved. Now scroll down and press <b>Connect</b> on that device to see what changed.
+            </span>
+            <span className="flex shrink-0 items-center gap-3">
+              <button type="button" onClick={goToDevices} className="cursor-pointer rounded-md px-2.5 py-1 text-[11px] font-semibold text-white" style={{ background: "var(--db-accent)" }}>
+                Take me there
+              </button>
+              <button type="button" onClick={muteHint} className="cursor-pointer text-[11px] underline underline-offset-2" style={{ color: "var(--db-text-mute)" }}>
+                Don&apos;t show again
+              </button>
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* The standing pointer, for the reader who has not toggled anything
+          yet. The banner above only fires on a toggle, and the failure it
+          prevents — approving something, seeing nothing happen, leaving —
+          starts before the first toggle. Hidden while the banner is up so
+          the block never says the same thing twice. */}
+      {!hint && (
+        <p className="flex items-center justify-center gap-2 text-center text-[11px]" style={{ color: "var(--db-text-mute)" }}>
+          <ArrowDown size={13} weight="bold" style={{ color: "var(--db-accent)" }} />
+          Approve here — then connect from {user.name.split(" ")[0]}&apos;s own devices, below.
+        </p>
+      )}
+
       {/* the user's actual devices */}
-      <div className="rounded-2xl border p-5 lg:p-6" style={{ background: "var(--db-bg)", borderColor: "var(--db-border)", boxShadow: "var(--db-shadow)" }}>
+      <div ref={devicesRef} className="rounded-2xl border p-4 sm:p-5 lg:p-6" style={{ background: "var(--db-bg)", borderColor: "var(--db-border)", boxShadow: "var(--db-shadow)" }}>
         <div className="mb-1 flex flex-wrap items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: "color-mix(in srgb, var(--db-accent) 20%, transparent)", color: "var(--db-accent)" }}>{user.name.split(" ").map((w) => w[0]).join("")}</span>
           <span className="text-sm font-semibold" style={{ color: "var(--db-text)" }}>{user.name}&apos;s devices</span>

@@ -42,7 +42,10 @@ const STEPS: Step[] = [
 /* ---------- the fork ---------- */
 const F_Y = R_Y + STEPS.length * STEP_H + 56;
 const F_W = 244;
-const F_H = 214;
+/* 214 -> 232: the untrusted card's caption is two lines now (see the note
+   at that <text>), and its second baseline sat 4px off the old card edge.
+   K_Y is derived from this, so the closing card follows it down. */
+const F_H = 232;
 const F_LX = MID - F_W - 14;
 const F_RX = MID + 14;
 
@@ -161,8 +164,16 @@ export function AnswerBinding() {
       <text x={F_RX + F_W / 2} y={F_Y + 168} textAnchor="middle" className="a-text an-sm a-deny">
         Access blocked
       </text>
+      {/* Two lines, because SVG text does not wrap and this one is the
+          longest label in the drawing — set on one line it ran past both
+          edges of its own 244px card. `certificate matches` opposite is
+          short enough to stay single, so the two cards are given the
+          same first baseline and this one hangs its second line below. */}
       <text x={F_RX + F_W / 2} y={F_Y + 192} textAnchor="middle" className="a-text an-xs a-mute">
-        same password, no certificate
+        same password,
+      </text>
+      <text x={F_RX + F_W / 2} y={F_Y + 210} textAnchor="middle" className="a-text an-xs a-mute">
+        no certificate
       </text>
 
       {/* ================= the closing card ================= */}
