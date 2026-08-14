@@ -458,6 +458,27 @@
 
 @media (max-width: 860px) {
   .ztuc { grid-template-columns: minmax(0, 1fr); padding: var(--sp-4); }
+
+  /* PHONE: THE RAIL AND THE SENTENCE, NOTHING ELSE (user call).
+     The scene is a five-part flow that has already had to turn a corner
+     to fit 556px — at 300px it is a stack of clipped chips, and the
+     benefits column repeats in four bullets what the sentence above
+     already says in one. Six use cases each needing a scroll to read is
+     what made this section overwhelming rather than informative.
+
+     What survives is exactly what answers "does this cover me": the
+     six labels you can tap, and the title and sentence for the one you
+     tapped. Nothing here is the only place its information lives — the
+     scene's nodes and the benefit bullets are both restatements of the
+     description. */
+  .ztuc-scene,
+  .ztuc-outs,
+  .ztuc-note,
+  .ztuc-benefits {
+    display: none;
+  }
+  .ztuc-stage { padding: var(--sp-5) 0 0; }
+  .ztuc-desc { max-width: none; }
   /* the rail becomes a horizontal scroller: a 210px column of six
      labels is a third of a phone screen */
   .ztuc-rail {

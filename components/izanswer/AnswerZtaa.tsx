@@ -30,6 +30,17 @@ import { Glyph, type GlyphName } from "@/components/izoutcomes/artifacts/DrawnGl
 
 const VB_W = 720;
 const VB_H = 820;
+/* THE DRAWING TOUCHES BOTH EDGES. Measured: the topmost element's box
+   starts at y exactly 0, so its 1px stroke is half outside the canvas
+   and the panel reads as sliced along its top edge — which is what the
+   review saw above the app grid. The bottom is worse by a pixel: the
+   closing accent line's box ends at 821 against a height of 820.
+
+   Rather than move ten coordinates, the canvas gains a margin: the
+   viewBox origin goes negative and the height grows by twice the pad.
+   Nothing inside moves, so every constant below still reads against the
+   same grid. */
+const VB_PAD = 10;
 const MID = 360;
 
 /* ---------- step 1 · the portal, and what is not in it ---------- */
@@ -99,7 +110,7 @@ function Step({ n, cy, label }: { n: number; cy: number; label: string }) {
 export function AnswerZtaa() {
   return (
     <svg
-      viewBox={`0 0 ${VB_W} ${VB_H}`}
+      viewBox={`${-VB_PAD} ${-VB_PAD} ${VB_W + VB_PAD * 2} ${VB_H + VB_PAD * 2}`}
       className="iz-art iz-ans iz-ans--ztaa"
       role="img"
       aria-label="One person signs in to a browser portal and sees only the applications they were provisioned; two others are absent. Opening one starts a session that is recorded and watermarked, with copy-out and download refused, and every action is written to an audit record."

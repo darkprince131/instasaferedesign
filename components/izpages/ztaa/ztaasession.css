@@ -57,13 +57,21 @@
    rather than shrink the page to them, so that is what happens here:
    the scene keeps a legible minimum and takes its own scrollbar. The
    page itself still never scrolls sideways. */
+/* SUPERSEDED ON PHONES (user call). The scroll-instead-of-shrink
+   convention above is the right instinct and the wrong outcome here: a
+   540px scene inside a 300px column is a diagram you have to drag
+   sideways to read, one scene at a time, eight times — and each one
+   only ever restates the control its own heading already names. The
+   review's word for it was "breaking", and it is: what you see without
+   dragging is a cropped fragment.
+
+   So on a phone these scenes are dropped rather than scrolled. Every
+   one of them is an illustration OF the copy beside it, not a carrier
+   of anything the copy omits, so nothing is lost but the drag. */
 @media (max-width: 760px) {
   .ztss-scene {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
+    display: none;
   }
-  .ztss-scene svg { min-width: 540px; }
 }
 
 /* ---------- the shared grammar ----------
