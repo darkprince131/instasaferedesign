@@ -1,0 +1,43 @@
+# ============================================================
+# The private preview. Builds the whole site as flat HTML and
+# publishes it to GitLab Pages so the component lab (/components),
+# the review routes (/dev/*) and every page in progress can be
+# LOOKED AT by people who are not running the dev server — without
+# any of it going live on instasafe.com.
+#
+# ▸ ONE SETTING MAKES THIS PRIVATE ◂ Deploy → Pages → "Access
+#   Control", set to project members only. Without it the Pages URL
+#   is public to anyone who knows it. The export ships a
+#   Disallow-all robots.txt as a second line of defence (app/robots.ts),
+#   but that stops crawlers, not people.
+#
+# Runs on the default branch only. If this project's GitLab has no
+# runner attached the job simply never starts and nothing here does
+# any harm.
+#
+# /blog reads the Ghost Content API. Without GHOST_API_URL and
+# GHOST_CONTENT_KEY as masked CI/CD variables it renders as an empty
+# index rather than failing the build — every other page is unaffected.
+# ============================================================
+
+stages: [build]
+
+pages:
+  stage: build
+  image: node:22-alpine
+  variables:
+    # switches next.config.ts to `output: "export"` — see the note there
+    NEXT_EXPORT: "1"
+  cache:
+    key:
+      files: [package-lock.json]
+    paths: [.npm/]
+  script:
+    - npm ci --cache .npm --prefer-offline
+    # `prebuild` runs the link audit; a dead link fails the preview too
+    - npm run build
+    - mv out public_pages && rm -rf public && mv public_pages public
+  artifacts:
+    paths: [public]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

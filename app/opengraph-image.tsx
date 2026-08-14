@@ -23,6 +23,11 @@ import { ImageResponse } from "next/og";
    size and cannot fail the build in CI.
    ============================================================ */
 
+/* Already generated once at build time; saying so explicitly is what
+   `output: "export"` requires of an image route, and changes nothing
+   about the normal build. */
+export const dynamic = "force-static";
+
 export const alt = "InstaSafe — Zero Trust access in one console";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

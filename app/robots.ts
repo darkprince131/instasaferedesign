@@ -13,7 +13,18 @@ import type { MetadataRoute } from "next";
    robots.ts) or they will disagree. */
 const SITE_URL = "https://instasafe.com";
 
+/* Emitted once at build time — required by `output: "export"`, and true
+   of the normal build as well. */
+export const dynamic = "force-static";
+
 export default function robots(): MetadataRoute.Robots {
+  /* THE PREVIEW BUILD REFUSES CRAWLERS. GitLab Pages access control is a
+     setting someone has to leave switched on, and if it is ever off, the
+     preview is a second complete copy of the site on a different host.
+     Belt and braces: the export ships a Disallow-all instead. */
+  if (process.env.NEXT_EXPORT === "1") {
+    return { rules: { userAgent: "*", disallow: "/" } };
+  }
   return {
     rules: { userAgent: "*", allow: "/" },
     sitemap: `${SITE_URL}/sitemap.xml`,

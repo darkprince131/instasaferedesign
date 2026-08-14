@@ -2,8 +2,22 @@ import type { NextConfig } from "next";
 
 import { REDIRECTS } from "./lib/redirects";
 
+/* THE PRIVATE PREVIEW BUILD. `NEXT_EXPORT=1 npm run build` emits a folder
+   of flat HTML instead of a server build, which is the only thing GitLab
+   Pages can host — see .gitlab-ci.yml. It exists so the component lab at
+   /components and the /dev/* review routes can be LOOKED AT by people who
+   are not running the dev server, without any of it going live.
+
+   Three things the export cannot carry, all switched off below rather
+   than worked around: rewritten response headers, 308 redirects, and
+   ISR. None of them matter to a preview — nothing is indexed, nothing is
+   migrating, and a blog index frozen at build time is still the blog
+   index. Production builds run without the variable and are unaffected. */
+const PREVIEW = process.env.NEXT_EXPORT === "1";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  ...(PREVIEW ? { output: "export" as const, images: { unoptimized: true } } : {}),
   /* EVERY LIVE URL ENDS IN A SLASH. The sitemap of the site currently in
      Google lists 78 URLs and all of them are `/about-us/`, not
      `/about-us`. Next's default (`false`) serves the unslashed form and
@@ -25,22 +39,26 @@ const nextConfig: NextConfig = {
      mean a replaced logo stays wrong for a year; 30 days plus
      stale-while-revalidate gets the repeat-view win and still refreshes
      within a release cycle. HTML is untouched — only these extensions. */
-  async headers() {
-    return [
-      {
-        source: "/:path*.(svg|png|jpg|jpeg|webp|avif|ico|woff2)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
-        ],
-      },
-    ];
-  },
-  async redirects() {
-    /* Declared in lib/redirects.ts so app/sitemap.ts can exclude the same
-       sources. Listing a redirect in the sitemap publishes a 308 as if it
-       were a canonical page. */
-    return REDIRECTS;
-  },
+  ...(PREVIEW
+    ? {}
+    : {
+        async headers() {
+          return [
+            {
+              source: "/:path*.(svg|png|jpg|jpeg|webp|avif|ico|woff2)",
+              headers: [
+                { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
+              ],
+            },
+          ];
+        },
+        async redirects() {
+          /* Declared in lib/redirects.ts so app/sitemap.ts can exclude the
+             same sources. Listing a redirect in the sitemap publishes a 308
+             as if it were a canonical page. */
+          return REDIRECTS;
+        },
+      }),
 };
 
 export default nextConfig;

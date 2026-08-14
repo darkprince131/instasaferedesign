@@ -3,6 +3,10 @@ import { PAGES } from "@/lib/site";
 import { REDIRECT_SOURCES } from "@/lib/redirects";
 import { isIndexable } from "@/lib/indexable";
 
+/* Emitted once at build time — required by `output: "export"`, and true
+   of the normal build as well. */
+export const dynamic = "force-static";
+
 /* APEX, NOT WWW. The live sitemap — the record of what Google actually
    has indexed — lists every URL as https://instasafe.com/..., with no
    www. Canonicals, sitemap <loc>s and the robots Host must name the SAME

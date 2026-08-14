@@ -12,8 +12,13 @@ import "@/components/home2/izfootergrid.css";
 
 /* Statically rendered, refreshed hourly. No webhook revalidation in
    this phase — a post published in Ghost appears here within the hour
-   and is live on Ghost immediately either way. */
-export const revalidate = 3600;
+   and is live on Ghost immediately either way.
+
+   The hour lives on the Ghost fetch itself (`next: { revalidate: 3600 }`
+   in lib/ghost.ts), which is what actually drives the refresh. The
+   duplicate segment-level `export const revalidate` that used to sit
+   here bought nothing and had to be a literal, so it made the whole app
+   impossible to `output: "export"` for the private preview build. */
 
 /* CANONICAL IS SELF-REFERENTIAL.
    This page IS /blog — the live, indexed URL, kept so the ranking index
