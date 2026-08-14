@@ -1,38 +1,14 @@
 import {
   AppWindow,
   ArrowsClockwise,
-  Article,
-  Bank,
-  BookOpen,
-  Briefcase,
-  Buildings,
-  CalendarBlank,
-  ChartLineUp,
-  ClipboardText,
-  Cloud,
-  Compass,
-  Cube,
-  Desktop,
   DeviceMobile,
   Devices,
-  EnvelopeSimple,
   Fingerprint,
-  GitBranch,
   GlobeSimple,
-  Handshake,
   Key,
-  Laptop,
   Lock,
-  Newspaper,
-  Path,
-  Phone,
-  Scales,
   ShieldCheck,
   SignIn,
-  Stack,
-  Trophy,
-  Truck,
-  UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
@@ -40,6 +16,14 @@ import type { ReactNode } from "react";
 /* ============================================================
    Mega-menu content — the single source of truth for what the
    nav says and where it points.
+
+   ▸ ONE PANE ◂ The bar carries Platform and nothing else. Solutions,
+   Why InstaSafe and Resources were removed at the user's direction;
+   every destination they held now lives in the footer, which is why
+   iz-footer-data.ts is a long list and says so at the top. Nothing
+   was orphaned in the move — the three comparison pages and
+   /security rank, and losing every link to them would have cost
+   real traffic.
 
    ▸ URLS ARE SEO-LOCKED ◂ every href here is an existing, indexed
    instasafe.com URL (or a route already in the page registry).
@@ -52,17 +36,17 @@ import type { ReactNode } from "react";
    ▸ NOTHING OFF THE SITEMAP GATE ◂ every href below is a path
    `lib/indexable.ts` would advertise — either already indexed or
    SHIPPED. The nav and footer are the strongest internal links the
-   site has; pointing them at the 57 placeholder scaffolds would
-   funnel every crawl into pages with nothing on them and land a
-   buyer on a stub. Scaffolds stay reachable at their URLs and get
-   their nav slot back the day they are promoted to SHIPPED.
+   site has; pointing them at the placeholder scaffolds would funnel
+   every crawl into pages with nothing on them and land a buyer on a
+   stub. Scaffolds stay reachable at their URLs and get a nav slot
+   the day they are promoted to SHIPPED.
    `lib/scripts/audit-links.mjs` fails the build if this drifts.
 
    Pricing is deliberately absent from the nav — the pricing page
    still exists and is still linked from the footer.
    ============================================================ */
 
-export type MenuKey = "platform" | "solutions" | "why" | "resources";
+export type MenuKey = "platform";
 
 export type Cell = {
   t: string;
@@ -99,57 +83,11 @@ export type Pane = {
   /** Every top-level item is a real page as well as a menu. The label
       navigates there; the caret beside it opens the panel. A trigger
       that only opens a dropdown strands the hub page it is named
-      after — the four below are all built, indexed pages. */
+      after — /platform is a built, indexed page. */
   href: string;
   cols: Col[];
   strip: { note: string; links: { label: string; href: string }[] };
 };
-
-/* ---------- featured-card artwork ---------- */
-/* Both are drawn from the same tokens the rest of the site uses, so
-   they flip with the theme without a second asset. */
-
-const RegulatoryArt = (
-  <svg viewBox="0 0 320 132" aria-hidden="true">
-    <defs>
-      <pattern id="izmm-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-        <path d="M20 0H0V20" fill="none" stroke="var(--line)" strokeWidth="1" />
-      </pattern>
-    </defs>
-    <rect width="320" height="132" fill="url(#izmm-grid)" />
-    <g fontFamily="var(--mono)" fontSize="10.5" fill="var(--tx-dim)">
-      <rect x="24" y="22" width="72" height="24" rx="12" fill="none" stroke="var(--line-strong)" />
-      <text x="60" y="38" textAnchor="middle">RBI</text>
-      <rect x="106" y="22" width="80" height="24" rx="12" fill="none" stroke="var(--line-strong)" />
-      <text x="146" y="38" textAnchor="middle">SEBI</text>
-      <rect x="196" y="22" width="84" height="24" rx="12" fill="none" stroke="var(--line-strong)" />
-      <text x="238" y="38" textAnchor="middle">IRDAI</text>
-      <rect x="24" y="56" width="100" height="24" rx="12" fill="none" stroke="var(--orange)" />
-      <text x="74" y="72" textAnchor="middle" fill="var(--orange)">CERT-In</text>
-      <rect x="134" y="56" width="92" height="24" rx="12" fill="none" stroke="var(--line-strong)" />
-      <text x="180" y="72" textAnchor="middle">DPDP Act</text>
-      <rect x="24" y="90" width="120" height="24" rx="12" fill="none" stroke="var(--line-strong)" />
-      <text x="84" y="106" textAnchor="middle">Data localisation</text>
-    </g>
-  </svg>
-);
-
-const MigrationArt = (
-  <svg viewBox="0 0 320 132" aria-hidden="true">
-    <g stroke="var(--line-strong)" fill="none" strokeWidth="1.2">
-      <rect x="30" y="26" width="120" height="80" rx="6" />
-      <path d="M30 44h120M42 58h58M42 70h74M42 82h44" />
-      <rect x="176" y="26" width="114" height="34" rx="6" />
-      <rect x="176" y="72" width="114" height="34" rx="6" />
-    </g>
-    <g stroke="var(--orange)" fill="none" strokeWidth="1.6">
-      <path d="M150 66h26" />
-      <circle cx="182" cy="43" r="4" />
-      <circle cx="182" cy="89" r="4" />
-      <path d="M196 43h74M196 89h58" />
-    </g>
-  </svg>
-);
 
 /* ---------- panes ---------- */
 
@@ -197,145 +135,6 @@ export const PANES: Pane[] = [
     strip: {
       note: "InstaSafe ZTNA · one platform",
       links: [{ label: "Integrations →", href: "/integrations" }],
-    },
-  },
-
-  {
-    key: "solutions",
-    label: "Solutions",
-    href: "/solutions",
-    cols: [
-      {
-        kind: "cells",
-        head: "Replace",
-        items: [
-          { t: "VPN Alternative", d: "Retire the concentrator without re-architecting the network", href: "/vpn-alternative", Icon: ArrowsClockwise },
-          { t: "Secure Remote Access", d: "Same policy at the desk, at home and on the road", href: "/secure-remote-access", Icon: Laptop },
-          { t: "Clientless Access", d: "Browser-only access for people you do not manage", href: "/clientless-remote-access", Icon: GlobeSimple },
-          { t: "VDI & Digital Workspace", d: "Published desktops and apps without the VDI bill", href: "/solutions/vdi-secure-digital-workspace", Icon: Desktop },
-          { t: "Domain Joining", d: "Join and manage domains off the corporate LAN", href: "/domain-joining", Icon: Buildings },
-        ],
-      },
-      {
-        kind: "cells",
-        head: "Secure",
-        items: [
-          { t: "Cloud & SaaS Applications", d: "Private apps and public SaaS under one policy", href: "/secure-cloud-applications", Icon: Cloud },
-          { t: "DevOps Access", d: "Governed SSH, RDP and repository paths", href: "/secure-devops-access", Icon: GitBranch },
-          { t: "Secure VoIP Access", d: "Latency-safe access for softphone traffic", href: "/secure-voip-access", Icon: Phone },
-          { t: "Data Loss Prevention", d: "Clipboard, download and watermark controls in session", href: "/solutions/data-loss-prevention", Icon: ClipboardText },
-          { t: "Secure Web Gateway", d: "Outbound filtering and internet access control", href: "/solutions/instasafe-secure-web-gateway", Icon: GlobeSimple },
-        ],
-      },
-      /* PROOF, NOT PROSPECTUS. This rail used to list eleven /industries/*
-         pages that are still placeholders — the strongest internal links on
-         the site pointing at pages with nothing on them. The case studies
-         below are the same industries, and they are real, indexed pages. */
-      {
-        kind: "rail",
-        head: "By industry",
-        items: [
-          { t: "Banking & BFSI", href: "/case-studies/Zero-trust-for-banking", Icon: Bank },
-          { t: "IT, ITES & BPM", href: "/case-studies/Zero-trust-for-IT-sector", Icon: Desktop },
-          { t: "Logistics", href: "/case-studies/Zero-trust-for-logistics", Icon: Truck },
-          { t: "Real Estate", href: "/case-studies/Zero-trust-for-real-estate", Icon: Buildings },
-          { t: "SAP Access", href: "/case-studies/Zero-trust-for-SAP-Access", Icon: Cube },
-          { t: "ERP Access", href: "/case-studies/Zero-trust-for-ERP-Access", Icon: Stack },
-          { t: "Government (GeM)", href: "/instasafe-on-gem", Icon: Buildings },
-        ],
-      },
-    ],
-    strip: {
-      note: "Same platform · different starting point",
-      links: [
-        { label: "See all solutions →", href: "/solutions" },
-        { label: "All case studies →", href: "/case-studies" },
-      ],
-    },
-  },
-
-  {
-    key: "why",
-    label: "Why InstaSafe",
-    href: "/why-instasafe-zero-trust",
-    cols: [
-      {
-        kind: "cells",
-        head: "Compare",
-        items: [
-          { t: "Zero Trust vs VPN", d: "Where the two models actually differ", href: "/zero-trust-vs-vpn", Icon: Path },
-          { t: "vs Zscaler Private Access", d: "Side by side, control by control", href: "/instasafe-zero-trust-vs-zscaler-private-access", Icon: Scales },
-          { t: "vs Fortinet VPN", d: "What changes when the appliance goes", href: "/instasafe-zero-trust-vs-fortinet-vpn", Icon: Scales },
-          { t: "Craft a Zero Trust Strategy", d: "How to phase a rollout that survives audit", href: "/craft-a-zero-trust-strategy", Icon: Compass },
-        ],
-      },
-      {
-        kind: "cells",
-        head: "Proof",
-        items: [
-          { t: "Customer Stories", d: "Named deployments, real scale, real constraints", href: "/case-studies", Icon: UsersThree },
-          { t: "Security & Certifications", d: "Our own posture, published", href: "/security", Icon: ShieldCheck },
-          { t: "Awards & Recognition", d: "What juries and analysts have said", href: "/awards", Icon: Trophy },
-          { t: "Talk to an Engineer", d: "Not an SDR — someone who runs deployments", href: "/contact-us", Icon: EnvelopeSimple },
-        ],
-      },
-      {
-        kind: "feature",
-        head: "India-regulated by design",
-        href: "/security",
-        title: "Built for RBI, SEBI and CERT-In scrutiny",
-        desc: "Control-by-control mapping to the frameworks your auditor actually cites.",
-        cta: "See our security posture →",
-        art: RegulatoryArt,
-      },
-    ],
-    strip: {
-      note: "Built in Bengaluru · deployed across regulated India",
-      links: [{ label: "Why InstaSafe →", href: "/why-instasafe-zero-trust" }],
-    },
-  },
-
-  {
-    key: "resources",
-    label: "Resources",
-    href: "/resource-center",
-    cols: [
-      {
-        kind: "cells",
-        head: "Learn",
-        items: [
-          { t: "Blog", d: "Zero Trust, access and India compliance", href: "/blog", Icon: Article },
-          { t: "What Is Zero Trust?", d: "The complete guide, no vendor pitch", href: "/what-is-zero-trust", Icon: Compass },
-          { t: "Glossary", d: "ZTNA, SDP, SASE — plainly defined", href: "/glossary", Icon: BookOpen },
-          { t: "Resource Center", d: "Whitepapers, datasheets and webinars", href: "/resource-center", Icon: ClipboardText },
-          { t: "State of Zero Trust", d: "Our survey of Indian enterprise adoption", href: "/the-state-of-zero-trust-security-2023", Icon: ChartLineUp },
-        ],
-      },
-      {
-        kind: "cells",
-        head: "Company",
-        items: [
-          { t: "About InstaSafe", d: "Who builds this, and why", href: "/about-us", Icon: UsersThree },
-          { t: "Partners", d: "Resellers, MSSPs and integration partners", href: "/partners", Icon: Handshake },
-          { t: "Careers", d: "Open roles across engineering and GTM", href: "/careers", Icon: Briefcase, tag: "Hiring" },
-          { t: "Newsroom", d: "Press, coverage and announcements", href: "/instasafe-newsroom", Icon: Newspaper },
-          { t: "Events & Meetups", d: "Where our engineers are speaking next", href: "https://meetups.instasafe.com/events", Icon: CalendarBlank, ext: true },
-          { t: "Contact Us", d: "Reach sales or support directly", href: "/contact-us", Icon: EnvelopeSimple },
-        ],
-      },
-      {
-        kind: "feature",
-        head: "Featured",
-        href: "/vpn-alternative",
-        title: "Migrating off a legacy VPN without a maintenance window",
-        desc: "The phased cutover pattern we use in regulated environments.",
-        cta: "Read the playbook →",
-        art: MigrationArt,
-      },
-    ],
-    strip: {
-      note: "Zero Trust, explained · updated weekly",
-      links: [{ label: "Browse all resources →", href: "/resource-center" }],
     },
   },
 ];

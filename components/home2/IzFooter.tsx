@@ -1,10 +1,17 @@
 import { Logo } from "@/components/brand/Logo";
 import { ConsentTrigger } from "@/components/consent/ConsentTrigger";
+import { FOOTER_COLUMNS } from "./iz-footer-data";
 
 /* ============================================================
    IzFooter — extracted from Home2.tsx (static, no state) so
    every migrated `.iz` page gets the real footer for free.
-   No visual change versus the inline version in Home2.
+
+   It used to hold its own hand-written four-link columns, a
+   shortened echo of the homepage footer. That was survivable while
+   the mega-menu carried four panes; with the nav cut back to
+   Platform alone it was not, because this footer is on every page
+   that is not the homepage and it was the only navigation there.
+   Both footers now render the same iz-footer-data columns.
    ============================================================ */
 
 export function IzFooter() {
@@ -21,34 +28,16 @@ export function IzFooter() {
               Unified Zero Trust access for the modern enterprise.
             </p>
           </div>
-          <div>
-            <h4>Platform</h4>
-            <a href="/zero-trust-network-access">ZTNA</a>
-            <a href="/zero-trust-application-access">ZTAA</a>
-            <a href="/platform/iam">Identity</a>
-            <a href="/multifactor-authentication">MFA</a>
-          </div>
-          <div>
-            <h4>Solutions</h4>
-            <a href="/vpn-alternative">VPN Alternative</a>
-            <a href="/secure-remote-access">Remote Access</a>
-            <a href="/secure-devops-access">DevOps</a>
-            <a href="/secure-cloud-applications">Cloud Apps</a>
-          </div>
-          <div>
-            <h4>Company</h4>
-            <a href="/about-us">About</a>
-            <a href="/careers">Careers</a>
-            <a href="/partners">Partners</a>
-            <a href="/contact-us">Contact</a>
-          </div>
-          <div>
-            <h4>Resources</h4>
-            <a href="/what-is-zero-trust">What is Zero Trust</a>
-            <a href="/blog">Blog</a>
-            <a href="/resource-center">Resource Center</a>
-            <a href="/awards">Awards</a>
-          </div>
+          {FOOTER_COLUMNS.map((col) => (
+            <div key={col.head}>
+              <h4>{col.head}</h4>
+              {col.links.map((l) => (
+                <a key={l.href} href={l.href}>
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          ))}
         </div>
         <div className="iz-foot-badges">
           <span>Gartner</span>

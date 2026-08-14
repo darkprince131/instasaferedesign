@@ -3,6 +3,7 @@
 import { Logo } from "@/components/brand/Logo";
 import { ConsentTrigger } from "@/components/consent/ConsentTrigger";
 import { IzShieldField } from "./IzShieldField";
+import { FOOTER_COLUMNS } from "./iz-footer-data";
 
 /* ============================================================
    IzFooterGrid — homepage footer built as a drawn lattice.
@@ -15,61 +16,6 @@ import { IzShieldField } from "./IzShieldField";
    Homepage only. `IzFooter` stays the footer for every other
    migrated `.iz` page until this is signed off.
    ============================================================ */
-
-type Column = { head: string; links: { label: string; href: string; badge?: string }[] };
-
-const COLUMNS: Column[] = [
-  {
-    head: "Platform",
-    links: [
-      { label: "Zero Trust Network Access", href: "/zero-trust-network-access" },
-      { label: "Zero Trust Application Access", href: "/zero-trust-application-access" },
-      { label: "Identity & Access", href: "/platform/iam" },
-      { label: "Multi-Factor Authentication", href: "/multifactor-authentication" },
-      { label: "Single Sign-On", href: "/zero-trust-features/single-sign-on" },
-      { label: "Secure Enterprise Browser", href: "/secure-enterprise-browser" },
-      { label: "Privileged Access", href: "/solutions/privileged-access-management" },
-      { label: "Data Loss Prevention", href: "/solutions/data-loss-prevention" },
-      /* the catalogue is otherwise an orphan — nothing else links to it */
-      { label: "Integrations", href: "/integrations" },
-    ],
-  },
-  {
-    head: "Solutions",
-    links: [
-      { label: "VPN Alternative", href: "/vpn-alternative" },
-      { label: "Secure Remote Access", href: "/secure-remote-access" },
-      { label: "Clientless Access", href: "/clientless-remote-access" },
-      { label: "DevOps Access", href: "/secure-devops-access" },
-      { label: "Cloud Applications", href: "/secure-cloud-applications" },
-      { label: "Domain Joining", href: "/domain-joining" },
-      { label: "VoIP Access", href: "/secure-voip-access" },
-    ],
-  },
-  {
-    head: "Resources",
-    links: [
-      { label: "What Is Zero Trust", href: "/what-is-zero-trust" },
-      { label: "Case Studies", href: "/case-studies" },
-      { label: "Resource Center", href: "/resource-center" },
-      { label: "Blog", href: "/blog" },
-      { label: "Events & Meetups", href: "https://meetups.instasafe.com/events" },
-      { label: "Pricing", href: "/instasafe-zero-trust-pricing" },
-      { label: "Awards", href: "/awards" },
-    ],
-  },
-  {
-    head: "Company",
-    links: [
-      { label: "About Us", href: "/about-us" },
-      { label: "Why InstaSafe", href: "/why-instasafe-zero-trust" },
-      { label: "Careers", href: "/careers", badge: "We're hiring" },
-      { label: "Partners", href: "/partners" },
-      { label: "Contact Us", href: "/contact-us" },
-      { label: "Book a Demo", href: "/book-a-demo" },
-    ],
-  },
-];
 
 /* Certifications and recognition, as the real marks rather than as
    text. A typed-out "ISO 27001" is a claim; the mark is the thing a
@@ -188,7 +134,7 @@ export function IzFooterGrid() {
              the ordinary footer grammar, and it lets the drawn lattice
              above stay the thing that's drawn. */}
         <nav className="izfg-links" aria-label="Footer">
-          {COLUMNS.map((col) => (
+          {FOOTER_COLUMNS.map((col) => (
             <div key={col.head} className="izfg-col">
               <span className="izfg-colhead">{col.head}</span>
               <ul>
