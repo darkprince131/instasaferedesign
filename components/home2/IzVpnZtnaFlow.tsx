@@ -334,20 +334,44 @@ export function IzVpnZtnaFlow({
           {/* Restates the mode in plain words AND names the one host that
               resolved, so screen readers hear something on a session
               change too, not only on a mode change. */}
+          {/* TWO LENGTHS, ONE ARGUMENT. Both are rendered and CSS picks
+              one, rather than a media-query hook — a JS pick would render
+              the desktop string on the server and swap it after
+              hydration, which on a phone is a visible rewrite of the
+              paragraph you just started reading.
+
+              The brief version is not a truncation; it is the same claim
+              with the elaboration removed. Whichever is shown still names
+              the mode, what the gateway does or does not know, and what
+              the session can reach — which is the whole of it. */}
           <p className="izvz-caption" aria-live="polite">
-            {mode === "vpn" ? (
-              <>
-                <b>With a VPN:</b> one credential, one tunnel, one flat network. The concentrator does not know which
-                application this session is for, so it hands over <b>the whole subnet</b> and leaves the rest to
-                firewall rules. Picking a different person changes nothing — they all land in the same place.
-              </>
-            ) : (
-              <>
-                <b>With InstaSafe:</b> identity, device and posture are checked, then the gateway resolves{" "}
-                <b>exactly one host</b> for this session — <b>{grantedApp.host}</b>. The other six are not denied at the
-                door; they never appear.
-              </>
-            )}
+            <span className="izvz-caption-full">
+              {mode === "vpn" ? (
+                <>
+                  <b>With a VPN:</b> one credential, one tunnel, one flat network. The concentrator does not know which
+                  application this session is for, so it hands over <b>the whole subnet</b> and leaves the rest to
+                  firewall rules. Picking a different person changes nothing — they all land in the same place.
+                </>
+              ) : (
+                <>
+                  <b>With InstaSafe:</b> identity, device and posture are checked, then the gateway resolves{" "}
+                  <b>exactly one host</b> for this session — <b>{grantedApp.host}</b>. The other six are not denied at
+                  the door; they never appear.
+                </>
+              )}
+            </span>
+            <span className="izvz-caption-brief">
+              {mode === "vpn" ? (
+                <>
+                  <b>With a VPN:</b> one tunnel onto <b>the whole subnet</b>. Everyone lands in the same place.
+                </>
+              ) : (
+                <>
+                  <b>With InstaSafe:</b> checks pass, then <b>one host</b> resolves — <b>{grantedApp.host}</b>. The
+                  other six never appear.
+                </>
+              )}
+            </span>
           </p>
 
           <div className="izvz-stage" id="izvz-stage" data-mode={mode} ref={stageRef}>

@@ -141,15 +141,15 @@ function ReasonPath() {
         />
       </div>
 
+      {/* No link under the quote. ConvergeFlow directly above already
+          ends on "Take the data path apart" pointing at the same route,
+          so the two sat a paragraph apart reading as the same button
+          twice. The diagram's is the one that keeps it — it is attached
+          to the thing it explains; this one was attached to a full stop. */}
       <blockquote className="whyr-quote">
         <span aria-hidden="true">“</span>
         We can&apos;t leak what we never carry.
       </blockquote>
-
-      <a className="whyr-cta" href="/why-instasafe/privacy-first">
-        Take the data path apart
-        <ArrowRight size={15} weight="bold" />
-      </a>
     </section>
   );
 }

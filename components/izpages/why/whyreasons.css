@@ -367,6 +367,27 @@
   padding-block: 0;
   background: none;
 }
+/* AND THE INNER GUTTER, which the note above describes but the rules
+   never actually removed. `.iz-wrap` is `max-width: 1200px` plus
+   `padding: 0 var(--wrap-gutter)`, so an embedded section re-gutters
+   inside a column that already has gutters: measured on a phone the
+   IzDevBand plate came out at 263px starting at x=56, against the 319px
+   at x=28 of the prose directly above it. That is the "shrinking"
+   in the review, and it is the same visible fault the homepage band had
+   for a different reason (there it was `--rail-inset`).
+
+   Specificity is deliberate: `.izdb.iz-railed .iz-wrap` in izdevband.css
+   is (0,3,0), so this has to be (0,4,0) to win regardless of which sheet
+   the bundler emits last. */
+.whyr-embed > .izdb.iz-railed > .iz-wrap,
+.whyr-embed > .izlg.iz-railed > .iz-wrap,
+.whyr-embed > .izts.iz-railed > .iz-wrap,
+.whyr-embed > .izdb > .iz-wrap,
+.whyr-embed > .izlg > .iz-wrap,
+.whyr-embed > .izts > .iz-wrap {
+  max-width: none;
+  padding-inline: 0;
+}
 /* ConvergeFlow carries its own `max-width: 1060px`, which was fine as a
    standalone panel and leaves it 84px narrower than every other block
    in the column. Every embed here is measured by the section edge. */

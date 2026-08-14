@@ -18,12 +18,21 @@
 .why-mono.is-accent { color: var(--tx); }
 
 /* ---------- the pair ---------- */
+/* The container lives on the SHELL, not on `.why-compare`. An element
+   cannot match an `@container` rule against a container it establishes
+   itself, so with `container-type` on `.why-compare` the stacking rule
+   below applied to every descendant and never to the grid — two 159px
+   columns side by side on a phone, each laid out as if it owned the
+   width. See the note in WhyScenes.tsx. */
+.why-compare-shell {
+  container-type: inline-size;
+  min-width: 0;
+}
 .why-compare {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1px;
-  container-type: inline-size;
 }
 .why-col { display: grid; gap: var(--sp-4); min-width: 0; }
 .why-col-h { display: grid; gap: 3px; justify-items: center; text-align: center; }
@@ -139,23 +148,34 @@
 }
 
 /* ---------- the control plane (right only) ---------- */
-/* Sits BESIDE the path rather than on it — the offset is the claim. */
+/* Sits BESIDE the path rather than on it — the offset is the claim.
+
+   It is a BOXED node now, matching `.why-vendor` opposite. Loose text
+   floating beside a logo read as a caption that had come adrift, and
+   next to the left column's bordered card the two stops in the path
+   were not visibly the same kind of thing. Same panel treatment, tinted
+   with the accent so the columns still differ in temperature rather
+   than in structure. */
 .why-cp {
   display: grid;
   grid-template-columns: auto 16px minmax(0, 1fr);
   align-items: center;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   width: 100%;
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--orange) 26%, var(--line));
+  border-radius: var(--r-md);
 }
+/* No border or shadow of its own any more — it sits INSIDE the boxed
+   node now, and a bordered chip inside a bordered card is two frames
+   around one mark. */
 .why-cp-mark {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: var(--r-md);
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--orange) 30%, var(--line));
-  box-shadow: var(--panel-sh);
+  width: 44px;
+  height: 44px;
+  flex: none;
 }
 .why-cp-arrow {
   height: 1px;

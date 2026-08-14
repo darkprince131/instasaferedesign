@@ -101,7 +101,17 @@ function AppsNode({ tinted }: { tinted?: boolean }) {
 
 export function WhyCompare() {
   return (
-    <div className="why-compare" aria-hidden="true">
+    /* The shell exists to BE the query container. `.why-compare` used to
+       carry `container-type` itself, and an element cannot match a
+       `@container` rule against a container it establishes — so the
+       stacking rule inside `@container (max-width: 520px)` silently
+       never applied to `.why-compare`, while every rule targeting its
+       DESCENDANTS did. The result on a phone was the worst of both: two
+       159px columns still side by side, each laid out as though it had
+       the full width to itself. Moving the container up one level makes
+       the query reach the grid too. */
+    <div className="why-compare-shell" aria-hidden="true">
+      <div className="why-compare">
       {/* ---------------- the old way ---------------- */}
       <div className="why-col">
         <div className="why-col-h">
@@ -180,6 +190,7 @@ export function WhyCompare() {
             </span>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
