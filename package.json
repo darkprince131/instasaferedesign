@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "audit:links": "node lib/scripts/audit-links.mjs",
+    "prebuild": "node lib/scripts/audit-links.mjs",
     "build": "next build",
     "start": "next start"
   },

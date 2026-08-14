@@ -189,8 +189,19 @@
   padding: 3px 7px;
 }
 
-/* ---------- industry rail ---------- */
-.izmm-rail { padding: 0 var(--sp-5); }
+/* ---------- industry rail ----------
+   The rail is the shortest column in the pane, so it used to leave a
+   block of dead panel under its last row. Letting it stretch and
+   distribute its own rows keeps the bottom edge of the panel level
+   without padding the list out with links nobody asked for. */
+.izmm-col:has(> .izmm-rail) { display: flex; flex-direction: column; }
+.izmm-rail {
+  padding: 0 var(--sp-5);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 .izmm-rl {
   display: flex;
   align-items: center;

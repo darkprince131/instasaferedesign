@@ -17,6 +17,24 @@ const nextConfig: NextConfig = {
      Do not flip this without re-checking the sitemap: it changes what
      `app/sitemap.ts` emits and what every canonical tag says. */
   trailingSlash: true,
+  /* STATIC ART IS NOT REVALIDATED ON EVERY VIEW. Next serves everything
+     in public/ with `cache-control: public, max-age=0, must-revalidate`,
+     so a returning visitor re-checks ~90 logos, badges and thumbnails on
+     every navigation — 90 conditional requests to be told nothing changed.
+     These files are not content-hashed, so `immutable` for a year would
+     mean a replaced logo stays wrong for a year; 30 days plus
+     stale-while-revalidate gets the repeat-view win and still refreshes
+     within a release cycle. HTML is untouched — only these extensions. */
+  async headers() {
+    return [
+      {
+        source: "/:path*.(svg|png|jpg|jpeg|webp|avif|ico|woff2)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
+        ],
+      },
+    ];
+  },
   async redirects() {
     /* Declared in lib/redirects.ts so app/sitemap.ts can exclude the same
        sources. Listing a redirect in the sitemap publishes a 308 as if it

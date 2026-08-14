@@ -292,6 +292,10 @@
    color-mix against --tx alone reads a touch faint on dark.
    ============================================================ */
 .iz {
+  /* The sticky bar's own height, as a token, because anything that
+     scrolls into view has to clear it — see section 10. */
+  --nav-h: 66px;
+
   --rail: var(--line);
   --rail-style: dashed;
   --grid-module: 16px;
@@ -321,4 +325,39 @@
 }
 .iz[data-theme="paper"] {
   --grid-line: color-mix(in srgb, var(--tx) 6%, transparent);
+}
+
+/* ============================================================
+   10. FOCUS — the system-wide keyboard ring (WCAG 2.4.7).
+
+   Until this existed, a focused control showed whatever the
+   browser drew by default, and a dozen components had killed even
+   that with `outline: none` before restoring their own. On the
+   dark theme the UA ring is a near-black double line over a
+   near-black page — technically present, practically invisible.
+
+   Written with `:where()` so the whole rule carries ZERO
+   specificity: any component that already draws a better ring for
+   its own shape still wins, and nothing here has to be fought with
+   `!important`. The offset gap shows the page background, so the
+   ring reads as two edges (orange against background, background
+   against control) and clears 3:1 on both themes without knowing
+   what colour the control is.
+
+   `.iz-btn-pri` is the one exception: an orange ring around an
+   orange fill is one shape, so the primary button rings in ink.
+   ============================================================ */
+:where(.iz) :is(a, button, summary, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+:where(.iz) .iz-btn-pri:focus-visible {
+  outline-color: var(--btn-ink);
+  outline-offset: -5px;
+}
+/* A control that is scrolled under the sticky nav has focus you
+   cannot see (WCAG 2.4.11). Every in-page jump and every focus
+   scroll clears the bar by its own height. */
+:where(.iz) :is(a, button, summary, input, select, textarea, [tabindex]) {
+  scroll-margin-top: calc(var(--nav-h, 68px) + var(--sp-4));
 }

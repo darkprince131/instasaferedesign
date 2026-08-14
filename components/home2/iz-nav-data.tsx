@@ -7,23 +7,19 @@ import {
   Briefcase,
   Buildings,
   CalendarBlank,
-  Certificate,
   ChartLineUp,
   ClipboardText,
   Cloud,
   Compass,
-  Cpu,
+  Cube,
   Desktop,
   DeviceMobile,
   Devices,
   EnvelopeSimple,
-  Factory,
   Fingerprint,
   GitBranch,
   GlobeSimple,
   Handshake,
-  Heartbeat,
-  IdentificationCard,
   Key,
   Laptop,
   Lock,
@@ -33,7 +29,9 @@ import {
   Scales,
   ShieldCheck,
   SignIn,
+  Stack,
   Trophy,
+  Truck,
   UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
@@ -50,6 +48,15 @@ import type { ReactNode } from "react";
    carries the ranking. Two paths are 308-redirected in
    next.config.ts (/platform/ztna, /platform/sso) and must never
    be linked from here; use the canonical destination instead.
+
+   ▸ NOTHING OFF THE SITEMAP GATE ◂ every href below is a path
+   `lib/indexable.ts` would advertise — either already indexed or
+   SHIPPED. The nav and footer are the strongest internal links the
+   site has; pointing them at the 57 placeholder scaffolds would
+   funnel every crawl into pages with nothing on them and land a
+   buyer on a stub. Scaffolds stay reachable at their URLs and get
+   their nav slot back the day they are promoted to SHIPPED.
+   `lib/scripts/audit-links.mjs` fails the build if this drifts.
 
    Pricing is deliberately absent from the nav — the pricing page
    still exists and is still linked from the footer.
@@ -189,10 +196,7 @@ export const PANES: Pane[] = [
     ],
     strip: {
       note: "InstaSafe ZTNA · one platform",
-      links: [
-        { label: "Data Loss Prevention", href: "/solutions/data-loss-prevention" },
-        { label: "Secure Web Gateway", href: "/solutions/instasafe-secure-web-gateway" },
-      ],
+      links: [{ label: "Integrations →", href: "/integrations" }],
     },
   },
 
@@ -216,32 +220,37 @@ export const PANES: Pane[] = [
         kind: "cells",
         head: "Secure",
         items: [
-          { t: "Third-Party & Vendor Access", d: "Scoped, expiring access for people you do not employ", href: "/solutions/third-party-access", Icon: IdentificationCard },
-          { t: "BYOD & Unmanaged Devices", d: "Posture-gated access without owning the endpoint", href: "/solutions/byod", Icon: DeviceMobile },
           { t: "Cloud & SaaS Applications", d: "Private apps and public SaaS under one policy", href: "/secure-cloud-applications", Icon: Cloud },
           { t: "DevOps Access", d: "Governed SSH, RDP and repository paths", href: "/secure-devops-access", Icon: GitBranch },
           { t: "Secure VoIP Access", d: "Latency-safe access for softphone traffic", href: "/secure-voip-access", Icon: Phone },
-          { t: "Compliance & Audit", d: "Evidence packs auditors actually accept", href: "/solutions/compliance", Icon: ClipboardText },
+          { t: "Data Loss Prevention", d: "Clipboard, download and watermark controls in session", href: "/solutions/data-loss-prevention", Icon: ClipboardText },
+          { t: "Secure Web Gateway", d: "Outbound filtering and internet access control", href: "/solutions/instasafe-secure-web-gateway", Icon: GlobeSimple },
         ],
       },
+      /* PROOF, NOT PROSPECTUS. This rail used to list eleven /industries/*
+         pages that are still placeholders — the strongest internal links on
+         the site pointing at pages with nothing on them. The case studies
+         below are the same industries, and they are real, indexed pages. */
       {
         kind: "rail",
         head: "By industry",
         items: [
-          { t: "Banking & BFSI", href: "/industries/banking", Icon: Bank },
-          { t: "Fintech", href: "/industries/fintech", Icon: Cpu },
-          { t: "NBFC", href: "/industries/nbfc", Icon: Scales },
-          { t: "Insurance", href: "/industries/insurance", Icon: Certificate },
-          { t: "IT / ITES", href: "/industries/it-ites", Icon: Desktop },
-          { t: "Manufacturing", href: "/industries/manufacturing", Icon: Factory },
-          { t: "Government & PSU", href: "/industries/government-psu", Icon: Buildings },
-          { t: "Healthcare & Pharma", href: "/industries/healthcare-pharma", Icon: Heartbeat },
+          { t: "Banking & BFSI", href: "/case-studies/Zero-trust-for-banking", Icon: Bank },
+          { t: "IT, ITES & BPM", href: "/case-studies/Zero-trust-for-IT-sector", Icon: Desktop },
+          { t: "Logistics", href: "/case-studies/Zero-trust-for-logistics", Icon: Truck },
+          { t: "Real Estate", href: "/case-studies/Zero-trust-for-real-estate", Icon: Buildings },
+          { t: "SAP Access", href: "/case-studies/Zero-trust-for-SAP-Access", Icon: Cube },
+          { t: "ERP Access", href: "/case-studies/Zero-trust-for-ERP-Access", Icon: Stack },
+          { t: "Government (GeM)", href: "/instasafe-on-gem", Icon: Buildings },
         ],
       },
     ],
     strip: {
       note: "Same platform · different starting point",
-      links: [{ label: "See all solutions →", href: "/solutions" }],
+      links: [
+        { label: "See all solutions →", href: "/solutions" },
+        { label: "All case studies →", href: "/case-studies" },
+      ],
     },
   },
 
