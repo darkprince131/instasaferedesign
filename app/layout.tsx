@@ -56,7 +56,14 @@ export const metadata: Metadata = {
     description:
       "Replace the VPN. Unify identity, access, devices and audit in a single Zero Trust platform.",
   },
-  robots: { index: true, follow: true },
+  /* robots.txt keeps crawlers off an internal review build; this keeps
+     them off any single page of it that gets linked from somewhere they
+     already crawl, which robots.txt cannot do. Set only by
+     `npm run deploy:preview` — never by the production export. */
+  robots:
+    process.env.PREVIEW_NOINDEX === "1"
+      ? { index: false, follow: false }
+      : { index: true, follow: true },
 };
 
 const jsonLd = {

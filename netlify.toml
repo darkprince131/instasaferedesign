@@ -53,12 +53,21 @@
 # no file and falls through to the proxy below. Adding `force = true`
 # would break that and send the index to Ghost as well.
 #
-# ▸ REPLACE THE HOST BELOW before the first production deploy. It must
-#   be the origin that actually serves Ghost today — NOT instasafe.com,
-#   or the site proxies to itself and loops.
+# ▸ PROBED 2026-08-14: Ghost has NO public origin. /blog/<slug>/ answers
+#   200 with `X-Powered-By: Express` from behind the nginx on the apex
+#   (3.108.204.3) — i.e. Ghost is reverse-proxied on that box and is not
+#   reachable from outside it. blog.instasafe.com is a different Laravel
+#   app and 404s. So this rule CANNOT be filled in until infra exposes
+#   Ghost on its own public hostname with a certificate.
+#
+#   Which is why the apex is NOT being cut over to Netlify: serving the
+#   new site from the existing nginx keeps the /blog proxy that already
+#   works. This file stays for internal preview deploys, and for the day
+#   Ghost does get its own hostname.
+#
 # [[redirects]]
 #   from = "/blog/*"
-#   to = "https://GHOST-ORIGIN-HERE/blog/:splat"
+#   to = "https://GHOST-PUBLIC-HOST/blog/:splat"
 #   status = 200
 
 # ---------- 404 ----------

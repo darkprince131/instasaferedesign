@@ -18,11 +18,15 @@ const SITE_URL = "https://instasafe.com";
 export const dynamic = "force-static";
 
 export default function robots(): MetadataRoute.Robots {
-  /* THE PREVIEW BUILD REFUSES CRAWLERS. GitLab Pages access control is a
-     setting someone has to leave switched on, and if it is ever off, the
-     preview is a second complete copy of the site on a different host.
-     Belt and braces: the export ships a Disallow-all instead. */
-  if (process.env.NEXT_EXPORT === "1") {
+  /* INTERNAL REVIEW BUILDS REFUSE CRAWLERS. A preview is a second
+     complete copy of the site on a host we do not control the linking
+     of; letting it be crawled is how a staging build ends up competing
+     with production in search.
+
+     Keyed off PREVIEW_NOINDEX, deliberately NOT off NEXT_EXPORT — the
+     production build is an export too, and it must be indexable. See
+     lib/scripts/build-static.mjs. */
+  if (process.env.PREVIEW_NOINDEX === "1") {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
   return {

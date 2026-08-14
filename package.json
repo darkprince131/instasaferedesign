@@ -8,7 +8,8 @@
     "prebuild": "node lib/scripts/audit-links.mjs",
     "build": "next build",
     "build:static": "node lib/scripts/build-static.mjs",
-    "deploy:preview": "npm run build:static && netlify deploy --dir=out",
+    "build:preview": "node lib/scripts/build-static.mjs --preview",
+    "deploy:preview": "npm run build:preview && netlify deploy --dir=out",
     "deploy:live": "npm run build:static && netlify deploy --dir=out --prod",
     "start": "next start"
   },
