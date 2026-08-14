@@ -99,9 +99,9 @@ function cleanExcerpt(input: string): string {
     .trim();
 }
 
-function env(name: string, fallback?: string): string {
+function env(name: string, fallback?: string): string | null {
   const v = process.env[name] ?? fallback;
-  if (!v) throw new Error(`[ghost] Missing required env var ${name}`);
+  if (!v) return null;
   return v.replace(/\/+$/, "");
 }
 
@@ -114,9 +114,34 @@ function env(name: string, fallback?: string): string {
  * what lets the filter row be instant and count-accurate. Server-side
  * `filter=tag:` would mean one round trip per chip press for a smaller win.
  */
+/* ▸ THIS FUNCTION MUST NOT BE ABLE TO FAIL A BUILD ▸
+   It used to throw — on a missing env var, and on any non-OK response
+   from Ghost. /blog is statically prerendered, so a throw here did not
+   fail one page, it exited the whole `next build`:
+
+     Error: [ghost] Missing required env var GHOST_CONTENT_KEY
+     Export encountered an error on /blog/page: /blog, exiting the build.
+
+   That is exactly what had been happening on the deploy host. The key
+   lives in .env.local, which is gitignored because it is a secret, so
+   the host never had it — and every build since /blog landed failed and
+   left the previous deploy serving. One third-party API being
+   unreachable should never take 153 unrelated pages offline with it.
+
+   So it fails SOFT: an empty index, and a loud console error so a real
+   misconfiguration is still obvious in the build log rather than
+   silently shipping an empty page nobody notices. */
 export async function getBlogIndex(): Promise<BlogIndexData> {
   const base = env("GHOST_API_URL", "https://instasafe.com/blog");
   const key = env("GHOST_CONTENT_KEY");
+
+  if (!base || !key) {
+    console.error(
+      "[ghost] GHOST_CONTENT_KEY is not set — /blog will render empty. " +
+        "Set it in the host's environment variables to restore the index."
+    );
+    return { posts: [], tags: [] };
+  }
 
   const url =
     `${base}/ghost/api/content/posts/?` +
@@ -128,12 +153,21 @@ export async function getBlogIndex(): Promise<BlogIndexData> {
       fields: FIELDS,
     }).toString();
 
-  const res = await fetch(url, { next: { revalidate: 3600 } });
-  if (!res.ok) {
-    throw new Error(`[ghost] ${res.status} ${res.statusText} fetching posts`);
+  let json: { posts?: RawPost[] };
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) {
+      console.error(`[ghost] ${res.status} ${res.statusText} fetching posts — /blog will render empty.`);
+      return { posts: [], tags: [] };
+    }
+    json = (await res.json()) as { posts?: RawPost[] };
+  } catch (e) {
+    /* network failure, DNS, TLS, timeout — same rule: do not take the
+       build down with us */
+    console.error("[ghost] request failed — /blog will render empty.", e);
+    return { posts: [], tags: [] };
   }
 
-  const json = (await res.json()) as { posts?: RawPost[] };
   const raw = json.posts ?? [];
 
   const counts = new Map<string, GhostTag & { count: number }>();
