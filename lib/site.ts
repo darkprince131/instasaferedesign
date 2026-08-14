@@ -592,6 +592,15 @@ const company: PageDef[] = [
 
 /* ───────────────────────── LEGAL ───────────────────────── */
 const legal: PageDef[] = [
+  /* THE POST-SUBMIT LANDING. components/izdemo/zoho-lead.ts posts a
+     `returnURL` of https://instasafe.com/thank-you-demo/ — Zoho redirects
+     the browser there after it accepts the lead. That URL existed on the
+     old site and did NOT exist in this build, so every successful demo
+     request was landing on a 404 immediately after converting. It is not
+     in the live sitemap and must never be indexed (a thank-you page in
+     search results is a leaked conversion), which is why it is absent
+     from lib/indexable.ts — the sitemap gate excludes it automatically. */
+  P({ path: "/thank-you-demo", kind: "legal", eyebrow: "Thank you", title: "Thanks — we'll be in touch", h1: "Thanks. We have your request.", highlight: ["your", "request."], sub: "Someone from the InstaSafe team will get back to you within one business day. If it is urgent, email sales@instasafe.com and we will move faster." }),
   P({ path: "/privacy-policy", kind: "legal", eyebrow: "Legal", title: "Privacy Policy", h1: "Privacy Policy.", highlight: ["Policy."], sub: "How InstaSafe collects, uses and protects your data — DPDP-aligned, with clear data-handling statements." }),
   P({ path: "/terms-and-conditions", kind: "legal", eyebrow: "Legal", title: "Terms & Conditions", h1: "Terms & Conditions.", highlight: ["Conditions."], sub: "The terms governing use of the InstaSafe website and the InstaSafe ZTNA platform." }),
   P({ path: "/ios-app-terms-of-use", kind: "legal", eyebrow: "Legal", title: "iOS App Terms of Use", h1: "iOS App Terms of Use.", highlight: ["Use."], sub: "Terms of use for the InstaSafe iOS authenticator and access apps." }),

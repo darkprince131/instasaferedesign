@@ -327,11 +327,11 @@ export function IzControlSurface({ exclude }: { exclude?: string[] } = {}) {
               A single "see the platform" link sent everyone to the same
               page and made the split above it decorative. */}
           <div className="izcs-ctas">
-            <a className="izcs-cta" href="/platform/contextual-access">
+            <a className="izcs-cta" href="/platform">
               Contextual access
               <ArrowUpRight weight="bold" aria-hidden="true" />
             </a>
-            <a className="izcs-cta" href="/platform/endpoint-controls">
+            <a className="izcs-cta" href="/platform">
               Endpoint controls
               <ArrowUpRight weight="bold" aria-hidden="true" />
             </a>

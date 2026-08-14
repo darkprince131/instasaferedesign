@@ -239,7 +239,7 @@ const SECTIONS: AcaSec[] = [
     id: "policy",
     label: "Smart Access Rules",
     desc:  "Rules that adapt to identity, device health, geo, time and live risk score — no VPN admin needed.",
-    href:  "/platform/contextual-access",
+    href:  "/platform",
     Left: PolicyLeft, Right: PolicyRight,
   },
   {

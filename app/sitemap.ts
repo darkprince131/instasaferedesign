@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { PAGES } from "@/lib/site";
 import { REDIRECT_SOURCES } from "@/lib/redirects";
+import { isIndexable } from "@/lib/indexable";
 
 /* APEX, NOT WWW. The live sitemap — the record of what Google actually
    has indexed — lists every URL as https://instasafe.com/..., with no
@@ -79,14 +80,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
   ];
 
+  /* `isIndexable` is the gate: a path is advertised only if it already
+     ranks on the live site or if we finished it for version one. The
+     other 57 URLs stay live and reachable — they are simply not
+     submitted while their content is still a placeholder. */
   for (const path of BESPOKE) {
-    if (seen.has(path)) continue;
+    if (seen.has(path) || !isIndexable(path)) continue;
     seen.add(path);
     rows.push({ url: loc(path), lastModified: now, changeFrequency: "monthly", priority: 0.9 });
   }
 
   for (const p of PAGES) {
-    if (seen.has(p.path)) continue;
+    if (seen.has(p.path) || !isIndexable(p.path)) continue;
     seen.add(p.path);
     rows.push({
       url: loc(p.path),

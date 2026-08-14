@@ -210,7 +210,7 @@ function ReasonNumbers() {
           links={[
             { label: "The full spec sheet", href: "/platform", Icon: Books },
             { label: "Device checks in detail", href: "/zero-trust-features/device-posture-check", Icon: Fingerprint },
-            { label: "Control mappings", href: "/trust-center", Icon: ShieldCheck },
+            { label: "Control mappings", href: "/why-instasafe-zero-trust", Icon: ShieldCheck },
             { label: "Book a demo", href: "/book-a-demo", Icon: Presentation },
           ]}
           stats={[
@@ -378,7 +378,7 @@ function ReasonFrameworks() {
         <FrameworkList head="Global" sub="The standards your board cites" items={GLOBAL_FRAMEWORKS} />
       </div>
 
-      <a className="whyr-cta" href="/trust-center">
+      <a className="whyr-cta" href="/why-instasafe-zero-trust">
         Control-by-control mappings in the Trust Center
         <ArrowRight size={15} weight="bold" />
       </a>
