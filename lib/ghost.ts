@@ -105,6 +105,10 @@ function env(name: string, fallback?: string): string | null {
   return v.replace(/\/+$/, "");
 }
 
+/** Hosts this app itself answers on. If GHOST_API_URL names one of these,
+    the Content API request is a loop — see the check in getBlogIndex. */
+const SITE_HOSTS = ["instasafe.com", "netlify.app", "localhost"];
+
 /**
  * Fetch the whole corpus in one request (~330 posts).
  *
@@ -143,6 +147,30 @@ export async function getBlogIndex(): Promise<BlogIndexData> {
     return { posts: [], tags: [] };
   }
 
+  /* ▸ THE SITE MUST NOT ASK ITSELF FOR THE BLOG ▸
+     GHOST_API_URL defaulted to https://instasafe.com/blog back when the
+     apex was the old site and nginx reverse-proxied /blog to Ghost. The
+     moment this app started serving the apex, that default began pointing
+     at THIS BUILD: the request went out to our own /blog/ghost/api/…,
+     hit the catch-all, came back as a 404 page of HTML, and the JSON
+     parse failed into the soft-fail below — an empty index and nothing
+     that said why.
+
+     The value has to be the Ghost ORIGIN, which is not public: on the
+     EC2 box that is http://127.0.0.1:2368/blog. A build that cannot
+     reach that origin (Netlify, or a laptop) will have an empty index,
+     and that is expected rather than broken. */
+  if (SITE_HOSTS.some((h) => base.includes(h))) {
+    console.error(
+      `[ghost] GHOST_API_URL is ${base}, which is THIS SITE, not Ghost. ` +
+        "The app would be asking itself for the Content API and getting " +
+        "its own 404 page back. Point it at the Ghost origin — on the " +
+        "app server that is http://127.0.0.1:2368/blog — and note that " +
+        "Ghost is not reachable from an external build host."
+    );
+    return { posts: [], tags: [] };
+  }
+
   const url =
     `${base}/ghost/api/content/posts/?` +
     new URLSearchParams({
@@ -157,7 +185,26 @@ export async function getBlogIndex(): Promise<BlogIndexData> {
   try {
     const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) {
-      console.error(`[ghost] ${res.status} ${res.statusText} fetching posts — /blog will render empty.`);
+      console.error(
+        `[ghost] ${res.status} ${res.statusText} from ${base} — /blog will render empty.` +
+          (res.status === 401 || res.status === 403
+            ? " A 401/403 here means the key is wrong — it must be the CONTENT key (26 hex chars), not the Admin key."
+            : res.status === 404
+              ? " A 404 here means the URL is not a Ghost install, or Ghost is not mounted at that subpath."
+              : "")
+      );
+      return { posts: [], tags: [] };
+    }
+    /* Anything that is not JSON is somebody else's web page — a proxy
+       error, a login wall, or this site's own 404. Say which, because
+       `await res.json()` would otherwise throw into the catch below and
+       report a generic "request failed". */
+    const type = res.headers.get("content-type") ?? "";
+    if (!type.includes("json")) {
+      console.error(
+        `[ghost] ${base} answered 200 with "${type}", not JSON — that is a web page, not the Content API. ` +
+          "Check GHOST_API_URL points at the Ghost origin."
+      );
       return { posts: [], tags: [] };
     }
     json = (await res.json()) as { posts?: RawPost[] };
