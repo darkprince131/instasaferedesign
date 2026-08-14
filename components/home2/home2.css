@@ -233,12 +233,18 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 0;
+  width: 100%;
   height: 1px;
   background: var(--orange);
-  transition: width var(--dur-fast) var(--ease-out);
+  /* Drawn full-width and scaled from zero rather than animated from
+     `width: 0`. Same wipe, but it runs on the compositor — a width
+     transition relayouts the underline on every frame of every nav
+     hover, on every page. */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-fast) var(--ease-out);
 }
-.iz-links a:hover::after { width: 100%; }
+.iz-links a:hover::after { transform: scaleX(1); }
 .iz-nav-right { display: flex; align-items: center; gap: 14px; }
 
 /* ---------- mobile nav: single theme circle + hamburger ---------- */
@@ -447,7 +453,16 @@
   border-bottom: 1px solid var(--line);
   cursor: pointer;
   position: relative;
-  transition: padding-left var(--dur) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  transition: background var(--dur-fast) var(--ease-out);
+}
+/* The hover nudge used to be `padding-left: 14px → 22px`, which reflows
+   the row's grid on every frame — and narrows the 1fr column, so a long
+   description could rewrap mid-hover. Translating the left-hand cells
+   gives the identical 8px inset with no layout at all. The stat cell is
+   excluded because it is anchored to the right edge: growing the padding
+   never moved it, and translating it would. */
+.iz-row > :not(.iz-row-stat) {
+  transition: transform var(--dur) var(--ease-out);
 }
 .iz-row::before {
   content: "";
@@ -458,7 +473,7 @@
   transition: opacity var(--dur-fast) var(--ease-out);
   pointer-events: none;
 }
-.iz-row:hover { padding-left: 22px; }
+.iz-row:hover > :not(.iz-row-stat) { transform: translateX(8px); }
 .iz-row:hover::before { opacity: 1; }
 .iz-row-i { font-family: var(--mono); font-size: var(--fs-sm); color: var(--tx-mute); transition: color var(--dur-fast) var(--ease-out); }
 .iz-row:hover .iz-row-i { color: var(--orange); }
@@ -670,6 +685,8 @@
   .iz-reveal[data-dir] { opacity: 1; transform: none; transition: none; }
   .iz-step { opacity: 1; transform: none; animation: none; }
   .iz-btn:hover, .iz-cell:hover, .iz-bento-cell:hover, .iz-row:hover { transform: none; }
+  /* the row's inset nudge moved off padding and onto its cells */
+  .iz-row:hover > :not(.iz-row-stat) { transform: none; }
   /* active-press feedback is exempt — a quick tap scale stays even under reduced motion */
   .iz-btn:active { transform: scale(0.97); }
 }
