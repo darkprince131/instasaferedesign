@@ -36,12 +36,25 @@
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  margin: 0;
+  /* `margin-block`, NOT `margin: 0` — this element also carries
+     `.iz-wrap`, whose `margin: 0 auto` is what centres the content
+     column. The shorthand was resetting the horizontal auto too, so the
+     line was not merely left-aligned, it was sitting at x=0 against the
+     viewport edge while every other block started at 143. */
+  margin-block: 0;
   padding-block: var(--sp-6);
   font-size: var(--fs-body-sm);
   font-weight: 500;
 }
 .pos-kicker svg { color: var(--orange); }
+/* Centred from tablet up. Left-aligned it sat alone at the far edge of
+   a 1200px rule with the whole width empty beside it — a one-line
+   standing claim between two full-bleed bands reads as a caption that
+   lost its picture. On a phone the line nearly fills the column, so it
+   stays where it is. */
+@media (min-width: 768px) {
+  .pos-kicker { justify-content: center; }
+}
 
 /* ---------- section rhythm ---------- */
 .pos-sec { padding: var(--sp-section) 0; }

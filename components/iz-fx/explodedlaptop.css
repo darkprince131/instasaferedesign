@@ -266,18 +266,91 @@
    eight checks that matter, give them a size step up, and shorten
    the pin — the explosion is the star on a phone. */
 
+/* ---------- the phone ticker ----------
+   Hidden by default; the phone block below turns it on. Rows are
+   stacked in one grid cell so switching family cannot shift layout,
+   and each row's band is [--a, --b) with a short crossfade either
+   side — two clamps rather than the single `--p` ramp the sheet uses,
+   because this wants a WINDOW, not a ramp. */
+.xl-ticker {
+  display: none;
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  /* clears the IzSideNav pill: bottom 18 + height 46 = 64 */
+  bottom: 76px;
+  z-index: 2;
+  pointer-events: none;
+}
+.xl-tick {
+  grid-area: 1 / 1;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--xl-line-dim);
+  border-left: 2px solid var(--xl-accent);
+  border-radius: var(--r-sm, 8px);
+  background: color-mix(in srgb, var(--bg, #0a0b0d) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  --in: clamp(0, calc((var(--progress, 0) - var(--a)) / 0.02), 1);
+  --out: clamp(0, calc((var(--progress, 0) - var(--b)) / 0.02), 1);
+  opacity: calc(var(--in) - var(--out));
+}
+.xl-tick-n {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--xl-accent);
+}
+.xl-tick-fam {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--xl-text);
+}
+.xl-tick-checks {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--xl-line-dim);
+  /* the long families run to three names; let them wrap rather than
+     truncate — this strip is the only place they are readable now */
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 767px) {
   .xl-sec {
     height: min(var(--pin, 300vh), 200vh);
   }
-  .xl-callout:not(.xl-min) {
+
+  /* THE SHEET BECOMES THE DRAWING, NOTHING ELSE. Every callout goes,
+     including the `.xl-min` ones that used to survive — at 375px the
+     1800-wide sheet renders 14px check names at about 3px, so "some of
+     them, still illegible" was the worst of both. The clusters move to
+     `.xl-ticker` below, at real type size, one at a time.
+
+     With the labels gone the drawing can have the width they were
+     using: 235% of the pin, centred, clipped by `.xl-pin`'s existing
+     `overflow: hidden`. That crops the empty label gutters and lands
+     the laptop at roughly full-bleed — about 2.3x its old size. No
+     viewBox change and no JS breakpoint; the svg is simply drawn
+     larger than the window it sits in. */
+  .xl-callout {
     display: none;
   }
-  /* No size bump. Box widths and check positions are cut for the
-     20px advance, and every bump tried (27, then 22) ran the long
-     labels into their own checkmarks. A genuinely larger mobile
-     type needs a second row manifest, not a font-size override —
-     flagged as the component's known follow-up. */
+  .xl {
+    width: 235%;
+    max-width: none;
+    max-height: none;
+  }
+  .xl-ticker {
+    display: grid;
+  }
 }
 
 /* ---------- reduced motion ----------
@@ -296,5 +369,17 @@
   }
   .xl-root {
     --progress: 1 !important;
+  }
+  /* The ticker is a scrub readout; with the scrub gone it would pin
+     one arbitrary family over a static figure. The callouts come back
+     instead — that state is the labelled diagram. */
+  .xl-ticker {
+    display: none !important;
+  }
+  .xl-callout {
+    display: revert;
+  }
+  .xl {
+    width: min(100%, 1640px);
   }
 }

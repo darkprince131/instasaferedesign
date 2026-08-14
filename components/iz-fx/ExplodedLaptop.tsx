@@ -207,6 +207,29 @@ const clusterWin = (idx: number) => {
   return { a: f2(a), b: f2(a + 0.11) };
 };
 
+/* ---------- the phone ticker ----------
+   On a phone the eight clusters were unreadable — 14px check names on
+   an 1800-wide sheet squeezed into 375px land at about 3px, and the
+   old mobile rule could only hide five of the eight and leave the rest
+   just as small. The note it left ("a genuinely larger mobile type
+   needs a second row manifest, not a font-size override") is what this
+   is: the SHEET keeps only the drawing, at 2.35x its old size, and the
+   clusters become a single line of real type at the foot of the pin
+   that advances one family at a time as you scroll.
+
+   Windows are the ticker's own, not `clusterWin`'s. Those overlap by
+   design — several callouts stand on the sheet at once — whereas the
+   ticker shows exactly one, so the callout phase (0.45 → 1) is split
+   into eight equal slots instead. */
+const TICK_FROM = 0.45;
+const TICK_SPAN = (1 - TICK_FROM) / 8;
+const tickWin = (idx: number) => ({
+  a: f2(TICK_FROM + idx * TICK_SPAN),
+  /* the last slot runs to the end rather than to 1 - span, so the
+     final family is still on screen when the stamp lands */
+  b: idx === 7 ? 1.2 : f2(TICK_FROM + (idx + 1) * TICK_SPAN),
+});
+
 /* +26 reserves the checkmark's lane (w−36 … w−17) beside the family
    label — without it the tick prints over long family names */
 const clusterW = (c: Cluster) =>
@@ -556,6 +579,29 @@ export function ExplodedLaptop({
     >
       <div className="xl-pin">
         <Sheet posture={variant === "posture"} />
+
+        {/* Phone only (CSS). It is `aria-hidden` because the sheet's own
+            `aria-label` already names what the drawing is doing, and a
+            screen reader should not be read eight family names it
+            cannot navigate. */}
+        {variant === "posture" && (
+          <div className="xl-ticker" aria-hidden="true">
+            {CLUSTERS.map((c, i) => {
+              const w = tickWin(i);
+              return (
+                <p
+                  key={c.family}
+                  className="xl-tick"
+                  style={{ ["--a" as string]: w.a, ["--b" as string]: w.b } as React.CSSProperties}
+                >
+                  <span className="xl-tick-n">{String(i + 1).padStart(2, "0")}/08</span>
+                  <span className="xl-tick-fam">{c.family}</span>
+                  <span className="xl-tick-checks">{c.checks.join(" · ")}</span>
+                </p>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
