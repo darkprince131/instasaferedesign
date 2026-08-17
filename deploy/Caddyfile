@@ -1,0 +1,51 @@
+﻿instasafe.com, www.instasafe.com {
+	encode gzip zstd
+
+	# ---- security headers, every response ----
+	# HSTS deliberately WITHOUT includeSubDomains/preload: *.instasafe.com
+	# is a wildcard onto a separate box and staging exists. Forcing HTTPS
+	# on every subdomain before auditing them can take one offline, and
+	# preload is very hard to undo. Add both once subdomains are checked.
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		-Server
+		-X-Powered-By
+	}
+
+	# /blog and /blog/ are THIS app's blog index page. Must be matched
+	# before the legacy rule below, which would otherwise swallow it.
+	@blogindex path /blog /blog/
+	handle @blogindex {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	# The legacy box holds Ghost (/blog/*) and the resource-center PDFs
+	# (/docs/*). Ghost's own pages pull jsdelivr, jQuery, Facebook and
+	# GTM, so an enforced CSP here would break an app this repo does not
+	# own. Report-Only collects the evidence without the risk.
+	@legacy path /blog/* /docs/*
+	handle @legacy {
+		header Content-Security-Policy-Report-Only "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; frame-ancestors 'self'"
+		reverse_proxy https://172.31.28.21 {
+			header_up Host instasafe.com
+			transport http {
+				tls
+				tls_server_name instasafe.com
+			}
+		}
+	}
+
+	# The Next app. 'unsafe-inline' on script-src is required by the theme
+	# bootstrap and the JSON-LD block; nonces need per-request rendering
+	# and these pages are prerendered. The three script hosts are the
+	# consent-gated tags (GTM, Zoho PageSense, Clearbit) and load only
+	# after consent. crm.zoho.com is where the demo form posts.
+	handle {
+		header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.pagesense.io https://tag.clearbitscripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://crm.zoho.com https://cdn.pagesense.io https://tag.clearbitscripts.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; form-action 'self' https://crm.zoho.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+		reverse_proxy 127.0.0.1:3000
+	}
+}

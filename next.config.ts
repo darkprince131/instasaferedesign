@@ -17,6 +17,11 @@ const PREVIEW = process.env.NEXT_EXPORT === "1";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /* `X-Powered-By: Next.js` names the framework and version family to
+     anyone scanning, and buys nothing. Caddy also strips it at the edge;
+     this removes it at the source so a change to the edge config cannot
+     quietly put it back. */
+  poweredByHeader: false,
   ...(PREVIEW ? { output: "export" as const, images: { unoptimized: true } } : {}),
   /* EVERY LIVE URL ENDS IN A SLASH. The sitemap of the site currently in
      Google lists 78 URLs and all of them are `/about-us/`, not
