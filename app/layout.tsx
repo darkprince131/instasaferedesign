@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "@/components/help/help-widget.css";
 import { ConsentProvider } from "@/components/consent/ConsentProvider";
+import { CONSENT_MODE_DEFAULT_SNIPPET } from "@/components/consent/consent-mode";
 import { IzHelpWidget } from "@/components/help/IzHelpWidget";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -109,6 +110,18 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.dataset.theme=t;}catch(e){}})();`,
           }}
+        />
+        {/* GOOGLE CONSENT MODE v2 DEFAULT — must stay HERE, in <head>, and
+            must stay unconditional. It denies every Google consent signal
+            before gtm.js exists; gtm.js is injected by next/script
+            afterInteractive, i.e. long after this head script has run, so
+            the ordering is structural rather than a race we hope to win.
+            If the default were ever to land after gtm.js, Google would
+            treat the visitor as legacy-untracked and the modeled counts
+            for rejecting visitors would silently stop. Rationale and the
+            snippet itself live in components/consent/consent-mode.ts. */}
+        <script
+          dangerouslySetInnerHTML={{ __html: CONSENT_MODE_DEFAULT_SNIPPET }}
         />
       </head>
       <body>
