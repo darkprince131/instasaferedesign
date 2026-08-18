@@ -1,0 +1,239 @@
+/* ============================================================
+   careers.css — /careers
+
+   Rules this sheet keeps:
+
+   1. TOKENS ONLY. No literal colours, no invented spacing steps.
+      (The one hex on this page lives in ZohoJobs.tsx, where it has
+      to: it is handed to a third-party script whose DOM our custom
+      properties never reach.)
+
+   2. THE ZOHO WIDGET IS SOMEONE ELSE'S CSS. Their stylesheet is
+      appended to <head> at runtime, so it lands after ours and wins
+      every equal-specificity tie. Anything we genuinely need to
+      override is written as `.iz .czr-jobs …` (0,2,1) rather than
+      `.czr-jobs …` (0,1,1). We override as little as possible —
+      width, rhythm and link colour — and let their sheet own the
+      listing internals.
+
+   3. NO INDEX NUMBERS anywhere (docs/no-index-numbers-rule.md).
+      The drives and the offers are sets, not sequences.
+   ============================================================ */
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.czr-hero {
+  position: relative;
+  padding: var(--sp-12) 0 var(--sp-section);
+}
+.czr-hero-in {
+  max-width: 44rem;
+}
+.czr-hero-in .iz-h1 {
+  max-width: 12ch;
+}
+.czr-hero-in .iz-lead {
+  max-width: 62ch;
+  margin-top: var(--sp-5);
+  color: var(--tx-dim);
+}
+
+/* the short rule under the headline — same mark the other rebuilt
+   heroes carry, so this page reads as a sibling of /why and /vpn */
+.czr-rule {
+  display: block;
+  width: 34px;
+  height: 3px;
+  margin-top: var(--sp-5);
+  border-radius: var(--r-pill);
+  background: var(--orange);
+}
+
+.czr-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+/* ============================================================
+   SECTION SHELL
+   ============================================================ */
+.czr-sec {
+  position: relative;
+  padding: var(--sp-section) 0;
+  border-top: 1px solid var(--line);
+}
+.czr-sec--alt {
+  background: var(--bg-2);
+}
+
+.czr-head {
+  max-width: 56ch;
+  margin-bottom: var(--sp-head);
+}
+.czr-head .iz-h2 {
+  margin-top: var(--sp-4);
+}
+.czr-head p {
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+}
+
+/* ============================================================
+   CARD SETS — the three drives, the four offers
+
+   Both use `.iz-gridcell` for the box itself (border, radius,
+   padding, h3/p type) and add only the icon, the internal rhythm
+   and the hover. `minmax(0, 1fr)` rather than `1fr`: a long title
+   like "Comprehensive Insurance for Entire Family" would otherwise
+   set the column's min-content width and blow the row out.
+   ============================================================ */
+.czr-cards {
+  display: grid;
+  gap: var(--gap-grid);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.czr-cards--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.czr-cards--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.czr-card {
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.czr-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+/* The lift is decoration, and a card is not a control — anyone who
+   has asked for less motion gets the border change only. */
+@media (prefers-reduced-motion: reduce) {
+  .czr-card {
+    transition: border-color var(--dur) var(--ease);
+  }
+  .czr-card:hover {
+    transform: none;
+  }
+}
+
+.czr-ic {
+  display: block;
+  color: var(--orange);
+}
+/* `.iz-gridcell h3` already sets the family, size and top margin;
+   this only lifts the weight, because these titles are names of
+   things rather than sentence heads. */
+.czr-card h3 {
+  font-weight: 500;
+}
+.czr-card p {
+  line-height: var(--lh-body);
+}
+
+/* ============================================================
+   THE ZOHO RECRUIT WIDGET
+
+   `min-height` is the whole point of this block: the listing is
+   fetched client-side, so without a reserved box the footer sits
+   under the heading on first paint and is shoved down a second
+   later. 400px is roughly four job rows — enough that the arriving
+   list usually fits inside the space already held.
+   ============================================================ */
+.czr-sec--openings {
+  scroll-margin-top: calc(var(--nav-h) + var(--sp-6));
+}
+
+.czr-jobs {
+  max-width: 900px;
+}
+.czr-jobs .embed_jobs_head {
+  min-height: 400px;
+  /* Their table is a fixed-ish width block; on a narrow viewport it
+     scrolls inside this box rather than widening the document. */
+  overflow: auto;
+}
+/* Their sheet paints links in the brand colour we hand it, but the
+   inherited `.iz a { color: inherit }` can beat it depending on load
+   order. Naming the token here makes the outcome the same either
+   way, and keeps the accent identical to the rest of the page. */
+.iz .czr-jobs .embed_jobs_head a {
+  color: var(--orange);
+}
+.iz .czr-jobs .embed_jobs_head a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- the failure panel ----------
+   Shown only when the embed cannot be trusted to render: blocked,
+   wrong script, or still empty after ten seconds. */
+.czr-jobs-fallback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--pad-panel);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.czr-jobs-fallback p {
+  margin: 0;
+  color: var(--tx-dim);
+  font-size: var(--fs-body);
+}
+
+/* ---------- the always-there escape hatch ---------- */
+.czr-jobs-all {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-6);
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+  border-bottom: 1px solid var(--line-strong);
+  padding-bottom: 2px;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.iz .czr-jobs-all:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1000px) {
+  .czr-cards--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .czr-cards--three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .czr-hero {
+    padding: var(--sp-10) 0 var(--sp-12);
+  }
+  .czr-hero-in .iz-h1 {
+    max-width: 100%;
+  }
+  .czr-sec {
+    padding: var(--sp-12) 0;
+  }
+  .czr-cards--three,
+  .czr-cards--four {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .czr-jobs .embed_jobs_head {
+    min-height: 320px;
+  }
+}

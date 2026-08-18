@@ -682,7 +682,7 @@ const CONTROLS: Control[] = [
   "granted": true,
   "scope": "reports-db:read",
   "expires_in_min": 42,
-  "approver": "priya.m"
+  "approver": "sophia.m"
 }`,
       },
       {
@@ -713,7 +713,7 @@ const CONTROLS: Control[] = [
         tone: "allow",
         json: `{
   "state": "approved",
-  "approver": "priya.m",
+  "approver": "sophia.m",
   "waited_min": 6
 }`,
       },

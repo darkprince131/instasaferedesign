@@ -45,7 +45,7 @@
 	# consent-gated tags (GTM, Zoho PageSense, Clearbit) and load only
 	# after consent. crm.zoho.com is where the demo form posts.
 	handle {
-		header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.pagesense.io https://tag.clearbitscripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://crm.zoho.com https://cdn.pagesense.io https://tag.clearbitscripts.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; form-action 'self' https://crm.zoho.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+		header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.zohocdn.com https://www.googletagmanager.com https://cdn.pagesense.io https://tag.clearbitscripts.com; style-src 'self' 'unsafe-inline' https://static.zohocdn.com; img-src 'self' data: https:; font-src 'self' data: https://static.zohocdn.com; connect-src 'self' https://static.zohocdn.com https://instasafe.zohorecruit.com https://www.googletagmanager.com https://www.google-analytics.com https://crm.zoho.com https://cdn.pagesense.io https://tag.clearbitscripts.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; form-action 'self' https://crm.zoho.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
 		reverse_proxy 127.0.0.1:3000
 	}
 }

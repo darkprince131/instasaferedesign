@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "audit:links": "node lib/scripts/audit-links.mjs",
+    "test": "node --test lib/scripts/*.test.mjs",
     "prebuild": "node lib/scripts/audit-links.mjs",
     "build": "next build",
     "build:static": "node lib/scripts/build-static.mjs",

@@ -57,7 +57,7 @@ function LockChip({ accent }: { accent?: boolean }) {
    corner-cut box. */
 const PEOPLE = {
   old: { src: "/people/alen-joseph-640.webp", name: "User" },
-  ours: { src: "/people/priya-s-640.webp", name: "User" },
+  ours: { src: "/people/sophia-s-640.webp", name: "User" },
 } as const;
 
 function PersonNode({ who, tinted }: { who: keyof typeof PEOPLE; tinted?: boolean }) {

@@ -41,7 +41,7 @@ const PANELS = [
     glyph: "person" as GlyphName,
     rows: [
       { label: "arjun.r", glyph: "person" as GlyphName },
-      { label: "priya.s", glyph: "person" as GlyphName },
+      { label: "sophia.s", glyph: "person" as GlyphName },
       { label: "neha.v", glyph: "person" as GlyphName },
     ],
   },

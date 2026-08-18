@@ -93,7 +93,7 @@ const CASES: IzUseCase[] = [
     score: { label: "Expires in", value: "42m" },
     rows: [
       { label: "Scope", value: "reports-db : read" },
-      { label: "Approved by", value: "priya.m", tone: "allow" },
+      { label: "Approved by", value: "sophia.m", tone: "allow" },
       { label: "Session recording", value: "On", tone: "allow" },
       { label: "Standing access", value: "None", tone: "allow" },
     ],

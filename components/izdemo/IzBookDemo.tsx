@@ -205,7 +205,7 @@ export function IzBookDemo() {
                         name="firstname"
                         type="text"
                         autoComplete="given-name"
-                        placeholder="Priya"
+                        placeholder="Sophia"
                         value={values.firstname}
                         onChange={set("firstname")}
                         aria-invalid={invalid.firstname ? true : undefined}
@@ -253,7 +253,7 @@ export function IzBookDemo() {
                         name="email"
                         type="email"
                         autoComplete="email"
-                        placeholder="priya@acme.com"
+                        placeholder="sophia@acme.com"
                         value={values.email}
                         onChange={set("email")}
                         aria-invalid={invalid.email ? true : undefined}

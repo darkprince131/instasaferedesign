@@ -143,7 +143,7 @@ function AccessConsole() {
   return (
     <Pane label="access-decisions">
       <LogRow u="anita.r" a="billing-portal" ok />
-      <LogRow u="priya.m" a="analytics-db" ok />
+      <LogRow u="sophia.m" a="analytics-db" ok />
       <LogRow u="contractor-07" a="finance-rdp" ok={false} />
     </Pane>
   );

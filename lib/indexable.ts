@@ -24,6 +24,7 @@
 /** New URLs finished for version one. Add to this as pages are built. */
 export const SHIPPED: ReadonlySet<string> = new Set([
   "/platform",
+  "/platform/endpoint-controls",
   "/platform/iam",
   "/platform/trust-engine",
   "/integrations",

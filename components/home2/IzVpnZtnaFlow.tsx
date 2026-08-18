@@ -76,7 +76,7 @@ type Session = { id: string; who: string; meta: string; grant: string; checks: C
 const SESSIONS: Session[] = [
   {
     id: "s1",
-    who: "Priya R. — Finance",
+    who: "Sophia R. — Finance",
     meta: "managed laptop · corporate IdP · in-domain",
     grant: "payroll",
     checks: [

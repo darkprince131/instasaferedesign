@@ -62,7 +62,7 @@ const ROWS: Cond[][] = [
     F(Clock, "Time", "09:00–18:00"),
     F(Gauge, "Risk", "Low"),
     F(AppWindow, "App", "finance-rdp", AppWindow),
-    F(User, "User", "priya.m"),
+    F(User, "User", "sophia.m"),
   ],
   [
     F(Gauge, "Risk score", "< 30"),

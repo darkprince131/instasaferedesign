@@ -150,11 +150,11 @@ export function VpnPage() {
             ]}
             slot={{
               kind: "terminal",
-              title: "priya@laptop · acme-bank",
+              title: "sophia@laptop · acme-bank",
               badge: "Session recorded",
               lines: [
                 { cmd: "connect erp-core.acme.internal" },
-                { out: "identity: priya@acme.co · device: bound, cert valid" },
+                { out: "identity: sophia@acme.co · device: bound, cert valid" },
                 { out: "posture: 25/25 checks pass · patch level ok" },
                 { out: "tunnel open · 1 resource · ttl 8h", tone: "ok" },
                 { cmd: "nmap -sS 10.20.0.0/16" },

@@ -249,24 +249,14 @@
   transform: none;
 }
 
-/* Numeral + icon on one baseline. The numeral is the elevation the
-   IAM reference asks for: it gives the row a ledger reading order that
-   an icon alone never provides, and it is the same 01/02/03 grammar as
-   IzSpecTable. Tabular figures so the three never sit at different
-   widths. */
+/* Icon mark above each outcome. The 01/02/03 numeral that used to sit
+   beside it was removed under docs/no-index-numbers-rule.md — the three
+   outcomes are unordered facts, not a sequence. */
 .izo-mark {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
   margin-bottom: var(--sp-4);
-}
-.izo-num {
-  font-style: normal;
-  font-family: var(--mono);
-  font-size: var(--fs-sm);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--ls-mono);
-  color: var(--accent);
 }
 .izo-ico {
   display: block;

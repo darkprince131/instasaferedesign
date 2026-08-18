@@ -69,12 +69,12 @@ const QUERIES: Query[] = [
     icon: GitBranch,
     title: "Denied-access triage",
     desc: "Find out exactly why a request was blocked — which gate failed, and the rule that stopped it.",
-    q: "Why was Priya blocked from the reports DB?",
+    q: "Why was Sophia blocked from the reports DB?",
     readMs: 6500,
     a: (
       <>
         <p>
-          <b>Blocked at the policy gate.</b> Device <C>MB-PRIYA</C> is <span className="qa-deny">Pending-Approval</span> —
+          <b>Blocked at the policy gate.</b> Device <C>MB-SOPHIA</C> is <span className="qa-deny">Pending-Approval</span> —
           not yet bound to a certificate.
         </p>
         <p>

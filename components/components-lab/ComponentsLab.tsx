@@ -1064,11 +1064,11 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
                 ]}
                 slot={{
                   kind: "terminal",
-                  title: "priya@laptop · acme-bank",
+                  title: "sophia@laptop · acme-bank",
                   badge: "Session recorded",
                   lines: [
                     { cmd: "connect erp-core.acme.internal" },
-                    { out: "identity: priya@acme.co · device: bound, cert valid" },
+                    { out: "identity: sophia@acme.co · device: bound, cert valid" },
                     { out: "posture: 25/25 checks pass · patch level ok" },
                     { out: "tunnel open · 1 resource · ttl 8h", tone: "ok" },
                     { cmd: "nmap -sS 10.20.0.0/16" },
@@ -1102,7 +1102,7 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
                 ]}
                 slot={{
                   kind: "grant-deny",
-                  grantHead: "after one login, priya reaches",
+                  grantHead: "after one login, sophia reaches",
                   denyHead: "and still cannot reach",
                   grant: ["Salesforce · role: finance", "ERP front-end · read-only", "Payroll portal · own record", "Jira · finance project"],
                   deny: ["Payments admin console", "Production database", "HR records of other staff", "Anything at all, from an unbound laptop"],
@@ -2232,7 +2232,7 @@ export function ComponentsLab({ illustrationSample, illustrationCity }: { illust
                     {[
                       ["anita.r", "WEB · billing", "allow", "09:41"],
                       ["contractor-07", "RDP · finance", "deny", "09:41"],
-                      ["priya.m", "DB · analytics", "allow", "09:41"],
+                      ["sophia.m", "DB · analytics", "allow", "09:41"],
                     ].map((l) => (
                       <div key={l[0]} className={`iz-log-row ${l[2] === "deny" ? "deny" : ""}`}>
                         <span style={{ color: l[2] === "deny" ? "var(--deny)" : "var(--allow)" }}>{l[2] === "deny" ? <Cross /> : <Check />}</span>

@@ -66,9 +66,9 @@ const EASE_NEAR = 0.085; // heavy and reluctant on top of one
 const CASES: Activity[] = [
   {
     id: "device", tone: "warn", icon: DeviceMobile,
-    title: <>New device — Pixel 8 under {A("priya.s")}</>, tag: "Pending approval",
+    title: <>New device — Pixel 8 under {A("sophia.s")}</>, tag: "Pending approval",
     details: [
-      { k: "User", v: "priya.s · Marketing" },
+      { k: "User", v: "sophia.s · Marketing" },
       { k: "Location", v: "Pune, IN" },
       { k: "IP", v: "203.0.113.47" },
       { k: "Posture", v: "encrypted · screen-lock on" },
@@ -79,7 +79,7 @@ const CASES: Activity[] = [
       bars: [{ h: 90, c: GRN }, { h: 78, c: GRN }, { h: 96, c: GRN }, { h: 40, c: AMBER }, { h: 84, c: GRN }],
     },
     ctas: [
-      { label: "Approve", kind: "approve", resolve: { tone: "ok", title: "Approved in seconds", body: "Great — you helped priya.s get verified and back to work in under 28 seconds. No ticket, no wait." } },
+      { label: "Approve", kind: "approve", resolve: { tone: "ok", title: "Approved in seconds", body: "Great — you helped sophia.s get verified and back to work in under 28 seconds. No ticket, no wait." } },
       { label: "Deny", kind: "deny", resolve: { tone: "ok", title: "Unknown device stopped", body: "Nice catch. You stopped an unrecognised device from ever joining the network — exactly how zero-trust should feel." } },
     ],
   },

@@ -51,14 +51,14 @@ const LOG = [
   { u: "anita.r", ap: "billing-portal", s: "allow", t: "09:41" },
   { u: "build-svc", ap: "code-server", s: "allow", t: "09:41" },
   { u: "contractor-07", ap: "finance-rdp", s: "deny", t: "09:41" },
-  { u: "priya.m", ap: "reports-db", s: "allow", t: "09:42" },
+  { u: "sophia.m", ap: "reports-db", s: "allow", t: "09:42" },
 ];
 
 type DeviceStatus = "Enabled" | "Pending" | "Suspended";
 const osIcons: Record<string, Icon> = { windows: WindowsLogo, apple: AppleLogo, android: AndroidLogo, linux: LinuxLogo };
 const DEVICES: { dev: string; os: string; st: DeviceStatus; reg: string }[] = [
   { dev: "WS-FIN-014", os: "windows", st: "Enabled", reg: "12 Jun" },
-  { dev: "MB-PRIYA", os: "apple", st: "Pending", reg: "30 Sep" },
+  { dev: "MB-SOPHIA", os: "apple", st: "Pending", reg: "30 Sep" },
   { dev: "SRV-NODE-7", os: "linux", st: "Enabled", reg: "03 Jan" },
   { dev: "PX-ANITA", os: "android", st: "Enabled", reg: "21 Aug" },
   { dev: "WS-OPS-22", os: "windows", st: "Suspended", reg: "08 May" },

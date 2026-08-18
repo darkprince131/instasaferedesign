@@ -37,7 +37,7 @@ type Run = {
 
 const RUNS: Run[] = [
   {
-    target: "priya@acme.co → erp-core",
+    target: "sophia@acme.co → erp-core",
     rows: [
       { k: "identity", v: "directory match · mfa satisfied" },
       { k: "device", v: "bound · posture 25/25" },
@@ -48,7 +48,7 @@ const RUNS: Run[] = [
     verdict: { tone: "allow", label: "ALLOW", parts: ["erp-finance-readonly", "ttl 8h"] },
   },
   {
-    target: "priya@acme.co → erp-core",
+    target: "sophia@acme.co → erp-core",
     rows: [
       { k: "location", v: "SG · 41 min after last IN login", changed: true },
       { k: "risk", v: "78 / 100 · impossible travel", changed: true },

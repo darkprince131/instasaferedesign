@@ -124,7 +124,7 @@ const KPIS = [
 
 const ACTIVITY = [
   { t: "09:42:17", who: "arun.k@instasafe.com", app: "SAP (Finance Portal)", ok: true },
-  { t: "09:42:16", who: "priya.m@instasafe.com", app: "reports-db", ok: true },
+  { t: "09:42:16", who: "sophia.m@instasafe.com", app: "reports-db", ok: true },
   { t: "09:42:15", who: "contractor-07@acme.in", app: "finance-rdp", ok: false },
   { t: "09:42:14", who: "build-svc@acme.in", app: "code-server", ok: true },
 ];

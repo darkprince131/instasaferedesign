@@ -306,7 +306,7 @@ function SceneDedicated({ uid }: { uid: string }) {
       <Junction x={294} y={cy} />
       <Junction x={APP_X} y={cy} />
 
-      <NodeCard uid={uid} x={14} cy={cy} glyph="user" name="priya" caption="USER" />
+      <NodeCard uid={uid} x={14} cy={cy} glyph="user" name="sophia" caption="USER" />
       <NodeCard uid={uid} x={APP_X} cy={cy} glyph="app" name="erp-core" caption="APPLICATION" />
     </svg>
   );
@@ -363,7 +363,7 @@ function SceneTwoLane({ uid, cut }: { uid: string; cut: boolean }) {
       <Junction x={APP_X} y={a} />
       <Junction x={APP_X} y={b} />
 
-      <NodeCard uid={uid} x={14} cy={cy} glyph="user" name="priya" caption="USER" />
+      <NodeCard uid={uid} x={14} cy={cy} glyph="user" name="sophia" caption="USER" />
       <NodeCard uid={uid} x={APP_X} cy={a} glyph="app" name="erp-core" caption="APPLICATION" dim={cut} />
       <NodeCard uid={uid} x={APP_X} cy={b} glyph="app" name="jira" caption="APPLICATION" />
     </svg>

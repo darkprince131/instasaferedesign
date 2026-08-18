@@ -544,15 +544,12 @@ const company: PageDef[] = [
     highlight: ["the", "Team."],
     sub: "Reach support at +91 844 844 8548, or contact sales for a tailored walkthrough. Offices in Bengaluru, Walnut CA and Urbar.",
   }),
-  P({
-    path: "/careers",
-    kind: "company",
-    eyebrow: "Careers",
-    title: "Careers at InstaSafe",
-    h1: "Build the Future of Access.",
-    highlight: ["Future", "of", "Access."],
-    sub: "Join a global, remote-friendly team simplifying cybersecurity for enterprises across five continents.",
-  }),
+  /* /careers is BESPOKE — app/careers, backed by
+     components/izpages/careers. Its registry entry was removed when
+     that route landed; leaving it here would put the path in
+     generateStaticParams as well and collide. Same arrangement as
+     /book-a-demo above. The path stays in ALREADY_INDEXED in
+     lib/indexable.ts — it is a live, indexed URL. */
   P({
     path: "/partners",
     kind: "company",

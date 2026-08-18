@@ -29,7 +29,7 @@ interface Evt { type: EvtType; actor?: string; mfa?: string; app?: string; devic
 /* scripted sequence — multiple users; dave.k fails (#4) then is blocked (#9), denied again (#13) */
 const EVENTS: Evt[] = [
   { type: "login",   actor: "arjun.m",       mfa: "Push" },
-  { type: "access",  actor: "priya.s",       app: "Billing Portal" },
+  { type: "access",  actor: "sophia.s",       app: "Billing Portal" },
   { type: "request", actor: "rohan.d",       app: "DevOps Cloud" },
   { type: "failed",  actor: "dave.k" },
   { type: "device",  device: "MacBook-RD-05" },
@@ -38,7 +38,7 @@ const EVENTS: Evt[] = [
   { type: "login",   actor: "sara.l",        mfa: "Hardware key" },
   { type: "blocked", actor: "dave.k" },
   { type: "access",  actor: "arjun.m",       app: "Code Server" },
-  { type: "request", actor: "priya.s",       app: "HR System" },
+  { type: "request", actor: "sophia.s",       app: "HR System" },
   { type: "login",   actor: "rohan.d",       mfa: "Biometric" },
   { type: "denied",  actor: "dave.k",        app: "Billing Portal" },
   { type: "device",  device: "WIN-NEH-09" },

@@ -27,7 +27,7 @@ const LOG_ROWS = [
   { u: "anita.r",    a: "billing-portal", ok: true,  t: "09:42" },
   { u: "rohan.d",    a: "code-server",    ok: true,  t: "09:41" },
   { u: "dave.k",     a: "admin-panel",    ok: false, t: "09:40" },
-  { u: "priya.m",    a: "hr-system",      ok: true,  t: "09:38" },
+  { u: "sophia.m",    a: "hr-system",      ok: true,  t: "09:38" },
   { u: "contractor", a: "finance-rdp",    ok: false, t: "09:35" },
 ];
 

@@ -152,7 +152,7 @@ const LOG = [
   { u: "anita.r",      a: "billing-portal", ok: true,  t: "09:41" },
   { u: "build-svc",    a: "code-server",    ok: true,  t: "09:41" },
   { u: "contractor-07",a: "finance-rdp",    ok: false, t: "09:41" },
-  { u: "priya.m",      a: "reports-db",     ok: true,  t: "09:42" },
+  { u: "sophia.m",      a: "reports-db",     ok: true,  t: "09:42" },
   { u: "ops-22",       a: "admin-panel",    ok: false, t: "09:42" },
   { u: "sarah.k",      a: "finance-app",    ok: true,  t: "09:43" },
 ];

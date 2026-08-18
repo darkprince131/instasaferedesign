@@ -44,7 +44,7 @@ function Dashboard() {
 
 function Logs() {
   const rows = [
-    { ok: true,  u: "priya.s", a: "hr-system",      t: "09:42" },
+    { ok: true,  u: "sophia.s", a: "hr-system",      t: "09:42" },
     { ok: true,  u: "rohan.d", a: "code-server",    t: "09:42" },
     { ok: false, u: "ops-22",  a: "admin-panel",    t: "09:41" },
     { ok: true,  u: "neha.r",  a: "reports-db",     t: "09:41" },

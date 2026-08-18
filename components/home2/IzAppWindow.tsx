@@ -33,7 +33,7 @@ interface IUser { name: string; email: string; role: string; status: "Active"|"I
    exist only to make the table look like a real tenant. */
 const USERS_INIT: IUser[] = [
   { name: "Alen Joseph",   email: "alen.joseph@veno.co.in", role: "Admin",      status: "Active",   seen: "2 min ago" },
-  { name: "Priya S",       email: "priya.s@veno.co.in",     role: "Developer",  status: "Active",   seen: "1h ago"    },
+  { name: "Sophia S",       email: "sophia.s@veno.co.in",     role: "Developer",  status: "Active",   seen: "1h ago"    },
   { name: "Olive Ketta",   email: "olive.ketta@veno.co.in", role: "Analyst",    status: "Active",   seen: "3h ago"    },
   { name: "contractor-07", email: "ext-07@vendor.com",      role: "Contractor", status: "Inactive", seen: "2d ago"    },
   { name: "Rohan Das",     email: "rohan.d@veno.co.in",     role: "Developer",  status: "Active",   seen: "5 min ago" },
@@ -52,7 +52,7 @@ const APPS_INIT: IApp[] = [
 interface IDevice { host: string; os: string; user: string; score: number; enc: boolean; patch: boolean; av: boolean|null; }
 const DEVICES: IDevice[] = [
   { host: "DESKTOP-16MTL6M", os: "Windows 11 Pro", user: "Alen Joseph",   score: 95, enc: true,  patch: true,  av: true  },
-  { host: "DESKTOP-7EJKLOP", os: "Windows 11 Pro", user: "Priya S",       score: 88, enc: true,  patch: true,  av: true  },
+  { host: "DESKTOP-7EJKLOP", os: "Windows 11 Pro", user: "Sophia S",       score: 88, enc: true,  patch: true,  av: true  },
   { host: "WIN-CTR-07",      os: "Windows 10",     user: "contractor-07", score: 62, enc: true,  patch: false, av: true  },
   { host: "MacBook-OK-03",   os: "macOS 14.5",     user: "Olive Ketta",   score: 91, enc: true,  patch: true,  av: null  },
   { host: "MacBook-RD-05",   os: "macOS 14.5",     user: "Rohan Das",     score: 97, enc: true,  patch: true,  av: true  },
@@ -63,13 +63,13 @@ const LOGS_DATA: ILog[] = [
   { u: "alen.joseph",  a: "prod-bastion",   ok: true,  t: "09:41:22", ip: "10.0.1.42"   },
   { u: "build-svc",    a: "code-server",    ok: true,  t: "09:41:18", ip: "10.0.1.88"   },
   { u: "contractor-07",a: "admin-panel",    ok: false, t: "09:41:05", ip: "192.168.3.7"  },
-  { u: "priya.s",      a: "erp-frontend",   ok: true,  t: "09:40:58", ip: "10.0.1.55"   },
+  { u: "sophia.s",      a: "erp-frontend",   ok: true,  t: "09:40:58", ip: "10.0.1.55"   },
   { u: "ops-22",       a: "finance-rdp",    ok: false, t: "09:40:44", ip: "10.0.2.19"   },
   { u: "rohan.d",      a: "code-server",    ok: true,  t: "09:40:31", ip: "10.0.1.73"   },
   { u: "olive.ketta",  a: "asset-store",    ok: true,  t: "09:40:12", ip: "10.0.1.61"   },
   { u: "contractor-07",a: "billing-portal", ok: false, t: "09:39:55", ip: "192.168.3.7"  },
   { u: "alen.joseph",  a: "build-farm",     ok: true,  t: "09:39:33", ip: "10.0.1.42"   },
-  { u: "priya.s",      a: "reports-db",     ok: true,  t: "09:39:01", ip: "10.0.1.55"   },
+  { u: "sophia.s",      a: "reports-db",     ok: true,  t: "09:39:01", ip: "10.0.1.55"   },
 ];
 
 interface IPolicy { name: string; who: string; apps: string[]; conditions: string[]; status: "Active"|"Draft"; }

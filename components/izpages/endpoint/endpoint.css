@@ -1,0 +1,2356 @@
+/* ============================================================
+   endpoint.css — /platform/endpoint-controls
+
+   Two rules govern this whole sheet:
+
+   1. TOKENS ONLY. There is not a single literal colour in here.
+      The session window is painted from --surface / --line / --tx /
+      --accent / --allow / --deny, so it comes out as a WHITE console
+      on the paper theme and a DARK console on the dark theme with no
+      second palette and no `.iz-inverted`. (The v2 prototype used a
+      permanently-dark window against paper; that needed a hardcoded
+      inverted palette, which is exactly what this replaces.)
+
+   2. THE WINDOW IS THE LCP ELEMENT. Everything it shows is painted
+      by the server in its resolved state — clipboard blocked, stamp
+      down, watermark on, three audit lines already written. Nothing
+      fades or slides in. Every box that the loop later mutates is
+      already at its final size here, so the animation can never move
+      the layout (CLS 0). Anything that would grow the window gets a
+      reserved min-height instead.
+   ============================================================ */
+
+/* ============================================================
+   HERO SHELL
+   ============================================================ */
+.ep-hero {
+  position: relative;
+  padding: var(--sp-12) 0 var(--sp-10);
+  overflow: hidden;
+}
+/* Same reasoning as iam.css: the headline wants ~460px and the window
+   wants ~600px before its table starts eliding. At 1200 one of them
+   gives; at 1320 neither does. Nothing else on the page is widened. */
+.ep-hero .iz-wrap {
+  max-width: 1320px;
+}
+.ep-hero-in {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  grid-template-areas:
+    "copy win"
+    "rail win";
+  grid-template-rows: auto 1fr;
+  column-gap: 56px;
+  row-gap: var(--sp-10);
+  align-items: start;
+}
+.ep-copy {
+  grid-area: copy;
+}
+.ep-copy .iz-lead {
+  max-width: 42ch;
+}
+.ep-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+
+/* ============================================================
+   THE CONTROL RAIL
+   Desktop: six pills under the copy, each one a chapter jump.
+   Coarse pointer: a stacked list UNDER the window (grid-area), each
+   row swapping the window to that control's resolved end state.
+   ============================================================ */
+.ep-rail {
+  grid-area: rail;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.ep-rail-lab {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-mute);
+  margin: 0 0 var(--sp-4);
+}
+.ep-pill {
+  position: relative;
+  display: grid;
+  grid-template-columns: 7px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  color: var(--tx-dim);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 9px var(--sp-2) 9px var(--sp-4);
+  cursor: pointer;
+  box-shadow: var(--panel-sh);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.ep-pill:hover {
+  border-color: var(--line-strong);
+  color: var(--tx);
+}
+.ep-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--line-strong);
+  transition: background-color var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.ep-nm {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ep-chip {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  padding: 4px 9px;
+  background: var(--bg-2);
+  color: var(--tx-mute);
+  border: 1px solid var(--line);
+}
+/* played — the pill keeps a quiet allow-tinted chip for the rest of the loop */
+.ep-pill.is-done .ep-dot {
+  background: var(--allow);
+}
+.ep-pill.is-done .ep-chip {
+  background: var(--allow-bg);
+  color: var(--allow);
+  border-color: color-mix(in srgb, var(--allow) 28%, transparent);
+}
+.ep-pill.is-done .ep-chip.deny {
+  background: var(--deny-bg);
+  color: var(--deny);
+  border-color: color-mix(in srgb, var(--deny) 30%, transparent);
+}
+/* the chapter currently playing */
+.ep-pill.is-live {
+  color: var(--tx);
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 8%, transparent), var(--panel-sh);
+}
+.ep-pill.is-live .ep-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.ep-pill.is-live .ep-chip {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.ep-pill.is-live .ep-chip.deny {
+  background: var(--deny-bg);
+  color: var(--deny);
+  border-color: color-mix(in srgb, var(--deny) 30%, transparent);
+}
+/* the overshoot stamp the chip lands with. Approved easing — do not
+   flatten it to a plain ease-out, the recoil is the point. */
+@keyframes ep-stamp {
+  0% {
+    transform: scale(1.22);
+    opacity: 0.35;
+  }
+  55% {
+    transform: scale(0.965);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.ep-chip.morph {
+  animation: ep-stamp 300ms cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+.ep-tick {
+  position: absolute;
+  right: -3px;
+  top: -3px;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: var(--allow);
+  color: var(--bg);
+  font-size: 8.5px;
+  line-height: 14px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur) cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+.ep-pill.is-done .ep-tick {
+  opacity: 1;
+  transform: scale(1);
+}
+/* THE ARM-TICK SWEEP. When Alen's APPLIED lands, the six dots pulse
+   down the rail in sequence — one 70ms step each, so the whole thing
+   is over in 770ms and reads as the controls arming rather than as
+   six separate events. `--ep-i` is set per pill in the markup; the
+   dot element is remounted to replay the animation, which is why
+   there is no `infinite` here and no cleanup to do. */
+@keyframes ep-armtick {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+  40% {
+    transform: scale(1.5);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+}
+/* NO FILL MODE. `both` would hold the 100% keyframe forever, and that
+   keyframe sets `box-shadow` — which would then outrank
+   `.ep-pill.is-live .ep-dot`'s ring for the whole rest of the loop
+   and the live pill would silently stop showing which chapter is
+   playing. Unfilled, the dot is its own CSS before and after. */
+.ep-pill.tick .ep-dot {
+  animation: ep-armtick 420ms cubic-bezier(0.34, 1.32, 0.5, 1);
+  animation-delay: calc(var(--ep-i, 0) * 70ms);
+}
+.ep-railfoot {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.06em;
+  color: var(--tx-mute);
+  margin: 6px 0 0;
+  padding: 11px var(--sp-1) 0;
+  border-top: 1px dashed var(--line);
+}
+.ep-railfoot b {
+  color: var(--tx-dim);
+  font-weight: 400;
+}
+
+/* ============================================================
+   THE RIGHT COLUMN — THREE CONTAINERS, NOT ONE CONSOLE
+
+   The scene used to be a single window with the connection strip
+   welded to its top and the audit log welded to its bottom. That made
+   three different claims look like one dashboard. They are now three
+   panels in one stack:
+
+     .ep-strip   the network the session runs across
+     .ep-winbox  → .ep-win, the application  (+ the actor pills)
+     .ep-log     what the platform wrote down
+
+   HEIGHT BUDGET, measured at 1440 rather than eyeballed:
+
+     strip                 98   min-height
+     gap (pill overhang)   34   .ep-winbox margin-top
+     window               427   titlebar 43 + stage 382
+     gap                   12   .ep-log margin-top
+     log                  104
+                         -----
+     total                675   (was 567 for the single window)
+
+   READ THE 567 BEFORE JUDGING THE 675. The old window's `min-height:
+   512` was never the height it rendered at: the document pane's own
+   content wanted ~341 and `.ep-net`'s `margin-top: auto` only ever
+   absorbed slack, so the window came out at 42 + 87 conn + 341 + 97
+   log = 567. Of the 108 the split added, ~65 is structural — the
+   strip is taller than the welded-on connection bar was, and the two
+   gaps between panels did not exist — and the rest is the stage
+   breathing the client asked for.
+
+   The column is still SHORTER than the one beside it (copy + rail is
+   ~880 at this width), so the extra height closes a gap rather than
+   opening one.
+
+   `.ep-win`'s min-height is a FLOOR, not the rendered height: it
+   exists so an empty or slow paint can never be shorter than the
+   scene, not to describe it. Every panel is unconditionally rendered
+   at a size that does not depend on loop state, which is the actual
+   CLS-0 guarantee.
+
+   `is-armed` lives on `.ep-stack`, not on `.ep-win`. It gates every
+   decorative animation in the scene, and two of the things it gates —
+   the tunnel dash and the log's slide-in — are no longer inside the
+   window.
+   ============================================================ */
+.ep-winwrap {
+  grid-area: win;
+  position: relative;
+}
+.ep-stack {
+  display: block;
+}
+
+/* ============================================================
+   CONTAINER 1 — THE CONNECTION STRIP
+
+   Left: the managed device. Middle: the three things the tunnel does
+   not reach, and the tunnel itself. Right: the one application it
+   does, wearing its own logo.
+
+   The tunnel is a 2px CSS rail rather than an SVG line, because the
+   strip is now a flexible three-column grid and the middle column's
+   width is whatever is left over — an SVG would either have to be
+   stretched (which distorts a dash pattern) or re-measured. Two
+   repeating gradients on one element do the same job at any width:
+   `::before` is the dead route, `::after` is the live one, and the
+   march is a background-position animation.
+   ============================================================ */
+.ep-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  /* NO COLUMN GAP. The tunnel has to touch the device on one side and
+     the app node on the other, or it reads as three loose objects. */
+  gap: 0;
+  min-height: 98px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+/* ---------- the managed device ---------- */
+.ep-dev {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  min-width: 0;
+}
+.ep-dev-pic {
+  display: block;
+  flex: none;
+  width: 72px;
+}
+.ep-dev-pic img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* The asset is a grey line render on transparency — no baked
+   background, so nothing has to be clipped or plated. Its darkest
+   values (the screen panel and the shadow under the base) do sink
+   into a dark surface though, so the dark theme gets a small lift.
+   This is a tone adjustment on a greyscale image, not a colour: the
+   sheet's tokens-only rule is intact. */
+.iz[data-theme="dark"] .ep-dev-pic img,
+.iz .iz-inverted .ep-dev-pic img {
+  filter: brightness(1.32) contrast(0.94);
+}
+.ep-dev-id {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.2;
+}
+.ep-dev-id b {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+.ep-dev-id i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+
+/* ---------- the middle: off-net, and the tunnel ----------
+     `.ep-tun` is the same height as the device block and both are
+     centred by the grid, so the rail comes out of the middle of the
+     laptop and lands in the middle of the app node without a single
+     measured number. The off-net row is absolutely positioned off the
+     same centre line, so it cannot push the rail around either. */
+.ep-tun {
+  position: relative;
+  min-width: 0;
+  height: 72px;
+}
+.ep-offnet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(50% + 11px);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.ep-off {
+  position: relative;
+  flex: none;
+  padding: 2px 5px;
+  border: 1px dashed var(--ghost);
+  border-radius: var(--r-hair);
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.11em;
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+/* the dead drop from each unreachable node down toward the tunnel it
+   is not on */
+.ep-off::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 0;
+  height: 9px;
+  border-left: 1px dashed var(--ghost);
+}
+.ep-unre {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+.ep-tunline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+}
+/* the dead route underneath */
+.ep-tunline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  margin-top: -0.5px;
+  background-image: repeating-linear-gradient(90deg, var(--ghost) 0 3px, transparent 3px 8px);
+}
+/* the live leg. Painted at FULL LENGTH by the server — the loop only
+   ever animates the march, never the reveal. */
+.ep-tunline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.6px;
+  margin-top: -0.8px;
+  background-image: repeating-linear-gradient(90deg, var(--accent) 0 9px, transparent 9px 16px);
+  background-size: 16px 100%;
+  background-repeat: repeat-x;
+}
+@keyframes ep-flow {
+  to {
+    background-position-x: 16px;
+  }
+}
+.ep-stack.is-armed .ep-tunline::after {
+  animation: ep-flow 1s var(--ease-linear) infinite;
+}
+/* the tunnel thickening when the policy lands. Same trap as the old
+   SVG version: the march above is declared at (0,3,0), so the surge
+   needs to outrank it or it silently never plays. (0,5,0) here. */
+@keyframes ep-tunsurge {
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  40% {
+    transform: scaleY(1.8);
+    opacity: 0.72;
+  }
+}
+.ep-stack.is-armed .ep-strip.surge .ep-tunline::after {
+  animation: ep-flow 1s var(--ease-linear) infinite, ep-tunsurge 900ms var(--ease) 2;
+}
+/* the tunnel drops when the idle timeout fires */
+.ep-strip.closed .ep-tunline::after {
+  background-image: repeating-linear-gradient(90deg, var(--ghost) 0 9px, transparent 9px 16px);
+}
+.ep-stack .ep-strip.closed .ep-tunline::after,
+.ep-stack.is-armed .ep-strip.closed .ep-tunline::after {
+  animation: none;
+}
+
+/* ---------- the one reachable application ---------- */
+.ep-appnode {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  padding: 6px 9px 6px 7px;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+  transition: border-color var(--dur) var(--ease);
+}
+/* the vendor logo is an svg file and brings its own colour — it is
+   the one thing on this page that is allowed to, because a
+   token-recoloured SAP logo is not the SAP logo */
+.ep-applogo {
+  display: block;
+  flex: none;
+  width: 40px;
+  height: auto;
+  border-radius: 1px;
+}
+.ep-appt {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.11em;
+  color: var(--accent);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease);
+}
+.ep-strip.closed .ep-appnode {
+  border-color: var(--line-strong);
+}
+.ep-strip.closed .ep-appt {
+  color: var(--tx-mute);
+}
+
+/* ============================================================
+   CONTAINER 2 — THE SESSION WINDOW
+   ============================================================ */
+/* `.ep-winbox` wraps the WINDOW ALONE. The actor pills are absolute
+   inside it, so they still hang off the window's top edge and not off
+   the strip that now sits above. The 34px top margin is what keeps
+   their 30px overhang from landing on the strip's contents. */
+.ep-winbox {
+  position: relative;
+  margin-top: 34px;
+}
+/* the window is role="img", so this paragraph IS its alt text */
+.ep-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.ep-win {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* A FLOOR, not the rendered height — see the budget above. The
+     document's own content lands the window at ~427 at desktop
+     widths; this only guarantees it can never be shorter than the
+     scene it has to hold. */
+  min-height: 372px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  color: var(--tx);
+  box-shadow: 0 24px 60px -30px color-mix(in srgb, var(--tx) 34%, transparent),
+    0 2px 8px -3px color-mix(in srgb, var(--tx) 14%, transparent);
+}
+
+/* ---------- titlebar ---------- */
+.ep-bar {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex: none;
+  padding: 11px var(--sp-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+/* ---------- window controls ----------
+     Close / minimise / maximise, tinted from the SEMANTIC tokens
+     rather than from literal red / amber / green, so they land in
+     both themes off one palette and the paper theme does not get
+     three saturated dots on a white bar. Mixing each one back toward
+     `--surface` is what keeps them reading as chrome rather than as
+     three status indicators — the live pip on the other end of the
+     bar is the thing that is allowed to shout. Decorative: the group
+     is aria-hidden. */
+.ep-lights {
+  display: flex;
+  gap: 5px;
+  flex: none;
+}
+/* geometry only — the fill is on the three classes below. A
+   `background` here would be (0,1,1) and would outrank every one of
+   them, which is exactly how this reverts to three grey dots. */
+.ep-lights i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-pill);
+}
+/* the mix ratios are set on the PAPER theme, which is the hard one:
+   mixing toward `--surface` lightens there and darkens on dark, so
+   whatever survives on white survives on black. At 58/52/54 the green
+   came out at 1.9:1 against the bar and read as a smudge; these land
+   the three of them between 2.6 and 3.2:1, which is about where a
+   real titlebar sits. */
+.ep-lights .ep-l-close {
+  background: color-mix(in srgb, var(--deny) 66%, var(--surface));
+}
+.ep-lights .ep-l-min {
+  background: color-mix(in srgb, var(--accent) 58%, var(--surface));
+}
+.ep-lights .ep-l-max {
+  background: color-mix(in srgb, var(--allow) 62%, var(--surface));
+}
+.ep-bar-ttl {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+/* the session meta moved to the right of the bar, next to the two
+   things it belongs with — who and which session, then whether it is
+   live and how long it has left */
+.ep-bar-meta {
+  flex: none;
+  padding-right: 11px;
+  border-right: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+.ep-bar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex: none;
+}
+.ep-livepip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity var(--dur) var(--ease);
+}
+.ep-livepip.off {
+  opacity: 0.32;
+}
+.ep-livepip i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+}
+.ep-livepip span {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+@keyframes ep-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.82);
+  }
+}
+.ep-stack.is-armed .ep-livepip i,
+.ep-stack.is-armed .ep-logpip {
+  animation: ep-pulse 1.6s ease-in-out infinite;
+}
+.ep-ring {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.ep-ring circle.bg {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 2;
+}
+.ep-ring circle.fg {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 53.4;
+  stroke-dashoffset: 53.4;
+  opacity: 0;
+  transform: rotate(-90deg);
+  transform-origin: 10px 10px;
+}
+.ep-ring.arm circle.fg {
+  opacity: 1;
+}
+.ep-ring.run circle.fg {
+  opacity: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 2100ms linear;
+}
+
+/* ============================================================
+   THE STAGE — the ERP document and the local clipboard beside it
+   ============================================================ */
+.ep-stage {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  min-height: 0;
+}
+.ep-doc {
+  position: relative;
+  min-width: 0;
+  /* the stage is ~382 now instead of ~341, and the extra 41 is spent
+     on breathing inside the document rather than on a bigger
+     document: the table is the evidence, and six crowded rows read as
+     a screenshot of a form rather than as a session. */
+  padding: var(--sp-4) var(--sp-4);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- the SAP-ish toolbar ---------- */
+.ep-tool {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+}
+/* the breadcrumb, with a glyph in front of it. `text-overflow` cannot
+   act on an anonymous flex item, so the label carries its own span —
+   without it the crumb clips mid-character instead of eliding. */
+.ep-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.09em;
+  color: var(--tx-mute);
+}
+.ep-crumb > span {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* accent, but pulled most of the way back toward the crumb's own
+   colour — a full-strength orange folder in the toolbar would compete
+   with the live pip and the tunnel for the page's one warm note */
+.ep-crumb-ic {
+  display: block;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  stroke: color-mix(in srgb, var(--accent) 68%, var(--tx-mute));
+  fill: none;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ep-search {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 96px;
+  max-width: 132px;
+  padding: 3px var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  color: var(--tx-mute);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ep-search svg {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  stroke: var(--tx-mute);
+  fill: none;
+  stroke-width: 1.6;
+}
+.ep-tbtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.ep-tbtn svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* `:first-of-type` would match nothing here — the breadcrumb is also a
+   span, so the first span-of-type is not a button. The export button
+   carries its own class instead. */
+.ep-tool.try .ep-tbtn--x {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+@keyframes ep-tap {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  45% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+.ep-tool.try .ep-tbtn--x {
+  animation: ep-tap 620ms var(--ease) 2;
+}
+.ep-tool.denied .ep-tbtn {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--deny) 42%, transparent);
+  background: var(--deny-bg);
+  color: color-mix(in srgb, var(--deny) 72%, var(--tx-mute));
+  animation: none;
+}
+.ep-tbtn s {
+  position: absolute;
+  inset: 50% 4px auto;
+  height: 1px;
+  background: var(--deny);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur) cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+.ep-tool.denied .ep-tbtn s {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ---------- the document head ---------- */
+.ep-dochead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0 var(--sp-3);
+}
+.ep-doc h3 {
+  margin: 0;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ep-doc-sub {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--tx-mute);
+  white-space: nowrap;
+}
+
+/* ---------- the table ---------- */
+.ep-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--fs-3xs);
+}
+/* explicit widths, because table-layout:fixed otherwise splits the
+   row into five equal columns and the vendor name — the only column
+   that has to be readable — ends up the same width as "Due" */
+.ep-tbl th:nth-child(1),
+.ep-tbl td:nth-child(1) {
+  width: 36%;
+}
+.ep-tbl th:nth-child(2),
+.ep-tbl td:nth-child(2) {
+  width: 18%;
+}
+.ep-tbl th:nth-child(3),
+.ep-tbl td:nth-child(3) {
+  width: 20%;
+}
+.ep-tbl th:nth-child(4),
+.ep-tbl td:nth-child(4) {
+  width: 13%;
+}
+.ep-tbl th:nth-child(5),
+.ep-tbl td:nth-child(5) {
+  width: 13%;
+}
+.ep-tbl th {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+  text-align: left;
+  padding: 0 6px 6px 0;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+/* ROW BREATHING, NOT A TYPE BUMP. The vendor column is 36% of the
+   document pane and "Meridian Components" already fills it at 9.5px;
+   a larger face would start eliding the only column that has to be
+   read. The freed height goes into the gutters instead. */
+.ep-tbl td {
+  padding: 7px 6px 7px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--tx-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-repeat: no-repeat;
+  background-size: var(--ep-sel-w, 100%) 100%;
+}
+.ep-tbl td.v {
+  color: var(--tx);
+  font-weight: 500;
+}
+/* The amount is right-aligned and Due sits immediately after it, so at
+   a 6px gutter the header read as one phrase — "AMOUNT DUE" — and the
+   cells read as "₹18,40,000 12 Sep". The gutter is the fix. */
+.ep-tbl td.n,
+.ep-tbl th:nth-child(3) {
+  padding-right: var(--sp-5);
+}
+.ep-tbl td.n {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.ep-tbl .st {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.ep-tbl .st.ok {
+  color: var(--allow);
+}
+/* THE SELECTION. Residue by default — the server paints the copy
+   attempt as already made and already refused, so these two rows carry
+   the leftover highlight from the moment the JS never has to run for.
+   `--ep-sel-w` is what the sweep animates; nothing is measured. */
+.ep-tbl tr.sel td {
+  background-image: linear-gradient(90deg, var(--ep-sel-c) 0 100%);
+}
+.ep-tbl {
+  --ep-sel-c: color-mix(in srgb, var(--accent) 8%, transparent);
+  --ep-sel-w: 100%;
+}
+.ep-tbl[data-sel="arm"] {
+  --ep-sel-c: color-mix(in srgb, var(--accent) 18%, transparent);
+  --ep-sel-w: 0%;
+}
+.ep-tbl[data-sel="sweep"] {
+  --ep-sel-c: color-mix(in srgb, var(--accent) 18%, transparent);
+  --ep-sel-w: 100%;
+}
+.ep-tbl[data-sel="sweep"] td {
+  transition: background-size 620ms var(--ease);
+}
+.ep-tbl[data-sel="residue"] td {
+  transition: background-size var(--dur) var(--ease);
+}
+
+/* ---------- the reserved network-filter strip ---------- */
+.ep-net {
+  position: relative;
+  margin-top: auto;
+  min-height: 64px;
+  padding-top: var(--sp-3);
+}
+.ep-net-layer {
+  position: absolute;
+  inset: var(--sp-3) 0 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.ep-net-layer.out {
+  opacity: 0;
+  pointer-events: none;
+}
+.ep-net-rest {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  color: var(--tx-mute);
+}
+.ep-net-rest s {
+  width: 22px;
+  height: 0;
+  border-top: 1px dashed var(--line-strong);
+}
+.ep-net-rows {
+  display: grid;
+  gap: 6px;
+}
+.ep-nrow {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.ep-nrow.on {
+  opacity: 1;
+  transform: none;
+}
+.ep-nleg {
+  width: 24px;
+  height: 0;
+  flex: none;
+  border-top: 1.5px solid var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 320ms var(--ease), border-color var(--dur) var(--ease);
+}
+.ep-nrow.on .ep-nleg {
+  transform: scaleX(1);
+}
+.ep-nrow.deny .ep-nleg {
+  border-top-style: dashed;
+  border-top-color: var(--deny);
+}
+.ep-nrow.allow .ep-nleg {
+  border-top-color: var(--allow);
+}
+.ep-nchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 22px;
+  padding: 3px var(--sp-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.05em;
+  color: var(--tx-dim);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+.ep-nrow.deny .ep-nchip {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--deny) 44%, transparent);
+  background: var(--deny-bg);
+  color: color-mix(in srgb, var(--deny) 76%, var(--tx-mute));
+}
+.ep-nrow.deny .ep-nurl {
+  text-decoration: line-through;
+  text-decoration-color: var(--deny);
+}
+.ep-nrow.allow .ep-nchip {
+  border-color: color-mix(in srgb, var(--allow) 36%, transparent);
+  background: var(--allow-bg);
+}
+.ep-nmark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 13px;
+  height: 13px;
+  border-radius: var(--r-pill);
+  font-size: 8px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur) cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+.ep-nrow.deny .ep-nmark {
+  opacity: 1;
+  transform: scale(1);
+  background: var(--deny);
+  color: var(--surface);
+}
+.ep-nrow.allow .ep-nmark {
+  opacity: 1;
+  transform: scale(1);
+  background: var(--allow);
+  color: var(--surface);
+}
+
+/* ---------- the local clipboard, outside the session ---------- */
+.ep-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: var(--sp-4) var(--sp-3);
+}
+.ep-side-lab {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.13em;
+  color: var(--tx-dim);
+}
+.ep-target {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  height: 84px;
+  border: 1px dashed color-mix(in srgb, var(--deny) 45%, transparent);
+  border-radius: var(--r-xs);
+  background: var(--deny-bg);
+  font-family: var(--mono);
+  font-size: var(--fs-body);
+  color: var(--tx-mute);
+}
+.ep-stamp {
+  font-family: var(--mono);
+  font-size: var(--fs-3xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--deny);
+  border: 1.5px solid var(--deny);
+  border-radius: var(--r-hair);
+  padding: 3px 7px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  transform: rotate(-8deg);
+}
+@keyframes ep-restamp {
+  0% {
+    transform: rotate(-8deg) scale(1.5);
+    opacity: 0.15;
+  }
+  55% {
+    transform: rotate(-8deg) scale(0.965);
+  }
+  100% {
+    transform: rotate(-8deg) scale(1);
+    opacity: 1;
+  }
+}
+.ep-stamp.pop {
+  animation: ep-restamp 320ms cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+@keyframes ep-shake {
+  10%,
+  90% {
+    transform: translateX(-1.5px);
+  }
+  20%,
+  80% {
+    transform: translateX(2.5px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-3.5px);
+  }
+  40%,
+  60% {
+    transform: translateX(3.5px);
+  }
+}
+.ep-target.shake {
+  animation: ep-shake 340ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+.ep-side-note {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: var(--tx-mute);
+}
+
+/* ============================================================
+   ACTOR PILLS — the two named people in the story
+
+   These are SIBLINGS of `.ep-win`, not children: the window clips its
+   own overflow and these hang over its top edge. They are
+   position:absolute inside `.ep-winwrap`, so they take no part in
+   layout — the window's height and the grid are untouched (CLS 0) and
+   the only thing that ever moves is a transform.
+
+   Sophia's pill ships in the HTML with `.on` already set. A
+   transition only fires on a CHANGE, so a class that was already
+   there on first paint animates nothing: she is simply present, like
+   the rest of the resolved scene. Alen ships without it.
+
+   NOTE the shadows are written out rather than composed with
+   `var(--panel-sh)`. That token resolves to `none` on the dark theme,
+   and `box-shadow: 0 1px 2px …, none` is INVALID — the whole
+   declaration is dropped and the element loses its shadow silently.
+   ============================================================ */
+.ep-ap {
+  position: absolute;
+  top: -30px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 5px 7px 5px 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: 0 12px 26px -16px color-mix(in srgb, var(--tx) 46%, transparent),
+    0 1px 3px -1px color-mix(in srgb, var(--tx) 16%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  /* approved arrival easing — same recoil as the cursor */
+  transform: translate3d(0, -12px, 0) scale(0.94);
+  transition: opacity var(--dur) var(--ease), transform 420ms cubic-bezier(0.34, 1.24, 0.5, 1);
+}
+.ep-ap.on {
+  opacity: 1;
+  transform: none;
+}
+/* Sophia is the persistent one and shares the accent the cursor
+   nametag already spends on her; Alen is ink, so two orange discs
+   never sit on the same edge at once */
+.ep-ap--sophia {
+  left: var(--sp-5);
+}
+.ep-ap--alen {
+  right: var(--sp-5);
+}
+
+/* ---------- the avatar. The real portraits out of /public/people,
+     in the same 30px disc the placeholder monogram used to occupy —
+     which is why the sizing lives here and not on the image.
+
+     The ring is a box-shadow rather than a border: a border would eat
+     into the 30px box and shrink the face by 3px, and `outline` on a
+     round element is drawn square in some engines. The disc under it
+     is painted so the pill is never a hole while the file is in
+     flight. */
+.ep-ap-av {
+  display: block;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  background: var(--bg-2);
+}
+.ep-ap-av img {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+  /* Sophia keeps the accent she already shares with the cursor
+     nametag; Alen is neutral, so two orange discs never sit on the
+     same edge at once. */
+  box-shadow: 0 0 0 1.4px color-mix(in srgb, var(--accent) 52%, transparent);
+}
+.ep-ap--alen .ep-ap-av img {
+  box-shadow: 0 0 0 1.4px var(--line-strong);
+}
+
+/* ---------- name and role ---------- */
+.ep-ap-id {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.15;
+}
+.ep-ap-id b {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--tx);
+  white-space: nowrap;
+}
+.ep-ap-id i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+
+/* ---------- the status chip: in-progress, then resolved ---------- */
+.ep-ap-chip {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--r-pill);
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  color: var(--tx-dim);
+}
+.ep-ap-t {
+  position: relative;
+  z-index: 1;
+}
+.ep-ap-chip.work {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.ep-ap-chip.done {
+  background: var(--allow-bg);
+  color: var(--allow);
+  border-color: color-mix(in srgb, var(--allow) 30%, transparent);
+}
+.ep-ap-chip.deny {
+  background: var(--deny-bg);
+  color: var(--deny);
+  border-color: color-mix(in srgb, var(--deny) 32%, transparent);
+}
+/* the loading sweep. A 55%-wide band translating across a clipped
+   chip — one transform, no background-position thrash. */
+@keyframes ep-apsheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(240%);
+  }
+}
+/* GATED ON `.on`. Alen's chip ships in `work` mode but hidden, and an
+   `opacity: 0` element still runs its animations — without this gate
+   every page load would leave a compositor animation ticking forever
+   behind an invisible pill. */
+.ep-ap.on .ep-ap-chip.work::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(100deg, transparent, color-mix(in srgb, var(--accent) 30%, transparent), transparent);
+  animation: ep-apsheen 1.35s var(--ease-linear) infinite;
+}
+@keyframes ep-apdot {
+  0%,
+  70%,
+  100% {
+    opacity: 0.22;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+.ep-ap-ell {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.ep-ap-ell b {
+  width: 2px;
+  height: 2px;
+  flex: none;
+  border-radius: var(--r-pill);
+  background: currentColor;
+  opacity: 0.22;
+}
+/* same gate as the sheen above — nothing ticks behind a hidden pill */
+.ep-ap.on .ep-ap-ell b {
+  animation: ep-apdot 1.05s var(--ease-linear) infinite;
+}
+.ep-ap.on .ep-ap-ell b:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.ep-ap.on .ep-ap-ell b:nth-child(3) {
+  animation-delay: 0.36s;
+}
+/* resolving reuses the rail chip's stamp, so the two chip families
+   land with exactly the same recoil */
+.ep-ap-chip.pop {
+  animation: ep-stamp 300ms cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+
+/* ============================================================
+   OVERLAYS — everything the loop mutates sits above the base scene
+   and never replaces any of it
+   ============================================================ */
+
+/* ---------- watermark ---------- */
+.ep-wm {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: var(--ep-wm-o, 0.55);
+  transition: opacity 520ms var(--ease);
+}
+.ep-wm b {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--accent) 34%, transparent);
+  transform: rotate(-24deg);
+}
+.ep-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    color-mix(in srgb, var(--accent) 20%, transparent) 48%,
+    color-mix(in srgb, var(--tx) 6%, transparent) 52%,
+    transparent 62%
+  );
+  background-size: 260% 100%;
+  background-position: 120% 0;
+}
+@keyframes ep-sweep {
+  0% {
+    opacity: 0;
+    background-position: 130% 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: -40% 0;
+  }
+}
+.ep-shimmer.sweep {
+  animation: ep-sweep 1100ms var(--ease);
+}
+
+/* ---------- the wall the copy hits, and the copy itself ---------- */
+.ep-wall {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent, var(--deny), transparent);
+}
+@keyframes ep-wallhit {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.ep-wall.hit {
+  animation: ep-wallhit 520ms var(--ease);
+}
+.ep-ghost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 4px var(--sp-2);
+  border-radius: var(--r-2xs);
+  background: var(--accent);
+  color: var(--btn-ink);
+  box-shadow: 0 5px 14px -5px color-mix(in srgb, var(--tx) 55%, transparent);
+}
+
+/* ---------- the right-click context menu ----------
+     Mounted always, hidden until its beat, and positioned from two
+     custom properties so opening it is one composited transform. The
+     transform-origin is the top-left corner, which is exactly where
+     the cursor is when it opens — so it grows out of the pointer.
+     z-index 8: over the watermark, the shimmer and the flying copy,
+     under the cursor that is clicking it. */
+/* POSITION IS left/top, NOT translate. If the position lived in the
+   same `transform` that carries the open scale, then the transform's
+   computed value would change from the PREVIOUS open position to the
+   new one at the moment the menu is shown — and since transform is a
+   transitioned property, the menu would slide diagonally across the
+   stage instead of growing out of the pointer (on the first open, all
+   the way from the stage's top-left corner). left/top are not in the
+   transition list, so they snap; `transform` is left to do nothing but
+   the scale, out of `transform-origin: 0 0` — the cursor. */
+.ep-menu {
+  position: absolute;
+  left: var(--ep-mx, 0px);
+  top: var(--ep-my, 0px);
+  z-index: 8;
+  /* MUST match MENU_W in EndpointHero.tsx, which clamps the open
+     position so the menu cannot hang out of the stage. The width is
+     set by the longest row — the lock glyph, "Copy with headers" and
+     the POLICY tag — with slack, because the items are nowrap and
+     would spill rather than reflow. */
+  width: 196px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-xs);
+  background: var(--surface);
+  box-shadow: 0 16px 34px -18px color-mix(in srgb, var(--tx) 58%, transparent),
+    0 2px 6px -2px color-mix(in srgb, var(--tx) 20%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 0 0;
+  transform: scale(0.86);
+  transition: opacity 170ms var(--ease), transform 170ms var(--ease);
+}
+.ep-menu.on {
+  opacity: 1;
+  transform: scale(1);
+}
+.ep-mi {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 7px;
+  border-radius: var(--r-2xs);
+  font-size: var(--fs-3xs);
+  color: var(--tx);
+  white-space: nowrap;
+}
+/* policy-disabled: dimmed, locked, and labelled with WHY */
+.ep-mi.no {
+  color: var(--tx-mute);
+}
+.ep-mi.hi {
+  background: color-mix(in srgb, var(--tx) 7%, transparent);
+}
+.ep-mi em {
+  margin-left: auto;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--deny) 72%, var(--tx-mute));
+}
+/* the glyph slot is the same box whether or not there is a lock in
+   it, so the labels stay on one left edge */
+.ep-mlock {
+  display: block;
+  flex: none;
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+.ep-menu hr {
+  margin: 4px 6px;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+/* the click that gets refused. The menu cannot shake — its transform
+   is carrying its position — so the refusal is a border and a fill
+   on the item that was clicked. */
+@keyframes ep-mrefuse {
+  0%,
+  100% {
+    border-color: var(--line-strong);
+  }
+  30%,
+  70% {
+    border-color: color-mix(in srgb, var(--deny) 62%, transparent);
+  }
+}
+.ep-menu.refuse {
+  animation: ep-mrefuse 260ms var(--ease);
+}
+.ep-menu.refuse .ep-mi.hi {
+  background: var(--deny-bg);
+  color: var(--deny);
+}
+
+/* ---------- the cursor actor ---------- */
+.ep-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(var(--ep-cx, -60px), var(--ep-cy, 320px), 0);
+  /* approved overshoot — the arrival recoil is what makes it read as a
+     hand rather than as a tween */
+  transition: transform var(--ep-cdur, 700ms) var(--ep-cease, cubic-bezier(0.34, 1.24, 0.5, 1)),
+    opacity var(--dur) var(--ease);
+}
+.ep-cursor.on {
+  opacity: 1;
+}
+.ep-cursor svg {
+  display: block;
+  filter: drop-shadow(0 3px 6px color-mix(in srgb, var(--tx) 45%, transparent));
+}
+.ep-cursor path {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+.ep-nametag {
+  position: absolute;
+  left: 15px;
+  top: 17px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  padding: 2.5px 6px;
+  border-radius: var(--r-2xs);
+  background: var(--accent);
+  color: var(--btn-ink);
+}
+.ep-cursor.flip .ep-nametag {
+  left: auto;
+  right: 6px;
+  top: 18px;
+}
+@keyframes ep-press {
+  45% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.ep-cursor.press svg {
+  animation: ep-press 260ms var(--ease);
+}
+
+/* ---------- idle close + payoff ---------- */
+.ep-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  transition: opacity 460ms var(--ease);
+}
+.ep-dim.on {
+  opacity: 1;
+}
+.ep-closed {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-2xs);
+  padding: 9px var(--sp-4);
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity var(--dur) var(--ease), transform 420ms cubic-bezier(0.34, 1.32, 0.5, 1);
+}
+.ep-dim.on .ep-closed {
+  opacity: 1;
+  transform: scale(1);
+}
+.ep-dim.payoff .ep-closed {
+  opacity: 0;
+  transform: scale(0.96);
+  transition-duration: 220ms;
+}
+.ep-score {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 var(--sp-5);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms var(--ease);
+}
+.ep-score.on {
+  opacity: 1;
+}
+.ep-score-big {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.ep-score-big b {
+  color: var(--accent);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ep-score-big i {
+  font-style: normal;
+  color: var(--tx-mute);
+  font-weight: 400;
+}
+.ep-score-bar {
+  width: 64px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 620ms var(--ease) 220ms;
+}
+.ep-score.on .ep-score-bar {
+  transform: scaleX(1);
+}
+.ep-score-foot {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+/* one line crediting the two people the loop just showed */
+.ep-score-cred {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.11em;
+  color: var(--tx-dim);
+}
+.ep-score-cred b {
+  color: var(--accent);
+  font-weight: 400;
+}
+.ep-rewind {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 40%,
+    color-mix(in srgb, var(--accent) 18%, transparent) 50%,
+    color-mix(in srgb, var(--tx) 7%, transparent) 54%,
+    transparent 64%
+  );
+  background-size: 250% 100%;
+}
+@keyframes ep-rewind {
+  0% {
+    opacity: 0;
+    background-position: 135% 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: -45% 0;
+  }
+}
+.ep-rewind.go {
+  animation: ep-rewind 900ms var(--ease);
+}
+
+/* ============================================================
+   CONTAINER 3 — THE AUDIT LOG
+
+   Three lines are painted by the server; the loop pushes later events
+   in and the oldest scroll out of a FIXED 58px box, so the panel's
+   height never changes.
+
+   It is its own panel now rather than the window's floor, because it
+   is not part of the application: it is what the platform wrote down
+   while the application was used. It gets the denser treatment of the
+   three — hairline, surface-2, tighter padding, no rounding on the
+   type — so it reads as a tail rather than as a third feature.
+   ============================================================ */
+.ep-log {
+  margin-top: var(--sp-3);
+  padding: 8px var(--sp-4) 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.ep-loghead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed var(--line);
+}
+.ep-logpip {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+}
+.ep-loghead .lbl,
+.ep-loghead .clock {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  color: var(--tx-dim);
+}
+.ep-loghead .clock {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.ep-log ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 58px;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  line-height: 1.85;
+}
+.ep-log li {
+  color: var(--tx-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity var(--dur) var(--ease);
+}
+.ep-log li.old {
+  opacity: 0.45;
+}
+.ep-log li b {
+  color: var(--accent);
+  font-weight: 400;
+}
+.ep-log li em {
+  font-style: normal;
+  color: var(--deny);
+}
+.ep-log li .t {
+  opacity: 0.7;
+}
+@keyframes ep-slidein {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ep-stack.is-armed .ep-log li.fresh {
+  animation: ep-slidein 340ms var(--ease);
+}
+@keyframes ep-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0.3;
+  }
+}
+.ep-stack.is-armed .ep-log li.lit {
+  color: var(--tx);
+  animation: ep-flash 420ms var(--ease);
+}
+
+/* ============================================================
+   COARSE POINTER / NARROW — the rail becomes the content
+   ============================================================ */
+@media (max-width: 1140px) {
+  .ep-hero-in {
+    column-gap: 36px;
+  }
+}
+/* THE TWO PILLS SHARE ONE EDGE, so they need the window to be wider
+   than both of them put together. Measured at their longest strings
+   ("session governed" and "applying 6 controls"): Alen 246, Sophia
+   317. She grew ~95px when the role went from "Finance" to the
+   registry's "Finance Systems Lead", and that is what moved this
+   breakpoint.
+
+   With the two 20px insets, 623px of pill against a window that is
+   1.14fr of the wrap:
+
+     1240   window 643   →  gap 40    crowded
+     1320   window 689   →  gap 86    fine
+
+   So Alen now steps out at 1320 rather than the old 1240. Chapter
+   zero still plays in full below it: the tunnel surge, the arm-tick
+   sweep down the rail and the POLICY line are all unaffected — only
+   his pill is absent. */
+@media (max-width: 1320px) {
+  .ep-ap--alen {
+    display: none;
+  }
+}
+@media (max-width: 980px) {
+  .ep-hero-in {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "win"
+      "rail";
+    grid-template-rows: auto;
+    row-gap: var(--sp-10);
+  }
+  .ep-win {
+    min-height: 0;
+  }
+  /* THE STRIP COMPRESSES RATHER THAN LEAVING. What it says on a phone
+     is "one managed device, one app, and a tunnel between them" —
+     which is the whole argument — so the device and the app node stay
+     and the three unreachable nodes, which need horizontal room they
+     do not have here, go. The tunnel keeps marching between what is
+     left, so the strip is still doing something. */
+  .ep-strip {
+    min-height: 0;
+    padding: var(--sp-3);
+  }
+  .ep-offnet {
+    display: none;
+  }
+  .ep-dev-pic {
+    width: 56px;
+  }
+  .ep-tun {
+    height: 44px;
+  }
+  /* Sophia's pill hangs 24px over the window here, not 30 */
+  .ep-winbox {
+    margin-top: 28px;
+  }
+  .ep-stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ep-doc {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .ep-side {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .ep-side-lab {
+    flex: none;
+  }
+  .ep-target {
+    flex: 1;
+    height: 58px;
+  }
+  .ep-side-note {
+    display: none;
+  }
+  /* the six names stop being a jump control and start being the list
+     of what the product does, so they get room to be read */
+  .ep-pill {
+    grid-template-columns: 7px minmax(0, 1fr) auto;
+    padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+    border-radius: var(--r-card);
+    font-size: var(--fs-body);
+  }
+  .ep-nm {
+    white-space: normal;
+  }
+  /* Below the loop's threshold there is no admin chapter and no
+     right-click beat, so neither element has a state it could reach.
+     They are switched off here as well so a stray class can never
+     surface them on a phone. */
+  .ep-ap--alen,
+  .ep-menu {
+    display: none;
+  }
+  .ep-ap--sophia {
+    top: -24px;
+    left: var(--sp-4);
+  }
+}
+@media (max-width: 620px) {
+  .ep-tbl .col-due,
+  .ep-tbl .cell-due {
+    display: none;
+  }
+  .ep-bar-meta {
+    display: none;
+  }
+  /* at this width the device label is the first thing that can go —
+     the laptop itself already says "managed device" */
+  .ep-dev-id {
+    display: none;
+  }
+  .ep-dev-pic {
+    width: 46px;
+  }
+  /* the search field is decoration; the breadcrumb is information,
+     and at this width one of them has to give */
+  .ep-search {
+    display: none;
+  }
+  .ep-crumb {
+    margin-right: auto;
+  }
+  .ep-doc-sub {
+    display: none;
+  }
+  /* four columns in ~285px. The amount and the status have to be read
+     whole or they read as broken; the vendor name is the one column
+     that ellipses gracefully, so it is the one that gives. */
+  .ep-tbl th:nth-child(1),
+  .ep-tbl td:nth-child(1) {
+    width: 32%;
+  }
+  .ep-tbl th:nth-child(2),
+  .ep-tbl td:nth-child(2) {
+    width: 18%;
+  }
+  .ep-tbl th:nth-child(3),
+  .ep-tbl td:nth-child(3) {
+    width: 26%;
+  }
+  .ep-tbl th:nth-child(5),
+  .ep-tbl td:nth-child(5) {
+    width: 24%;
+  }
+  .ep-tbl td.n {
+    padding-right: 6px;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION — the server-rendered scene is already the answer,
+   so there is nothing to switch off but the decoration
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .ep-hero *,
+  .ep-hero *::before,
+  .ep-hero *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ep-cursor,
+  .ep-menu {
+    display: none;
+  }
+  /* the sheen is a moving band; frozen it would just be a smear
+     across the chip, so it is removed rather than stopped */
+  .ep-ap-chip.work::before,
+  .ep-ap-ell {
+    display: none;
+  }
+}
+
+/* ============================================================
+   PAGE RHYTHM — the rest of the page, same template as the other
+   bespoke platform pages
+   ============================================================ */
+.ep-sec {
+  padding: var(--sp-section) 0;
+}
+.ep-sec--tight {
+  padding: var(--sp-12) 0 var(--sp-10);
+}
+.ep-sec--alt {
+  background: var(--bg-2);
+  border-block: 1px solid var(--line);
+}
+.ep-head {
+  margin-bottom: var(--sp-10);
+  max-width: 60ch;
+}
+.ep-head h2 {
+  margin: var(--sp-4) 0 0;
+  font-family: var(--disp);
+  font-weight: var(--fw-disp);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  text-wrap: balance;
+}
+.ep-head h2 em {
+  font-style: normal;
+  color: var(--orange);
+}
+.ep-head p {
+  max-width: 60ch;
+  margin: var(--sp-5) 0 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+}
+.ep-rows {
+  display: grid;
+  gap: var(--sp-section);
+}
+
+/* ============================================================
+   AnswerEndpoint's two surfaces.
+
+   The shared `.iz-ans` vocabulary has an "unreachable" outline but it
+   is neutral grey — correct for a server nobody can see, wrong for an
+   action that was actively refused. These two say refused and allowed
+   in the semantic colours, and they are the only classes the answer
+   sheet adds. They live here rather than in answers.css because this
+   sheet is the only place the illustration is ever loaded.
+   ============================================================ */
+.iz-ans--end .ae-refuse {
+  fill: var(--deny-bg);
+  stroke: color-mix(in srgb, var(--deny) 45%, transparent);
+  stroke-width: 1.3;
+  stroke-dasharray: 6 5;
+}
+.iz-ans--end .ae-allow {
+  fill: var(--allow-bg);
+  stroke: color-mix(in srgb, var(--allow) 42%, transparent);
+  stroke-width: 1.3;
+}
+
+/* ============================================================
+   THE SIX ROW CONSOLES
+   One shell, six bodies. Each one shows the control in its enforced
+   state, because a screenshot of a control doing nothing is a
+   screenshot of nothing.
+   ============================================================ */
+.epc {
+  display: flex;
+  flex-direction: column;
+  min-height: 268px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  overflow: hidden;
+}
+.epc-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+  padding: 9px var(--sp-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.epc-bar i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+}
+.epc-bar b {
+  margin-left: 6px;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.epc-state {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+}
+.epc-state.deny {
+  color: var(--deny);
+  background: var(--deny-bg);
+  border-color: color-mix(in srgb, var(--deny) 28%, transparent);
+}
+.epc-state.on {
+  color: var(--allow);
+  background: var(--allow-bg);
+  border-color: color-mix(in srgb, var(--allow) 28%, transparent);
+}
+.epc-body {
+  flex: 1;
+  padding: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+  align-content: start;
+  min-width: 0;
+}
+.epc-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+  font-size: var(--fs-sm);
+  color: var(--tx-dim);
+}
+.epc-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.epc-row em {
+  margin-left: auto;
+  flex: none;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.epc-row.no {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--deny) 40%, transparent);
+  background: var(--deny-bg);
+}
+.epc-row.no em {
+  color: var(--deny);
+}
+.epc-row.no span {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--deny) 60%, transparent);
+}
+.epc-row.yes {
+  border-color: color-mix(in srgb, var(--allow) 34%, transparent);
+  background: var(--allow-bg);
+}
+.epc-row.yes em {
+  color: var(--allow);
+}
+.epc-note {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--tx-mute);
+}
+/* the watermark row-console shows a marked screen rather than a list */
+.epc-screen {
+  position: relative;
+  min-height: 148px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-xs);
+  background: var(--bg-2);
+  overflow: hidden;
+  padding: var(--sp-3);
+  display: grid;
+  gap: 7px;
+  align-content: start;
+}
+.epc-line {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line-strong);
+  width: var(--w, 80%);
+}
+.epc-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.epc-marks b {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: rotate(-24deg);
+}
+/* the inactivity console is one countdown, so it gets the whole box */
+.epc-idle {
+  display: grid;
+  place-items: center;
+  gap: var(--sp-3);
+  min-height: 148px;
+}
+.epc-idle-n {
+  font-family: var(--mono);
+  font-size: var(--fs-num-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+}
+.epc-idle-l {
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}

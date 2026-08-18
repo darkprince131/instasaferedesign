@@ -74,14 +74,7 @@ export const NEW_IA: PageDef[] = [
     h1: "Domain Joining",
     sub: "Join remote devices to your corporate AD domain over ZTNA — push GPO, enforce compliance, no VPN and no office visit.",
   }),
-  P({
-    path: "/platform/endpoint-controls",
-    kind: "platform",
-    eyebrow: "Platform",
-    title: "Endpoint Session Controls",
-    h1: "Endpoint Controls",
-    sub: "Clipboard control, watermarking, network and app filters, browser restrictions, inactivity timeout — session-layer DLP for remote access.",
-  }),
+  /* /platform/endpoint-controls is BESPOKE — app/platform/endpoint-controls. */
   P({
     path: "/platform/geofencing",
     kind: "platform",

@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Endpoint Controls — hero prototype v2</title>
+<style>
+/* ============================================================
+   endpoint-controls-hero-v2
+   Paper page + one inverted dark "session window".
+   One continuous ~20s narrative loop, seven chapters, no resets
+   mid-loop: state accumulates and decays, it never blanks.
+   Tokens mirror components/home2/iz-system.css §5 §6 §7.
+   ============================================================ */
+
+:root{
+  --sans:"Geist",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Geist Mono","SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+
+  /* §5 motion */
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease-pop:cubic-bezier(0.34,1.32,0.5,1);
+  --dur-fast:180ms;
+  --dur:300ms;
+  --dur-slow:650ms;
+  --stagger:80ms;
+}
+
+/* ---------- PAPER theme (page) ---------- */
+.paper{
+  --bg:#f9f9f7;
+  --bg-2:#f2f1ec;
+  --surface:#ffffff;
+  --line:rgba(20,18,12,.11);
+  --line-strong:rgba(20,18,12,.17);
+  --tx:#1b1a17;
+  --tx-dim:#5c594f;
+  --tx-mute:#7a766e;
+  --accent:#f2480a;
+  --accent-tint:rgba(242,72,10,.10);
+  --accent-tint-2:rgba(242,72,10,.055);
+  --allow:#178a51;
+  --allow-bg:rgba(23,138,81,.10);
+  --deny:#c32f46;
+  --deny-bg:rgba(195,47,70,.09);
+  --panel-sh:0 1px 3px rgba(40,30,10,.05);
+  --btn-ink:#ffffff;
+}
+
+/* ---------- INVERTED DARK (session window only) ---------- */
+.win{
+  --bg:#0a0b0d;
+  --surface:#121417;
+  --surface-2:#171a1e;
+  --line:rgba(255,255,255,.07);
+  --line-strong:rgba(255,255,255,.13);
+  --tx:#f1f1f3;
+  --tx-dim:#a1a1aa;
+  --tx-mute:#61626b;
+  --accent:#ff6a2c;
+  --accent-tint:rgba(255,106,44,.13);
+  --accent-tint-2:rgba(255,106,44,.07);
+  --allow:#46d38a;
+  --allow-bg:rgba(70,211,138,.13);
+  --deny:#ff5c72;
+  --deny-bg:rgba(255,92,114,.12);
+  --ghost:#2a2d33;
+  --btn-ink:#0a0b0d;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg);color:var(--tx);
+  font-family:var(--sans);line-height:1.55;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============================================================
+   HERO SHELL + dashed-rail backdrop (izgrid idiom, inlined)
+   ============================================================ */
+.hero{position:relative;padding:74px 28px 44px;overflow:hidden;background:var(--bg)}
+
+/* paper texture: two very quiet washes, no grid */
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(120% 70% at 12% -8%, var(--accent-tint-2) 0%, transparent 58%),
+    radial-gradient(90% 60% at 100% 0%, rgba(20,18,12,.035) 0%, transparent 62%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+}
+
+/* the two dashed column rails, bounding the content column */
+.rails{position:absolute;inset:0;pointer-events:none;z-index:1}
+.rails i{
+  position:absolute;top:0;bottom:0;width:0;
+  border-left:1px dashed var(--line);
+}
+.rails i.l{left:max(28px,calc(50% - 640px))}
+.rails i.r{right:max(28px,calc(50% - 640px))}
+.rails hr{
+  position:absolute;left:0;right:0;height:0;margin:0;border:0;
+  border-top:1px dashed var(--line);
+}
+.rails hr.t{top:46px}
+.rails hr.b{bottom:26px}
+/* 9px plus/cross markers at intersections */
+.x{position:absolute;width:9px;height:9px;pointer-events:none}
+.x::before,.x::after{content:"";position:absolute;background:var(--line-strong)}
+.x::before{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+.x::after{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+
+.inner{
+  position:relative;z-index:2;max-width:1240px;margin:0 auto;
+  display:grid;grid-template-columns:minmax(320px,0.92fr) minmax(440px,1.12fr);
+  gap:60px;align-items:start;
+}
+
+/* ============================================================
+   MICRO-LABEL CONVENTION (kept from v1)
+   ============================================================ */
+.ml{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;
+  color:var(--tx-mute);text-transform:lowercase;display:block;margin-bottom:16px;
+}
+
+/* ============================================================
+   LEFT COLUMN
+   ============================================================ */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  color:var(--accent);text-transform:uppercase;margin:0 0 20px;
+}
+.eyebrow::before{content:"";width:16px;height:1px;background:var(--accent)}
+
+h1{
+  font-size:clamp(34px,4.5vw,54px);line-height:1.06;letter-spacing:-.02em;
+  font-weight:600;margin:0 0 18px;max-width:16ch;
+}
+.sub{color:var(--tx-dim);font-size:17px;margin:0 0 30px;max-width:44ch}
+.sub em{font-style:normal;color:var(--tx);font-weight:500}
+
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:38px}
+.btn{
+  font:inherit;font-size:14.5px;font-weight:500;border-radius:999px;padding:11px 24px;
+  cursor:pointer;border:1px solid transparent;text-decoration:none;display:inline-block;
+  transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+/* --cta-glow from iz-system.css §7 (paper): offset, not a halo */
+.btn-p{background:var(--accent);color:var(--btn-ink);border-color:var(--accent);box-shadow:0 8px 26px -8px rgba(242,72,10,.42)}
+.btn-p:hover{background:#ff5a1c;transform:translateY(-1px)}
+.btn-s{background:transparent;color:var(--tx);border-color:var(--line-strong)}
+.btn-s:hover{border-color:var(--tx-mute);background:var(--surface)}
+
+/* ---------- control rail ---------- */
+.rail{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ctrl{
+  position:relative;display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:11px;
+  width:100%;text-align:left;font:inherit;font-size:14.5px;cursor:pointer;
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:9px 8px 9px 14px;color:var(--tx-dim);box-shadow:var(--panel-sh);
+  transition:border-color var(--dur) var(--ease),color var(--dur) var(--ease),
+             background var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
+}
+.ctrl:hover{border-color:var(--line-strong);color:var(--tx)}
+.ctrl .dot{
+  width:7px;height:7px;border-radius:50%;background:var(--line-strong);margin-left:4px;
+  transition:background var(--dur-fast) var(--ease),box-shadow var(--dur) var(--ease);
+}
+.ctrl .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctrl .chip{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:999px;padding:4px 9px;background:var(--bg-2);color:var(--tx-mute);
+  border:1px solid var(--line);white-space:nowrap;
+  transition:background var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease);
+}
+/* live chapter */
+.ctrl.live{
+  color:var(--tx);border-color:var(--accent);background:#fff;
+  box-shadow:0 0 0 3px var(--accent-tint-2),var(--panel-sh);
+}
+.ctrl.live .dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)}
+.ctrl.live .chip{background:var(--accent-tint);color:var(--accent);border-color:rgba(242,72,10,.28)}
+.ctrl.live .chip.deny{background:var(--deny-bg);color:var(--deny);border-color:rgba(195,47,70,.3)}
+/* played — small green tick persists for the rest of the loop */
+.ctrl.done .dot{background:var(--allow)}
+.ctrl.done .chip{background:var(--allow-bg);color:var(--allow);border-color:rgba(23,138,81,.26)}
+.ctrl.done.live .chip{background:var(--accent-tint);color:var(--accent);border-color:rgba(242,72,10,.28)}
+.ctrl.done.live .chip.deny{background:var(--deny-bg);color:var(--deny);border-color:rgba(195,47,70,.3)}
+.tick{
+  position:absolute;right:-3px;top:-3px;width:14px;height:14px;border-radius:50%;
+  background:var(--allow);color:#fff;font-size:8.5px;line-height:14px;text-align:center;
+  opacity:0;transform:scale(.4);transition:opacity var(--dur-fast) var(--ease),transform var(--dur) var(--ease-pop);
+}
+.ctrl.done .tick{opacity:1;transform:scale(1)}
+/* chip morph stamp */
+@keyframes stamp{0%{transform:scale(1.22);opacity:.35}55%{transform:scale(.965)}100%{transform:scale(1);opacity:1}}
+.chip.morph{animation:stamp 300ms var(--ease-pop)}
+
+.railfoot{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--tx-mute);
+  padding:11px 4px 0;border-top:1px dashed var(--line);margin-top:6px;
+}
+.railfoot b{color:var(--tx-dim);font-weight:400}
+
+/* ============================================================
+   SESSION WINDOW (dark)
+   ============================================================ */
+.winwrap{position:relative}
+.win{
+  position:relative;background:var(--surface);border:1px solid rgba(20,18,12,.14);
+  border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:486px;
+  color:var(--tx);
+  box-shadow:0 24px 60px -28px rgba(20,18,12,.42),0 2px 8px -2px rgba(20,18,12,.14);
+}
+
+/* ---------- titlebar ---------- */
+.bar{
+  display:flex;align-items:center;gap:11px;padding:11px 14px;
+  border-bottom:1px solid var(--line);background:var(--surface-2);flex:none;
+}
+.bar .lights{display:flex;gap:5px}
+.bar .lights i{width:8px;height:8px;border-radius:50%;background:var(--ghost);display:block}
+.bar .ttl{font-size:12.5px;color:var(--tx);font-weight:500;letter-spacing:-.005em;white-space:nowrap}
+.bar .meta{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--tx-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .right{margin-left:auto;display:flex;align-items:center;gap:11px;flex:none}
+.livepip{display:flex;align-items:center;gap:6px;opacity:.35;transition:opacity var(--dur) var(--ease)}
+.livepip.on{opacity:1}
+.livepip i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.82)}}
+.livepip span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--accent)}
+.idlering{width:20px;height:20px;flex:none}
+.idlering circle.bg{fill:none;stroke:var(--line-strong);stroke-width:2}
+.idlering circle.fg{
+  fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;
+  stroke-dasharray:53.4;stroke-dashoffset:53.4;opacity:0;
+  transform:rotate(-90deg);transform-origin:10px 10px;
+}
+.idlering.arm circle.fg{opacity:1;stroke-dashoffset:53.4}
+.idlering.run circle.fg{opacity:1;stroke-dashoffset:0;transition:stroke-dashoffset var(--idlespin,2600ms) linear}
+
+/* ---------- connection strip ---------- */
+.conn{padding:9px 14px 3px;border-bottom:1px solid var(--line);background:var(--surface-2);flex:none}
+.conn svg{display:block;width:100%;height:auto}
+.conn .box{fill:#0e1013;stroke:var(--line-strong)}
+.conn .bt{fill:var(--tx-dim);font-family:var(--mono);font-size:8px;letter-spacing:.11em}
+.conn .app{fill:#0e1013;stroke:var(--line-strong);transition:stroke var(--dur) var(--ease)}
+.conn .appt{fill:var(--tx-dim);font-family:var(--mono);font-size:8.5px;letter-spacing:.11em;transition:fill var(--dur) var(--ease)}
+.conn .base{fill:none;stroke:var(--ghost);stroke-width:1.3;stroke-dasharray:3 5}
+.conn .flowclip{clip-path:inset(0 100% 0 0);transition:clip-path var(--dur-slow) var(--ease)}
+.conn .flow{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-dasharray:9 7}
+.conn .offnet rect{fill:none;stroke:var(--ghost);stroke-width:1;stroke-dasharray:3 4}
+.conn .offnet text{fill:#5b5d64;font-family:var(--mono);font-size:7.5px;letter-spacing:.09em}
+.conn .offnet line{stroke:var(--ghost);stroke-width:1;stroke-dasharray:2 4}
+.conn .unre{fill:#5b5d64;font-family:var(--mono);font-size:7px;letter-spacing:.13em}
+.conn.live .flowclip{clip-path:inset(0 0 0 0)}
+.conn.live .flow{animation:flow 1s linear infinite}
+.conn.live .app{stroke:var(--accent)}
+.conn.live .appt{fill:var(--accent)}
+@keyframes flow{to{stroke-dashoffset:-32}}
+.conn.decay .flowclip{clip-path:inset(0 0 0 100%);transition:clip-path 900ms var(--ease)}
+
+/* ---------- stage ---------- */
+.stage{position:relative;flex:1;display:grid;grid-template-columns:1fr 138px;min-height:0}
+.doc{position:relative;padding:16px 18px 14px;border-right:1px solid var(--line);overflow:hidden;min-width:0}
+.dochead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.doc h3{font-size:12.5px;margin:0;color:var(--tx);font-weight:500;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* download control (Ch5) */
+.dl{position:relative;margin-left:auto;width:24px;height:24px;border-radius:6px;flex:none;
+    border:1px solid var(--line);display:grid;place-items:center;
+    transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.dl svg{width:12px;height:12px;stroke:var(--tx-dim);fill:none;stroke-width:1.5;stroke-linecap:round;transition:stroke var(--dur) var(--ease)}
+.dl.try{animation:tap 620ms var(--ease) 2;border-color:var(--accent)}
+.dl.try svg{stroke:var(--accent)}
+@keyframes tap{0%,100%{box-shadow:0 0 0 0 var(--accent-tint)}45%{box-shadow:0 0 0 6px rgba(255,106,44,0)}}
+.dl .cross{position:absolute;inset:-2px;opacity:0;transform:scale(.7);transition:opacity var(--dur-fast) var(--ease),transform var(--dur) var(--ease-pop)}
+.dl .cross line{stroke:var(--deny);stroke-width:1.4;stroke-dasharray:2.5 2.5;stroke-linecap:round}
+.dl.denied{border-color:rgba(255,92,114,.4);border-style:dashed;background:var(--deny-bg);animation:none}
+.dl.denied svg.ic{stroke:#6d5158}
+.dl.denied .cross{opacity:1;transform:scale(1)}
+
+.offchip{
+  margin-left:auto;font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--deny);background:var(--deny-bg);
+  border:1px dashed rgba(255,92,114,.4);border-radius:999px;padding:3px 8px;white-space:nowrap;
+  opacity:0;transform:translateY(3px);flex:none;
+  transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease-pop);
+}
+.offchip.on{opacity:1;transform:none}
+.dochead .dl{margin-left:8px}
+
+/* doc body lines — "type themselves in" */
+.ln{
+  height:5px;border-radius:3px;background:#272b31;margin-bottom:9px;width:var(--w,80%);
+  transform:scaleX(0);transform-origin:left center;
+  transition:transform 380ms var(--ease);transition-delay:calc(var(--i,0) * 70ms);
+}
+.doc.typed .ln{transform:scaleX(1)}
+.para{position:relative;padding:6px 8px;margin:0 -8px 10px;border-radius:4px}
+.para .ln{margin-bottom:8px}
+.selband{
+  position:absolute;inset:2px 4px;border-radius:3px;background:var(--accent-tint);
+  box-shadow:inset 0 0 0 1px rgba(255,106,44,.24);
+  transform:scaleX(0);transform-origin:left center;opacity:0;
+  transition:transform 620ms var(--ease),opacity var(--dur-fast) var(--ease);
+}
+.para.sel .selband{transform:scaleX(1);opacity:1}
+/* after the block lands, the selection decays to a residue — it stays
+   readable as "this is what was attempted" without owning the frame */
+.para.settled .selband{opacity:.34;transition:opacity 900ms var(--ease)}
+.caret{
+  display:inline-block;width:1.5px;height:11px;background:var(--accent);vertical-align:-2px;
+  margin-left:2px;animation:blink 1.05s steps(2,end) infinite;opacity:.85;
+}
+@keyframes blink{50%{opacity:0}}
+
+/* network filter chips (Ch4) */
+.net{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.nrow{display:flex;align-items:center;gap:0;opacity:0;transform:translateY(4px);
+      transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.nrow.on{opacity:1;transform:none}
+.nleg{width:26px;height:0;border-top:1.5px solid var(--accent);flex:none;
+      transform:scaleX(0);transform-origin:left center;transition:transform 320ms var(--ease),border-color var(--dur) var(--ease)}
+.nrow.on .nleg{transform:scaleX(1)}
+.nrow.denied .nleg{border-top-style:dashed;border-top-color:var(--deny)}
+.nrow.allowed .nleg{border-top-color:var(--allow)}
+.nchip{
+  display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.05em;color:var(--tx-dim);background:#0e1013;border:1px solid var(--line-strong);
+  border-radius:5px;padding:4px 8px;min-height:22px;
+  transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease),color var(--dur) var(--ease);
+}
+.nrow.denied .nchip{border-style:dashed;border-color:rgba(255,92,114,.42);background:var(--deny-bg);color:#c9909a}
+.nrow.denied .nurl{text-decoration:line-through;text-decoration-color:var(--deny)}
+.nrow.allowed .nchip{border-color:rgba(70,211,138,.34);background:var(--allow-bg);color:var(--tx-dim)}
+.nmark{
+  width:13px;height:13px;border-radius:50%;display:grid;place-items:center;font-size:8px;line-height:1;
+  opacity:0;transform:scale(.4);transition:opacity var(--dur-fast) var(--ease),transform var(--dur) var(--ease-pop);flex:none;
+}
+.nrow.denied .nmark{opacity:1;transform:scale(1);background:var(--deny);color:#1a0207}
+.nrow.allowed .nmark{opacity:1;transform:scale(1);background:var(--allow);color:#04170d}
+
+/* ---------- clipboard side target ---------- */
+.side{padding:16px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.side .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--tx-dim);text-transform:lowercase}
+.target{
+  position:relative;flex:0 0 auto;height:82px;border-radius:6px;border:1px solid var(--line);
+  background:var(--surface-2);display:grid;place-items:center;
+  font-family:var(--mono);font-size:15px;color:var(--tx-mute);
+  transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease);
+}
+.target.blocked{border:1px dashed rgba(255,92,114,.45);background:var(--deny-bg)}
+.target.shake{animation:shake 340ms cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{10%,90%{transform:translateX(-1.5px)}20%,80%{transform:translateX(2.5px)}30%,50%,70%{transform:translateX(-3.5px)}40%,60%{transform:translateX(3.5px)}}
+.stampx{
+  position:absolute;font-family:var(--mono);font-size:10px;letter-spacing:.16em;font-weight:600;
+  color:var(--deny);border:1.5px solid var(--deny);border-radius:3px;padding:3px 7px;
+  transform:rotate(-8deg) scale(1.5);opacity:0;background:rgba(10,11,13,.6);
+}
+.target.blocked .stampx{opacity:1;transform:rotate(-8deg) scale(1);transition:opacity 140ms var(--ease),transform 320ms var(--ease-pop)}
+.emptymark{transition:opacity var(--dur) var(--ease)}
+.target.blocked .emptymark{opacity:0}
+
+/* copy ghost chip */
+.ghost{
+  position:absolute;left:0;top:0;z-index:6;font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;
+  background:var(--accent);color:var(--btn-ink);border-radius:4px;padding:4px 8px;
+  opacity:0;pointer-events:none;white-space:nowrap;font-weight:600;
+  box-shadow:0 5px 14px -5px rgba(0,0,0,.6);
+}
+/* the invisible wall the copy hits */
+.wall{
+  position:absolute;top:0;bottom:0;width:2px;z-index:5;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--deny),transparent);
+  opacity:0;
+}
+.wall.hit{animation:wallhit 520ms var(--ease)}
+@keyframes wallhit{0%{opacity:0}18%{opacity:.95}100%{opacity:0}}
+
+/* ---------- watermark layer (persists once applied) ---------- */
+.wm{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:4;opacity:0;transition:opacity 520ms var(--ease)}
+.wm.on{opacity:1}
+.wm b{
+  position:absolute;font-family:var(--mono);font-size:8px;letter-spacing:.11em;font-weight:400;
+  color:rgba(255,106,44,.25);transform:rotate(-24deg);white-space:nowrap;
+}
+.shimmer{
+  position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;
+  background:linear-gradient(104deg,transparent 38%,rgba(255,106,44,.16) 48%,rgba(255,255,255,.05) 52%,transparent 62%);
+  background-size:260% 100%;background-position:120% 0;
+}
+.shimmer.sweep{animation:sweep 1100ms var(--ease)}
+@keyframes sweep{0%{opacity:0;background-position:130% 0}18%{opacity:1}100%{opacity:0;background-position:-40% 0}}
+
+/* ---------- cursor actor ---------- */
+.cursor{
+  position:absolute;left:0;top:0;z-index:9;pointer-events:none;
+  transform:translate3d(var(--cx,-60px),var(--cy,320px),0);
+  transition:transform var(--cdur,700ms) var(--cease,cubic-bezier(0.34,1.24,0.5,1)),opacity var(--dur) var(--ease);
+  opacity:0;
+}
+.cursor.on{opacity:1}
+.cursor svg{display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.cursor .nametag{
+  position:absolute;left:15px;top:17px;font-family:var(--mono);font-size:8.5px;letter-spacing:.07em;
+  background:var(--accent);color:var(--btn-ink);border-radius:4px;padding:2.5px 6px;white-space:nowrap;font-weight:600;
+}
+/* near the right edge the tag would clip on the window, so it swaps sides */
+.cursor.flip .nametag{left:auto;right:6px;top:18px}
+.cursor.press svg{animation:press 260ms var(--ease)}
+@keyframes press{45%{transform:scale(.8)}100%{transform:scale(1)}}
+
+/* ---------- dim / closed / payoff ---------- */
+.dim{
+  position:absolute;inset:0;z-index:10;background:rgba(10,11,13,.8);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 460ms var(--ease);
+}
+.dim.on{opacity:1}
+.closed{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.17em;color:var(--tx-dim);
+  text-transform:uppercase;border:1px dashed var(--line-strong);border-radius:4px;padding:9px 16px;
+  transform:scale(1.08);opacity:0;transition:opacity var(--dur) var(--ease),transform 420ms var(--ease-pop);
+}
+.dim.on .closed{opacity:1;transform:scale(1)}
+.dim.payoff .closed{opacity:0;transform:scale(.96);transition-duration:220ms}
+
+.score{
+  position:absolute;inset:0;z-index:11;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity 420ms var(--ease);padding:0 20px;
+}
+.score.on{opacity:1}
+.score .big{
+  display:flex;align-items:baseline;gap:12px;font-size:clamp(17px,2.2vw,21px);
+  font-weight:600;letter-spacing:-.02em;color:var(--tx);flex-wrap:wrap;justify-content:center;
+}
+.score .big b{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+.score .big span.sep{color:var(--tx-mute);font-weight:400}
+.score .foot{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;color:var(--tx-dim);text-transform:uppercase}
+.score .ubar{width:64px;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:center;transition:transform 620ms var(--ease) 220ms}
+.score.on .ubar{transform:scaleX(1)}
+
+/* loop-restart sweep — crossfade, never a blank */
+.rewind{
+  position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0;
+  background:linear-gradient(100deg,transparent 40%,rgba(255,106,44,.14) 50%,rgba(255,255,255,.06) 54%,transparent 64%);
+  background-size:250% 100%;
+}
+.rewind.go{animation:rewind 900ms var(--ease)}
+@keyframes rewind{0%{opacity:0;background-position:135% 0}15%{opacity:1}100%{opacity:0;background-position:-45% 0}}
+
+/* ---------- audit log ---------- */
+.log{border-top:1px solid var(--line);background:var(--surface-2);padding:9px 14px 11px;flex:none}
+.loghead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.loghead .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--tx-dim)}
+.loghead .clock{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--tx-dim);font-variant-numeric:tabular-nums}
+.loghead .pip{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
+.log ul{list-style:none;margin:0;padding:0;font-family:var(--mono);font-size:10.5px;line-height:1.8;min-height:76px}
+.log li{
+  color:var(--tx-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:opacity var(--dur) var(--ease);
+}
+.log li.old{opacity:.45}
+.log li b{color:var(--accent);font-weight:400}
+.log li em{font-style:normal;color:var(--deny)}
+.log li i{font-style:normal;color:var(--allow)}
+.log li.fresh{animation:slidein 340ms var(--ease)}
+@keyframes slidein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.log li.gone{animation:fadeup 300ms var(--ease) forwards}
+@keyframes fadeup{to{opacity:0;transform:translateY(-8px)}}
+
+/* ============================================================
+   REVIEW HARNESS (not part of the component)
+   ============================================================ */
+.harness{
+  position:relative;z-index:2;max-width:1240px;margin:30px auto 0;
+  display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  border-top:1px dashed var(--line-strong);padding-top:14px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.11em;color:var(--tx-mute);text-transform:uppercase;
+}
+.harness b{color:var(--accent);font-weight:400}
+.harness button{
+  font:inherit;background:var(--surface);border:1px solid var(--line-strong);color:var(--tx-dim);
+  border-radius:999px;padding:4px 11px;cursor:pointer;letter-spacing:.11em;
+}
+.harness button:hover{border-color:var(--tx-mute);color:var(--tx)}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.win :focus-visible{outline-color:var(--accent)}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1100px){
+  .inner{gap:40px}
+}
+@media (max-width:920px){
+  .hero{padding:52px 20px 36px}
+  .inner{grid-template-columns:1fr;gap:38px}
+  .rails i.l{left:20px}
+  .rails i.r{right:20px}
+  h1{max-width:none}
+  .win{min-height:0}
+  .stage{grid-template-columns:1fr}
+  .doc{border-right:0;border-bottom:1px solid var(--line)}
+  .side{flex-direction:row;align-items:center;gap:12px}
+  .side .lbl{flex:none}
+  .target{flex:1;height:58px}
+}
+
+/* ============================================================
+   REDUCED MOTION — static, fully resolved scene
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  .cursor{display:none}
+  .conn .flowclip{clip-path:inset(0 0 0 0)}
+  .log ul{min-height:0}
+}
+</style>
+</head>
+<body class="paper">
+
+<section class="hero">
+  <!-- dashed-rail backdrop -->
+  <div class="rails" aria-hidden="true">
+    <i class="l"></i><i class="r"></i>
+    <hr class="t"><hr class="b">
+    <span class="x" style="left:max(28px,calc(50% - 640px));top:46px;transform:translate(-50%,-50%)"></span>
+    <span class="x" style="right:max(28px,calc(50% - 640px));top:46px;transform:translate(50%,-50%)"></span>
+    <span class="x" style="left:max(28px,calc(50% - 640px));bottom:26px;transform:translate(-50%,50%)"></span>
+    <span class="x" style="right:max(28px,calc(50% - 640px));bottom:26px;transform:translate(50%,50%)"></span>
+  </div>
+
+  <div class="inner">
+
+    <!-- ==================== LEFT ==================== -->
+    <div>
+      <p class="eyebrow">Endpoint Controls</p>
+      <h1>Access granted is not the end of the story.</h1>
+      <p class="sub">What happens inside the session — <em>copying, downloading, wandering</em> — is policy too.</p>
+
+      <div class="ctas">
+        <a class="btn btn-p" href="#">Book a Demo</a>
+        <a class="btn btn-s" href="#">See the six controls</a>
+      </div>
+
+      <span class="ml" id="raillabel">the six controls_</span>
+      <div class="rail" id="rail">
+        <button class="ctrl" data-p="0" aria-pressed="false" aria-describedby="raillabel">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="nm">Clipboard controls</span>
+          <span class="chip" data-idle="monitoring">monitoring</span>
+          <span class="tick" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="ctrl" data-p="1" aria-pressed="false" aria-describedby="raillabel">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="nm">Watermark protection</span>
+          <span class="chip" data-idle="standby">standby</span>
+          <span class="tick" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="ctrl" data-p="2" aria-pressed="false" aria-describedby="raillabel">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="nm">Network filter</span>
+          <span class="chip" data-idle="24 rules">24 rules</span>
+          <span class="tick" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="ctrl" data-p="3" aria-pressed="false" aria-describedby="raillabel">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="nm">App filter</span>
+          <span class="chip" data-idle="standby">standby</span>
+          <span class="tick" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="ctrl" data-p="4" aria-pressed="false" aria-describedby="raillabel">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="nm">Chrome control</span>
+          <span class="chip" data-idle="standby">standby</span>
+          <span class="tick" aria-hidden="true">&#10003;</span>
+        </button>
+        <button class="ctrl" data-p="5" aria-pressed="false" aria-describedby="raillabel">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="nm">Inactivity timeout</span>
+          <span class="chip" data-idle="15:00">15:00</span>
+          <span class="tick" aria-hidden="true">&#10003;</span>
+        </button>
+        <p class="railfoot">enforced per app, per user group — <b>every event is one of 202 logged types.</b></p>
+      </div>
+    </div>
+
+    <!-- ==================== RIGHT: SESSION WINDOW ==================== -->
+    <div class="winwrap">
+      <p class="sr" id="scenedesc">
+        A live remote session to SAP ERP. The tunnel reaches one application and nothing else on the
+        network. A copy attempt out of the session is blocked, a watermark bound to the user is applied,
+        a personal file-sharing domain is denied while a support domain is allowed, downloads and printing
+        are switched off, and the idle session closes after fifteen minutes. Every one of those decisions
+        is written to the audit log.
+      </p>
+
+      <div class="win" id="win" role="img" aria-labelledby="scenedesc">
+
+        <div class="bar">
+          <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="ttl">Remote session &mdash; SAP ERP</span>
+          <span class="meta">priya.n@ &middot; 8F2A</span>
+          <span class="right">
+            <span class="livepip" id="livepip" aria-hidden="true"><i></i><span>LIVE</span></span>
+            <svg class="idlering" id="idlering" viewBox="0 0 20 20" aria-hidden="true">
+              <circle class="bg" cx="10" cy="10" r="8.5"/>
+              <circle class="fg" cx="10" cy="10" r="8.5"/>
+            </svg>
+          </span>
+        </div>
+
+        <div class="conn" id="conn" aria-hidden="true">
+          <svg viewBox="0 0 560 74">
+            <g class="offnet">
+              <rect x="146" y="3" width="64" height="15" rx="3"/><text x="153" y="14">FILE SRV</text>
+              <line x1="178" y1="18" x2="178" y2="33"/>
+              <rect x="246" y="3" width="74" height="15" rx="3"/><text x="253" y="14">10.0.0.0/8</text>
+              <line x1="283" y1="18" x2="283" y2="33"/>
+              <rect x="356" y="3" width="48" height="15" rx="3"/><text x="366" y="14">DB-01</text>
+              <line x1="380" y1="18" x2="380" y2="33"/>
+              <text class="unre" x="424" y="14">UNREACHABLE</text>
+            </g>
+            <rect class="box" x="3" y="36" width="64" height="24" rx="4"/>
+            <text class="bt" x="13" y="51">DEVICE</text>
+            <path class="base" d="M71 48 H452"/>
+            <g class="flowclip"><path class="flow" d="M71 48 H452"/></g>
+            <rect class="app" x="456" y="32" width="100" height="32" rx="4"/>
+            <text class="appt" x="468" y="51">SAP ERP</text>
+          </svg>
+        </div>
+
+        <div class="stage" id="stage">
+
+          <div class="doc" id="doc">
+            <div class="dochead">
+              <h3>Q3 vendor payment schedule</h3>
+              <span class="offchip" id="offchip">downloads off</span>
+              <span class="dl" id="dlbtn">
+                <svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3-3-3M3 13h10"/></svg>
+                <svg class="cross" viewBox="0 0 28 28" aria-hidden="true"><line x1="4" y1="4" x2="24" y2="24"/><line x1="24" y1="4" x2="4" y2="24"/></svg>
+              </span>
+            </div>
+
+            <div class="ln" style="--w:88%;--i:0"></div>
+            <div class="ln" style="--w:71%;--i:1"></div>
+
+            <div class="para" id="para">
+              <span class="selband" aria-hidden="true"></span>
+              <div class="ln" style="--w:93%;--i:2"></div>
+              <div class="ln" style="--w:84%;--i:3"></div>
+              <div class="ln" style="--w:57%;--i:4"></div>
+            </div>
+
+            <div class="ln" style="--w:79%;--i:5"></div>
+            <div class="ln" style="--w:63%;--i:6"></div>
+            <div style="display:flex;align-items:center;gap:0">
+              <div class="ln" style="--w:112px;--i:7;margin-bottom:0"></div>
+              <span class="caret" id="caret" aria-hidden="true"></span>
+            </div>
+
+            <div class="net" id="net" aria-hidden="true">
+              <div class="nrow" id="nrow1">
+                <span class="nleg"></span>
+                <span class="nchip"><span class="nurl" id="nurl1"></span><span class="nmark">&#10005;</span></span>
+              </div>
+              <div class="nrow" id="nrow2">
+                <span class="nleg"></span>
+                <span class="nchip"><span class="nurl" id="nurl2"></span><span class="nmark">&#10003;</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="side">
+            <span class="lbl">local_clipboard_</span>
+            <div class="target" id="target">
+              <span class="emptymark" aria-hidden="true">&mdash;</span>
+              <span class="stampx">BLOCKED</span>
+            </div>
+          </div>
+
+          <!-- overlays -->
+          <div class="wm" id="wm" aria-hidden="true"></div>
+          <div class="shimmer" id="shimmer" aria-hidden="true"></div>
+          <div class="wall" id="wall" aria-hidden="true"></div>
+          <div class="ghost" id="ghost" aria-hidden="true">&#8984;C &nbsp;copy</div>
+
+          <div class="cursor" id="cursor" aria-hidden="true">
+            <svg width="19" height="23" viewBox="0 0 19 23">
+              <path d="M1.6 1.2 L1.6 18.4 L6.1 14.3 L8.8 20.6 L11.8 19.3 L9.1 13.2 L15.2 13 Z"
+                    fill="#ff6a2c" stroke="#0a0b0d" stroke-width="1.1" stroke-linejoin="round"/>
+            </svg>
+            <span class="nametag">priya.n@</span>
+          </div>
+
+          <div class="dim" id="dim" aria-hidden="true">
+            <p class="closed" id="closed" style="margin:0">Session closed &mdash; 15 min idle</p>
+          </div>
+
+          <div class="score" id="score" aria-hidden="true">
+            <div class="big">
+              <span><b id="n1">0</b> controls enforced</span>
+              <span class="sep">&middot;</span>
+              <span><b id="n2">0</b> events logged</span>
+            </div>
+            <span class="ubar"></span>
+            <div class="foot">202 logged event types</div>
+          </div>
+
+          <div class="rewind" id="rewind" aria-hidden="true"></div>
+        </div>
+
+        <div class="log">
+          <div class="loghead">
+            <span class="pip" aria-hidden="true"></span>
+            <span class="lbl">audit_log_</span>
+            <span class="clock" id="clock">10:42:07</span>
+          </div>
+          <ul id="loglist"></ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="harness">
+    <span>review harness</span>
+    <span>mode <b id="hmode">auto</b></span>
+    <span>chapter <b id="hbeat">&mdash;</b></span>
+    <span>speed <b id="hspeed">1.00</b>&times;</span>
+    <button id="slower" type="button">slower</button>
+    <button id="faster" type="button">faster</button>
+    <button id="replay" type="button">replay loop</button>
+    <span>loop &asymp; <b id="hloop">20.4</b>s &middot; click a control to jump</span>
+  </div>
+</section>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- element handles ---------------- */
+var $  = function(id){ return document.getElementById(id); };
+var rail = $('rail'), pills = [].slice.call(rail.querySelectorAll('.ctrl'));
+var conn = $('conn'), livepip = $('livepip'), idlering = $('idlering');
+var stage = $('stage'), doc = $('doc'), para = $('para');
+var target = $('target'), ghost = $('ghost'), wall = $('wall');
+var wm = $('wm'), shimmer = $('shimmer'), cursor = $('cursor');
+var dlbtn = $('dlbtn'), offchip = $('offchip');
+var net = $('net'), nrow1 = $('nrow1'), nrow2 = $('nrow2'), nurl1 = $('nurl1'), nurl2 = $('nurl2');
+var dim = $('dim'), score = $('score'), rewind = $('rewind');
+var loglist = $('loglist'), clockEl = $('clock');
+var hmode = $('hmode'), hbeat = $('hbeat'), hspeed = $('hspeed'), hloop = $('hloop');
+
+var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- watermark tiles (built once, then persistent) --------- */
+(function(){
+  var txt = 'priya.n@ · 8F2A · 10:42 IST';
+  for(var r=0;r<8;r++){
+    for(var c=0;c<4;c++){
+      var b = document.createElement('b');
+      b.textContent = txt;
+      b.style.left = (c*132 - 40) + 'px';
+      b.style.top  = (r*52 + 2) + 'px';
+      wm.appendChild(b);
+    }
+  }
+})();
+
+/* ---------------- clock (constant micro-motion) ---------------- */
+var t0 = 10*3600 + 42*60 + 7;   /* 10:42:07 */
+var tick = 0;
+function hhmmss(s){
+  var h=Math.floor(s/3600), m=Math.floor(s/60)%60, x=s%60;
+  return (h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(x<10?'0':'')+x;
+}
+if(!REDUCE){
+  setInterval(function(){
+    if(document.hidden) return;
+    tick++; clockEl.textContent = hhmmss(t0 + tick);
+  }, 1000);
+}
+
+/* ---------------- audit log ---------------- */
+var eventCount = 0;
+function logLine(html){
+  eventCount++;
+  var li = document.createElement('li');
+  li.innerHTML = '<span style="opacity:.7">' + hhmmss(t0 + tick) + '</span>&nbsp; ' + html;
+  li.className = 'fresh';
+  loglist.appendChild(li);
+  /* older lines decay rather than disappear */
+  var kids = [].slice.call(loglist.children);
+  kids.forEach(function(k,i){ k.classList.toggle('old', i < kids.length - 2); });
+  /* reduced motion shows the whole resolved log; the live loop keeps ~4 */
+  if(!REDUCE){
+    while(loglist.children.length > 4){
+      var first = loglist.firstChild;
+      first.classList.add('gone');
+      (function(n){ setTimeout(function(){ if(n.parentNode) n.parentNode.removeChild(n); }, 300); })(first);
+      /* stop the list from growing past 5 while the fade-up runs */
+      if(loglist.children.length > 5) loglist.removeChild(loglist.firstChild);
+      break;
+    }
+  }
+}
+
+/* ---------------- rail pill state ---------------- */
+function chip(i){ return pills[i].querySelector('.chip'); }
+function setChip(i, text, denial){
+  var c = chip(i);
+  if(c.textContent === text) return;
+  c.textContent = text;
+  c.classList.toggle('deny', !!denial);
+  c.classList.remove('morph');
+  void c.offsetWidth;             /* restart the stamp */
+  if(!REDUCE) c.classList.add('morph');
+}
+function setLive(i){
+  pills.forEach(function(p,n){
+    p.classList.toggle('live', n === i);
+    p.setAttribute('aria-pressed', n === i ? 'true' : 'false');
+  });
+}
+function markDone(i){ pills[i].classList.add('done'); }
+function clearRail(){
+  pills.forEach(function(p,n){
+    p.classList.remove('live','done');
+    p.setAttribute('aria-pressed','false');
+    var c = p.querySelector('.chip');
+    c.textContent = c.dataset.idle;
+    c.classList.remove('deny','morph');
+  });
+}
+
+/* ---------------- cursor actor ---------------- */
+function pt(el, fx, fy){
+  var s = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+  return { x: r.left - s.left + r.width*fx, y: r.top - s.top + r.height*fy };
+}
+function cursorTo(x, y, dur, ease){
+  if(REDUCE) return;
+  cursor.style.setProperty('--cdur', (dur|0) + 'ms');
+  cursor.style.setProperty('--cease', ease || 'cubic-bezier(0.34,1.24,0.5,1)');
+  cursor.style.setProperty('--cx', Math.round(x) + 'px');
+  cursor.style.setProperty('--cy', Math.round(y) + 'px');
+  cursor.classList.toggle('flip', x > stage.offsetWidth - 86);
+}
+function cursorAt(el, fx, fy, dur, ease){
+  var p = pt(el, fx, fy); cursorTo(p.x, p.y, dur, ease);
+}
+function cursorShow(on){ cursor.classList.toggle('on', !!on && !REDUCE); }
+function cursorPress(){
+  if(REDUCE) return;
+  cursor.classList.remove('press'); void cursor.offsetWidth; cursor.classList.add('press');
+}
+
+/* ---------------- typing helper ---------------- */
+function typeInto(el, text, per){
+  el.textContent = '';
+  if(REDUCE){ el.textContent = text; return; }
+  for(var i=1;i<=text.length;i++){
+    (function(n){ at(n*per, function(){ el.textContent = text.slice(0,n); }); })(i);
+  }
+}
+
+/* ---------------- state reset (loop restart only) ---------------- */
+function softReset(){
+  clearRail();
+  doc.classList.remove('typed');
+  para.classList.remove('sel','settled');
+  target.classList.remove('blocked','shake');
+  wm.classList.remove('on');
+  dlbtn.classList.remove('try','denied');
+  offchip.classList.remove('on');
+  nrow1.classList.remove('on','denied'); nrow2.classList.remove('on','allowed');
+  nurl1.textContent = ''; nurl2.textContent = '';
+  dim.classList.remove('on','payoff');
+  score.classList.remove('on');
+  conn.classList.remove('live','decay');
+  livepip.classList.remove('on');
+  idlering.classList.remove('arm','run');
+  cursorShow(false);
+  cursorTo(-70, stage.offsetHeight * 0.86, 0, 'linear');
+  enforcedCount = 0;
+}
+
+/* ---------------- resolved scene (reduced motion) ---------------- */
+function resolvedScene(){
+  doc.classList.add('typed');
+  conn.classList.add('live');
+  livepip.classList.add('on');
+  para.classList.add('sel','settled');
+  target.classList.add('blocked');
+  wm.classList.add('on');
+  nrow1.classList.add('on','denied'); nurl1.textContent = 'drive-personal.com';
+  nrow2.classList.add('on','allowed'); nurl2.textContent = 'sap-support.com';
+  dlbtn.classList.add('denied'); offchip.classList.add('on');
+  ['BLOCKED','ON','1 DENIED','ENFORCED','DOWNLOADS OFF','CLOSED'].forEach(function(t,i){
+    setChip(i, t, i===0 || i===5);
+    markDone(i);
+  });
+  /* the static scene still needs plausible, distinct timestamps */
+  [ '<b>TUNNEL</b> app=sap-erp scope=1 net=unreachable',
+    '<b>CLIP</b> direction=out action=<em>blocked</em>',
+    '<b>MARK</b> overlay=on bound=priya.n',
+    '<b>NET</b> dst=drive-personal.com action=<em>denied</em>',
+    '<b>CHROME</b> download=blocked print=blocked'
+  ].forEach(function(l,i){ tick = i*4; logLine(l); });
+  tick = 907;                     /* +15 min of idle */
+  logLine('<b>IDLE</b> 15m session=closed');
+  clockEl.textContent = hhmmss(t0 + tick);
+  $('n1').textContent = '6';
+  $('n2').textContent = '6';
+  hmode.textContent = 'static';
+  hbeat.textContent = 'resolved';
+}
+
+/* ============================================================
+   THE TIMELINE — chapters chain, states persist, nothing resets
+   ============================================================ */
+var enforcedCount = 0;
+function enforce(i, chipText, denial, logHtml){
+  setChip(i, chipText, denial);
+  markDone(i);
+  enforcedCount++;
+  if(logHtml) logLine(logHtml);
+}
+
+var CH = [
+{ name:'connect', dur:2600, enter:function(){
+    setLive(-1);
+    conn.classList.remove('decay');
+    at(60,  function(){ conn.classList.add('live'); livepip.classList.add('on'); });
+    at(240, function(){ doc.classList.add('typed'); });
+    at(900, function(){ logLine('<b>TUNNEL</b> app=sap-erp scope=1 net=unreachable'); });
+    /* the actor arrives near the end of the chapter, ready for Ch2 */
+    at(1500, function(){
+      cursorTo(stage.offsetWidth * 0.12, stage.offsetHeight * 0.92, 0, 'linear');
+      cursorShow(true);
+      cursorAt(para, 0.06, 0.5, 900);
+    });
+  }},
+
+{ name:'clipboard', dur:4200, enter:function(){
+    setLive(0);
+    setChip(0, 'watching…', false);
+    cursorShow(true);
+    at(40,  function(){ cursorAt(para, 0.05, 0.28, 520); });
+    /* the sweep: cursor drags left-to-right while the band grows with it */
+    at(420, function(){ para.classList.add('sel'); cursorAt(para, 0.94, 0.78, 640, 'cubic-bezier(0.4,0,0.2,1)'); });
+    at(1150,function(){ cursorPress(); });
+    /* the copy leaves the paragraph and heads for the local clipboard */
+    at(1250,function(){ flyCopy(); });
+    at(1900,function(){
+      wall.classList.remove('hit'); void wall.offsetWidth; wall.classList.add('hit');
+      target.classList.add('blocked','shake');
+      at(0, function(){ /* noop keeps ordering readable */ });
+    });
+    at(2050,function(){ enforce(0, 'BLOCKED', true, '<b>CLIP</b> direction=out action=<em>blocked</em>'); });
+    at(2350,function(){ target.classList.remove('shake'); });
+    at(2700,function(){ para.classList.add('settled'); });
+  }},
+
+{ name:'watermark', dur:2600, enter:function(){
+    setLive(1);
+    setChip(1, 'applying…', false);
+    at(60,  function(){
+      if(!REDUCE){ shimmer.classList.remove('sweep'); void shimmer.offsetWidth; shimmer.classList.add('sweep'); }
+      cursorAt(doc, 0.62, 0.34, 760);
+    });
+    at(520, function(){ wm.classList.add('on'); });   /* stays on for the rest of the loop */
+    at(1250,function(){ enforce(1, 'ON', false, '<b>MARK</b> overlay=on bound=priya.n'); });
+  }},
+
+{ name:'network', dur:2800, enter:function(){
+    setLive(2);
+    setChip(2, 'filtering…', false);
+    at(40,  function(){ nrow1.classList.add('on'); cursorAt(nrow1, 0.42, 0.5, 620); });
+    at(180, function(){ typeInto(nurl1, 'drive-personal.com', 42); });
+    at(1080,function(){ nrow1.classList.add('denied'); });
+    at(1200,function(){ enforce(2, '1 DENIED', true, '<b>NET</b> dst=drive-personal.com action=<em>denied</em>'); });
+    /* the single green beat: an allowed destination, same rule engine */
+    at(1420,function(){ nrow2.classList.add('on'); cursorAt(nrow2, 0.36, 0.5, 520); });
+    at(1520,function(){ typeInto(nurl2, 'sap-support.com', 36); });
+    at(2220,function(){ nrow2.classList.add('allowed'); });
+  }},
+
+{ name:'chrome', dur:2400, enter:function(){
+    setLive(4);
+    setChip(4, 'restricting…', false);
+    at(40,  function(){ cursorAt(dlbtn, 0.5, 0.5, 700); });
+    at(680, function(){ dlbtn.classList.add('try'); cursorPress(); });
+    at(1250,function(){ dlbtn.classList.remove('try'); dlbtn.classList.add('denied'); offchip.classList.add('on'); });
+    at(1380,function(){ enforce(4, 'DOWNLOADS OFF', true, '<b>CHROME</b> download=blocked print=blocked'); });
+    /* app filter has no scene of its own — it resolves alongside */
+    at(1700,function(){ setChip(3, 'ENFORCED', false); markDone(3); enforcedCount++; });
+  }},
+
+{ name:'idle', dur:3200, enter:function(){
+    setLive(5);
+    setChip(5, '00:12…', false);
+    at(40,  function(){
+      idlering.classList.add('arm');
+      idlering.style.setProperty('--idlespin', Math.round(2100 * speed) + 'ms');
+      cursorAt(stage, 1.12, 1.15, 900, 'cubic-bezier(0.4,0,1,1)');
+    });
+    at(140, function(){ idlering.classList.add('run'); });
+    at(760, function(){ cursorShow(false); });
+    at(2200,function(){
+      conn.classList.remove('live'); conn.classList.add('decay');
+      livepip.classList.remove('on');
+      dim.classList.add('on');
+    });
+    at(2380,function(){ enforce(5, 'CLOSED', true, '<b>IDLE</b> 15m session=closed'); });
+  }},
+
+{ name:'payoff', dur:2600, enter:function(){
+    setLive(-1);
+    at(180, function(){
+      dim.classList.add('payoff');
+      score.classList.add('on');
+      countTo($('n1'), 6, 900);
+      countTo($('n2'), eventCount >= 6 ? 6 : eventCount, 1100);
+    });
+    /* crossfade back into Ch1 — a sweep, never a blank */
+    at(2050,function(){
+      if(!REDUCE){ rewind.classList.remove('go'); void rewind.offsetWidth; rewind.classList.add('go'); }
+      score.classList.remove('on');
+    });
+    at(2330,function(){ softReset(); });   /* under the sweep */
+  }}
+];
+
+hloop.textContent = (CH.reduce(function(a,c){return a+c.dur;},0)/1000).toFixed(1);
+
+/* ---------------- copy-ghost flight ---------------- */
+function flyCopy(){
+  var p  = pt(para, 0.88, 0.32);
+  var wx = doc.offsetWidth - 10;                 /* the panel edge = the wall */
+  ghost.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0)';
+  wall.style.left = (doc.offsetWidth - 1) + 'px';
+  var travel = Math.max(40, wx - p.x);
+  if(REDUCE) return;
+  ghost.animate([
+    { transform:'translate3d('+p.x+'px,'+p.y+'px,0) scale(.86)', opacity:0 },
+    { transform:'translate3d('+(p.x+16)+'px,'+(p.y-8)+'px,0) scale(1)', opacity:1, offset:.16 },
+    { transform:'translate3d('+(p.x+travel)+'px,'+(p.y-18)+'px,0) scale(1)', opacity:1, offset:.62 },
+    { transform:'translate3d('+(p.x+travel-18)+'px,'+(p.y-8)+'px,0) scale(.97)', opacity:1, offset:.78 },
+    { transform:'translate3d('+(p.x+travel-34)+'px,'+(p.y+4)+'px,0) scale(.86)', opacity:0 }
+  ], { duration: 900 * speed, easing:'cubic-bezier(0.16,1,0.3,1)', fill:'forwards' });
+  /* the cursor chases its own copy, then recoils off the wall with it */
+  at(160, function(){ cursorTo(p.x + travel*0.72, p.y + 10, 480 , 'cubic-bezier(0.3,0,0.2,1)'); });
+  at(660, function(){ cursorTo(p.x + travel*0.42, p.y + 26, 520); });
+}
+
+/* ---------------- number counter ---------------- */
+function countTo(el, to, ms){
+  if(REDUCE){ el.textContent = to; return; }
+  var start = performance.now(), from = 0;
+  function step(now){
+    var t = Math.min(1, (now - start) / (ms * speed));
+    var e = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(from + (to - from) * e);
+    if(t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ============================================================
+   SCHEDULER — one timeline, one source of truth
+   ============================================================ */
+var timers = [], nextT = null, resumeT = null;
+var idx = 0, speed = 1, paused = false;
+
+function at(ms, fn){ timers.push(setTimeout(fn, ms * speed)); }
+function clearAll(){
+  timers.forEach(clearTimeout); timers = [];
+  if(nextT){ clearTimeout(nextT); nextT = null; }
+}
+function go(i){
+  clearAll();
+  idx = ((i % CH.length) + CH.length) % CH.length;
+  var c = CH[idx];
+  hbeat.textContent = c.name;
+  c.enter();
+  if(!paused) nextT = setTimeout(function(){ go(idx + 1); }, c.dur * speed);
+}
+
+/* ---------------- interaction: pills jump the narrative ---------------- */
+var PILL_TO_CH = { 0:1, 1:2, 2:3, 3:4, 4:4, 5:5 };
+function userJump(chIndex){
+  paused = true;
+  hmode.textContent = 'manual';
+  if(resumeT) clearTimeout(resumeT);
+  /* jumping backwards past applied state would look like a reset,
+     so a jump to an earlier chapter rewinds the whole scene cleanly */
+  if(chIndex <= idx){
+    if(!REDUCE){ rewind.classList.remove('go'); void rewind.offsetWidth; rewind.classList.add('go'); }
+    softReset();
+    CH[0].enter();          /* re-establish the tunnel + doc under the sweep */
+  }
+  go(chIndex);
+  resumeT = setTimeout(function(){
+    paused = false;
+    hmode.textContent = 'auto';
+    go(idx + 1);
+  }, 12000);
+}
+pills.forEach(function(p){
+  p.addEventListener('click', function(){
+    if(REDUCE) return;
+    userJump(PILL_TO_CH[parseInt(p.dataset.p, 10)]);
+  });
+});
+
+/* ---------------- harness ---------------- */
+function setSpeed(mult){
+  speed = Math.max(0.5, Math.min(2.5, mult));
+  hspeed.textContent = speed.toFixed(2);
+  hloop.textContent = (CH.reduce(function(a,c){return a+c.dur;},0) * speed / 1000).toFixed(1);
+  go(idx);                      /* restart the current chapter at the new tempo */
+}
+$('slower').addEventListener('click', function(){ setSpeed(speed * 1.25); });
+$('faster').addEventListener('click', function(){ setSpeed(speed / 1.25); });
+$('replay').addEventListener('click', function(){
+  paused = false; if(resumeT) clearTimeout(resumeT);
+  hmode.textContent = 'auto';
+  loglist.innerHTML = ''; eventCount = 0;
+  if(!REDUCE){ rewind.classList.remove('go'); void rewind.offsetWidth; rewind.classList.add('go'); }
+  softReset(); go(0);
+});
+
+/* ---------------- boot ---------------- */
+if(REDUCE){
+  resolvedScene();
+}else{
+  softReset();
+  go(0);
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ clearAll(); }
+    else { go(idx); }
+  });
+  /* keep the cursor honest when the stage is re-laid-out */
+  window.addEventListener('resize', function(){
+    wall.style.left = (doc.offsetWidth - 1) + 'px';
+  });
+}
+
+})();
+</script>
+</body>
+</html>

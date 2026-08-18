@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Endpoint Controls — hero prototype</title>
+<style>
+:root{
+  --bg:#0B0B0C;
+  --surface:#131316;
+  --surface-2:#191A1D;
+  --surface-3:#1F2024;
+  --rule:#2A2B30;          /* hairline grey — exists */
+  --rule-soft:#212227;
+  --inert:#8B857C;         /* flat beige — inert */
+  --inert-dim:#5A554E;
+  --absent:#3A3B41;        /* dashed grey — absence / denial */
+  --ink:#EDEDEF;
+  --muted:#8B8C95;
+  --muted-2:#5E5F68;
+  --orange:#FF5A1F;        /* the control doing work */
+  --orange-dim:#7A3A1C;
+  --mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;
+  --sans:"Helvetica Neue",Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --beat:1400ms;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* grid backdrop — breaks the monotony, per the design refs */
+.hero{position:relative;overflow:hidden;padding:72px 28px 56px}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--rule-soft) 1px,transparent 1px),linear-gradient(90deg,var(--rule-soft) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(120% 80% at 30% 0%,#000 0%,transparent 72%);
+  -webkit-mask-image:radial-gradient(120% 80% at 30% 0%,#000 0%,transparent 72%);
+  opacity:.55
+}
+.inner{position:relative;max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(320px,1fr) minmax(420px,1.12fr);gap:56px;align-items:start}
+
+/* ---------- micro-label convention ---------- */
+.ml{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--muted-2);text-transform:lowercase;display:block;margin-bottom:14px}
+
+/* ---------- left column ---------- */
+h1{font-size:clamp(32px,4.4vw,50px);line-height:1.04;letter-spacing:-.024em;font-weight:600;margin:0 0 18px;max-width:19ch}
+.sub{color:var(--muted);font-size:16px;margin:0 0 28px;max-width:46ch}
+.sub b{color:var(--ink);font-weight:500}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+.btn{
+  font:inherit;font-size:14px;font-weight:500;border-radius:999px;padding:11px 22px;cursor:pointer;
+  border:1px solid transparent;text-decoration:none;display:inline-block
+}
+.btn-p{background:var(--orange);color:#150A04;border-color:var(--orange)}
+.btn-p:hover{background:#FF6E3A}
+.btn-s{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn-s:hover{border-color:var(--muted-2)}
+
+/* ---------- control rail ---------- */
+.rail{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.ctrl{
+  display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:12px;
+  width:100%;text-align:left;font:inherit;font-size:14px;cursor:pointer;
+  background:var(--surface);border:1px solid var(--rule-soft);border-radius:999px;
+  padding:10px 8px 10px 16px;color:var(--muted);
+  transition:border-color 200ms ease,color 200ms ease,background 200ms ease
+}
+.ctrl:hover{border-color:var(--rule);color:var(--ink)}
+.ctrl .dot{width:7px;height:7px;border-radius:50%;background:var(--absent);transition:background 90ms linear;margin-left:5px}
+.ctrl .chip{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  border-radius:999px;padding:4px 10px;background:var(--surface-3);color:var(--muted-2);
+  border:1px solid var(--rule-soft);transition:background 90ms linear,color 90ms linear,border-color 90ms linear
+}
+.ctrl[aria-pressed="true"]{color:var(--ink);border-color:var(--orange);background:#17110D}
+.ctrl[aria-pressed="true"] .dot{background:var(--orange)}
+.ctrl[aria-pressed="true"] .chip{background:var(--orange);color:#150A04;border-color:var(--orange)}
+.ctrl[aria-pressed="true"].denial .chip{background:transparent;color:var(--muted);border:1px dashed var(--absent)}
+.more{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--muted-2);
+  padding:8px 16px;border-top:1px dashed var(--absent);margin-top:4px
+}
+.more a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--absent)}
+.more a:hover{color:var(--orange);border-color:var(--orange)}
+
+/* ---------- session window ---------- */
+.win{
+  background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column;min-height:454px
+}
+.win-bar{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--rule-soft);
+  background:var(--surface-2)
+}
+.win-bar .lights{display:flex;gap:5px}
+.win-bar .lights i{width:8px;height:8px;border-radius:50%;background:var(--absent);display:block}
+.win-bar .name{font-size:12.5px;color:var(--ink);font-weight:500}
+.win-bar .sid{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted-2)}
+.win-bar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.rec{display:flex;align-items:center;gap:6px;opacity:0;transition:opacity 200ms ease}
+.rec.on{opacity:1}
+.rec i{width:7px;height:7px;border-radius:50%;background:var(--orange);display:block;animation:blink 1.1s steps(2,end) infinite}
+@keyframes blink{50%{opacity:.25}}
+.rec span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--orange)}
+.idle{width:22px;height:22px;opacity:.3;transition:opacity 200ms ease}
+.idle.on{opacity:1}
+.idle circle.bg{fill:none;stroke:var(--rule);stroke-width:2}
+.idle circle.fg{fill:none;stroke:var(--muted-2);stroke-width:2;stroke-dasharray:57;stroke-dashoffset:0;transform:rotate(-90deg);transform-origin:11px 11px}
+.idle.on circle.fg{stroke:var(--orange);stroke-dashoffset:57;transition:stroke-dashoffset 2400ms linear}
+
+/* connection strip */
+.conn{padding:10px 14px 4px;border-bottom:1px solid var(--rule-soft);background:var(--surface-2)}
+.conn svg{display:block;width:100%;height:auto}
+.conn .node{fill:var(--surface-3);stroke:var(--rule)}
+.conn .node-t{fill:var(--inert);font-family:var(--mono);font-size:8px;letter-spacing:.1em}
+.conn .app{fill:var(--surface-3);stroke:var(--rule);transition:stroke 200ms ease}
+.conn .app-t{fill:var(--inert);font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;transition:fill 200ms ease}
+.conn .chan{fill:none;stroke:var(--absent);stroke-width:1.4;stroke-dasharray:4 5;transition:stroke 200ms ease}
+.conn .offnet rect{fill:none;stroke:var(--absent);stroke-width:1;stroke-dasharray:3 4}
+.conn .offnet text{fill:var(--absent);font-family:var(--mono);font-size:7.5px;letter-spacing:.08em}
+.conn .offnet line{stroke:var(--absent);stroke-width:1;stroke-dasharray:2 4}
+.conn.live .chan{stroke:var(--orange);stroke-dasharray:8 6;animation:flow 900ms linear infinite}
+@keyframes flow{to{stroke-dashoffset:-28}}
+.conn.live .app{stroke:var(--orange)}
+.conn.live .app-t{fill:var(--orange)}
+
+/* document stage */
+.stage{position:relative;flex:1;display:grid;grid-template-columns:1fr 128px;gap:0;min-height:0}
+.doc{position:relative;padding:20px 18px;border-right:1px solid var(--rule-soft);overflow:hidden}
+.doc h3{font-size:13px;margin:0 0 14px;color:var(--inert);font-weight:600;letter-spacing:-.005em}
+.line{height:5px;border-radius:3px;background:var(--inert-dim);margin-bottom:9px;opacity:.55}
+.para{
+  position:relative;padding:7px 8px;margin:0 -8px 12px;border-radius:4px;
+  transition:background 220ms ease,box-shadow 220ms ease
+}
+.para .line{margin-bottom:8px}
+.para.sel{background:rgba(255,90,31,.13);box-shadow:inset 0 0 0 1px var(--orange-dim)}
+.scrub{margin-top:14px;height:3px;border-radius:2px;background:var(--absent);position:relative;overflow:hidden;opacity:0;transition:opacity 200ms ease}
+.scrub.on{opacity:1}
+.scrub i{position:absolute;inset:0 100% 0 0;background:var(--orange);transition:right 4200ms linear}
+.scrub.on i{right:14%}
+
+/* watermark layer */
+.wm{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 420ms ease;overflow:hidden}
+.wm.on{opacity:1}
+.wm div{
+  position:absolute;font-family:var(--mono);font-size:8px;letter-spacing:.1em;
+  color:rgba(255,90,31,.30);transform:rotate(-24deg);white-space:nowrap
+}
+
+/* dim / closed layer */
+.dim{
+  position:absolute;inset:0;background:rgba(11,11,12,.82);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  opacity:0;pointer-events:none;transition:opacity 320ms ease;
+  border:1px dashed var(--absent);border-radius:2px;margin:6px
+}
+.dim.on{opacity:1;pointer-events:auto}
+.dim p{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--muted);margin:0;text-transform:uppercase}
+
+/* clipboard side panel */
+.side{padding:20px 14px;display:flex;flex-direction:column;gap:8px}
+.side .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted-2);text-transform:lowercase}
+.target{
+  flex:0 0 auto;height:76px;border-radius:5px;border:1px solid var(--rule-soft);background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:16px;color:var(--absent);transition:border 220ms ease,color 220ms ease
+}
+.target.blocked{border:1px dashed var(--absent);background:transparent;color:var(--absent)}
+.ghost{
+  position:absolute;font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;
+  background:var(--orange);color:#150A04;border-radius:3px;padding:3px 7px;
+  opacity:0;pointer-events:none;z-index:5
+}
+.ghost.fly{animation:fly 720ms cubic-bezier(.4,0,.6,1) forwards}
+@keyframes fly{
+  0%{opacity:0;transform:translate(0,0) scale(.9)}
+  18%{opacity:1;transform:translate(20px,-6px) scale(1)}
+  72%{opacity:1;transform:translate(150px,-14px) scale(1)}
+  100%{opacity:0;transform:translate(168px,-16px) scale(.86)}
+}
+
+/* audit log */
+.log{border-top:1px solid var(--rule-soft);background:var(--surface-2);padding:10px 14px 12px}
+.log .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted-2);margin-bottom:7px}
+.log ul{list-style:none;margin:0;padding:0;font-family:var(--mono);font-size:10.5px;line-height:1.85;min-height:59px}
+.log li{color:var(--muted-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log li:last-child{color:var(--muted)}
+.log li b{color:var(--orange);font-weight:400}
+.log li.fresh{animation:slide 320ms ease-out}
+@keyframes slide{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* review harness — not part of the component */
+.harness{
+  max-width:1240px;margin:26px auto 0;display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+  border-top:1px dashed var(--absent);padding-top:14px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted-2);text-transform:uppercase
+}
+.harness b{color:var(--orange);font-weight:400}
+.harness button{
+  font:inherit;background:transparent;border:1px solid var(--rule);color:var(--muted);
+  border-radius:999px;padding:4px 10px;cursor:pointer
+}
+.harness button:hover{border-color:var(--muted-2);color:var(--ink)}
+
+:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+
+@media (max-width:920px){
+  .inner{grid-template-columns:1fr;gap:36px}
+  .stage{grid-template-columns:1fr}
+  .doc{border-right:0;border-bottom:1px solid var(--rule-soft)}
+  .side{flex-direction:row;align-items:center}
+  .target{flex:1;height:56px}
+}
+@media (prefers-reduced-motion:reduce){
+  .conn.live .chan{animation:none}
+  .rec i{animation:none}
+  .ghost.fly{animation:none}
+  .scrub.on i{transition:none;right:14%}
+  .idle.on circle.fg{transition:none}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="inner">
+
+    <!-- ============ LEFT ============ -->
+    <div>
+      <span class="ml">platform / endpoint_controls_</span>
+      <h1>Control what happens after access is granted.</h1>
+      <p class="sub">Eight controls that govern the session itself — what can be copied, captured, recorded or left open. <b>Every one writes its own audit record.</b></p>
+      <div class="ctas">
+        <a class="btn btn-p" href="#">Book a demo</a>
+        <a class="btn btn-s" href="#">See all eight controls</a>
+      </div>
+
+      <span class="ml">pick a control_</span>
+      <div class="rail" id="rail">
+        <button class="ctrl" data-c="0" aria-pressed="true">
+          <span class="dot"></span><span>Per-app encrypted tunnel</span><span class="chip">Active</span>
+        </button>
+        <button class="ctrl" data-c="1" aria-pressed="false">
+          <span class="dot"></span><span>Session recording</span><span class="chip">Capturing</span>
+        </button>
+        <button class="ctrl denial" data-c="2" aria-pressed="false">
+          <span class="dot"></span><span>Clipboard control</span><span class="chip">Blocked</span>
+        </button>
+        <button class="ctrl" data-c="3" aria-pressed="false">
+          <span class="dot"></span><span>Watermark</span><span class="chip">Applied</span>
+        </button>
+        <button class="ctrl denial" data-c="4" aria-pressed="false">
+          <span class="dot"></span><span>Inactivity timeout</span><span class="chip">Closed</span>
+        </button>
+        <div class="more">+ 3 more — browser chrome controls, screenshot block, anti-keylogging. <a href="#">See the full set</a></div>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: SESSION WINDOW ============ -->
+    <div>
+      <div class="win">
+        <div class="win-bar">
+          <span class="lights"><i></i><i></i><i></i></span>
+          <span class="name">Remote session</span>
+          <span class="sid">SESSION 8F2A · priya.n@</span>
+          <span class="right">
+            <span class="rec" id="rec"><i></i><span>REC</span></span>
+            <svg class="idle" id="idle" viewBox="0 0 22 22" aria-hidden="true">
+              <circle class="bg" cx="11" cy="11" r="9"/>
+              <circle class="fg" cx="11" cy="11" r="9"/>
+            </svg>
+          </span>
+        </div>
+
+        <div class="conn" id="conn">
+          <svg viewBox="0 0 560 78" aria-label="Session connected to one application; the rest of the network is unreachable">
+            <g class="offnet">
+              <rect x="150" y="4" width="62" height="15" rx="3"/><text x="157" y="15">FILE SRV</text>
+              <line x1="181" y1="19" x2="181" y2="34"/>
+              <rect x="248" y="4" width="72" height="15" rx="3"/><text x="255" y="15">10.0.0.0/8</text>
+              <line x1="284" y1="19" x2="284" y2="34"/>
+              <rect x="356" y="4" width="46" height="15" rx="3"/><text x="366" y="15">DB-01</text>
+              <line x1="379" y1="19" x2="379" y2="34"/>
+            </g>
+            <rect class="node" x="4" y="38" width="62" height="24" rx="4"/>
+            <text class="node-t" x="14" y="53">DEVICE</text>
+            <path class="chan" d="M70 50 H454"/>
+            <rect class="app" x="458" y="34" width="98" height="32" rx="4"/>
+            <text class="app-t" x="470" y="53">SAP ERP</text>
+          </svg>
+        </div>
+
+        <div class="stage">
+          <div class="doc" id="doc">
+            <h3>Q3 vendor payment schedule</h3>
+            <div class="line" style="width:88%"></div>
+            <div class="line" style="width:72%"></div>
+            <div class="para" id="para">
+              <div class="line" style="width:94%"></div>
+              <div class="line" style="width:81%"></div>
+              <div class="line" style="width:58%"></div>
+            </div>
+            <div class="line" style="width:79%"></div>
+            <div class="line" style="width:64%"></div>
+            <div class="line" style="width:46%"></div>
+            <div class="scrub" id="scrub"><i></i></div>
+            <div class="wm" id="wm" aria-hidden="true"></div>
+            <div class="dim" id="dim">
+              <p>Session closed — 15 min idle</p>
+              <button class="btn btn-s" id="restart" style="font-size:12px;padding:8px 18px">Start again</button>
+            </div>
+            <span class="ghost" id="ghost">COPY</span>
+          </div>
+
+          <div class="side">
+            <span class="lbl">local_clipboard_</span>
+            <div class="target" id="target">—</div>
+          </div>
+        </div>
+
+        <div class="log">
+          <div class="lbl">audit_log_</div>
+          <ul id="log"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="harness">
+    <span>review harness</span>
+    <span>mode <b id="mode">auto</b></span>
+    <span>beat <b id="beatv">1400</b>ms</span>
+    <button id="slower">slower</button>
+    <button id="faster">faster</button>
+    <span>attract cycles 4 of 5 · timeout is click-only</span>
+  </div>
+</section>
+
+<script>
+(function(){
+  var railEl   = document.getElementById('rail');
+  var btns     = Array.prototype.slice.call(railEl.querySelectorAll('.ctrl'));
+  var conn     = document.getElementById('conn');
+  var rec      = document.getElementById('rec');
+  var idle     = document.getElementById('idle');
+  var para     = document.getElementById('para');
+  var target   = document.getElementById('target');
+  var ghost    = document.getElementById('ghost');
+  var wm       = document.getElementById('wm');
+  var dim      = document.getElementById('dim');
+  var scrub    = document.getElementById('scrub');
+  var logEl    = document.getElementById('log');
+  var modeEl   = document.getElementById('mode');
+  var beatEl   = document.getElementById('beatv');
+  var restart  = document.getElementById('restart');
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var beat = 1400;
+  var manual = false;
+  var timers = [];
+  var attract = null;
+  var cur = 0;
+
+  // watermark tiles, built once
+  (function(){
+    var txt = 'priya.n@ · 8F2A · 10:42 IST';
+    for(var r=0;r<7;r++){
+      for(var c=0;c<3;c++){
+        var d = document.createElement('div');
+        d.textContent = txt;
+        d.style.left = (c*118 - 30) + 'px';
+        d.style.top  = (r*46 + 6) + 'px';
+        wm.appendChild(d);
+      }
+    }
+  })();
+
+  var LOGS = [
+    '10:42:07  <b>TUNNEL</b>  app=sap-erp  scope=1  net=unreachable',
+    '10:42:09  <b>RECORD</b>  session=8F2A  state=capturing',
+    '10:42:12  <b>CLIP</b>  direction=out  action=blocked',
+    '10:42:14  <b>MARK</b>  overlay=on  bound=priya.n',
+    '10:57:14  <b>IDLE</b>  15m  session=closed'
+  ];
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+  function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+
+  function pushLog(html){
+    var li = document.createElement('li');
+    li.innerHTML = html;
+    li.className = 'fresh';
+    logEl.appendChild(li);
+    while(logEl.children.length > 3) logEl.removeChild(logEl.firstChild);
+  }
+
+  function resetStage(){
+    clearTimers();
+    conn.classList.remove('live');
+    rec.classList.remove('on');
+    idle.classList.remove('on');
+    para.classList.remove('sel');
+    target.classList.remove('blocked');
+    target.textContent = '—';
+    ghost.classList.remove('fly');
+    wm.classList.remove('on');
+    dim.classList.remove('on');
+    scrub.classList.remove('on');
+  }
+
+  function setControl(i, fromUser){
+    if(fromUser && !manual){
+      manual = true;
+      modeEl.textContent = 'manual';
+      if(attract){ clearInterval(attract); attract = null; }
+    }
+    cur = i;
+    resetStage();
+    btns.forEach(function(b,n){ b.setAttribute('aria-pressed', n===i ? 'true' : 'false'); });
+
+    var g = reduce ? 0 : 1;   // gesture delay multiplier
+
+    if(i===0){                                   // per-app tunnel
+      later(function(){ conn.classList.add('live'); }, 120*g);
+      later(function(){ pushLog(LOGS[0]); }, 620*g);
+    }
+    else if(i===1){                              // session recording
+      conn.classList.add('live');
+      later(function(){ rec.classList.add('on'); }, 120*g);
+      later(function(){ scrub.classList.add('on'); }, 220*g);
+      later(function(){ pushLog(LOGS[1]); }, 620*g);
+    }
+    else if(i===2){                              // clipboard control
+      conn.classList.add('live');
+      later(function(){ para.classList.add('sel'); }, 100*g);
+      later(function(){
+        var pr = para.getBoundingClientRect(), dr = para.offsetParent.getBoundingClientRect();
+        ghost.style.left = (para.offsetLeft + 14) + 'px';
+        ghost.style.top  = (para.offsetTop + 10) + 'px';
+        ghost.classList.add('fly');
+      }, 340*g);
+      later(function(){ target.classList.add('blocked'); target.textContent = '—'; }, 900*g);
+      later(function(){ pushLog(LOGS[2]); }, 980*g);
+    }
+    else if(i===3){                              // watermark
+      conn.classList.add('live');
+      later(function(){ wm.classList.add('on'); }, 140*g);
+      later(function(){ pushLog(LOGS[3]); }, 700*g);
+    }
+    else if(i===4){                              // inactivity timeout
+      conn.classList.add('live');
+      later(function(){ idle.classList.add('on'); }, 100*g);
+      later(function(){
+        conn.classList.remove('live');
+        dim.classList.add('on');
+        pushLog(LOGS[4]);
+      }, reduce ? 0 : 2500);
+    }
+  }
+
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){ setControl(parseInt(b.dataset.c,10), true); });
+  });
+  restart.addEventListener('click', function(){ setControl(0, true); });
+
+  document.getElementById('slower').addEventListener('click', function(){
+    beat = Math.min(4000, beat + 200); beatEl.textContent = beat; restartAttract();
+  });
+  document.getElementById('faster').addEventListener('click', function(){
+    beat = Math.max(600, beat - 200); beatEl.textContent = beat; restartAttract();
+  });
+
+  function restartAttract(){
+    if(manual || reduce) return;
+    if(attract) clearInterval(attract);
+    attract = setInterval(function(){ setControl((cur + 1) % 4, false); }, beat);
+  }
+
+  // seed: first control resolved at paint, then attract mode takes over
+  setControl(0, false);
+  pushLog(LOGS[0]);
+  if(!reduce) restartAttract();
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ if(attract){ clearInterval(attract); attract = null; } }
+    else { restartAttract(); }
+  });
+})();
+</script>
+</body>
+</html>

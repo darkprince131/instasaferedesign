@@ -31,6 +31,9 @@ is doing real work and stays.
   screen reader stops announcing "1 of 3" after the visible numbering went.
 - `ConsoleRow` / section eyebrows — plain words. `the decision layer`, not
   `platform_ 05 — the decision layer`.
+- `IzOutcomes` marks — the `01/02/03` beside each outcome icon (2026-08-17).
+  The three outcomes are unordered conclusions, not a walkthrough; the icon
+  alone carries the mark row on every bespoke platform page.
 - Any new interstitial, stat strip or kicker.
 
 ## What it does not apply to

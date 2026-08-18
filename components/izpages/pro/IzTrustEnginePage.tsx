@@ -105,7 +105,7 @@ export function IzTrustEnginePage() {
               title: "policy.evaluate",
               badge: "session",
               lines: [
-                { cmd: "evaluate priya@acme.co → erp-core" },
+                { cmd: "evaluate sophia@acme.co → erp-core" },
                 { out: "identity   directory match · mfa satisfied", tone: "ok" },
                 { out: "device     bound · posture 25/25", tone: "ok" },
                 { out: "location   SG · 41 min after last IN login", tone: "no" },

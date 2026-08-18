@@ -169,7 +169,6 @@ export function IzOutcomes({
               onMouseLeave={() => setHover(null)}
             >
               <span className="izo-mark" aria-hidden="true">
-                <i className="izo-num">{String(i + 1).padStart(2, "0")}</i>
                 <span className="izo-ico">
                   <o.Icon />
                 </span>

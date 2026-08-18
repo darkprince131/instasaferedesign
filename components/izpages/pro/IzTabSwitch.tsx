@@ -171,7 +171,7 @@ const RESOURCE_TABS: IzTabSwitchTab[] = [
       body: "A manufacturer moved 2,400 people off an always-on tunnel one application at a time. Nobody filed a ticket, and the quarterly access review went from a fortnight to an afternoon.",
       href: "/resource-center",
     },
-    story: { tone: "a", author: { name: "Priya Menon", role: "Head of Infrastructure" } },
+    story: { tone: "a", author: { name: "Sophia Menon", role: "Head of Infrastructure" } },
   },
   {
     id: "tutorial",
