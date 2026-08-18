@@ -1,6 +1,7 @@
 import {
   AppWindow,
   Article,
+  Briefcase,
   Compass,
   DeviceMobile,
   Devices,
@@ -161,6 +162,7 @@ export const PANES: Pane[] = [
         items: [
           { t: "Awards & Recognition", d: "What juries and analysts have said", href: "/awards", Icon: Trophy },
           { t: "Newsroom", d: "Press, coverage and announcements", href: "/instasafe-newsroom", Icon: Newspaper },
+          { t: "Careers", d: "Open roles, straight from our recruiting system", href: "/careers", Icon: Briefcase, tag: "Hiring" },
         ],
       },
     ],

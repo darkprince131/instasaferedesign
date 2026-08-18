@@ -57,10 +57,12 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   },
   {
     head: "Company",
-    /* the two plain nav links */
+    /* the two plain nav links, plus the careers page now that it is a
+       real bespoke build with live openings */
     links: [
       { label: "Solutions", href: "/solutions" },
       { label: "Why InstaSafe", href: "/why-instasafe-zero-trust" },
+      { label: "Careers", href: "/careers", badge: "We're hiring" },
     ],
   },
 ];

@@ -34,6 +34,7 @@ export function IzFooter() {
               {col.links.map((l) => (
                 <a key={l.href} href={l.href}>
                   {l.label}
+                  {l.badge && <span className="iz-foot-hiring">{l.badge}</span>}
                 </a>
               ))}
             </div>
