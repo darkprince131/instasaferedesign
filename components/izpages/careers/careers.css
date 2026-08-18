@@ -4,17 +4,16 @@
    Rules this sheet keeps:
 
    1. TOKENS ONLY. No literal colours, no invented spacing steps.
-      (The one hex on this page lives in ZohoJobs.tsx, where it has
-      to: it is handed to a third-party script whose DOM our custom
-      properties never reach.)
+      There is now no exception: the Zoho Recruit embed that used to
+      need a hardcoded brand hex (a third-party script writes inline
+      styles into its own DOM, where our custom properties never
+      resolve) has been replaced by a board we render ourselves from
+      Recruit's public JSON. Every pixel on this page is ours.
 
-   2. THE ZOHO WIDGET IS SOMEONE ELSE'S CSS. Their stylesheet is
-      appended to <head> at runtime, so it lands after ours and wins
-      every equal-specificity tie. Anything we genuinely need to
-      override is written as `.iz .czr-jobs …` (0,2,1) rather than
-      `.czr-jobs …` (0,1,1). We override as little as possible —
-      width, rhythm and link colour — and let their sheet own the
-      listing internals.
+   2. `.iz a { color: inherit }` in home2.css is (0,1,1) and beats a
+      bare class, so any anchor that has to carry its own colour —
+      the role cards, the board link — is written as `.iz a.czr-…`
+      (0,2,1). This is the one specificity trap on the page.
 
    3. NO INDEX NUMBERS anywhere (docs/no-index-numbers-rule.md).
       The drives and the offers are sets, not sequences.
@@ -140,42 +139,338 @@
 }
 
 /* ============================================================
-   THE ZOHO RECRUIT WIDGET
+   THE OPENINGS BOARD
 
-   `min-height` is the whole point of this block: the listing is
-   fetched client-side, so without a reserved box the footer sits
-   under the heading on first paint and is shoved down a second
-   later. 400px is roughly four job rows — enough that the arriving
-   list usually fits inside the space already held.
+   Rendered by us from Zoho Recruit's public JSON, so unlike the embed
+   it used to be, every rule below is ours and every colour is a
+   token. It spans the full `.iz-wrap` — the openings are the reason
+   most people are on this page, and the old widget's ~660px column
+   made the site's biggest ask its smallest element.
    ============================================================ */
 .czr-sec--openings {
   scroll-margin-top: calc(var(--nav-h) + var(--sp-6));
 }
 
-.czr-jobs {
-  max-width: 900px;
+/* Visually-hidden. The `.iz` system has no global utility for this,
+   and this page needs two: the search label and the loading status. */
+.czr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
-.czr-jobs .embed_jobs_head {
-  min-height: 400px;
-  /* Their table is a fixed-ish width block; on a narrow viewport it
-     scrolls inside this box rather than widening the document. */
-  overflow: auto;
+
+/* ---------- controls ---------- */
+.czr-jb-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-5) var(--sp-8);
+  padding-bottom: var(--sp-6);
+  margin-bottom: var(--sp-8);
+  border-bottom: var(--bw) solid var(--line);
 }
-/* Their sheet paints links in the brand colour we hand it, but the
-   inherited `.iz a { color: inherit }` can beat it depending on load
-   order. Naming the token here makes the outcome the same either
-   way, and keeps the accent identical to the rest of the page. */
-.iz .czr-jobs .embed_jobs_head a {
+
+.czr-jb-search {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.czr-jb-input {
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: var(--bw) solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--tx);
+  font-family: var(--body);
+  font-size: var(--fs-body-sm);
+  line-height: 1.4;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+/* --tx-mute fails AA on both themes, so it is never used for text
+   that has to be read. A placeholder is a hint, not content, and it
+   is the one place the muted token is honest. */
+.czr-jb-input::placeholder {
+  color: var(--tx-mute);
+}
+.czr-jb-input:hover {
+  border-color: var(--orange);
+}
+.czr-jb-input:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  border-color: var(--orange);
+}
+
+.czr-jb-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.czr-jb-grouplabel {
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.czr-jb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* Same chip recipe as the blog's topic filter (blog.css), including
+   the reason it is a tinted edge and not a solid fill: the primary
+   button's --orange-behind---btn-ink measures 3.68:1, fine at 15px
+   and under AA at 13.5px. The tint keeps the brand colour on the
+   control and puts the label back on --tx. */
+.czr-jb-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-2) var(--sp-4);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  color: var(--tx-dim);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+.czr-jb-chip:hover {
+  color: var(--tx);
+  border-color: var(--line-strong);
+}
+.czr-jb-chip:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+.czr-jb-chip[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--orange) 12%, var(--surface));
+  border-color: var(--orange);
+  color: var(--tx);
+  font-weight: 500;
+}
+
+.czr-jb-status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-left: auto;
+}
+.czr-jb-count {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--tx-dim);
+  white-space: nowrap;
+}
+.czr-jb-clear {
+  padding: 0 0 2px;
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  background: none;
+  color: var(--tx-dim);
+  font-family: var(--body);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.czr-jb-clear:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+.czr-jb-clear:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* ---------- the grid ---------- */
+.czr-jb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-grid);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.czr-jb-grid > li {
+  display: flex;
+  min-width: 0;
+}
+
+/* The WHOLE CARD is the anchor, not a link inside it — the target is
+   a job page and half a card of dead space next to a link is the
+   commonest reason a listing feels unresponsive. `.iz a { color:
+   inherit }` is (0,1,1) and beats a bare class, so the colour rules
+   that matter are written as `.iz a.czr-jb-card`. */
+.czr-jb-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: var(--sp-6);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.iz a.czr-jb-card {
+  color: var(--tx);
+}
+.czr-jb-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+.czr-jb-card:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.czr-jb-title {
+  margin: 0;
+  font-family: var(--disp);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--tx);
+}
+
+.czr-jb-meta {
+  margin: var(--sp-3) 0 0;
+  font-family: var(--mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  line-height: 1.6;
+  color: var(--tx-dim);
+}
+
+/* Two lines of the description, no more: the blobs run 2,500–5,000
+   characters and an unclamped one would make a card taller than the
+   viewport. `max-height` carries the clamp where -webkit-line-clamp
+   is not honoured, so a browser without it truncates cleanly rather
+   than printing the essay. */
+.czr-jb-desc {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body);
+  color: var(--tx-dim);
+  overflow: hidden;
+  max-height: calc(var(--fs-body-sm) * var(--lh-body) * 2);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.czr-jb-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  /* `auto` rather than a step: it pins the footer to the bottom edge
+     whatever the title wraps to, so two cards in a row keep one
+     shared baseline for the CTA. */
+  margin-top: auto;
+  padding-top: var(--sp-4);
+  border-top: var(--bw) solid var(--line);
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  color: var(--tx-dim);
+  transition: color var(--dur-fast) var(--ease);
+}
+.czr-jb-card:hover .czr-jb-go {
   color: var(--orange);
 }
-.iz .czr-jobs .embed_jobs_head a:hover {
-  text-decoration: underline;
+
+/* The lift is decoration; anyone who asked for less motion keeps the
+   border and colour changes only. */
+@media (prefers-reduced-motion: reduce) {
+  .czr-jb-card {
+    transition: border-color var(--dur) var(--ease);
+  }
+  .czr-jb-card:hover {
+    transform: none;
+  }
+}
+
+/* ---------- loading ---------- */
+.czr-jb-grid--skeleton {
+  /* No <li> children here, so the grid takes the boxes directly. */
+  display: grid;
+}
+.czr-jb-skel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-height: 180px;
+  padding: var(--sp-6);
+  border: var(--bw) solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.czr-jb-skel-line {
+  display: block;
+  height: 10px;
+  border-radius: var(--r-hair);
+  background: var(--line-strong);
+  animation: czr-jb-pulse 1.4s var(--ease-linear) infinite;
+}
+.czr-jb-skel-title {
+  height: 18px;
+  width: 62%;
+}
+.czr-jb-skel-meta {
+  width: 78%;
+  margin-bottom: var(--sp-2);
+}
+.czr-jb-skel-short {
+  width: 44%;
+}
+.czr-jb-skel:nth-child(2) .czr-jb-skel-line {
+  animation-delay: 0.12s;
+}
+.czr-jb-skel:nth-child(3) .czr-jb-skel-line {
+  animation-delay: 0.24s;
+}
+.czr-jb-skel:nth-child(4) .czr-jb-skel-line {
+  animation-delay: 0.36s;
+}
+@keyframes czr-jb-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+/* A pulsing placeholder is exactly the kind of ambient motion the
+   preference is about — the reserved boxes still hold the layout. */
+@media (prefers-reduced-motion: reduce) {
+  .czr-jb-skel-line {
+    animation: none;
+  }
 }
 
 /* ---------- the failure panel ----------
-   Shown only when the embed cannot be trusted to render: blocked,
-   wrong script, or still empty after ten seconds. */
-.czr-jobs-fallback {
+   Shown when the feed cannot be trusted: fetch rejected, non-OK,
+   unparseable, or no publishable records. */
+.czr-jb-fallback {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -185,25 +480,41 @@
   border-radius: var(--r-md);
   background: var(--surface);
 }
-.czr-jobs-fallback p {
+.czr-jb-fallback p {
+  margin: 0;
+  color: var(--tx-dim);
+  font-size: var(--fs-body);
+}
+
+/* ---------- zero MATCHES (not zero roles) ---------- */
+.czr-jb-none {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-10) var(--pad-panel);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-md);
+}
+.czr-jb-none p {
   margin: 0;
   color: var(--tx-dim);
   font-size: var(--fs-body);
 }
 
 /* ---------- the always-there escape hatch ---------- */
-.czr-jobs-all {
+.czr-jb-all {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  margin-top: var(--sp-6);
+  margin-top: var(--sp-8);
   font-size: var(--fs-body-sm);
   color: var(--tx-dim);
   border-bottom: 1px solid var(--line-strong);
   padding-bottom: 2px;
   transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.iz .czr-jobs-all:hover {
+.iz .czr-jb-all:hover {
   color: var(--orange);
   border-color: var(--orange);
 }
@@ -233,7 +544,28 @@
   .czr-cards--four {
     grid-template-columns: minmax(0, 1fr);
   }
-  .czr-jobs .embed_jobs_head {
-    min-height: 320px;
+}
+
+/* The board collapses to one column earlier than the marketing cards:
+   a role card carries a long title, a four-part mono meta line and a
+   two-line clamp, and two of those side by side stop being readable
+   well before 640px. */
+@media (max-width: 860px) {
+  .czr-jb-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .czr-jb-status {
+    margin-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  .czr-jb-controls {
+    gap: var(--sp-5);
+  }
+  .czr-jb-search {
+    flex: 1 1 100%;
+  }
+  .czr-jb-card {
+    padding: var(--sp-5);
   }
 }

@@ -9,7 +9,7 @@ import { IzNav } from "@/components/home2/IzNav";
 import { Magnetic } from "@/components/v2/Magnetic";
 import { izFontVars } from "@/lib/iz-fonts";
 
-import { ZohoJobs } from "./ZohoJobs";
+import { OpeningsBoard } from "./OpeningsBoard";
 
 /* ============================================================
    /careers — SEO-locked live URL, promoted from the scaffold
@@ -174,7 +174,12 @@ export function CareersPage() {
 
       {/* ---------------- OPENINGS ----------------
           The heading is the live page's, unchanged: /careers is
-          indexed on it and people arrive searching for it. */}
+          indexed on it and people arrive searching for it.
+
+          The board spans the full `.iz-wrap` — it used to be a ~660px
+          third-party widget, which made the page's main ask its
+          smallest element. Only the HEADING keeps the narrow measure,
+          because a 56ch line is still the readable one for prose. */}
       <section className="czr-sec czr-sec--openings" id="openings">
         <div className="iz-wrap">
           <div className="czr-head">
@@ -185,7 +190,7 @@ export function CareersPage() {
             </p>
           </div>
 
-          <ZohoJobs />
+          <OpeningsBoard />
         </div>
       </section>
 
