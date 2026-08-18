@@ -371,3 +371,98 @@
   .izmm,
   .iz-links .iz-navitem::after { transition: none; }
 }
+
+/* ============================================================
+   Log in dropdown — two product consoles, two colours.
+
+   ZTA rides the site accent (--orange). i365 gets the purple from
+   the other half of the brand mark — #652c8f on paper, but that
+   value is near-invisible on the dark theme, so dark swaps in a
+   lifted #b18cff. Both live in --lg-accent so the card, its art
+   (stroke: currentColor) and the hover shade all move together.
+   ============================================================ */
+.iz-login { position: relative; display: inline-flex; }
+.iz-login-btn { display: inline-flex; align-items: center; gap: 5px; }
+.iz-login-btn[aria-expanded="true"] { border-color: var(--orange); color: var(--orange); }
+
+.iz-login-panel {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 218px);
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--panel-sh);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), visibility var(--dur-fast);
+  z-index: 60;
+}
+.iz-login-panel.is-open { opacity: 1; visibility: visible; transform: none; }
+
+/* ---- the card ---- */
+.iz-login-card {
+  --lg-accent: var(--orange);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  aspect-ratio: 1 / 1;
+  padding: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.iz-login-card.is-purple { --lg-accent: #652c8f; }
+.iz[data-theme="dark"] .iz-login-card.is-purple { --lg-accent: #b18cff; }
+
+/* the rising shade: a gradient pinned to the card floor that fades in
+   and drifts up on hover — colour from the card's own accent */
+.iz-login-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 62%;
+  background: linear-gradient(to top, color-mix(in srgb, var(--lg-accent) 26%, transparent), transparent);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-out);
+  pointer-events: none;
+}
+.iz-login-card:hover::after,
+.iz-login-card:focus-visible::after { opacity: 1; transform: none; }
+.iz-login-card:hover,
+.iz-login-card:focus-visible { border-color: var(--lg-accent); }
+
+.iz-login-art { color: var(--lg-accent); margin-bottom: auto; }
+.iz-login-art svg { width: 100%; height: auto; display: block; }
+.iz-login-name { font-family: var(--disp); font-size: 22px; font-weight: 650; letter-spacing: -0.01em; color: var(--lg-accent); }
+.iz-login-desc { font-size: var(--fs-sm); color: var(--tx-dim); }
+.iz-login-go { font-family: var(--mono); font-size: var(--fs-mono-xs); letter-spacing: var(--ls-mono); color: var(--tx-mute); margin-top: var(--sp-2); }
+.iz-login-card:hover .iz-login-go { color: var(--lg-accent); }
+
+/* ---- mobile sheet ---- */
+.iz-sheet-login {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+}
+.iz-login-card.is-compact { aspect-ratio: auto; padding: var(--sp-3); }
+.iz-login-card.is-compact .iz-login-art { max-width: 96px; }
+
+/* desktop-only dropdown; the sheet carries the cards on mobile */
+@media (max-width: 920px) {
+  .iz-login { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iz-login-panel, .iz-login-card::after { transition: none; transform: none; }
+}

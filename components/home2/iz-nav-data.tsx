@@ -93,6 +93,75 @@ export type Pane = {
   strip?: { note: string; links: { label: string; href: string }[] };
 };
 
+/* ---------- login portals ----------
+   The "Log in" dropdown beside Book a demo. Two products, two consoles,
+   two END-CUSTOMER destinations — so the cards are deliberately loud
+   about which is which: ZTA is orange (the site accent), i365 is purple
+   (the other half of the brand mark). The isometric art is line-drawn
+   in each card's own accent so the pair reads as different at a glance,
+   before anyone reads a word. */
+
+export type LoginPortal = {
+  key: string;
+  name: string;
+  desc: string;
+  href: string;
+  accent: "orange" | "purple";
+  art: ReactNode;
+};
+
+/* Isometric line art, drawn on a 2:1 diamond grid, stroke-only in
+   `currentColor` so each card colours its own illustration via CSS —
+   no second asset per theme. */
+
+const ZtaArt = (
+  <svg viewBox="0 0 150 110" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+    {/* floor diamond */}
+    <path d="M75 96 27 72 75 48l48 24z" opacity="0.35" />
+    {/* gateway slab: two uprights + lintel, iso */}
+    <path d="M47 62V26l14 7v36" />
+    <path d="M89 83V47l14-7v36" />
+    <path d="M47 26l14 7 42 21 14-7-14-7-42-21z" />
+    {/* keyhole on the lintel face */}
+    <circle cx="75" cy="47" r="4.5" />
+    <path d="M75 51.5v7" />
+    {/* checked traveller: a small cube passing through */}
+    <path d="M68 78l7-3.5 7 3.5-7 3.5z" />
+    <path d="M68 78v6l7 3.5V81.5M82 78v6l-7 3.5" />
+  </svg>
+);
+
+const I365Art = (
+  <svg viewBox="0 0 150 110" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+    {/* three stacked iso tiles — a suite, not a gate */}
+    <path d="M75 92 39 74l36-18 36 18z" opacity="0.35" />
+    <path d="M75 74 39 56l36-18 36 18z" opacity="0.65" />
+    <path d="M75 56 39 38l36-18 36 18z" />
+    {/* the top tile carries a spark: four ticks around its centre */}
+    <path d="M75 30v-6M75 46v6M59 38h-6M91 38h6" />
+    <circle cx="75" cy="38" r="4" />
+  </svg>
+);
+
+export const LOGIN_PORTALS: LoginPortal[] = [
+  {
+    key: "zta",
+    name: "ZTA",
+    desc: "Zero Trust Access portal",
+    href: "https://app.instasafe.io/",
+    accent: "orange",
+    art: ZtaArt,
+  },
+  {
+    key: "i365",
+    name: "i365",
+    desc: "InstaSafe 365 portal",
+    href: "https://core.instasafe.com/",
+    accent: "purple",
+    art: I365Art,
+  },
+];
+
 /* ---------- panes ---------- */
 
 export const PANES: Pane[] = [

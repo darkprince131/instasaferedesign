@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CaretDown, Compass } from "@phosphor-icons/react";
 import { Logo } from "@/components/brand/Logo";
-import { PANES, type Cell, type MenuKey, type Pane } from "./iz-nav-data";
+import { LOGIN_PORTALS, PANES, type Cell, type MenuKey, type Pane } from "./iz-nav-data";
 import "./iznav.css";
 
 /* ============================================================
@@ -41,6 +41,29 @@ const Moon = () => (
 );
 
 const ext = (c: Cell) => (c.ext ? { target: "_blank", rel: "noreferrer" } : {});
+
+/* One portal card — used by the desktop dropdown and the mobile sheet.
+   The rising hover shade is a ::after in iznav.css; everything here is
+   structure. External destinations, deliberately same-tab: a login
+   portal is where the visitor is going, not a reference they glance at. */
+function LoginCard({ compact = false }: { compact?: boolean }) {
+  return (
+    <>
+      {LOGIN_PORTALS.map((p) => (
+        <a
+          key={p.key}
+          className={`iz-login-card is-${p.accent}${compact ? " is-compact" : ""}`}
+          href={p.href}
+        >
+          <span className="iz-login-art">{p.art}</span>
+          <b className="iz-login-name">{p.name}</b>
+          <span className="iz-login-desc">{p.desc}</span>
+          <span className="iz-login-go" aria-hidden="true">Log in →</span>
+        </a>
+      ))}
+    </>
+  );
+}
 
 function CellRow({ c }: { c: Cell }) {
   return (
@@ -142,6 +165,8 @@ export function IzNav({
   const [solid, setSolid] = useState(!overlay);
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState<MenuKey | null>(null);
+  const [login, setLogin] = useState(false);
+  const loginTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   /* which sheet group is expanded on mobile — one at a time, all
      closed on open, so the sheet starts as four taps not fifty links */
   const [group, setGroup] = useState<MenuKey | null>(null);
@@ -195,10 +220,34 @@ export function IzNav({
   useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
 
   const hold = () => { if (closeTimer.current) clearTimeout(closeTimer.current); };
-  const openMenu = (k: MenuKey) => { hold(); setMenu(k); };
+  const openMenu = (k: MenuKey) => { hold(); setMenu(k); setLogin(false); };
   /* 120ms of grace: the cursor has to cross a hairline gap between the
      trigger and the panel, and an instant close makes that trip fail. */
   const closeMenu = () => { hold(); closeTimer.current = setTimeout(() => setMenu(null), 120); };
+
+  /* the Log in dropdown: same grace-timer pattern as the mega panel, its
+     own timer so the two can't cancel each other's close */
+  const holdLogin = () => { if (loginTimer.current) clearTimeout(loginTimer.current); };
+  const openLogin = () => { holdLogin(); setLogin(true); setMenu(null); };
+  const closeLogin = () => { holdLogin(); loginTimer.current = setTimeout(() => setLogin(false), 120); };
+  useEffect(() => () => { if (loginTimer.current) clearTimeout(loginTimer.current); }, []);
+  useEffect(() => {
+    if (!login) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setLogin(false);
+      headerRef.current?.querySelector<HTMLButtonElement>(".iz-login-btn")?.focus();
+    };
+    const onFocus = (e: FocusEvent) => {
+      if (!headerRef.current?.querySelector(".iz-login")?.contains(e.target as Node)) setLogin(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("focusin", onFocus);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("focusin", onFocus);
+    };
+  }, [login]);
 
   const next: Theme = theme === "dark" ? "paper" : "dark";
   const active = PANES.find((p) => p.key === menu);
@@ -272,6 +321,24 @@ export function IzNav({
           >
             {theme === "dark" ? <Moon /> : <Sun />}
           </button>
+
+          {/* Log in — a dropdown, not a link: two products, two consoles,
+              and guessing wrong on behalf of the visitor costs a login. */}
+          <span className="iz-login" onMouseEnter={openLogin} onMouseLeave={closeLogin}>
+            <button
+              type="button"
+              className="iz-btn iz-btn-ghost iz-btn-sm iz-login-btn"
+              aria-expanded={login}
+              aria-controls="iz-login-panel"
+              onClick={() => (login ? setLogin(false) : openLogin())}
+            >
+              Log in
+              <CaretDown size={11} weight="bold" aria-hidden="true" />
+            </button>
+            <div id="iz-login-panel" className={`iz-login-panel${login ? " is-open" : ""}`}>
+              <LoginCard />
+            </div>
+          </span>
 
           <a href="/book-a-demo" className="iz-btn iz-btn-pri iz-btn-sm iz-nav-cta">
             Book a demo
@@ -352,6 +419,11 @@ export function IzNav({
           </div>
           )
         )}
+        {/* the two consoles, above the demo CTA — an existing customer
+            opens this sheet to log in far more often than to buy */}
+        <div className="iz-sheet-login">
+          <LoginCard compact />
+        </div>
         <a href="/book-a-demo" className="iz-btn iz-btn-pri iz-sheet-cta" onClick={() => setOpen(false)}>
           Book a demo
         </a>
