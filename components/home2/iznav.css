@@ -390,7 +390,7 @@
   top: calc(100% + 14px);
   right: 0;
   display: grid;
-  grid-template-columns: repeat(2, 218px);
+  grid-template-columns: repeat(2, 236px);
   gap: var(--sp-3);
   padding: var(--sp-3);
   background: var(--surface);
@@ -423,6 +423,47 @@
 .iz-login-card.is-purple { --lg-accent: #652c8f; }
 .iz[data-theme="dark"] .iz-login-card.is-purple { --lg-accent: #b18cff; }
 
+/* ---- the illustration ramp ----
+   Every surface in the two scenes is a --il-* custom property, so one
+   copy of the geometry serves both themes. The paper values below are
+   the LIGHT dict out of the user's gen_portal_scenes.py verbatim; the
+   dark ramp is the one its preview harness ships. Declared HERE, on the
+   card, and nowhere else: --il-* is a short, generic prefix and the
+   illustration system elsewhere on the site uses the same namespace —
+   putting these on :root would repaint components in other files.
+
+   The two accents are not here. --il-acc / --il-acc2 are set on each
+   scene's own root in iz-login-scenes.tsx, and the i365 scene takes
+   --lg-accent, so the art can never disagree with the name beside it. */
+.iz-login-card {
+  --il-t: #fafaf8;  --il-r: #e9e9e4;  --il-l: #d6d6d0;   /* neutral solid */
+  --il-t2: #f2f2ee; --il-r2: #deded8; --il-l2: #c9c9c2;  /* pale: plinths */
+  --il-dt: #4c4c54; --il-dr: #3a3a41; --il-dl: #2b2b31;  /* dark reveals */
+  --il-it: #efefec; --il-ir: #e0e0dc; --il-il: #d0d0cb;  /* inert: denied */
+  --il-at: #ede7fb; --il-ar: #dcd2f5; --il-al: #c9bcee;  /* accent-tinted deck */
+  --il-edge: #c6c6c0;
+  --il-inert-line: #b9b9b3;
+  --il-screen: #2e2e34;
+  --il-key: #dfdfd9;
+  --il-band: #ff8a4c;
+  --il-x-bg: #f4f4f1;
+  --il-x-line: #a8a8a2;
+}
+.iz[data-theme="dark"] .iz-login-card {
+  --il-t: #2a2b31;  --il-r: #212228;  --il-l: #191a1f;
+  --il-t2: #232429; --il-r2: #1c1d22; --il-l2: #141519;
+  --il-dt: #3c3d45; --il-dr: #2d2e35; --il-dl: #1f2026;
+  --il-it: #202126; --il-ir: #1a1b20; --il-il: #141519;
+  --il-at: #2b2439; --il-ar: #221c2e; --il-al: #181322;
+  --il-edge: #3c3d44;
+  --il-inert-line: #33343a;
+  --il-screen: #0e0f13;
+  --il-key: #2e2f36;
+  --il-band: #ff8a4c;
+  --il-x-bg: #1c1d22;
+  --il-x-line: #54555d;
+}
+
 /* the rising shade: a gradient pinned to the card floor that fades in
    and drifts up on hover — colour from the card's own accent */
 .iz-login-card::after {
@@ -441,11 +482,37 @@
 .iz-login-card:hover,
 .iz-login-card:focus-visible { border-color: var(--lg-accent); }
 
-.iz-login-art { color: var(--lg-accent); margin-bottom: auto; }
-.iz-login-art svg { width: 100%; height: auto; display: block; }
-.iz-login-name { font-family: var(--disp); font-size: 22px; font-weight: 650; letter-spacing: -0.01em; color: var(--lg-accent); }
-.iz-login-desc { font-size: var(--fs-sm); color: var(--tx-dim); }
-.iz-login-go { font-family: var(--mono); font-size: var(--fs-mono-xs); letter-spacing: var(--ls-mono); color: var(--tx-mute); margin-top: var(--sp-2); }
+/* ---- the art well ----
+   The scenes are ~1.22:1 (ZTA) and ~1.31:1 (i365) and the card is
+   square, so a scene drawn at the card's width is taller than the room
+   left over the name. The well is therefore a window the scene overflows
+   and is centred in, cropped top and bottom.
+
+   That crop is budgeted, not hoped for: the generator pads every viewBox
+   by 22 units and the well is sized so the overflow stays inside that
+   padding — no lintel or floor corner is ever cut. It bleeds 8px past
+   the side padding and all the way to the card's top edge, both to widen
+   the scene and to keep the crop shallow enough for that to hold.
+
+   `min-height: 0` and `overflow: hidden` together are what keep the pair
+   square. Without them the flex item's automatic minimum size is the
+   uncropped scene, that beats the card's aspect-ratio, and the cards
+   grow into portraits. */
+.iz-login-art {
+  color: var(--lg-accent);
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: calc(var(--sp-4) * -1) -8px var(--sp-1);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.iz-login-art svg { width: 100%; height: auto; flex: none; display: block; }
+/* 22px display type was inheriting the body's 1.68 leading and eating
+   13px of the art's room for a single word */
+.iz-login-name { font-family: var(--disp); font-size: 22px; line-height: 1.1; font-weight: 650; letter-spacing: -0.01em; color: var(--lg-accent); }
+.iz-login-desc { font-size: var(--fs-sm); line-height: 1.4; color: var(--tx-dim); }
+.iz-login-go { font-family: var(--mono); font-size: var(--fs-mono-xs); line-height: 1.25; letter-spacing: var(--ls-mono); color: var(--tx-mute); margin-top: var(--sp-2); }
 .iz-login-card:hover .iz-login-go { color: var(--lg-accent); }
 
 /* ---- mobile sheet ---- */
@@ -456,11 +523,38 @@
   margin: var(--sp-4) 0 0;
 }
 .iz-login-card.is-compact { aspect-ratio: auto; padding: var(--sp-3); }
-.iz-login-card.is-compact .iz-login-art { max-width: 96px; }
+/* The sheet card is free to grow, so the scene runs uncropped at the
+   card's own width — 96px of a scene this dense was a smudge. */
+.iz-login-card.is-compact .iz-login-art {
+  overflow: visible;
+  margin: calc(var(--sp-3) * -1) calc(var(--sp-3) * -1) var(--sp-1);
+}
 
 /* desktop-only dropdown; the sheet carries the cards on mobile */
 @media (max-width: 920px) {
   .iz-login { display: none; }
+}
+
+/* ---- motion, on hover only ----
+   The scenes are static at rest. A dropdown that is already animating
+   the moment it opens reads as a loading state, and two of them side by
+   side compete for the eye before the visitor has picked one. Pointing
+   at a card starts its own beams marching and breathes its iris; the
+   other card stays still. Both hooks are classes the generator emits. */
+@media (prefers-reduced-motion: no-preference) {
+  .iz-login-card:hover .beam,
+  .iz-login-card:focus-visible .beam { animation: iz-beam-flow 1.6s linear infinite; }
+  .iz-login-card:hover .iris,
+  .iz-login-card:focus-visible .iris { animation: iz-iris-pulse 2.6s var(--ease-out) infinite; }
+}
+/* fill-box, or the transform would scale about the whole viewBox origin
+   and throw the iris off the threshold it sits on */
+.iz-login-card .iris { transform-box: fill-box; transform-origin: center; }
+
+@keyframes iz-beam-flow { to { stroke-dashoffset: -16; } }
+@keyframes iz-iris-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
 }
 
 @media (prefers-reduced-motion: reduce) {
