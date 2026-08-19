@@ -26,6 +26,17 @@ Thumbs.db
 # third-party tooling, not site source
 /caveman/
 /.agents/skills/
+# fontconfig scratch: sharp's Windows build writes its cache into the repo
+# root when it rasterises SVGs, because it resolves the cache dir from a
+# LOCAL_APPDATA_FONTCONFIG_CACHE token it never expands
+/LOCAL_APPDATA_FONTCONFIG_CACHE/
+
+# the social-card review board — 724KB of inlined SVG, regenerated in one
+# command (`python gen_og_kit.py` in prototypes/og). The scene sources and
+# the manifest beside it ARE tracked: gen-og-pages.mjs builds the cards
+# from them.
+/prototypes/og/index.html
+/prototypes/og/__pycache__/
 
 # raw asset drop folder — sources are copied into public/thumbs/ by lib/thumbs.ts
 # conventions; committing both doubles ~4.4MB of identical binaries

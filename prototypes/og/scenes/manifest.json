@@ -1,0 +1,107 @@
+[
+  {
+    "comp": "HUB",
+    "eyebrow": "Platform",
+    "file": "platform.svg",
+    "h1": "Access control the way your network actually works.",
+    "slug": "/platform"
+  },
+  {
+    "comp": "FLOW",
+    "eyebrow": "Solutions",
+    "file": "solutions.svg",
+    "h1": "Same platform. Fourteen access problems.",
+    "slug": "/solutions"
+  },
+  {
+    "comp": "HUB",
+    "eyebrow": "Platform",
+    "file": "multifactor-authentication.svg",
+    "h1": "A password is a guess. Prove it’s really them.",
+    "slug": "/multifactor-authentication"
+  },
+  {
+    "comp": "FLOW",
+    "eyebrow": "Platform",
+    "file": "zero-trust-features_single-sign-on.svg",
+    "h1": "Log in once. Get everything you’re allowed.",
+    "slug": "/zero-trust-features/single-sign-on"
+  },
+  {
+    "comp": "FLOW",
+    "eyebrow": "Platform",
+    "file": "zero-trust-network-access.svg",
+    "h1": "Network access that verifies everything.",
+    "slug": "/zero-trust-network-access"
+  },
+  {
+    "comp": "FLOW",
+    "eyebrow": "Platform",
+    "file": "zero-trust-application-access.svg",
+    "h1": "One portal. Every app. No network exposed.",
+    "slug": "/zero-trust-application-access"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Platform",
+    "file": "zero-trust-features_device-binding.svg",
+    "h1": "Credentials say who. Binding says from what.",
+    "slug": "/zero-trust-features/device-binding"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Platform",
+    "file": "zero-trust-features_device-posture-check.svg",
+    "h1": "The user checked out. Is the laptop lying?",
+    "slug": "/zero-trust-features/device-posture-check"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Platform",
+    "file": "platform_endpoint-controls.svg",
+    "h1": "Access granted is not the end of the story.",
+    "slug": "/platform/endpoint-controls"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Company",
+    "file": "awards.svg",
+    "h1": "Judged by people who do not work here.",
+    "slug": "/awards"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Company",
+    "file": "instasafe-newsroom.svg",
+    "h1": "InstaSafe, in other people’s words.",
+    "slug": "/instasafe-newsroom"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Resources",
+    "file": "blog.svg",
+    "h1": "Insights from the Zero Trust front line.",
+    "slug": "/blog"
+  },
+  {
+    "comp": "FLOW",
+    "eyebrow": "Company",
+    "file": "careers.svg",
+    "h1": "Grow with InstaSafe.",
+    "slug": "/careers"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Resources",
+    "file": "resource-center.svg",
+    "h1": "Every brochure, whitepaper and recording.",
+    "slug": "/resource-center"
+  },
+  {
+    "comp": "PEDESTAL",
+    "eyebrow": "Company",
+    "file": "book-a-demo.svg",
+    "h1": "See InstaSafe ZTNA running against your use case.",
+    "slug": "/book-a-demo"
+  }
+]
