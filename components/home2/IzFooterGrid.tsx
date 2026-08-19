@@ -27,14 +27,18 @@ import { FOOTER_COLUMNS } from "./iz-footer-data";
    240px-tall WebP, which is 65 KB for the set. Only
    easiest-to-do-business-with is a true vector and stayed .svg —
    hence filenames carry their own extension here. */
+/* Users Love Us is the odd one out — a red heart badge where the other
+   six are the same white shield with a blue banner. It reads as a
+   different kind of object mid-row, so it sits last rather than
+   second. */
 const G2_AWARDS: { file: string; alt: string }[] = [
   { file: "high-performer.webp", alt: "G2 High Performer" },
-  { file: "users-love-us.webp", alt: "G2 Users Love Us" },
   { file: "best-support.webp", alt: "G2 Best Support" },
   { file: "easiest-setup.webp", alt: "G2 Easiest Setup" },
   { file: "easiest-to-do-business-with.svg", alt: "G2 Easiest To Do Business With" },
   { file: "momentum-leader.webp", alt: "G2 Momentum Leader" },
   { file: "most-likely-to-recommend.webp", alt: "G2 Users Most Likely To Recommend" },
+  { file: "users-love-us.webp", alt: "G2 Users Love Us" },
 ];
 
 type Badge = { file: string; alt: string; h: number };
@@ -78,9 +82,13 @@ export function IzFooterGrid() {
                 <Logo height={24} />
                 <span className="iz-tag">ZTNA</span>
               </a>
+              {/* The line introduces the award row directly underneath it.
+                  It used to be a product claim about invisible apps, which
+                  belongs on a product page — here it sat above seven G2
+                  badges and explained none of them. */}
               <p className="izfg-tagline">
-                Access that verifies every time. Apps stay invisible to everyone who
-                hasn&apos;t been checked.
+                The badges below are G2 awards. They come from verified user
+                reviews, not from us.
               </p>
               {/* G2 awards, in a row under the tagline and above the
                   shield field. These keep their real colour in BOTH
