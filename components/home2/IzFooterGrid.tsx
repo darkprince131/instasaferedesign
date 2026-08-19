@@ -35,7 +35,13 @@ const G2_AWARDS: { file: string; alt: string }[] = [
   { file: "high-performer.webp", alt: "G2 High Performer" },
   { file: "best-support.webp", alt: "G2 Best Support" },
   { file: "easiest-setup.webp", alt: "G2 Easiest Setup" },
-  { file: "easiest-to-do-business-with.svg", alt: "G2 Easiest To Do Business With" },
+  /* The year is IN THE FILENAME on purpose. Static assets here are served
+     with max-age=2592000, so replacing artwork at a stable path fixes it
+     only for people who have never seen it — the old file sat in every
+     returning visitor's cache for thirty days. This artwork replaced one
+     whose "2024" was missing its 2. Bump the suffix whenever the badge
+     art changes, or the fix will not reach the people already looking. */
+  { file: "easiest-to-do-business-with-2024.svg", alt: "G2 Easiest To Do Business With" },
   { file: "momentum-leader.webp", alt: "G2 Momentum Leader" },
   { file: "most-likely-to-recommend.webp", alt: "G2 Users Most Likely To Recommend" },
   { file: "users-love-us.webp", alt: "G2 Users Love Us" },
@@ -87,8 +93,8 @@ export function IzFooterGrid() {
                   belongs on a product page — here it sat above seven G2
                   badges and explained none of them. */}
               <p className="izfg-tagline">
-                The badges below are G2 awards. They come from verified user
-                reviews, not from us.
+                Security teams trust it every day. Their reviews put these
+                badges here.
               </p>
               {/* G2 awards, in a row under the tagline and above the
                   shield field. These keep their real colour in BOTH
