@@ -822,6 +822,18 @@
   object-fit: cover;
   display: block;
 }
+/* The social-card scenes: 5:4 drawings on a warm bone ground, which is
+   the ONE surface on this site that does not follow the theme — the
+   illustration's charcoal hairlines only read on bone, in either theme,
+   exactly as they do in the shared preview. `cover` would crop a third
+   of the drawing, so it is contained and the ground is painted to match
+   the artwork's own, which hides the letterbox. */
+.izrr-thumb--scene {
+  background: #f7f4ef;
+}
+.izrr-thumb--scene img {
+  object-fit: contain;
+}
 /* the drawn fallback: accent line art, quiet enough to sit under a title */
 .izrr-art {
   width: 100%;

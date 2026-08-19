@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { SCENE_THUMB } from "@/lib/og-scenes";
+
 /* ============================================================
    00aw · IzRelatedRail — the `Related:` line already written at the
    bottom of nearly every Content Master page (~42 of them).
@@ -17,11 +19,14 @@ import { useState } from "react";
                 pages and anywhere a full card grid would outweigh
                 the section above it.
 
-   ▸ THUMBNAILS ◂ pass `thumb` with a path under /public, by
-   convention `/related/<page-slug>.webp` (16:9, ~640×360).
-   Until the real art lands — or if a path 404s — each card falls
-   back to a deterministic vector motif chosen by `kind`, so the
-   grid never renders as grey boxes or broken images.
+   ▸ THUMBNAILS ◂ a card resolves its art in three steps: an explicit
+   `thumb` wins, then the isometric scene the linked route's SOCIAL CARD
+   uses (lib/og-scenes.ts, keyed by href), then the drawn placeholder.
+   The middle step is the one that matters: a rail card and the preview
+   that appears when someone shares the same page are now the same
+   drawing, so the site looks like one hand made it. Fifteen routes have
+   a scene; everything else keeps the motif, and a 404 falls back too, so
+   the grid never renders as grey boxes or broken images.
    ============================================================ */
 
 export type RelatedLink = {
@@ -106,14 +111,21 @@ function ThumbArt({ kind }: { kind?: string }) {
 
 function Thumb({ link }: { link: RelatedLink }) {
   const [failed, setFailed] = useState(false);
-  const showArt = !link.thumb || failed;
+  /* hrefs are authored with and without a trailing slash across the site */
+  const scene = SCENE_THUMB[link.href.replace(/\/+$/, "") || "/"];
+  const src = link.thumb ?? scene;
+  const showArt = !src || failed;
   return (
-    <span className="izrr-thumb">
+    /* The scenes are drawn on bone and are 5:4, so `cover` inside a 16:9
+       thumb would crop a third of the illustration away. They are let-
+       terboxed instead, on a ground the same bone as their own — which
+       makes the letterbox invisible and the card read as one surface. */
+    <span className={`izrr-thumb${!showArt && src === scene ? " izrr-thumb--scene" : ""}`}>
       {showArt ? (
         <ThumbArt kind={link.kind} />
       ) : (
         /* eslint-disable-next-line @next/next/no-img-element */
-        <img src={link.thumb} alt="" loading="lazy" onError={() => setFailed(true)} />
+        <img src={src} alt="" loading="lazy" onError={() => setFailed(true)} />
       )}
       {link.kind && <span className="izrr-kind">{link.kind}</span>}
     </span>
