@@ -29,11 +29,27 @@ import "@/components/home2/izfootergrid.css";
 
    Post bodies still live in Ghost and every card links to its Ghost
    post URL (/blog/<slug>) — this route owns the INDEX only. */
+/* THE SOCIAL CARD CANNOT LIVE UNDER /blog/. Every other page uses Next's
+   file convention (app/<route>/opengraph-image.png), but Caddy proxies
+   `/blog/*` wholesale to the legacy Ghost box, so /blog/opengraph-image.png
+   never reaches Next — it reached Ghost, which redirected it and 404'd,
+   and the card was dead on the one page that gets shared most. Patching
+   the proxy to punch a hole for two filenames would leave the same trap
+   armed for the next asset, so the file sits in /public/og/ instead and
+   is named here by hand. */
+const CARD = "/og/blog.png";
+const CARD_ALT =
+  "Isometric illustration: an upright article page with an orange caret mid-paragraph, sheets leaning behind it, and ZTNA, MFA and SDP topic chips along the plinth apron.";
+
 export const metadata: Metadata = {
   title: "Blog — Zero Trust Insights & Stories",
   description:
     "Product thinking, threat analysis and migration playbooks from the InstaSafe team — zero trust, ZTNA, MFA and identity, in plain language.",
   alternates: { canonical: "/blog" },
+  openGraph: {
+    images: [{ url: CARD, width: 1200, height: 630, alt: CARD_ALT }],
+  },
+  twitter: { card: "summary_large_image", images: [CARD] },
 };
 
 export default async function Page() {
