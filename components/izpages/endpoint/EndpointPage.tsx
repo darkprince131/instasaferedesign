@@ -218,9 +218,15 @@ export function EndpointPage() {
                 desc: "Where watermarking and download control are enforced by the browser itself.",
               },
               {
+                /* /zero-trust-application-access, NOT the /platform/ztaa
+                   scaffold. Both describe ZTAA, but only this one is the
+                   bespoke build and only this one is on the live sitemap —
+                   pointing at the scaffold sent readers to the thinner of
+                   two pages about the same subject and split the internal
+                   linking between them. */
                 kind: "platform",
                 title: "ZTAA session controls",
-                href: "/platform/ztaa",
+                href: "/zero-trust-application-access",
                 desc: "RDP, SSH and database sessions under the same session-layer policy.",
               },
               {
