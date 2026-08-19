@@ -57,6 +57,16 @@
   gap: var(--sp-3);
   margin-top: var(--sp-8);
 }
+/* "Try the controls ↓" jumps to #simulator, and #simulator is
+   display:none below 920 / on a coarse pointer (endpointsim.css, and
+   the JS gate beside it). The link leaves with its target — the query
+   here is a copy of that one and the two must not drift. Book a Demo
+   stays, so the hero never loses its call to action. */
+@media (max-width: 919.98px), (pointer: coarse) {
+  .ep-cta-sim {
+    display: none;
+  }
+}
 
 /* ============================================================
    THE CONTROL RAIL
@@ -2149,10 +2159,6 @@
   line-height: var(--lh-body);
   color: var(--tx-dim);
 }
-.ep-rows {
-  display: grid;
-  gap: var(--sp-section);
-}
 
 /* ============================================================
    AnswerEndpoint's two surfaces.
@@ -2176,181 +2182,1102 @@
   stroke-width: 1.3;
 }
 
+
 /* ============================================================
-   THE SIX ROW CONSOLES
-   One shell, six bodies. Each one shows the control in its enforced
-   state, because a screenshot of a control doing nothing is a
-   screenshot of nothing.
+   THE SIX CONTROL CARDS  (#controls)
+
+   Six little desktop scenes, one shell. Grammar is 00an: identical
+   card, different mock, wash tinted to the verdict the mock reaches.
+
+   ONE RULE GOVERNS EVERY ANIMATION BELOW: it is declared inside
+   `.epk-card.is-live`. Hover-out removes it and the element snaps to
+   its NATURAL state — so the natural state of everything here is the
+   FINISHED state: menu open with Copy struck, watermark tiles down,
+   deny toast up, screen already locked. That is what makes the touch
+   still, the reduced-motion still and the no-JS still all correct
+   without a single extra rule.
+
+   SIX SCENES, NOT ONE SCENE SIX TIMES. The card shell is identical;
+   the scene inside it is not. Each mock has its own composition and
+   its own focal object — context menu, watermark field, bookmarks
+   bar, desktop icon, browser toolbar, countdown ring — and no two
+   put a window in the same place or at the same size.
+
+   COLOUR: everything above `.epk-screen` is tokens, as the rest of
+   this sheet is. Everything inside `.epk-screen` is a DEPICTED
+   WINDOWS DESKTOP and is literal and theme-constant — see the
+   commented palette blocks below.
    ============================================================ */
-.epc {
+.epk-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-5);
+}
+
+.epk-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 268px;
-  border: 1px solid var(--line);
+  gap: var(--sp-4);
+  padding: var(--sp-6) var(--sp-5) var(--sp-5);
   border-radius: var(--r-md);
   background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  overflow: hidden;
+  isolation: isolate;
+  transition: box-shadow var(--dur) var(--ease);
+}
+.epk-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.epk-card.is-live {
+  box-shadow: 0 0 0 1px var(--line-strong), 0 18px 40px -32px color-mix(in srgb, var(--tx) 60%, transparent);
+}
+.epk-cardtitle {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: var(--fs-body);
+  line-height: 1.35;
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.epk-cardbody {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--tx-dim);
+  text-wrap: pretty;
+}
+/* the stage reserves its full height in the static markup, so nothing
+   the animation does can move the grid */
+.epk-stage {
+  margin-top: auto;
+  padding-top: var(--sp-2);
+  min-height: 208px;
+  display: grid;
+  place-items: end center;
+}
+.epk-wash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.epk-card.is-live .epk-wash {
+  opacity: 1;
+}
+.epk-card.t-deny .epk-wash {
+  background: linear-gradient(to top, color-mix(in srgb, var(--deny) 16%, transparent), transparent);
+}
+.epk-card.t-warn .epk-wash {
+  background: linear-gradient(to top, color-mix(in srgb, var(--accent) 16%, transparent), transparent);
+}
+
+/* ---------- the mini desktop shell ---------- */
+.epk-mini {
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
   box-shadow: var(--panel-sh);
   overflow: hidden;
 }
-.epc-bar {
+/* the titled tab is the CARD's furniture, not part of the depicted
+   screen — it stays token-painted so it reads as our page */
+.epk-tabbar {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  flex: none;
-  padding: 9px var(--sp-4);
+  padding: 5px var(--sp-2);
   border-bottom: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--bg-2);
 }
-.epc-bar i {
-  display: block;
-  width: 7px;
-  height: 7px;
+.epk-lights {
+  display: inline-flex;
+  gap: 3px;
+}
+.epk-lights i {
+  width: 5px;
+  height: 5px;
   border-radius: var(--r-pill);
   background: var(--ghost);
 }
-.epc-bar b {
-  margin-left: 6px;
+.epk-tab {
   font-family: var(--mono);
   font-size: var(--fs-micro);
-  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--tx-dim);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-2xs);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
 }
-.epc-state {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 3px var(--sp-2);
-  border-radius: var(--r-pill);
-  border: 1px solid transparent;
+
+/* ============================================================
+   THE DEPICTED SCREEN — where literal colour is allowed
+
+   Below this line the sheet is drawing a WINDOWS DESKTOP, and a
+   desktop does not repaint itself because a website's theme did. The
+   wallpaper, the Windows 11 app palette and the Chrome palette are
+   therefore literal and theme-CONSTANT, exactly as they are in
+   endpointsim.css (same values, same reasoning) and in
+   components/home2/izminidesktop.css, which is where the wallpaper
+   came from. `--accent` still appears where the thing being drawn is
+   OURS — the InstaSafe tile, the wash, the watermark the product
+   stamps — because that is the product speaking, not Windows.
+   ============================================================ */
+.epk-screen {
+  position: relative;
+  height: 172px;
+  overflow: hidden;
+
+  /* ---- depicted-screen ink: one light set, both site themes ---- */
+  --scr-ink: #f3f1ef;
+  --scr-dim: rgba(243, 241, 239, 0.7);
+  --scr-mute: rgba(243, 241, 239, 0.5);
+  --scr-line: rgba(243, 241, 239, 0.16);
+  --scr-glass: rgba(18, 14, 24, 0.76);
+  --scr-panel: rgba(30, 25, 37, 0.96);
+  --scr-deny: #ff5c72;
 }
-.epc-state.deny {
-  color: var(--deny);
-  background: var(--deny-bg);
-  border-color: color-mix(in srgb, var(--deny) 28%, transparent);
+/* the wallpaper: the site's own mini-desktop plum — a 140deg field
+   with an orange bloom low-left and a violet bloom high-right */
+.epk-wall {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(40% 66% at 13% 82%, rgba(255, 106, 44, 0.44), transparent 70%),
+    radial-gradient(32% 54% at 89% 14%, rgba(180, 150, 210, 0.32), transparent 70%),
+    radial-gradient(28% 46% at 60% 56%, rgba(255, 106, 44, 0.18), transparent 72%),
+    linear-gradient(140deg, #1b1622 0%, #2a2030 52%, #191521 100%);
 }
-.epc-state.on {
-  color: var(--allow);
-  background: var(--allow-bg);
-  border-color: color-mix(in srgb, var(--allow) 28%, transparent);
+.epk-wall::after {
+  content: "";
+  position: absolute;
+  right: -24%;
+  bottom: -36%;
+  width: 78%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(243, 241, 239, 0.1);
+  border-radius: 50%;
 }
-.epc-body {
-  flex: 1;
-  padding: var(--sp-4);
-  display: grid;
-  gap: var(--sp-3);
-  align-content: start;
-  min-width: 0;
+.epk-appico {
+  display: block;
+  user-select: none;
 }
-.epc-row {
+
+/* ---------- taskbar: dark glass, real pinned marks ---------- */
+.epk-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  height: 20px;
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  min-width: 0;
-  padding: var(--sp-2) var(--sp-3);
-  border: 1px solid var(--line);
-  border-radius: var(--r-xs);
-  background: var(--bg-2);
-  font-size: var(--fs-sm);
-  color: var(--tx-dim);
+  justify-content: center;
+  gap: 5px;
+  border-top: 1px solid var(--scr-line);
+  background: var(--scr-glass);
 }
-.epc-row span {
+.epk-dk {
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+.epk-dk--brand {
+  width: 14px;
+  height: 14px;
+  background: rgba(243, 241, 239, 0.94);
+}
+.epk-clock {
+  position: absolute;
+  right: 6px;
+  font-family: var(--mono);
+  font-size: 7.5px;
+  font-weight: 400;
+  color: var(--scr-dim);
+}
+
+/* ============================================================
+   WINDOWS INSIDE THE SCENE
+   Windows 11 app palette · literal, not tokens
+   ============================================================ */
+.epk-win {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  --w11-bar: #f3f3f3;
+  --w11-body: #ffffff;
+  --w11-ink: #1b1b1b;
+  --w11-dim: #5d5d5d;
+  --w11-mute: #8a8a8a;
+  --w11-line: #e5e5e5;
+  --w11-rule: #d6d6d6;
+  --w11-sel: #9ecbff;
+  --w11-red: #d13438;
+
+  border: 1px solid rgba(0, 0, 0, 0.34);
+  border-radius: 6px 6px 4px 4px;
+  background: var(--w11-body);
+  box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.6), 0 2px 6px -3px rgba(0, 0, 0, 0.45);
+}
+.epk-wbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  height: 16px;
+  padding: 0 4px 0 5px;
+  border-bottom: 1px solid var(--w11-line);
+  background: var(--w11-bar);
+  font-size: 7.5px;
+  letter-spacing: 0.02em;
+  color: var(--w11-ink);
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* minimise / maximise / close at 6px, drawn rather than dotted —
+   three coloured circles would be a Mac and this is not one */
+.epk-wbtn {
+  position: relative;
+  flex: none;
+  width: 6px;
+  height: 6px;
+}
+.epk-wbtn:first-of-type {
+  margin-left: auto;
+}
+.epk-wbtn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--w11-dim);
+}
+.epk-wbtn:nth-of-type(2)::before {
+  inset: 0;
+  height: auto;
+  top: 0;
+  border: 1px solid var(--w11-dim);
+  background: none;
+}
+.epk-wbtn--x::before {
+  rotate: 45deg;
+}
+.epk-wbtn--x::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--w11-dim);
+  rotate: -45deg;
+}
+.epk-wmenu {
+  display: flex;
+  gap: 6px;
+  flex: none;
+  height: 13px;
+  align-items: center;
+  padding: 0 6px;
+  border-bottom: 1px solid var(--w11-line);
+  background: var(--w11-body);
+  font-size: 7px;
+  color: var(--w11-ink);
+}
+.epk-wmenu i {
+  font-style: normal;
+}
+.epk-wbody {
+  display: grid;
+  gap: 6px;
+  padding: 7px 6px;
+  align-content: start;
+  background: var(--w11-body);
+}
+.epk-tl {
+  height: 5px;
+  width: var(--w, 80%);
+  border-radius: 3px;
+  background: var(--w11-rule);
+}
+.epk-tl--sel {
+  background: var(--w11-sel);
+  transform-origin: left center;
+}
+
+/* ---------- the five window geometries ----------
+   No two cards put a window in the same place or at the same size.
+   That is the whole point of this block. */
+.epk-win--note {
+  left: 10px;
+  top: 10px;
+  width: 57%;
+}
+.epk-win--wide {
+  left: 8px;
+  right: 8px;
+  top: 9px;
+  bottom: 26px;
+}
+.epk-win--doc {
+  left: 16px;
+  top: 22px;
+  width: 60%;
+}
+.epk-win--net {
+  left: 8px;
+  right: 8px;
+  top: 8px;
+}
+.epk-win--crmbig {
+  left: 6px;
+  right: 6px;
+  top: 16px;
+}
+
+/* ============================================================
+   CHROME (Windows) inside a card — brand-accurate, literal hex,
+   deliberately not theme tokens. Same values as endpointsim.css.
+   ============================================================ */
+.epk-win--chrome {
+  --crm-strip: #dee1e6;
+  --crm-tab: #ffffff;
+  --crm-bar: #ffffff;
+  --crm-omni: #f1f3f4;
+  --crm-ink: #202124;
+  --crm-dim: #5f6368;
+  --crm-faint: #80868b;
+  --crm-off: #bdc1c6;
+  --crm-line: #dadce0;
+  --crm-close: #e81123;
+  --crm-rule: #e8eaed;
+  background: var(--crm-bar);
+}
+.epk-crm-tabs {
+  display: flex;
+  align-items: flex-end;
+  flex: none;
+  height: 18px;
+  padding-left: 7px;
+  background: var(--crm-strip);
+}
+/* the rounded-top tab with the two flared feet — the one silhouette
+   everybody recognises as Chrome */
+.epk-crm-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 14px;
+  max-width: 60%;
+  padding: 0 7px;
+  border-radius: 6px 6px 0 0;
+  background: var(--crm-tab);
+  font-size: 7px;
+  color: var(--crm-ink);
+  white-space: nowrap;
+  overflow: visible;
+}
+.epk-crm-tab::before,
+.epk-crm-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  height: 6px;
+}
+.epk-crm-tab::before {
+  left: -6px;
+  background: radial-gradient(circle at 0 0, transparent 0 6px, var(--crm-tab) 6px);
+}
+.epk-crm-tab::after {
+  right: -6px;
+  background: radial-gradient(circle at 100% 0, transparent 0 6px, var(--crm-tab) 6px);
+}
+.epk-crm-wc {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 5px 0 8px;
+}
+.epk-crm-wc i {
+  position: relative;
+  display: block;
+  width: 6px;
+  height: 6px;
+}
+.epk-crm-wc i::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--crm-dim);
+}
+.epk-crm-wc i:nth-child(2)::before {
+  inset: 0;
+  top: 0;
+  height: auto;
+  border: 1px solid var(--crm-dim);
+  background: none;
+}
+.epk-crm-wc i.x::before {
+  rotate: 45deg;
+}
+.epk-crm-wc i.x::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--crm-dim);
+  rotate: -45deg;
+}
+.epk-crm-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  height: 20px;
+  padding: 0 5px;
+  background: var(--crm-bar);
+}
+.epk-crm-bar--big {
+  height: 24px;
+}
+.epk-crm-omni {
+  flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 13px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--crm-omni);
+  font-size: 7px;
+  color: var(--crm-dim);
+}
+.epk-crm-bar--big .epk-crm-omni {
+  height: 15px;
+  font-size: 7.5px;
+}
+.epk-crm-omni > svg {
+  flex: none;
+  color: var(--crm-dim);
+}
+.epk-crm-url {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.epk-crm-url b {
+  font-weight: 400;
+  color: var(--crm-ink);
+}
+.epk-crm-av {
+  flex: none;
+  display: block;
+  width: 11px;
+  height: 11px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+}
+.epk-crm-bar > svg {
+  flex: none;
+  color: var(--crm-dim);
+}
+/* the bookmarks bar — the focal object of the network card */
+.epk-crm-bm {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  height: 16px;
+  padding: 0 6px;
+  background: var(--crm-bar);
+  border-bottom: 1px solid var(--crm-line);
+}
+.epk-bmk {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 7px;
+  font-weight: 400;
+  color: var(--crm-ink);
+  white-space: nowrap;
+}
+.epk-bmk svg {
+  flex: none;
+  color: var(--crm-dim);
+}
+.epk-bmk--deny,
+.epk-bmk--deny svg {
+  color: var(--crm-close);
+}
+.epk-bmstrike {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 1px;
+  background: var(--crm-close);
+  transform-origin: left center;
+}
+.epk-crm-page {
+  flex: 1;
+  display: grid;
+  gap: 5px;
+  align-content: start;
+  padding: 7px 7px 8px;
+  background: var(--crm-bar);
+}
+.epk-crm-page--err {
+  gap: 3px;
+  place-content: center start;
+  padding-inline: 9px;
+}
+.epk-err-h {
+  font-style: normal;
+  font-size: 8.5px;
+  color: var(--crm-ink);
+}
+.epk-err-c {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 6.5px;
+  letter-spacing: 0.08em;
+  color: var(--crm-faint);
+}
+.epk-pl {
+  display: block;
+  height: 4px;
+  width: var(--w, 70%);
+  border-radius: 2px;
+  background: var(--crm-rule);
+}
+.epk-glyphs {
+  flex: none;
+  display: inline-flex;
+  gap: 2px;
+}
+.epk-glyphs b {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: var(--r-pill);
+  color: var(--crm-dim);
+}
+.epk-glyphs b s {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 50%;
+  height: 1px;
+  background: var(--crm-close);
+  transform-origin: left center;
+  rotate: -38deg;
+}
+.epk-chip {
+  justify-self: start;
+  margin-top: 1px;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
+  border: 1px solid color-mix(in srgb, var(--crm-close) 34%, transparent);
+  background: color-mix(in srgb, var(--crm-close) 8%, transparent);
+  font-family: var(--mono);
+  font-size: 6.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--crm-close);
+}
+
+/* ---------- the right-click micro-menu (clipboard focal) ----------
+   Bigger than it was and thrown clear of the window, because it is
+   the thing this card is about. A Windows context menu: white, thin
+   grey border, 6px radius, real drop shadow. */
+.epk-menu {
+  position: absolute;
+  z-index: 3;
+  left: 43%;
+  top: 30%;
+  width: 130px;
+  display: grid;
+  gap: 1px;
+  padding: 3px;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 12px 26px -12px rgba(0, 0, 0, 0.65), 0 2px 5px -2px rgba(0, 0, 0, 0.35);
+  transform-origin: top left;
+}
+.epk-mi {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 5px;
+  border-radius: var(--r-2xs);
+  font-size: 7.5px;
+  letter-spacing: 0.02em;
+  color: #1b1b1b;
+}
+.epk-mi svg {
+  flex: none;
+  color: #d13438;
+}
+.epk-mi-sp {
+  width: 9px;
+  flex: none;
+}
+.epk-mi-l {
+  position: relative;
+  white-space: nowrap;
+}
+/* the strike is a pseudo-element, not text-decoration, so it can be
+   drawn on rather than simply existing */
+.epk-mi--no .epk-mi-l::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: 50%;
+  height: 1px;
+  background: #d13438;
+  transform-origin: left center;
+}
+.epk-mi--no {
+  color: #8a8a8a;
+}
+.epk-mi em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 6.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d13438;
+}
+.epk-mi-l--ok {
+  color: #1b1b1b;
+}
+
+/* ---------- the cursor ---------- */
+.epk-cur {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: 0;
+  line-height: 0;
+  /* the individual `translate` property, NOT a transform — the
+     keyframes below animate `translate` too, and a base `transform`
+     would compose with them and double the offset */
+  translate: var(--x, 0px) var(--y, 0px);
+}
+.epk-cur svg {
+  fill: #fff;
+  stroke: #1b1622;
+  stroke-width: 1.3;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+.epk-cur--clip {
+  --x: 168px;
+  --y: 74px;
+}
+/* lands on the anydesk tile, which is the third of four columns */
+.epk-cur--app {
+  --x: 186px;
+  --y: 44px;
+}
+
+/* ---------- the notification: Windows dark glass ---------- */
+.epk-toast {
+  position: absolute;
+  z-index: 7;
+  right: 7px;
+  bottom: 26px;
+  width: 156px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border: 1px solid var(--scr-line);
+  border-radius: var(--r-xs);
+  background: var(--scr-panel);
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.9);
+}
+.epk-toast.deny {
+  border-color: color-mix(in srgb, var(--scr-deny) 45%, transparent);
+}
+.epk-toast-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-2xs);
+  color: var(--scr-deny);
+  background: color-mix(in srgb, var(--scr-deny) 20%, transparent);
+}
+.epk-toast-tx {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.epk-toast-tx b {
+  font-size: 8.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--scr-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.epc-row em {
-  margin-left: auto;
-  flex: none;
+.epk-toast-tx em {
   font-style: normal;
   font-family: var(--mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--tx-mute);
-}
-.epc-row.no {
-  border-style: dashed;
-  border-color: color-mix(in srgb, var(--deny) 40%, transparent);
-  background: var(--deny-bg);
-}
-.epc-row.no em {
-  color: var(--deny);
-}
-.epc-row.no span {
-  text-decoration: line-through;
-  text-decoration-color: color-mix(in srgb, var(--deny) 60%, transparent);
-}
-.epc-row.yes {
-  border-color: color-mix(in srgb, var(--allow) 34%, transparent);
-  background: var(--allow-bg);
-}
-.epc-row.yes em {
-  color: var(--allow);
-}
-.epc-note {
-  font-family: var(--mono);
-  font-size: var(--fs-micro);
+  font-size: 7px;
   letter-spacing: 0.08em;
-  color: var(--tx-mute);
+  color: var(--scr-mute);
 }
-/* the watermark row-console shows a marked screen rather than a list */
-.epc-screen {
-  position: relative;
-  min-height: 148px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-xs);
-  background: var(--bg-2);
-  overflow: hidden;
-  padding: var(--sp-3);
-  display: grid;
-  gap: 7px;
-  align-content: start;
-}
-.epc-line {
-  height: 5px;
-  border-radius: 3px;
-  background: var(--line-strong);
-  width: var(--w, 80%);
-}
-.epc-marks {
+
+/* ---------- watermark tiles (watermark focal) ----------
+   Warm and semi-transparent rather than light: this field has to be
+   legible over a WHITE document AND over the plum wallpaper in the
+   same frame, and only a mid-tone does both. */
+.epk-marks {
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  z-index: 5;
   overflow: hidden;
+  pointer-events: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 15px 17px;
+  transform: rotate(-22deg) scale(1.35);
 }
-.epc-marks b {
-  position: absolute;
+.epk-marks b {
   font-family: var(--mono);
-  font-size: 8px;
+  font-size: 7.5px;
   font-weight: 400;
   letter-spacing: 0.1em;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--accent) 30%, transparent);
-  transform: rotate(-24deg);
+  color: rgba(255, 106, 44, 0.62);
 }
-/* the inactivity console is one countdown, so it gets the whole box */
-.epc-idle {
+
+/* ---------- desktop icons (app-filter focal) ----------
+   No plate under the mark, same as the simulator: Windows draws the
+   icon straight onto the wallpaper. */
+.epk-icons {
+  position: absolute;
+  z-index: 2;
+  left: 8px;
+  right: 8px;
+  top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+.epk-ic {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  font-size: 7px;
+  letter-spacing: 0.02em;
+  color: var(--scr-ink);
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.epk-ic-tile {
+  position: relative;
   display: grid;
   place-items: center;
-  gap: var(--sp-3);
-  min-height: 148px;
+  width: 28px;
+  height: 28px;
 }
-.epc-idle-n {
-  font-family: var(--mono);
-  font-size: var(--fs-num-sm);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  color: var(--tx);
+.epk-ic-tile--brand {
+  width: 25px;
+  height: 25px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(243, 241, 239, 0.5);
 }
-.epc-idle-l {
+/* the blocked tool ends greyed out — resting state IS the finished
+   state, which is what makes the no-JS still correct */
+.epk-ic--target .epk-appico {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+.epk-ic-lock {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border-radius: var(--r-pill);
+  color: #fff;
+  background: var(--scr-deny);
+  box-shadow: 0 0 0 1.5px rgba(25, 21, 33, 0.85);
+}
+
+/* ---------- the idle ring + lock plate (inactivity focal) ---------- */
+.epk-ring {
+  position: absolute;
+  z-index: 5;
+  right: 16px;
+  top: 26px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+}
+.epk-ring svg {
+  position: absolute;
+  inset: 0;
+  rotate: -90deg;
+  fill: none;
+  stroke-width: 2.4;
+}
+.epk-ring .bg {
+  stroke: rgba(243, 241, 239, 0.22);
+}
+/* r = 15.5 → circumference 97.4. A fully-offset ring is an EMPTY
+   ring, which is the resting (expired) state. */
+.epk-ring .fg {
+  stroke: var(--scr-deny);
+  stroke-linecap: round;
+  stroke-dasharray: 97.4;
+  stroke-dashoffset: 97.4;
+}
+.epk-ring b {
   font-family: var(--mono);
-  font-size: var(--fs-micro);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--tx-mute);
+  font-size: 7.5px;
+  font-weight: 400;
+  color: var(--scr-ink);
+}
+.epk-lock {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 9px;
+  background: rgba(16, 12, 22, 0.86);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.epk-lock-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-xs);
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(243, 241, 239, 0.4);
+}
+.epk-lock-l {
+  padding: 4px var(--sp-3);
+  border: 1px solid var(--scr-line);
+  border-radius: var(--r-pill);
+  background: var(--scr-panel);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--scr-ink);
+}
+
+/* ============================================================
+   MOTION — every keyframe below runs ONLY inside `.is-live`.
+   Standard easings only; no new curves are introduced here.
+   ============================================================ */
+/* into the notepad, drag across the two rows, right-click, then down
+   to Copy in the menu that opens */
+@keyframes epk-cursor-clip {
+  0% { translate: 22px 150px; }
+  24% { translate: 26px 52px; }
+  46% { translate: 118px 66px; }
+  62% { translate: 120px 68px; }
+  100% { translate: 168px 74px; }
+}
+@keyframes epk-cursor-app {
+  0% { translate: 18px 130px; }
+  60% { translate: 186px 44px; }
+  70% { translate: 186px 47px; }
+  100% { translate: 186px 44px; }
+}
+@keyframes epk-sweep-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes epk-pop-in {
+  from { opacity: 0; scale: 0.9; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes epk-badge-in {
+  from { opacity: 0; scale: 0.4; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes epk-press {
+  0%, 100% { scale: 1; }
+  50% { scale: 0.9; }
+}
+@keyframes epk-toast-in {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes epk-mark-in {
+  from { opacity: 0; translate: -10px -8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes epk-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes epk-grey-out {
+  0%, 52% { filter: none; opacity: 1; }
+  100% { filter: grayscale(1); opacity: 0.5; }
+}
+@keyframes epk-countdown {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 97.4; }
+}
+
+/* 1 · clipboard — cursor to the rows, sweep the selection, right-click,
+   strike Copy, refuse. */
+.epk-card.is-live .epk-cur--clip {
+  animation: epk-cursor-clip 2000ms var(--ease) both;
+}
+.epk-card.is-live .epk-tl--sel {
+  animation: epk-sweep-x 420ms var(--ease) 380ms both;
+}
+.epk-card.is-live .epk-menu {
+  animation: epk-pop-in 200ms var(--ease-out) 1000ms both;
+}
+.epk-card.is-live .epk-mi--no .epk-mi-l::after {
+  animation: epk-sweep-x 260ms var(--ease-out) calc(1560ms + var(--i, 0) * 160ms) both;
+}
+
+/* 2 · watermark — the tiles arrive diagonally and stay */
+.epk-card.is-live .epk-marks b {
+  animation: epk-mark-in 460ms var(--ease) calc(120ms + var(--i, 0) * 50ms) both;
+}
+
+/* 3 · network — the bookmark is struck where it sits in the bar, then
+   the page underneath fails to resolve */
+.epk-card.is-live .epk-bmstrike {
+  animation: epk-sweep-x 320ms var(--ease-out) 900ms both;
+}
+.epk-card.is-live .epk-crm-page--err {
+  animation: epk-fade-in 300ms var(--ease-out) 1280ms both;
+}
+
+/* 4 · app filter — press, grey out, badge */
+.epk-card.is-live .epk-cur--app {
+  animation: epk-cursor-app 1100ms var(--ease) both;
+}
+.epk-card.is-live .epk-ic--target .epk-ic-tile {
+  animation: epk-press 260ms var(--ease-out) 700ms both;
+}
+.epk-card.is-live .epk-ic--target .epk-appico {
+  animation: epk-grey-out 1300ms var(--ease-out) both;
+}
+.epk-card.is-live .epk-ic-lock {
+  animation: epk-badge-in 260ms var(--ease-out) 1020ms both;
+}
+
+/* 5 · chrome — the three exits go one after another */
+.epk-card.is-live .epk-glyphs b s {
+  animation: epk-sweep-x 240ms var(--ease-out) calc(420ms + var(--i, 0) * 320ms) both;
+}
+.epk-card.is-live .epk-chip {
+  animation: epk-pop-in 260ms var(--ease-out) 1420ms both;
+}
+
+/* 6 · inactivity */
+.epk-card.is-live .epk-ring .fg {
+  animation: epk-countdown 1700ms var(--ease-linear) 160ms both;
+}
+.epk-card.is-live .epk-lock {
+  animation: epk-fade-in 420ms var(--ease-out) 1880ms both;
+}
+
+/* the refusal always lands last, whichever scene it belongs to */
+.epk-card.is-live .epk-toast {
+  animation: epk-toast-in 320ms var(--ease) 1960ms both;
+}
+
+/* ============================================================
+   RESPONSIVE + STILLS
+   ============================================================ */
+@media (max-width: 1080px) {
+  .epk-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .epk-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .epk-stage {
+    place-items: end start;
+  }
+}
+
+/* Below the desktop breakpoint every mock is a finished still. A
+   narrow window on a hoverable device can still set `.is-live`, so
+   this has to be an explicit override rather than relying on touch. */
+@media (max-width: 900px) {
+  .epk-card.is-live *,
+  .epk-card.is-live .epk-mi--no .epk-mi-l::after {
+    animation: none !important;
+  }
+  .epk-cur {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .epk-card.is-live *,
+  .epk-card.is-live .epk-mi--no .epk-mi-l::after {
+    animation: none !important;
+  }
+  .epk-card,
+  .epk-wash {
+    transition: none;
+  }
+  .epk-cur {
+    display: none;
+  }
 }

@@ -1,0 +1,1543 @@
+/* ============================================================
+   endpointsim.css — the live desktop (#simulator)
+
+   Ported from the deck's s09.css + miniwin.css.
+
+   ------------------------------------------------------------
+   WHERE LITERAL COLOUR IS ALLOWED, AND WHY
+
+   The sheet used to have a hard no-hex rule and the desktop was
+   painted from `.iz` tokens, which made it a PALE desktop on the
+   paper theme. The client's note is the correct one: a desktop
+   wallpaper does not change because a website's theme did, and a
+   Chrome window is not our brand's colours — it is Chrome's.
+
+   So the rule is now scoped rather than absolute:
+
+     · INSIDE `.eps-screen` — the depicted screen — literal colour is
+       allowed and is confined to three commented palette blocks: the
+       WALLPAPER (the site's own mini-desktop plum, shared with
+       components/home2/izminidesktop.css), the WINDOWS 11 APP
+       palette on `.eps-win`, and the CHROME palette on
+       `.eps-win--chrome`. Everything painted on the wallpaper reads
+       off `--scr-*`, one light-ink set, because the wallpaper is
+       dark in both themes.
+     · OUTSIDE the screen — the admin rail, the caption, the frame —
+       nothing changed. Tokens only.
+     · `--accent` still appears inside the screen in exactly the
+       places where the thing being drawn is OURS and not Windows':
+       the InstaSafe agent's tray state, the idle chip, the hint chip
+       and the hint's pulse ring. Those are allowed to follow the
+       site's accent switcher, because they are the product speaking.
+
+   TWO HEIGHT CONTRACTS, both load-bearing for CLS:
+     · `.eps-screen` has an explicit height. Windows open and close
+       inside it and can never resize it.
+     · The still in EndpointSimSection reuses every class in this
+       sheet, so the space it reserves before the simulator loads is
+       the space the simulator takes.
+   ============================================================ */
+
+.ep-sec--sim {
+  background: var(--bg-2);
+  border-block: 1px solid var(--line);
+}
+
+.eps-shell {
+  display: grid;
+  grid-template-columns: minmax(300px, 350px) minmax(0, 1fr);
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+/* ============================================================
+   THE ADMIN CONSOLE — outside the screen, tokens only
+   ============================================================ */
+.eps-rail {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+}
+.eps-railhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.eps-railttl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tx-dim);
+}
+.eps-railttl svg {
+  color: var(--accent);
+}
+.eps-count {
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+.eps-count.live {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.eps-group {
+  display: grid;
+  gap: 6px;
+}
+.eps-grouplab {
+  margin: 0 0 2px;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tx-mute);
+}
+
+/* the toggle row. A <button> in the live rail, a <span> in the still —
+   both get the same box, which is what keeps the reserved height
+   honest. */
+.eps-ctl {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  min-height: 60px;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--panel-sh);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+span.eps-ctl {
+  cursor: default;
+}
+.eps-ctl:hover {
+  border-color: var(--line-strong);
+}
+.eps-ctl:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.eps-ctl.on {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+.eps-ctl-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  color: var(--tx-dim);
+  background: var(--bg-2);
+  box-shadow: 0 0 0 1px var(--line);
+  transition: color var(--dur) var(--ease);
+}
+.eps-ctl.on .eps-ctl-ic {
+  color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.eps-ctl-tx {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.eps-ctl-tx b {
+  font-family: var(--disp);
+  font-weight: 500;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-h3);
+  color: var(--tx);
+}
+.eps-ctl-tx em {
+  font-style: normal;
+  font-size: var(--fs-mono-xs);
+  line-height: 1.4;
+  color: var(--tx-dim);
+}
+.eps-sw {
+  flex: none;
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.eps-sw i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: var(--tx-mute);
+  transition: translate var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.eps-ctl.on .eps-sw {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.eps-ctl.on .eps-sw i {
+  translate: 14px 0;
+  background: var(--btn-ink);
+}
+.eps-railfoot {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  color: var(--tx-mute);
+}
+
+/* ============================================================
+   THE DESKTOP
+   ============================================================ */
+.eps-stagewrap {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.eps-screen {
+  position: relative;
+  height: 468px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: #191521;
+  box-shadow: var(--panel-sh);
+  overflow: hidden;
+
+  /* ----------------------------------------------------------
+     DEPICTED-SCREEN INK — literal, deliberately not tokens.
+
+     The wallpaper below is dark in BOTH site themes, so everything
+     painted straight onto it (icon labels, taskbar, notifications,
+     the lock screen) needs one light-ink set that does not flip.
+     Same values as .izmd-* on the homepage mini-desktop, so the two
+     depicted Windows desktops on this site are the same desktop.
+     ---------------------------------------------------------- */
+  --scr-ink: #f3f1ef;
+  --scr-dim: rgba(243, 241, 239, 0.7);
+  --scr-mute: rgba(243, 241, 239, 0.5);
+  --scr-line: rgba(243, 241, 239, 0.16);
+  --scr-hover: rgba(243, 241, 239, 0.12);
+  --scr-glass: rgba(18, 14, 24, 0.74);
+  --scr-panel: rgba(30, 25, 37, 0.96);
+  /* status ink for the agent's own notifications, taken from the
+     dark-theme semantic tokens: the notification surface is always
+     dark, so the paper-theme values would sink into it */
+  --scr-allow: #46d38a;
+  --scr-deny: #ff5c72;
+}
+
+/* ----------------------------------------------------------
+   THE WALLPAPER — "like a person keeps in background".
+
+   This is the site's own mini-desktop wallpaper, lifted from
+   components/home2/izminidesktop.css (.izmd-wall + .izmd-bloom
+   b1/b2/b3 + .izmd-arc): a deep plum 140deg field with an orange
+   bloom low-left and a violet bloom high-right — the deck's
+   "Gradient Field" flavour. Four background layers replace four
+   blurred elements, because this span is also what the SSR still
+   renders and adding children to it would break the still's
+   class-for-class contract.
+
+   Literal colour, theme-CONSTANT, deliberately.
+   ---------------------------------------------------------- */
+.eps-wall {
+  position: absolute;
+  inset: 0;
+  /* the three bloom centres are izminidesktop's b1/b2/b3 resolved out
+     of its left/right/top/bottom offsets, so the light lands in the
+     same three places it does on the homepage */
+  background:
+    radial-gradient(40% 62% at 14% 80%, rgba(255, 106, 44, 0.42), transparent 70%),
+    radial-gradient(32% 50% at 88% 16%, rgba(180, 150, 210, 0.3), transparent 70%),
+    radial-gradient(28% 42% at 60% 56%, rgba(255, 106, 44, 0.18), transparent 72%),
+    linear-gradient(140deg, #1b1622 0%, #2a2030 52%, #191521 100%);
+}
+.eps-wall::after {
+  content: "";
+  position: absolute;
+  right: -22%;
+  bottom: -34%;
+  width: 76%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(243, 241, 239, 0.1);
+  border-radius: 50%;
+}
+
+/* ---------- the hint pulse ----------
+   One ring for every hint target. `border-radius: inherit` means the
+   pill targets get a pill ring and the square ones get a square one
+   without a rule each. Accent, because this is the PRODUCT pointing
+   at something, not part of the Windows depiction. */
+@keyframes eps-ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+}
+.eps-screen .is-pulse {
+  position: relative;
+}
+.eps-screen .is-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: 1;
+  border: 1.5px solid var(--accent);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: eps-ring 1.4s var(--ease-out) infinite;
+}
+
+/* ---------- desktop icons ----------
+   No plate under the mark: Windows draws the app icon straight onto
+   the wallpaper and the label under it carries a shadow. Giving the
+   real .webp marks a token-coloured tile was most of what made the
+   old desktop read as a diagram. */
+.eps-icons {
+  position: absolute;
+  z-index: 2;
+  left: 10px;
+  top: 10px;
+  display: grid;
+  gap: 2px;
+}
+.eps-di {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  width: 74px;
+  padding: 6px 2px;
+  border: 1px solid transparent;
+  border-radius: var(--r-2xs);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+span.eps-di {
+  cursor: default;
+}
+button.eps-di:hover {
+  background: var(--scr-hover);
+  border-color: rgba(243, 241, 239, 0.18);
+}
+.eps-di:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.eps-di-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+}
+/* the brand mark is the one icon that needs a plate — it is drawn for
+   light backgrounds and would disappear into the plum */
+.eps-di-tile--brand {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-2xs);
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(243, 241, 239, 0.5);
+}
+.eps-appico {
+  display: block;
+  user-select: none;
+}
+.eps-di.is-blocked .eps-appico {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+.eps-di-lock {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  color: #fff;
+  background: var(--scr-deny);
+  box-shadow: 0 0 0 1.5px rgba(25, 21, 33, 0.8);
+}
+.eps-di-l {
+  font-size: 9.5px;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--scr-ink);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+/* ---------- the idle chip (ours, so accent) ---------- */
+.eps-idlechip {
+  position: absolute;
+  z-index: 8;
+  right: var(--sp-3);
+  top: var(--sp-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px var(--sp-3);
+  border-radius: var(--r-pill);
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: var(--scr-panel);
+  box-shadow: 0 10px 22px -14px rgba(0, 0, 0, 0.8);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.eps-idlechip em {
+  font-style: normal;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--scr-mute);
+}
+
+/* ============================================================
+   WINDOWS — "feel like a window actually exists"
+
+   A neutral OFFSET drop shadow (never a coloured glow), an 8px top
+   radius, a 1px border. The palette below is the WINDOWS 11 APP
+   palette and it is literal on purpose: Notepad and File Explorer
+   are light applications on Sophia's laptop whichever theme this
+   website happens to be in.
+   ============================================================ */
+.eps-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px 8px 6px 6px;
+  overflow: hidden;
+
+  /* ---- Windows 11 app palette · literal, not tokens ---- */
+  --w11-bar: #f3f3f3;
+  --w11-body: #ffffff;
+  --w11-ink: #1b1b1b;
+  --w11-dim: #5d5d5d;
+  --w11-mute: #8a8a8a;
+  --w11-line: #e5e5e5;
+  --w11-hover: rgba(0, 0, 0, 0.06);
+  --w11-close: #e81123;
+  --w11-sel: #cce8ff;
+  --w11-folder: #e8b339;
+  --w11-warm: #b3421a;
+
+  border: 1px solid rgba(0, 0, 0, 0.36);
+  background: var(--w11-body);
+  color: var(--w11-ink);
+  box-shadow: 0 20px 44px -14px rgba(0, 0, 0, 0.55), 0 3px 10px -4px rgba(0, 0, 0, 0.4);
+}
+.eps-win.is-min {
+  display: none;
+}
+.eps-win--note {
+  left: 8%;
+  top: 24px;
+  width: min(300px, 40%);
+}
+.eps-win--exp {
+  left: 15%;
+  top: 214px;
+  width: min(328px, 45%);
+}
+.eps-win--chrome {
+  left: 37%;
+  top: 58px;
+  width: min(432px, 60%);
+}
+/* maximise is real, not decorative: it grows to the desktop minus the
+   taskbar, which is what the button means */
+.eps-win--chrome.is-max {
+  left: 8px;
+  right: 8px;
+  top: 8px;
+  bottom: 46px;
+  width: auto;
+}
+
+/* ---------- Windows 11 title bar ---------- */
+.eps-w11bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  height: 30px;
+  padding-left: 9px;
+  background: var(--w11-bar);
+  border-bottom: 1px solid var(--w11-line);
+}
+.eps-w11ttl {
+  flex: 1;
+  min-width: 0;
+  font-size: 10.5px;
+  color: var(--w11-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.eps-w11wc {
+  display: flex;
+  flex: none;
+  align-self: stretch;
+}
+.eps-w11wc > button,
+.eps-w11wc > span {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--w11-ink);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.eps-w11wc > span {
+  cursor: default;
+  color: var(--w11-dim);
+}
+.eps-w11wc > button:hover {
+  background: var(--w11-hover);
+}
+.eps-w11wc > button.x:hover {
+  background: var(--w11-close);
+  color: #fff;
+}
+.eps-w11wc > button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ---------- Notepad ---------- */
+.eps-w11menu {
+  display: flex;
+  gap: 1px;
+  flex: none;
+  padding: 3px 6px;
+  background: var(--w11-body);
+  border-bottom: 1px solid var(--w11-line);
+}
+.eps-w11menu span {
+  padding: 2px 7px;
+  border-radius: var(--r-2xs);
+  font-size: 10px;
+  color: var(--w11-ink);
+}
+.eps-tools {
+  display: flex;
+  gap: 4px;
+  flex: none;
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--w11-line);
+  background: var(--w11-bar);
+}
+.eps-tools button {
+  padding: 3px 9px;
+  border: 1px solid #d2d2d2;
+  border-radius: var(--r-2xs);
+  background: var(--w11-body);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--w11-dim);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.eps-tools button:hover {
+  border-color: #8a8a8a;
+  color: var(--w11-ink);
+}
+.eps-tools button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.eps-note {
+  padding: 9px 10px 11px;
+  background: var(--w11-body);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+  color: var(--w11-dim);
+}
+.eps-note p {
+  display: flex;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 2px 0;
+}
+.eps-note p span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.eps-note p i {
+  font-style: normal;
+  color: var(--w11-mute);
+}
+.eps-note p b {
+  font-weight: 500;
+  color: var(--w11-ink);
+  font-variant-numeric: tabular-nums;
+}
+.eps-note-h {
+  display: block !important;
+  margin-bottom: 4px !important;
+  letter-spacing: 0.1em;
+  color: var(--w11-warm) !important;
+}
+/* the real Windows text-selection blue, because this line is the one
+   the reader is about to try to copy */
+.eps-note-sel {
+  display: inline-block !important;
+  margin-top: 6px !important;
+  padding: 2px 5px !important;
+  border-radius: var(--r-hair);
+  background: var(--w11-sel);
+  color: var(--w11-ink) !important;
+}
+
+/* ---------- File Explorer ---------- */
+.eps-exp-crumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  height: 24px;
+  padding: 0 8px;
+  background: var(--w11-body);
+  border-bottom: 1px solid var(--w11-line);
+  font-size: 9.5px;
+  color: var(--w11-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.eps-exp-crumb svg {
+  flex: none;
+  color: var(--w11-folder);
+}
+.eps-exp-crumb i {
+  font-style: normal;
+  color: var(--w11-mute);
+}
+.eps-exp-crumb b {
+  font-weight: 500;
+  color: var(--w11-ink);
+}
+.eps-exp-body {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  background: var(--w11-body);
+}
+.eps-exp-rail {
+  display: grid;
+  gap: 1px;
+  align-content: start;
+  padding: 6px 4px 9px;
+  border-right: 1px solid var(--w11-line);
+  background: #fafafa;
+}
+.eps-exp-rail p {
+  margin: 0 0 3px;
+  padding: 0 6px;
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--w11-mute);
+}
+.eps-exp-rail span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: var(--r-2xs);
+  font-size: 9.5px;
+  color: var(--w11-dim);
+  white-space: nowrap;
+}
+.eps-exp-rail span svg {
+  flex: none;
+  color: var(--w11-folder);
+}
+.eps-exp-rail span.on {
+  background: #eaeaea;
+  color: var(--w11-ink);
+}
+.eps-exp-list {
+  display: grid;
+  gap: 1px;
+  align-content: start;
+  padding: 6px 8px 10px;
+}
+.eps-exp-list span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  border-radius: var(--r-2xs);
+  font-size: 9.5px;
+}
+.eps-exp-list span svg {
+  flex: none;
+  color: var(--w11-folder);
+}
+.eps-exp-list i {
+  flex: 1;
+  min-width: 0;
+  font-style: normal;
+  color: var(--w11-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.eps-exp-list em {
+  flex: none;
+  font-style: normal;
+  font-size: 9px;
+  color: var(--w11-mute);
+}
+.eps-exp-hd {
+  padding-bottom: 5px !important;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--w11-line);
+}
+.eps-exp-hd i,
+.eps-exp-hd em {
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  color: var(--w11-mute) !important;
+}
+
+/* ============================================================
+   CHROME (Windows) — brand-accurate depiction.
+
+   Literal hex only, deliberately NOT theme tokens: her Chrome is a
+   light Chrome in both site themes, because that is what Chrome
+   looks like on the laptop this page is describing. Values are
+   Chrome's own — #DEE1E6 tab strip, #F1F3F4 omnibox, #202124 ink,
+   #E81123 close-button hover (that one is Windows', not Chrome's).
+   ============================================================ */
+.eps-win--chrome {
+  --crm-strip: #dee1e6;
+  --crm-tab: #ffffff;
+  --crm-bar: #ffffff;
+  --crm-omni: #f1f3f4;
+  --crm-ink: #202124;
+  --crm-dim: #5f6368;
+  --crm-faint: #80868b;
+  --crm-off: #bdc1c6;
+  --crm-line: #dadce0;
+  --crm-hover: rgba(0, 0, 0, 0.06);
+  --crm-close: #e81123;
+
+  background: var(--crm-bar);
+  color: var(--crm-ink);
+}
+
+/* ---- tab strip ---- */
+.eps-crm-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex: none;
+  height: 31px;
+  padding: 0 0 0 10px;
+  background: var(--crm-strip);
+}
+/* the active tab: a white rounded-top card whose bottom corners flare
+   OUT into the strip. Those two feet are the single most recognisable
+   thing about a Chrome window, and they are two radial gradients
+   rather than an SVG so they follow the tab's own colour. */
+.eps-crm-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  max-width: 176px;
+  padding: 0 5px 0 9px;
+  border-radius: 8px 8px 0 0;
+  background: var(--crm-tab);
+  font-size: 10px;
+  color: var(--crm-ink);
+}
+.eps-crm-tab::before,
+.eps-crm-tab::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+}
+.eps-crm-tab::before {
+  left: -8px;
+  background: radial-gradient(circle at 0 0, transparent 0 8px, var(--crm-tab) 8px);
+}
+.eps-crm-tab::after {
+  right: -8px;
+  background: radial-gradient(circle at 100% 0, transparent 0 8px, var(--crm-tab) 8px);
+}
+/* the fallback favicon on a tab that never loaded — Chrome's grey
+   globe, not our mark */
+.eps-crm-fav {
+  flex: none;
+  color: var(--crm-faint);
+}
+.eps-crm-tab b {
+  min-width: 0;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.eps-crm-tabx {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--crm-dim);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.eps-crm-tabx:hover {
+  background: var(--crm-hover);
+}
+.eps-crm-new {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin: 0 0 3px 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--crm-dim);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.eps-crm-new:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+.eps-crm-wc {
+  margin-left: auto;
+  align-self: stretch;
+  display: flex;
+  flex: none;
+}
+.eps-crm-wc button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--crm-ink);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.eps-crm-wc button:hover {
+  background: rgba(0, 0, 0, 0.09);
+}
+.eps-crm-wc button.x:hover {
+  background: var(--crm-close);
+  color: #fff;
+}
+
+/* ---- toolbar ---- */
+.eps-crm-bar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex: none;
+  height: 34px;
+  padding: 0 6px;
+  background: var(--crm-bar);
+}
+.eps-crm-nb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--crm-dim);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+button.eps-crm-nb:hover {
+  background: var(--crm-hover);
+}
+/* forward is dimmed, because there is nowhere forward to go */
+.eps-crm-nb.is-off {
+  color: var(--crm-off);
+  cursor: default;
+}
+.eps-crm-omni {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  margin: 0 5px;
+  padding: 0 9px;
+  border-radius: var(--r-pill);
+  background: var(--crm-omni);
+  font-size: 10px;
+  color: var(--crm-dim);
+}
+.eps-crm-omni > svg {
+  flex: none;
+  color: var(--crm-dim);
+}
+.eps-crm-url {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the domain is the dark half and the path is grey — the one piece of
+   omnibox typography everybody can read at a glance */
+.eps-crm-url b {
+  font-weight: 400;
+  color: var(--crm-ink);
+}
+.eps-crm-tools {
+  flex: none;
+  display: inline-flex;
+  gap: 1px;
+  border-radius: var(--r-pill);
+}
+.eps-crm-tools button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--crm-dim);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.eps-crm-tools button:hover {
+  background: var(--crm-hover);
+  color: var(--crm-ink);
+}
+.eps-crm-ext,
+.eps-crm-kebab {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 22px;
+  color: var(--crm-dim);
+}
+.eps-crm-av {
+  flex: none;
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0 2px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+}
+.eps-win--chrome button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* ---- bookmarks bar: where the network filter actually happens ---- */
+.eps-crm-bm {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  height: 27px;
+  padding: 0 8px;
+  background: var(--crm-bar);
+  border-bottom: 1px solid var(--crm-line);
+}
+.eps-bm {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  border: 0;
+  border-radius: var(--r-2xs);
+  background: transparent;
+  font-size: 10px;
+  color: var(--crm-ink);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.eps-bm svg {
+  flex: none;
+  color: var(--crm-dim);
+}
+.eps-bm:hover {
+  background: var(--crm-hover);
+}
+.eps-bm.is-denied,
+.eps-bm.is-denied svg {
+  color: var(--crm-close);
+}
+.eps-bm.is-denied {
+  text-decoration: line-through;
+}
+
+/* ---- the page ---- */
+.eps-crm-page {
+  flex: 1;
+  min-height: 98px;
+  padding: 11px 12px;
+  background: var(--crm-bar);
+  overflow: hidden;
+}
+.eps-page-h {
+  margin: 0 0 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--crm-ink);
+}
+.eps-page-r {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--crm-line);
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  color: var(--crm-dim);
+}
+.eps-page-n {
+  margin: 9px 0 0;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--crm-faint);
+}
+/* the deny is Chrome's own error page, not a badge we invented — a
+   filtered domain does not resolve, and this is what that looks like */
+.eps-err {
+  display: grid;
+  gap: 5px;
+  justify-items: start;
+}
+.eps-err-ic {
+  color: var(--crm-off);
+}
+.eps-err-h {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--crm-ink);
+}
+.eps-err-p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--crm-dim);
+}
+.eps-err-p b {
+  font-weight: 500;
+  color: var(--crm-ink);
+}
+.eps-err-c {
+  margin: 5px 0 0;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--crm-faint);
+}
+
+/* ============================================================
+   THE HINT CHIP
+
+   Sits low-left, above the taskbar and clear of the notification at
+   the other corner. role="status" in the markup — the arrow and the
+   pulse are for the eye, the sentence is for everybody.
+   ============================================================ */
+.eps-hintbox {
+  position: absolute;
+  z-index: 36;
+  left: 10px;
+  bottom: 48px;
+  max-width: 54%;
+}
+.eps-hintchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  background: var(--scr-panel);
+  box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.85);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  line-height: 1.35;
+  letter-spacing: 0.03em;
+  color: var(--scr-ink);
+  animation: eps-hint-in 300ms var(--ease) both;
+}
+.eps-hintchip svg {
+  flex: none;
+  color: var(--accent);
+}
+@keyframes eps-hint-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ============================================================
+   TASKBAR — Windows 11 dark glass, centred pinned row
+   ============================================================ */
+.eps-taskbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  height: 38px;
+  border-top: 1px solid var(--scr-line);
+  background: var(--scr-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.eps-tbc {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.eps-tbtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: var(--r-2xs);
+  background: transparent;
+  color: var(--scr-dim);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+span.eps-tbtn {
+  cursor: default;
+}
+.eps-tbtn:hover {
+  background: var(--scr-hover);
+}
+.eps-tbtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* the agent is pinned and always running — a white tile so the brand
+   mark reads as itself, and an accent underline that never goes out */
+.eps-tbtn--pin {
+  background: rgba(243, 241, 239, 0.94);
+}
+.eps-tbtn--pin:hover {
+  background: #fff;
+}
+.eps-tbtn.active {
+  background: rgba(243, 241, 239, 0.18);
+}
+.eps-tbtn--pin::after,
+.eps-tbtn.run::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  translate: -50% 0;
+  /* full active width; inactive shrinks via scaleX so the grow
+     animates on transform, not layout */
+  width: 15px;
+  height: 2.5px;
+  border-radius: var(--r-hair);
+  background: rgba(243, 241, 239, 0.55);
+  transform: scaleX(0.33);
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.eps-tbtn--pin::after,
+.eps-tbtn.active::after {
+  transform: scaleX(1);
+  background: var(--accent);
+}
+.eps-tray {
+  position: absolute;
+  right: var(--sp-3);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eps-trayi {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-2xs);
+  color: var(--scr-mute);
+}
+.eps-trayi.on {
+  color: var(--accent);
+}
+.eps-clock {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  font-family: var(--mono);
+  line-height: 1;
+  color: var(--scr-dim);
+}
+.eps-clock b {
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  color: var(--scr-ink);
+}
+.eps-clock em {
+  font-style: normal;
+  font-size: 8px;
+  color: var(--scr-mute);
+}
+
+/* ---------- the watermark, composing over everything ---------- */
+.eps-wm {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
+}
+.eps-wm-grid {
+  position: absolute;
+  left: -30%;
+  top: -30%;
+  width: 160%;
+  height: 160%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 26px 34px;
+  rotate: -22deg;
+}
+.eps-wm-grid span {
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  /* legibility budget: the overlay has to be unmistakably THERE in a
+     screen photo and unmistakably NOT in the way of reading the
+     windows under it. It composes over a WHITE Chrome window and a
+     plum wallpaper in the same frame, so neither a light tint nor a
+     dark one works — only a mid-tone does both, and the brand orange
+     is the mid-tone this product would actually stamp. */
+  color: rgba(255, 106, 44, 0.5);
+}
+
+/* ---------- the closed session ---------- */
+.eps-lock {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-4);
+  background: rgba(16, 12, 22, 0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.eps-lock.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+.eps-lock-mark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-sm);
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(243, 241, 239, 0.4), 0 14px 30px -18px rgba(0, 0, 0, 0.9);
+}
+.eps-lock p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  letter-spacing: 0.1em;
+  color: var(--scr-ink);
+}
+.eps-restart {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px var(--sp-4);
+  border: 1px solid var(--scr-line);
+  border-radius: var(--r-pill);
+  background: rgba(243, 241, 239, 0.1);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--scr-ink);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.eps-restart:hover {
+  border-color: var(--accent);
+  background: rgba(243, 241, 239, 0.16);
+}
+.eps-restart:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- the notification ----------
+   Rides ABOVE the watermark (30) so a refusal stays legible when the
+   two controls compose, and below the lock screen (40) because a
+   closed session has nothing left to notify about. Windows-style
+   dark glass, because it is a system notification on a dark desktop
+   and not a card on our page. */
+.eps-toastbox {
+  position: absolute;
+  z-index: 35;
+  right: var(--sp-3);
+  bottom: 48px;
+  width: min(258px, 52%);
+}
+.eps-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--scr-line);
+  border-radius: var(--r-sm);
+  background: var(--scr-panel);
+  box-shadow: 0 16px 34px -18px rgba(0, 0, 0, 0.9);
+  animation: eps-toast-in 320ms var(--ease) both;
+}
+.eps-toast.deny {
+  border-color: color-mix(in srgb, var(--scr-deny) 45%, transparent);
+}
+.eps-toast-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-sm);
+  color: var(--scr-allow);
+  background: color-mix(in srgb, var(--scr-allow) 20%, transparent);
+}
+.eps-toast.deny .eps-toast-ic {
+  color: var(--scr-deny);
+  background: color-mix(in srgb, var(--scr-deny) 20%, transparent);
+}
+.eps-toast-tx {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.eps-toast-tx b {
+  font-size: var(--fs-3xs);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--scr-ink);
+}
+.eps-toast-tx em {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--scr-mute);
+}
+
+@keyframes eps-toast-in {
+  from {
+    opacity: 0;
+    translate: 16px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ---------- captions ---------- */
+.eps-hint {
+  margin: 0;
+  max-width: 68ch;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--tx-dim);
+}
+.eps-boot {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  margin: 0;
+  padding: 6px var(--sp-4);
+  border: 1px solid var(--scr-line);
+  border-radius: var(--r-pill);
+  background: var(--scr-panel);
+  font-family: var(--mono);
+  font-size: var(--fs-mono-xs);
+  letter-spacing: 0.1em;
+  color: var(--scr-dim);
+}
+
+/* ============================================================
+   RESPONSIVE — and then, below 920, GONE
+
+   There are only two states. Between 920 and about 1000 the rail
+   stops sitting beside the desktop and stacks over it; the windows
+   move in a little to match the narrower stage. Below 920, or on any
+   coarse pointer, the whole section leaves.
+
+   THE SIMULATOR IS DESKTOP-ONLY BY DECISION, not by neglect. It
+   depicts overlapping windows on a taskbar'd desktop, it is driven by
+   hover and by a right-hand notification corner, and a phone-sized
+   version of that is a picture of a desktop rather than a thing you
+   can use. The six cards above already carry the argument on a phone,
+   in their static resolved frames.
+
+   Hiding the SECTION (not just the shell) is what makes this free:
+   the heading, the still and the reserved height all go with it, so a
+   phone paints nothing and shifts nothing. The matching JS gate in
+   EndpointSimSection keeps the lazy chunk from being fetched at all —
+   this rule and that constant have to stay in step.
+   ============================================================ */
+@media (max-width: 1000px) {
+  .eps-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .eps-win--note {
+    left: 6%;
+    width: min(300px, 54%);
+  }
+  .eps-win--chrome {
+    left: 28%;
+    width: min(420px, 70%);
+  }
+  .eps-win--exp {
+    left: 12%;
+    width: min(320px, 58%);
+  }
+}
+
+@media (max-width: 919.98px), (pointer: coarse) {
+  .ep-sec--sim {
+    display: none;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION — the toast still appears, it just stops sliding,
+   the hint still appears, its ring just stops pulsing, and every
+   switch/knob transition is dropped. `.is-still` carries the same
+   rules for the SSR placeholder, which must never animate.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .eps-toast,
+  .eps-hintchip {
+    animation: none;
+  }
+  .eps-screen .is-pulse::after {
+    animation: none;
+    opacity: 1;
+  }
+  .eps-ctl,
+  .eps-ctl-ic,
+  .eps-sw,
+  .eps-sw i,
+  .eps-lock,
+  .eps-di,
+  .eps-bm,
+  .eps-tools button,
+  .eps-tbtn,
+  .eps-tbtn::after,
+  .eps-w11wc > button,
+  .eps-crm-nb,
+  .eps-crm-tools button,
+  .eps-crm-wc button,
+  .eps-restart {
+    transition: none;
+  }
+}
+.eps-shell.is-still .eps-toast,
+.eps-shell.is-still .eps-hintchip {
+  animation: none;
+}
+.eps-shell.is-still .is-pulse::after {
+  animation: none;
+  opacity: 1;
+}

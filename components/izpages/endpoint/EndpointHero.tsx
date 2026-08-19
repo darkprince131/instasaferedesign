@@ -1071,8 +1071,16 @@ export function EndpointHero() {
                 Book a Demo
               </a>
             </Magnetic>
-            <a href="#controls" className="iz-btn iz-btn-ghost">
-              See the six controls ↓
+            {/* the simulator, not the card grid: "try" means the live
+                desktop the reader can actually flip switches on.
+
+                It therefore goes when the simulator does. Below 920 /
+                on a coarse pointer the target section is display:none
+                (see the foot of endpointsim.css), and a jump link to a
+                hidden anchor is worse than no link — it looks broken.
+                One class, hidden by the same query, no JS. */}
+            <a href="#simulator" className="iz-btn iz-btn-ghost ep-cta-sim">
+              Try the controls ↓
             </a>
           </div>
         </div>

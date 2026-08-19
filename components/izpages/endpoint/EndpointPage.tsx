@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Certificate, Prohibit, UsersThree } from "@phosphor-icons/react";
 
 import { ChatFaq } from "@/components/home2/ChatFaq";
-import { ConsoleRow } from "@/components/home2/ConsoleRow";
 import { FilterStream } from "@/components/home2/FilterStream";
 import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
@@ -17,8 +16,9 @@ import { EndpointControls } from "@/components/izoutcomes/artifacts/EndpointCont
 import { IzOutcomes } from "@/components/izpages/pro/IzOutcomes";
 import { izFontVars } from "@/lib/iz-fonts";
 
+import { EndpointCards } from "./EndpointCards";
 import { EndpointHero } from "./EndpointHero";
-import { EpApps, EpChrome, EpClipboard, EpIdle, EpNetwork, EpWatermark } from "./EndpointScenes";
+import { EndpointSimSection } from "./EndpointSimSection";
 
 /* ============================================================
    /platform/endpoint-controls — A2 PLATFORM LIGHT.
@@ -124,7 +124,13 @@ export function EndpointPage() {
         </div>
       </section>
 
-      {/* ---------------- THE SIX CONTROLS ---------------- */}
+      {/* ---------------- THE SIX CONTROLS ----------------
+          Was six ConsoleRow tables. They said the right things and
+          none of them moved, which is exactly the note the client
+          gave: the reference GIFs are little desktop movies and this
+          section was a spreadsheet. Same six claims, now as the
+          hover-played card grid (00an grammar, the pattern the SSO
+          page uses) with a mini desktop inside each. */}
       <section className="ep-sec ep-sec--alt" id="controls">
         <div className="iz-wrap">
           <div className="ep-head">
@@ -133,125 +139,19 @@ export function EndpointPage() {
               Six things a session <em>will not do for you</em>.
             </h2>
             <p>
-              Each one is a policy on an application and a user group, not a switch on a laptop. Turn a control on for
-              the HR system and off for the sales tool, and the same person gets both answers in the same afternoon.
+              Each control is a policy on an application and a user group, not a switch on a laptop. Hover any card to
+              watch it enforce. Nothing here needs an agent rebuild, a proxy in front of the app, or a ticket queue.
             </p>
           </div>
 
-          <div className="ep-rows">
-            <ConsoleRow
-              eyebrow="Clipboard controls"
-              title={
-                <>
-                  The copy that <em>never leaves</em>.
-                </>
-              }
-              body="Block copy/paste and clipboard access for designated applications; block screen-capture and screen-recording actions initiated through the governed session context."
-              facts={[
-                ["Scope", "The InstaSafe session, not the OS at large"],
-                ["Set on", "Per application, per user group"],
-              ]}
-              ctaLabel="See how DLP fits"
-              ctaHref="/solutions/data-loss-prevention"
-            >
-              <EpClipboard />
-            </ConsoleRow>
-
-            <ConsoleRow
-              reverse
-              eyebrow="Watermark protection"
-              title={
-                <>
-                  A screen photo that <em>names the photographer</em>.
-                </>
-              }
-              body="Logo/text overlay rendered over on-screen content — every screen photo identifies its viewer."
-              facts={[
-                ["Carries", "User · session ID · timestamp"],
-                ["Rendered", "Over the session, not into the file"],
-              ]}
-              ctaLabel="Inside the secure browser"
-              ctaHref="/platform/secure-browser"
-            >
-              <EpWatermark />
-            </ConsoleRow>
-
-            <ConsoleRow
-              eyebrow="Network filter"
-              title={
-                <>
-                  Where the session <em>is allowed to reach</em>.
-                </>
-              }
-              body="Block specified domains/IPs per user group during sessions."
-              facts={[
-                ["Filters", "Domains and IP ranges"],
-                ["Applies", "For the duration of the session"],
-              ]}
-              ctaLabel="How the policy engine decides"
-              ctaHref="/platform/trust-engine"
-            >
-              <EpNetwork />
-            </ConsoleRow>
-
-            <ConsoleRow
-              reverse
-              eyebrow="App filter"
-              title={
-                <>
-                  The recorder that <em>will not start</em>.
-                </>
-              }
-              body="Block launching specified local applications during sensitive sessions."
-              facts={[
-                ["Scope", "Named local applications"],
-                ["Duration", "Only while the session is open"],
-              ]}
-              ctaLabel="Third-party and vendor access"
-              ctaHref="/solutions/third-party-access"
-            >
-              <EpApps />
-            </ConsoleRow>
-
-            <ConsoleRow
-              eyebrow="Chrome control"
-              title={
-                <>
-                  The browser, <em>minus the exits</em>.
-                </>
-              }
-              body="Restrict downloads, developer tools, and printing of browser content in governed browsing."
-              facts={[
-                ["Removes", "Download · dev tools · print"],
-                ["Keeps", "The application itself, fully usable"],
-              ]}
-              ctaLabel="The secure enterprise browser"
-              ctaHref="/platform/secure-browser"
-            >
-              <EpChrome />
-            </ConsoleRow>
-
-            <ConsoleRow
-              reverse
-              eyebrow="Inactivity timeout"
-              title={
-                <>
-                  The unattended desk, <em>closed</em>.
-                </>
-              }
-              body="Idle or low-transfer sessions disconnect automatically — the unattended-desk risk, closed."
-              facts={[
-                ["Trigger", "Idle time or low transfer"],
-                ["Result", "Session disconnects, event logged"],
-              ]}
-              ctaLabel="Session controls in ZTAA"
-              ctaHref="/zero-trust-application-access"
-            >
-              <EpIdle />
-            </ConsoleRow>
-          </div>
+          <EndpointCards />
         </div>
       </section>
+
+      {/* ---------------- THE SIMULATOR ----------------
+          Below the fold, client-only and lazy: see
+          EndpointSimSection for the still that holds its space. */}
+      <EndpointSimSection />
 
       <IzQuietBand statement="The session ends." emphasis="The evidence" tail="stays." />
 

@@ -24,6 +24,7 @@ import "@/components/izoutcomes/illustrations.css";
 import "@/components/izanswer/answers.css";
 import "@/components/home2/izfootergrid.css";
 import "@/components/izpages/endpoint/endpoint.css";
+import "@/components/izpages/endpoint/endpointsim.css";
 
 /* Metadata carries over unchanged from the lib/site-ia.ts record this
    route replaced, so nothing that already links here changes meaning. */
