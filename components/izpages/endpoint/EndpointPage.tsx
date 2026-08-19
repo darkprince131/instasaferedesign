@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Certificate, Prohibit, UsersThree } from "@phosphor-icons/react";
 
 import { ChatFaq } from "@/components/home2/ChatFaq";
-import { FilterStream } from "@/components/home2/FilterStream";
 import { IzAnswerStrip } from "@/components/home2/IzAnswerStrip";
 import { IzFinalCta } from "@/components/home2/IzFinalCta";
 import { IzFooterGrid } from "@/components/home2/IzFooterGrid";
@@ -199,7 +198,12 @@ export function EndpointPage() {
         </div>
       </section>
 
-      <FilterStream href="/zero-trust-application-access" />
+      {/* FilterStream ("21 rule combinations · Detailed access rules") used
+          to sit here. It is a policy-authoring pitch, and this page is about
+          what the session does AFTER a policy has let someone in — the card
+          answered a question the page had already moved past. ZTAA dropped
+          the same card for its own reasons; it now survives on the homepage
+          and /platform/iam, where authoring a rule IS the subject. */}
 
       {/* ---------------- RELATED ---------------- */}
       <section className="ep-sec ep-sec--tight">

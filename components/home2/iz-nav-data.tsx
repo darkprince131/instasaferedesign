@@ -161,6 +161,7 @@ export const PANES: Pane[] = [
         items: [
           { t: "Zero Trust Network Access", d: "Users reach the app, never the network behind it", href: "/zero-trust-network-access", Icon: Lock },
           { t: "Zero Trust Application Access", d: "Web, SSH, RDP and thick clients under one policy", href: "/zero-trust-application-access", Icon: AppWindow },
+          { t: "Endpoint Controls", d: "What the session allows after access is granted", href: "/platform/endpoint-controls", Icon: ClipboardText },
           { t: "Platform Overview", d: "How the whole console fits together", href: "/platform", Icon: Compass },
         ],
       },

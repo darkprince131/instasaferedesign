@@ -41,6 +41,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Device Posture Check", href: "/zero-trust-features/device-posture-check" },
       { label: "Zero Trust Network Access", href: "/zero-trust-network-access" },
       { label: "Zero Trust Application Access", href: "/zero-trust-application-access" },
+      { label: "Endpoint Controls", href: "/platform/endpoint-controls" },
       { label: "Platform Overview", href: "/platform" },
       { label: "Integrations", href: "/integrations" },
     ],
