@@ -1,1 +1,1 @@
-Isometric illustration: a verified user's laptop routes into a ZERO TRUST decision panel and on to the permitted estate, while a crossed-out cluster above is captioned NETWORK NOT ACCESSIBLE.
+Isometric illustration: a laptop reading USER DEVICE routes into a ZERO TRUST panel and on to an ERP console reading ACCESS GRANTED, while a greyed, crossed-out cluster of servers floats unreachable above the flow.

@@ -38,8 +38,11 @@ from gen_scene_kit import (  # noqa: F401  (the kit IS the vocabulary)
     iso, P, rrect, circ,
     prism, body, bandprism, face, pad, quad, plane3, panel,
     route, trace, ghost_stack, xmark, glow_ring, laptop,
-    panel_svg, mono, tick, shield,
-    label_box, poly_area, xml_esc, SCREEN_INSET,
+    panel_svg, mono, mono_width, MONO_ADV, tick, shield,
+    screen_canvas, screen_caption,
+    label_box, poly_area, xml_esc, xml_unesc, SCREEN_INSET,
+    CARD_SCENE_W, CARD_PX, cardpx, MIN_TEXT_PX, CAP_TEXT_PX,
+    PANEL_PROJ, SCREEN_PROJ, FLAT_PROJ,
     ztna_flow, mfa_hub, set_fingerprint,
 )
 
@@ -53,7 +56,7 @@ MIN_STATION_GAP = 24.0  # fix C: scene-units, bbox to bbox
 MIN_CLEAR_PX = 12.0     # fix C: projected px, label/panel to other silhouettes
 MIN_SCREEN_RATIO = 1.15  # fix A: projected screen quad vs deck top
 TEXT_PAD = 6.0           # local px a string must keep from its plate's edge
-MONO_ADV = 0.60          # monospace advance as a fraction of font-size
+# MIN_TEXT_PX / CAP_TEXT_PX / cardpx come from the kit — see gen_scene_kit.
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -259,32 +262,85 @@ def scene_svg_file(sc):
             % (vb, sc.name, x0, y0, x1, y1, C["bg"], sc.body()))
 
 
-def scene_text(sc, x, y, z, lines, o=1.7, size=12.5, fill=None, lead=17):
+def scene_text(sc, x, y, z, lines, o=1.7, px=15.0, fill=None):
     """Bare mono caps set straight into the scene (the kit's DENIED label
-       idiom), with the bounding box actually marked."""
+       idiom), sized in finished-card px, with the bounding box marked.
+       No surface, so no foreshortening — FLAT_PROJ."""
+    size = cardpx(px, FLAT_PROJ)
+    lead = size * 1.38
     tx, ty = iso(x, y, z)
     s = ""
     for i, t in enumerate(lines):
-        s += mono(tx, ty + i * lead, t, size, fill or C["mid"], 700, ".1em")
+        s += mono(tx, ty + i * lead, t, size, fill or C["mid"], 700, ".08em")
     sc.add(o, s)
-    label_box(sc, tx, ty - size, max(len(t) for t in lines) * size * 0.62,
-              lead * (len(lines) - 1) + size + 3, " ".join(lines))
+    label_box(sc, tx, ty - size * 0.80,
+              max(mono_width(t, size, ".08em") for t in lines),
+              lead * (len(lines) - 1) + size * 1.02, " ".join(lines))
 
 
-def cap_panel(sc, x, y, z_top, l1, l2, o=20, w=158, h=60, green=False, glyph=""):
+def cap_dims(l1, l2, green=False):
+    """(w, h, size) for a caption plate — THE TYPE DECIDES THE PLATE.
+
+    It used to be the other way round: a fixed 158x60 plate with the type
+    stepped down to 11 units whenever either word ran past ten characters.
+    That rule is what set AWARDS & / RECOGNITION and APPLICATION / ACCESS
+    at 11.7 and 10.6 rendered px — the two least readable primary labels in
+    the set — while ONE / PLATFORM on an identical plate got 13.7. A label
+    that shrinks as its word grows is backwards. Now the size is fixed in
+    card pixels and the plate is built around whatever that costs."""
+    size = cardpx(CAP_TEXT_PX)
+    tw = max(mono_width(l1, size, ".10em"), mono_width(l2, size, ".10em"))
+    w = math.ceil(17.0 + tw + (26.0 if green else 12.0))
+    h = math.ceil(size * 2.55 + 20.0)
+    return w, h, size
+
+
+def cap_panel(sc, x, y, z_top, l1, l2, o=20, w=None, h=None, green=False,
+              glyph="", tag="cap"):
     """Rule 10 label: mono caps, two lines, second line orange, orange
        spine bar. Optional single green verdict tick."""
-    size = 14.0 if max(len(l1), len(l2)) <= 10 else 11.0
-    inner = '<rect x="0" y="10" width="3.2" height="%.1f" rx="1.6" fill="%s"/>' % (h - 20, C["acc"])
+    dw, dh, size = cap_dims(l1, l2, green)
+    w = dw if w is None else w
+    h = dh if h is None else h
+    base = (h - size * 1.45) / 2.0 + size * 0.30
+    inner = ('<rect x="0" y="%.1f" width="3.2" height="%.1f" rx="1.6" fill="%s"/>'
+             % (h * 0.16, h * 0.68, C["acc"]))
     inner += glyph
-    inner += mono(17, h * 0.44, l1, size, C["ink"], 700, ".10em")
-    inner += mono(17, h * 0.44 + size * 1.45, l2, size, C["acc"], 700, ".10em")
+    inner += mono(17, base, l1, size, C["ink"], 700, ".10em")
+    inner += mono(17, base + size * 1.45, l2, size, C["acc"], 700, ".10em")
     if green:
-        inner += tick(w - 19, h - 17, 9.5)
-    panel(sc, x, y, z_top, w, h, panel_svg(w, h, inner, 8), o)
+        inner += tick(w - 15, h - 14, 9.5)
+    panel(sc, x, y, z_top, w, h, panel_svg(w, h, inner, 8), o, tag=tag)
 
 
-def cap_side(sc, l1, l2, o=20, w=158, h=60, green=False, glyph="",
+def _hull(pts):
+    """Monotone-chain convex hull — the plinth outline the caption plate
+       has to stay off."""
+    pts = sorted(set((round(x, 3), round(y, 3)) for x, y in pts))
+    if len(pts) < 3:
+        return pts
+
+    def half(seq):
+        out = []
+        for p in seq:
+            while len(out) > 1 and ((out[-1][0] - out[-2][0]) * (p[1] - out[-2][1]) -
+                                    (out[-1][1] - out[-2][1]) * (p[0] - out[-2][0])) <= 0:
+                out.pop()
+            out.append(p)
+        return out[:-1]
+    return half(pts) + half(pts[::-1])
+
+
+def pad_silhouette(p):
+    """A plinth's projected outline: its footprint at ground level and at
+       deck level, hulled together. Everything between the two is body."""
+    x, y, w, d = p["fp"]
+    fp = rrect(x, y, w, d, 0)
+    return _hull([iso(px, py, 0) for px, py in fp] +
+                 [iso(px, py, p["z"]) for px, py in fp])
+
+
+def cap_side(sc, l1, l2, o=20, w=None, h=None, green=False, glyph="",
              target=None, drop=62):
     """PEDESTAL convention: the label is a plate at the subject's lower
        LEFT, not a caption underneath it. A single tall subject otherwise
@@ -307,19 +363,42 @@ def cap_side(sc, l1, l2, o=20, w=158, h=60, green=False, glyph="",
        allowed to relocate artwork.
 
        scene_pad depends on the box the placement is deciding, so the two
-       are solved together — four passes converge to well under a unit."""
+       are solved together — four passes converge to well under a unit.
+
+       CLEARANCE. The aspect solve says how far out the FRAME wants the
+       plate; it says nothing about what is already there. On
+       /platform/endpoint-controls and /zero-trust-features/
+       device-posture-check the two answers disagreed and the plate landed
+       on the plinth's front-left face — the client flagged both. So the
+       aspect placement is now the opening bid: the plate steps out and
+       down in 8-unit increments until its projected quad clears every
+       plinth silhouette by MIN_CLEAR_PX, and audit C re-proves it
+       afterwards on the shipped geometry."""
     target = CAP_SIDE_STANDOFF if target is None else target
+    dw, dh, _size = cap_dims(l1, l2, green)
+    w = dw if w is None else w
+    h = dh if h is None else h
+    sil = [pad_silhouette(p) for p in sc.pads]
     x0, x1, y0, y1 = sc.bx
     lh = SIN30 * w + h
-    Hc = (y1 - y0) + drop              # content height once the plate is down
     Wc = x1 - x0
-    want_w, Wf = Wc, Wc
-    for _ in range(4):
-        pad_ = scene_pad(Wf, Hc)
-        want_w = target * (Hc + pad_ * 2) - pad_ * 2
-        Wf = max(Wc, want_w)
-    sx = x0 - max(0.0, want_w - Wc)
-    sy = y1 + drop - lh
+    sx = sy = 0.0
+    for step in range(0, 26):
+        extra = step * 8.0
+        Hc = (y1 - y0) + drop + extra   # content height once the plate is down
+        want_w, Wf = Wc, Wc
+        for _ in range(4):
+            pad_ = scene_pad(Wf, Hc)
+            want_w = target * (Hc + pad_ * 2) - pad_ * 2
+            Wf = max(Wc, want_w)
+        sx = x0 - max(0.0, want_w - Wc) - extra
+        sy = y1 + drop + extra - lh
+        quad_ = [(sx, sy), (sx + w * COS30, sy + w * SIN30),
+                 (sx + w * COS30, sy + w * SIN30 + h), (sx, sy + h)]
+        if all(_poly_dist(quad_, s) >= MIN_CLEAR_PX for s in sil):
+            break
+    else:
+        raise AssertionError("%s: caption plate never cleared the plinths" % sc.name)
     yw = 340.0
     xw = yw + sx / COS30
     zw = (xw + yw) / 2.0 - sy
@@ -338,13 +417,29 @@ def led_strip(sc, x, y_front, w, z_lo, z_hi, n=6, lit=(1, 4), o=0):
                   (cx + lw, y_front, z_hi), (cx, y_front, z_hi)], col, o=o)
 
 
-def chip_svg(w, h, t, hot=False):
-    """Tiny mono chip label for a module tower face."""
-    fs = min(12.0, (w - 8.0) / max(1.0, len(t) * 0.74))
+CHIP_LS = ".06em"
+
+
+def chip_dims(t, px=15.0):
+    """(w, h, size) for a chip that carries `t` at `px` finished-card px.
+
+    The chip is sized around the type, not the type around the chip. The
+    old chip_svg capped itself at 12 units and then squeezed further to
+    fit, which is how the /platform module names — SSO, MFA, IAM, ZTNA,
+    the four words that scene exists to say — shipped at 11.8 px."""
+    fs = cardpx(px)
+    return (math.ceil(mono_width(t, fs, CHIP_LS) + 2 * TEXT_PAD + 4.0),
+            math.ceil(fs * 1.34 + 6.0), fs)
+
+
+def chip_svg(w, h, t, hot=False, fs=None):
+    """Tiny mono chip label for a module tower face. Pass the `fs` that
+       chip_dims returned for the same string."""
+    fs = cardpx(15.0) if fs is None else fs
     return ('<rect x="0.7" y="0.7" width="%.1f" height="%.1f" rx="2.6" fill="%s" '
             'stroke="%s" stroke-width="1"/>' % (w - 1.4, h - 1.4, C["screen"], C["edge"]) +
             mono(w / 2, h * 0.5 + fs * 0.36, t, fs,
-                 C["acc"] if hot else C["ink"], 700, ".06em", "middle"))
+                 C["acc"] if hot else C["ink"], 700, CHIP_LS, "middle"))
 
 
 def slab(sc, x, y, w, t, z0, hgt, content, o=0, inset=6.0, o_face=None):
@@ -501,20 +596,47 @@ def padlock(x, y, s=1.0, col=None):
 def watermark_svg(w, h, txt="INSTASAFE"):
     """The endpoint-controls screen: tiled watermark, the way a governed
        session actually looks. Clipped to the canvas: the tiles are wider
-       than the screen by design, and unclipped they spilled off the lid."""
+       than the screen by design, and unclipped they spilled off the lid.
+
+       AUDIT G EXEMPTION — data-texture="1". These fifteen tiles are one
+       word repeated on a -18 degree rake at 34% opacity, and they render
+       at 8.7 px. They are exempt on purpose, not by oversight: nobody is
+       meant to READ a watermark, and a reader who can make out one tile
+       has already understood the other fourteen. Enlarging them to 14 px
+       would turn a surface pattern into fifteen competing labels on a
+       104-unit screen. Anything on this screen that is meant to be read
+       — and after this pass there is nothing — is outside the group.
+
+       The GOVERNED SESSION title-bar caption is gone: 16 characters at
+       6.2 rendered px inside an 8-unit chrome bar. The bar keeps the
+       InstaSafe mark, which is a real brand mark and reads as one."""
     s = '<rect x="0" y="0" width="%d" height="%d" fill="%s"/>' % (w, h, C["screen"])
+
+    # PITCH COMES FROM THE TEXT, NOT FROM THE SCREEN. The first version
+    # tiled a fixed 3x5 grid: columns every w/2.6 = 40 units carrying a
+    # word 41 units wide, and rows every h/5.4 = 9.6 units carrying a run
+    # whose -18 degree rake alone spans tw*sin18 = 13 units. Every tile
+    # therefore sat on its neighbours, and at card scale the pattern read
+    # as garbled overlapping type — a rendering fault rather than a
+    # watermark. A watermark is only texture if the repeats do not
+    # collide.
     tiles = ""
-    for r_ in range(5):
-        for c_ in range(3):
-            x = 2 + c_ * (w / 2.6) + (r_ % 2) * (w / 5.2)
-            y = 15 + r_ * (h / 5.4)
+    size, rake = 7.0, math.radians(18)
+    adv = size * (0.5498 + 0.10)          # Consolas advance + the .10em tracking
+    tw = len(txt) * adv
+    px = tw * math.cos(rake) + 10          # horizontal footprint of a raked run
+    py = tw * math.sin(rake) + size + 7    # vertical footprint of the same run
+    cols, rows = int(math.ceil(w / px)) + 1, int(math.ceil(h / py)) + 1
+    for r_ in range(rows):
+        for c_ in range(cols):
+            x = -6 + c_ * px + (r_ % 2) * (px / 2)
+            y = 13 + r_ * py
             tiles += ('<g transform="translate(%.1f,%.1f) rotate(-18)" opacity=".34">%s</g>'
-                      % (x, y, mono(0, 0, txt, 7.0, C["mid"], 700, ".10em")))
+                      % (x, y, mono(0, 0, txt, size, C["mid"], 700, ".10em")))
     s += ('<clipPath id="wmclip"><rect x="0" y="0" width="%d" height="%d"/></clipPath>'
-          '<g clip-path="url(#wmclip)">%s</g>' % (w, h, tiles))
+          '<g data-texture="1" clip-path="url(#wmclip)">%s</g>' % (w, h, tiles))
     s += bar(4, 4, w - 8, 8, C["screen_dark"], 3)
     s += '<g transform="translate(6.5,4.6)">%s</g>' % iz_mark(6.8, 6.8)
-    s += mono(17, 10.6, "GOVERNED SESSION", 5.0, C["screen"], 700, ".10em")
     return s
 
 
@@ -525,47 +647,60 @@ def platform_hub():
     trace(sc, [(-70, -70), (300, -70), (300, 300), (-70, 300), (-70, -70)], o=0,
           nodes=[(-70, -70), (300, -70), (300, 300), (-70, 300)])
 
-    hd = pad(sc, 44, 44, 172, 172, 0, o=10, c=14, h1=10, hb=3.6, h2=7)
-    body(sc, rrect(58, 58, 144, 144, 11), hd, 4.5, o=10.5)
+    hd = pad(sc, 56, 56, 220, 220, 0, o=10, c=14, h1=10, hb=3.6, h2=7)
+    body(sc, rrect(70, 70, 192, 192, 11), hd, 4.5, o=10.5)
 
-    sats = [(-52, -52), (-60, 200), (200, -60), (240, 240)]
+    sats = [(-56, -56), (-60, 232), (232, -60), (312, 312)]
     for i, (sx, sy) in enumerate(sats):
         sd = pad(sc, sx, sy, 74, 64, 0, o=3 + i * .4, c=8, h1=5, hb=2.0, h2=3.5)
         face(sc, rrect(sx + 24, sy + 20, 26, 24, 3), sd + .05, "none",
              o=3 + i * .4 + .3, stroke=C["edge_soft"], sw=.9, op=.65)
 
-    # placed by PROJECTED separation, not scene-space tidiness: a square
+    # Placed by PROJECTED separation, not scene-space tidiness: a square
     # grid put IAM directly behind ZTNA on screen. On the diamond the three
-    # modules land at screen-x -61 / 0 / +61 with ZTNA forward at 0.
-    towers = [(100, 170, 42, "IAM"), (170, 100, 42, "MFA"),
-              (100, 100, 42, "SSO"), (170, 170, 76, "ZTNA")]
+    # modules land at screen-x -118 / 0 / +118 with ZTNA forward at 0.
+    #
+    # FIX G, in two parts. Each tower is now as wide as its own name needs
+    # at 15 card px, instead of the name being squeezed into whatever a
+    # 42-unit tower had left over — four module names is the whole point of
+    # this scene. And the diamond grew from a 70-unit half-diagonal to 132,
+    # which is what the enlargement exposed rather than caused: SSO sits at
+    # the same screen-x as ZTNA, so ZTNA's crown covered its chip. At 70
+    # the crown reached 19 units INTO the chip; at 132 it stops 20 units
+    # short of it. Audit G measured that chip at a passing 15 px the whole
+    # time, because a rendered size says nothing about what is drawn on top
+    # of it — which is why the contact sheet, not the table, is the test.
+    towers = [(98, 230, 42, "IAM"), (230, 98, 42, "MFA"),
+              (98, 98, 42, "SSO"), (230, 230, 76, "ZTNA")]
     for i, (cx, cy, hgt, tag) in enumerate(towers):
         hot = tag == "ZTNA"
-        tw = 52 if hot else 42
+        cw, ch, cfs = chip_dims(tag)
+        tw = cw
         o = 12 + (cx + cy) / 100.0
         body(sc, rrect(cx - tw / 2, cy - tw / 2, tw, tw, 4), hd + 4.5, hgt, o=o)
-        panel(sc, cx - tw / 2, cy + tw / 2, hd + 4.5 + hgt, tw, 17,
-              chip_svg(tw, 17, tag, hot), o=o + .05)
+        panel(sc, cx - tw / 2, cy + tw / 2, hd + 4.5 + hgt, tw, ch,
+              chip_svg(tw, ch, tag, hot, cfs), o=o + .05)
         if hot:
             glow_ring(sc, cx, cy, hd + 4.5 + hgt * .62, tw * .55,
                       o=o + .6, o_back=o - .4)
 
-    routes = [[(112, 46, hd + 3), (50, 8, 20), (2, -18, 12.5)],
-              [(58, 190, hd + 3), (22, 208, 20), (-16, 218, 12.5)],
-              [(202, 58, hd + 3), (214, 20, 20), (222, -18, 12.5)],
-              [(212, 194, hd + 3), (240, 218, 20), (266, 250, 12.5)]]
+    routes = [[(120, 56, hd + 3), (56, 16, 20), (4, -22, 12.5)],
+              [(56, 244, hd + 3), (20, 258, 20), (-14, 266, 12.5)],
+              [(276, 68, hd + 3), (292, 26, 20), (306, -14, 12.5)],
+              [(262, 276, hd + 3), (292, 306, 20), (322, 336, 12.5)]]
     for i, r in enumerate(routes):
         route(sc, r, o=18 + i * .1, dot_end=True)
 
-    # the real InstaSafe mark on the plinth's front apron
-    # the mark reads as a nameplate ON the plinth's front face; standing
-    # it up on the apron put it behind a tower
-    panel(sc, 112, 216, hd - 2, 60, 18, (
-        '<rect x="0" y="0" width="60" height="18" rx="4" fill="%s" stroke="%s" '
+    # The real InstaSafe mark on the plinth's front apron. It used to be a
+    # nameplate: mark plus the word INSTASAFE at 4.4 units, which rendered
+    # at 4.3 px — the smallest text in the whole set, and unnecessary,
+    # because the mark IS the wordless version of that word. The word went;
+    # the mark stayed and grew into the space.
+    panel(sc, 154, 276, hd - 2, 24, 24, (
+        '<rect x="0" y="0" width="24" height="24" rx="5" fill="%s" stroke="%s" '
         'stroke-width="1.1"/>' % (C["screen"], C["edge"]) +
-        '<g transform="translate(5,2.5)">%s</g>' % iz_mark(13, 13) +
-        mono(21, 12.4, "INSTASAFE", 4.4, C["ink"], 700, ".08em")), o=10.6)
-    cap_panel(sc, 170, 402, 30, "ONE", "PLATFORM", o=22, green=True)
+        '<g transform="translate(4.5,4.5)">%s</g>' % iz_mark(15, 15)), o=10.6)
+    cap_panel(sc, 200, 470, 26, "ONE", "PLATFORM", o=22, green=True)
     return sc
 
 
@@ -580,24 +715,30 @@ def solutions_flow():
         ghost_stack(sc, gx, gy, 6, o=1 + i * .1, w=62, d=54, tiers=3)
         xmark(sc, (gx + 31, gy + 10, 46), o=1.6 + i * .05, r=9.0)
         trace(sc, [(gx + 62, gy + 27), (100, 68 + i * 3)], o=1.4, z=24)
-    scene_text(sc, -100, -74, 12, ["DIFFERENT", "DOORS"], o=1.7, size=11.5, lead=15)
+    # Kept and enlarged rather than deleted. It is the counterweight that
+    # makes the scene read "many problems, one platform" instead of just
+    # "denial"; two words, glance length, and the only thing naming the
+    # ghost cluster's job.
+    scene_text(sc, -100, -74, 12, ["DIFFERENT", "DOORS"], o=1.7, px=15.0)
 
     jd = pad(sc, 100, 34, 86, 78, 0, o=6, c=10, h1=7, hb=2.6, h2=5)
     glow_ring(sc, 143, 73, jd + .4, 28, o=13.6, o_back=6.4)
 
     sd = pad(sc, 236, -66, 122, 110, 0, o=10, c=12, h1=9, hb=3.2, h2=6)
     body(sc, rrect(252, -50, 90, 78, 8), sd, 5, o=10.5)
+    SS = cardpx(15.0)          # the verdict — the one string on this console
     panel(sc, 250, 14, sd + 5 + 108, 106, 108, panel_svg(106, 108,
           bar(0, 0, 106, 15, C["screen_dark"], 7) + bar(0, 8, 106, 7, C["screen_dark"], 0) +
           "".join('<circle cx="%d" cy="7.5" r="2.1" fill="#8E8A84"/>' % (11 + i * 9)
                   for i in range(3)) +
           "".join('<rect x="%d" y="%d" width="11" height="11" rx="2.6" fill="none" stroke="%s" '
-                  'stroke-width="1.7"/>' % (13 + (i % 3) * 15, 26 + (i // 3) * 15, C["ink"])
+                  'stroke-width="1.7"/>' % (13 + (i % 3) * 15, 24 + (i // 3) * 15, C["ink"])
                   for i in range(6)) +
-          '<rect x="10" y="62" width="86" height="36" rx="5" fill="#EBF7EF" stroke="%s" '
+          '<rect x="8" y="56" width="90" height="46" rx="5" fill="#EBF7EF" stroke="%s" '
           'stroke-width="1.2"/>' % C["trace"] +
-          mono(18, 78, "IN", 9.4, C["ink"], 700) +
-          mono(18, 91, "SCOPE", 9.4, C["ink"], 700) + tick(78, 80, 10.5)), o=12)
+          mono(15, 56 + SS * 1.25, "IN", SS, C["ink"], 700) +
+          mono(15, 56 + SS * 2.55, "SCOPE", SS, C["ink"], 700) +
+          tick(84, 70, 10.5)), o=12)
 
     route(sc, [(143, 73, jd + 4), (196, 56, jd + 4), (236, 44, sd + 3)],
           o=13, cube_at=(143, 73, jd + 3), glow=.8)
@@ -611,14 +752,12 @@ def sso_flow():
     trace(sc, [(-110, 250), (10, 250), (10, 168), (240, 168)], o=0,
           nodes=[(-110, 250), (240, 168)])
 
+    # FIX G. The avatar glyph shared this lid with the two words at 10.5
+    # units — 9.3 rendered px. 88 units of screen holds a portrait OR a
+    # readable premise; the premise is what the page is about.
     d1 = pad(sc, -78, 148, 118, 106, 0, o=4, c=11)
-    laptop(sc, -64, 164, d1, o=5, w=88, d=42, screen_svg=(
-        '<rect x="7" y="8" width="20" height="20" rx="4" fill="none" stroke="%s" '
-        'stroke-width="2"/>' % C["ink"] +
-        '<circle cx="17" cy="16" r="4.3" fill="%s"/>' % C["ink"] +
-        '<path d="M11 27 q6 -7 12 0" fill="%s"/>' % C["ink"] +
-        mono(34, 17, "ONE", 10.5, C["acc"], 700) +
-        mono(34, 30, "LOGIN", 10.5, C["acc"], 700)))
+    laptop(sc, -64, 164, d1, o=5, w=88, d=42,
+           screen_svg=screen_caption(*screen_canvas(88), lines=["ONE", "LOGIN"]))
 
     gd = pad(sc, 76, 26, 96, 60, 0, o=8, c=10, h1=7, hb=2.6, h2=5)
     route(sc, [(38, 176, d1 + 2), (62, 132, 12), (76, 86, gd + 2)],
@@ -634,8 +773,9 @@ def sso_flow():
         'stroke="%s" stroke-width="2.4" stroke-linejoin="round"/>'
         % (dx, GH - 7, dx, dy + dw / 2, dw / 2, dw / 2, dx + dw, dy + dw / 2,
            dx + dw, GH - 7, C["acc_soft"], C["acc"]) +
-        bar(dx - 4, GH - 8.5, dw + 8, 3.2, C["acc"], 1.6) +
-        mono(GW / 2, 20, "GATE", 8.6, C["ink"], 700, ".14em", "middle")), o=9.4)
+        # "GATE" at 8.6 units (8.5 px) was a caption naming the drawing it
+        # sat on — a labelled picture of a gate. Deleted, not enlarged.
+        bar(dx - 4, GH - 8.5, dw + 8, 3.2, C["acc"], 1.6)), o=9.4)
 
     tiles = [(172, -118, "github"), (252, -64, "aws"), (316, 0, "gmail"),
              (338, 68, "figma"), (322, 148, "azure")]
@@ -668,25 +808,35 @@ def ztaa_flow():
         trace(sc, [a, b], o=1.4, z=z)
     for p in ((110, -152, 110), (204, -124, 102), (240, 28, 86)):
         xmark(sc, p, o=1.6)
-    scene_text(sc, -56, -140, 104, ["NETWORK", "NOT ACCESSIBLE"], o=1.7)
+    # NETWORK NOT ACCESSIBLE removed on the client's instruction — it read
+    # at 13.0 px here and 11.4 on /zero-trust-network-access, and rule 7
+    # already says the ghosted, crossed-out cluster carries that meaning.
 
+    # The console grew from 68 to 86 units wide so its verdict and its name
+    # can be set at a size that survives a feed; the tower under it grew to
+    # match. Everything else about the station is where it was.
     ad = pad(sc, 26, 26, 148, 132, 0, o=6, c=13, h1=10, hb=3.4, h2=7)
     glow_ring(sc, 100, 92, ad + 52, 52, o=8.6, o_back=7.4)
     body(sc, rrect(56, 52, 88, 80, 9), ad, 7, o=7)
-    body(sc, rrect(66, 62, 68, 60, 7), ad + 7, 104, o=7.5)
-    panel(sc, 66, 122, ad + 7 + 104, 68, 90, panel_svg(68, 90,
-          bar(0, 0, 68, 14, C["screen_dark"], 6) + bar(0, 8, 68, 6, C["screen_dark"], 0) +
+    body(sc, rrect(58, 56, 86, 72, 7), ad + 7, 104, o=7.5)
+    AV = cardpx(15.0)
+    AB = cardpx(21.0)
+    panel(sc, 58, 128, ad + 7 + 104, 86, 94, panel_svg(86, 94,
+          bar(0, 0, 86, 14, C["screen_dark"], 6) + bar(0, 8, 86, 6, C["screen_dark"], 0) +
           "".join('<circle cx="%d" cy="7" r="2.0" fill="#8E8A84"/>' % (10 + i * 9)
                   for i in range(3)) +
-          mono(34, 34, "APP", 15.5, C["ink"], 700, ".08em", "middle") +
-          lines_block(14, 44, 40, 3, 7.0, 2.8) +
-          '<rect x="12" y="64" width="44" height="18" rx="4" fill="#EBF7EF" '
+          mono(43, 14 + AB * 1.30, "APP", AB, C["ink"], 700, ".08em", "middle") +
+          '<rect x="8" y="60" width="70" height="26" rx="4" fill="#EBF7EF" '
           'stroke="%s" stroke-width="1"/>' % C["trace"] +
-          mono(18, 76, "OPEN", 8.0, C["ink"], 700, ".08em") +
-          tick(48, 73, 7.6)), o=8)
+          mono(14, 60 + AV * 1.28, "OPEN", AV, C["ink"], 700, ".08em") +
+          tick(68, 73, 8.4)), o=8)
 
     route(sc, [(-40, 214, 12), (0, 186, 14), (26, 158, ad + 3)], o=9, glow=.8)
-    cap_panel(sc, 86, 210, 40, "APPLICATION", "ACCESS", o=20)
+    # Dropped from z=40 to z=28: APPLICATION at 20 card px needs a 186-unit
+    # plate where the old 11-unit type needed 158, and the wider plate ran
+    # onto the plinth's front-left face. 28 buys 20px of clearance and
+    # costs 1.5 points of fill.
+    cap_panel(sc, 86, 210, 28, "APPLICATION", "ACCESS", o=20)
     return sc
 
 
@@ -702,29 +852,32 @@ def binding_pedestal():
 
     hd = pad(sc, -60, 18, 206, 132, 0, o=6, c=13, h1=10, hb=3.4, h2=7)
 
-    laptop(sc, -46, 40, hd, o=11, w=96, d=44, screen_svg=(
-        shield(12, 6, .72, "none", C["ink"], 2.0) +
-        '<path d="M8 18 l4.2 4.7 l7.6 -9.6" stroke="%s" stroke-width="2.7" fill="none" '
-        'stroke-linecap="round" stroke-linejoin="round"/>' % C["acc"] +
-        mono(34, 20, "THIS", 10, C["acc"], 700) +
-        mono(34, 34, "DEVICE", 10, C["acc"], 700)))
+    laptop(sc, -46, 40, hd, o=11, w=96, d=44,
+           screen_svg=screen_caption(*screen_canvas(96), lines=["THIS", "DEVICE"]))
     # the certificate slot the key goes into
     quad(sc, [(-46, 74, hd + 2), (-46, 90, hd + 2), (-46, 90, hd + 12),
               (-46, 74, hd + 12)], C["screen_dark"], o=11.4, op=.9)
     key_prism(sc, -44, 100, hd, o=12, ln=84, sh=14, bow=16)
 
-    # the credential evidence stands clear to the right, where it adds the
-    # height this card was short of without covering the subject
-    CW, CH = 88, 132
-    inner = (mono(12, 21, "BOUND TO", 8.0, C["ink"], 700, ".10em") +
-             bar(11, 27, CW - 22, 1.4, C["trace"], .7) +
-             '<g transform="translate(30,34)">%s</g>' % padlock(0, 0, 1.9))
-    for i, (k, v) in enumerate((("MAC", "8C:1D:96"), ("SERIAL", "R9TK42"),
-                                ("UUID", "4F2A-9C"))):
-        y = 82 + i * 15
-        inner += (mono(12, y, k, 7.0, C["ink"], 700, ".05em") +
-                  mono(45, y, v, 6.6, C["mid"], 500, ".02em"))
-    inner += tick(CW - 18, 119, 7.8)
+    # The credential evidence stands clear to the right, where it adds the
+    # height this card was short of without covering the subject.
+    #
+    # CLIENT FIX 5. It used to be a spec sheet: BOUND TO over MAC / SERIAL
+    # / UUID with their values, six strings between 6.8 and 8.2 rendered
+    # px. A card is not a spec sheet. What survives is the heading and ONE
+    # identifier — the MAC, because it is the one a reader recognises as a
+    # device's name — both at 15 card px, with the plate re-spaced around
+    # the two lines and the padlock instead of six.
+    CS = cardpx(15.0)
+    CW = int(math.ceil(max(mono_width("BOUND TO", CS, ".10em"),
+                           mono_width("8C:1D:96", CS, ".06em")) + 2 * TEXT_PAD + 12.0))
+    CH = 122
+    inner = (mono(12, CS * 1.30, "BOUND TO", CS, C["ink"], 700, ".10em") +
+             bar(11, CS * 1.85, CW - 22, 1.4, C["trace"], .7) +
+             '<g transform="translate(%.1f,%.1f)">%s</g>'
+             % (CW / 2.0 - 12, CS * 2.4, padlock(0, 0, 1.9)) +
+             mono(12, CH - 34, "8C:1D:96", CS, C["ink"], 700, ".06em") +
+             tick(CW - 17, CH - 16, 8.6))
     panel(sc, 56, 18, hd + CH + 12, CW, CH, panel_svg(CW, CH, inner, 8), o=9)
 
     cap_panel(sc, -30, 250, 22, "DEVICE", "BOUND", o=20)
@@ -739,31 +892,54 @@ def posture_pedestal():
 
     hd = pad(sc, -16, -16, 186, 164, 0, o=6, c=13, h1=10, hb=3.4, h2=7)
 
+    PL = cardpx(15.0, SCREEN_PROJ)
     laptop(sc, 8, 36, hd, o=12, w=112, d=46, screen_svg=(
         shield(13, 7, .76, "none", C["ink"], 2.1) +
         '<path d="M9 20 l4.5 5 l8 -10" stroke="%s" stroke-width="2.8" fill="none" '
         'stroke-linecap="round" stroke-linejoin="round"/>' % C["acc"] +
-        mono(38, 21, "SCAN", 10.5, C["acc"], 700) +
-        lines_block(38, 28, 40, 3, 6.2, 2.3, fill=C["mid"])))
+        mono(38, 18 + PL * 0.36, "SCAN", PL, C["acc"], 700) +
+        lines_block(38, 30, 40, 3, 6.2, 2.3, fill=C["mid"])))
     # the scan halos pass ROUND the lid — dropped to lid height so the far
     # arc is actually occluded by the machine, which is the whole point
     glow_ring(sc, 64, 50, hd + 18, 48, o=16, o_back=11.5)
     glow_ring(sc, 64, 50, hd + 56, 29, o=16.1, o_back=11.5)
 
-    # the verdict sheet — floating annotation, the kit's caption idiom, kept
-    # clear of the scan rings so neither reads as a scribble at 300px.
-    CW, CH = 126, 100
-    rows = [("OS", "WIN 11 22H2"), ("AV", "REAL-TIME ON"), ("DISK", "ENCRYPTED")]
-    inner = (mono(14, 21, "DEVICE CHECK", 8.6, C["ink"], 700, ".14em") +
-             bar(13, 27, CW - 26, 1.4, C["trace"], 0.7))
-    for i, (k, v) in enumerate(rows):
-        y = 44 + i * 20
-        inner += ('<rect x="13" y="%.1f" width="%.1f" height="16" rx="4" fill="%s" '
-                  'stroke="%s" stroke-width="1"/>' % (y - 11, CW - 26, C["bg"], C["trace"]))
-        inner += mono(19, y, k, 8.2, C["ink"], 700, ".08em")
-        inner += mono(48, y, v, 7.2, C["mid"], 500, ".02em")
-        inner += check_glyph(CW - 27, y - 3.4, .95, C["ink"])
-    inner += mono(14, 92, "25 CHECK TYPES", 7.2, C["mid"], 500, ".06em")
+    # The verdict sheet — floating annotation, the kit's caption idiom,
+    # kept clear of the scan rings so neither reads as a scribble.
+    #
+    # CLIENT FIX 3. It used to be three key/value rows plus a footnote:
+    # OS / WIN 11 22H2, AV / REAL-TIME ON, DISK / ENCRYPTED, 25 CHECK
+    # TYPES — seven strings between 10.4 and 12.4 rendered px, crowded into
+    # 100 units. The values and the footnote are gone. What a reader needs
+    # from this sheet at card size is that three named things were checked
+    # and all three passed, so what is left is three keys, three ticks, and
+    # room: the rows are 26 units apart instead of 20, and the keys are set
+    # at 16 card px where they were at 11.9.
+    # The tick leads the key rather than trailing it at the row's far end.
+    # On a sheared face horizontal distance IS vertical distance — 63 local
+    # units of gap between DISK and its tick put the tick 31 px lower on
+    # screen, which is one and a half row heights, and every tick appeared
+    # to belong to the row beneath. Tick and key now sit 20 units apart and
+    # read as one checkbox.
+    HS = cardpx(15.0)
+    KS = cardpx(16.0)
+    rows = ["OS", "AV", "DISK"]
+    ROW_H = math.ceil(KS * 1.9)
+    KEY_X = 40.0
+    CW = int(math.ceil(max(mono_width("DEVICE CHECK", HS, ".12em"),
+                           mono_width("DISK", KS, ".08em") + KEY_X - 13.0)
+                       + 2 * TEXT_PAD + 16.0))
+    # +8, not +14: at 14 the strip between the last row and the plate's own
+    # rounded edge was the same depth as a row and read as an empty fourth.
+    CH = int(math.ceil(HS * 2.4 + len(rows) * ROW_H + (len(rows) - 1) * 6 + 8))
+    inner = (mono(14, HS * 1.30, "DEVICE CHECK", HS, C["ink"], 700, ".12em") +
+             bar(13, HS * 1.85, CW - 26, 1.4, C["trace"], 0.7))
+    for i, k in enumerate(rows):
+        y0 = HS * 2.4 + i * (ROW_H + 6)
+        inner += ('<rect x="13" y="%.1f" width="%.1f" height="%.1f" rx="4" fill="%s" '
+                  'stroke="%s" stroke-width="1"/>' % (y0, CW - 26, ROW_H, C["bg"], C["trace"]))
+        inner += check_glyph(19, y0 + ROW_H / 2.0 - 1.0, 1.35, C["ink"])
+        inner += mono(KEY_X, y0 + ROW_H / 2.0 + KS * 0.34, k, KS, C["ink"], 700, ".08em")
     panel(sc, 214, 26, 158, CW, CH, panel_svg(CW, CH, inner, 8), o=17)
 
     cap_side(sc, "POSTURE", "VERIFIED", o=20, green=True)
@@ -812,21 +988,31 @@ def newsroom_pedestal():
     sheet(sc, 36, 24, 152, 6, hd, 122, o=7.4)
 
     W, T, H = 164, 9, 126
-    inner = (bar(9, 8, W - 18, 12, C["screen_dark"], 2) +
-             '<g transform="translate(12,9.4)">%s</g>' % iz_mark(9.2, 9.2) +
-             mono(W / 2 + 6, 17.6, "NEWSROOM", 8.4, C["screen"], 700, ".20em", "middle") +
-             '<rect x="%.1f" y="24" width="34" height="11" rx="5.5" fill="%s"/>' % (W - 47, C["acc"]) +
-             mono(W - 30, 32.2, "LATEST", 6.4, C["screen"], 700, ".10em", "middle") +
-             bar(9, 26, 74, 7, C["ink"], 2) + bar(9, 37, 58, 7, C["ink"], 2) +
-             '<rect x="9" y="50" width="66" height="46" rx="4" fill="%s" stroke="%s" '
-             'stroke-width="1.1"/>' % (C["bg"], C["edge"]) +
-             '<path d="M13 92 l17 -21 l13 15 l10 -11 l18 21 z" fill="%s" opacity=".55"/>'
-             % C["edge_soft"] +
-             '<circle cx="24" cy="62" r="5" fill="%s" opacity=".5"/>' % C["edge_soft"] +
-             lines_block(81, 52, 33, 7, 6.4, 2.6) +
-             lines_block(120, 52, 33, 7, 6.4, 2.6) +
-             lines_block(9, 102, 66, 3, 6.4, 2.6) +
-             lines_block(81, 102, 72, 3, 6.4, 2.6))
+    # FIX G. The masthead bar was 12 units deep carrying NEWSROOM at 8.4
+    # (9.7 rendered px) and a LATEST pill at 6.4 (7.4 px). The pill is gone
+    # — a six-character badge is the definition of detail nobody reads at
+    # card size, and the orange it contributed is already in the caption
+    # plate's spine. The masthead deepened to fit its own name at 15 px,
+    # and the columns below shifted down with it.
+    NS = cardpx(15.0)
+    BARH = math.ceil(NS * 1.55)
+    inner = (bar(9, 6, W - 18, BARH, C["screen_dark"], 2) +
+             '<g transform="translate(12,%.1f)">%s</g>'
+             % (6 + (BARH - 11) / 2.0, iz_mark(11, 11)) +
+             mono(W / 2 + 8, 6 + BARH / 2.0 + NS * 0.36, "NEWSROOM", NS,
+                  C["screen"], 700, ".16em", "middle") +
+             bar(9, BARH + 14, 74, 7, C["ink"], 2) +
+             bar(9, BARH + 25, 58, 7, C["ink"], 2) +
+             '<rect x="9" y="%.1f" width="66" height="46" rx="4" fill="%s" stroke="%s" '
+             'stroke-width="1.1"/>' % (BARH + 38, C["bg"], C["edge"]) +
+             '<path d="M13 %.1f l17 -21 l13 15 l10 -11 l18 21 z" fill="%s" opacity=".55"/>'
+             % (BARH + 80, C["edge_soft"]) +
+             '<circle cx="24" cy="%.1f" r="5" fill="%s" opacity=".5"/>'
+             % (BARH + 50, C["edge_soft"]) +
+             lines_block(81, BARH + 40, 33, 7, 6.4, 2.6) +
+             lines_block(120, BARH + 40, 33, 7, 6.4, 2.6) +
+             lines_block(9, BARH + 86, 66, 3, 6.4, 2.6) +
+             lines_block(81, BARH + 86, 72, 3, 6.4, 2.6))
     slab(sc, -2, 40, W, T, hd, H, inner, o=9, inset=5)
 
     cap_side(sc, "THE", "NEWSROOM", o=20, green=True)
@@ -841,18 +1027,20 @@ def blog_pedestal():
 
     hd = pad(sc, -10, 0, 172, 124, 0, o=6, c=12, h1=10, hb=3.4, h2=7)
 
+    # FIX G. Two strings left this page. The INSTASAFE byline (6.2 units,
+    # 7.4 rendered px) sat beside the mark that already says it, and the
+    # ZERO TRUST footer tag (7.0 units, 8.4 px) repeated the ZTNA chip on
+    # the apron three units below it. The mark grew into the byline's room.
     W, T, H = 92, 9, 138
     caret_y = 78
-    inner = ('<g transform="translate(9,7)">%s</g>' % iz_mark(9, 9) +
-             mono(22, 14, "INSTASAFE", 6.2, C["mid"], 700, ".14em") +
-             bar(9, 22, 58, 8, C["ink"], 2) + bar(9, 34, 42, 8, C["ink"], 2) +
-             bar(9, 38, W - 18, 1.4, C["trace"], .7) +
-             lines_block(9, 46, W - 18, 4, 7.4, 2.8) +
-             lines_block(9, 78, 34, 1, 7.4, 2.8) +
+    inner = ('<g transform="translate(9,6)">%s</g>' % iz_mark(14, 14) +
+             bar(9, 26, 58, 8, C["ink"], 2) + bar(9, 38, 42, 8, C["ink"], 2) +
+             bar(9, 52, W - 18, 1.4, C["trace"], .7) +
+             lines_block(9, 60, W - 18, 4, 7.4, 2.8) +
+             lines_block(9, 92, 34, 1, 7.4, 2.8) +
              '<rect x="%.1f" y="%.1f" width="3.2" height="13" rx="1.6" fill="%s"/>'
-             % (46, caret_y - 5.2, C["acc"]) +
-             lines_block(9, 94, W - 18, 4, 7.4, 2.8) +
-             mono(9, 130, "ZERO TRUST", 7.0, C["mid"], 700, ".12em"))
+             % (46, caret_y + 8.8, C["acc"]) +
+             lines_block(9, 108, W - 18, 4, 7.4, 2.8))
     slab(sc, 12, 26, W, T, hd, H, inner, o=9, inset=5)
 
     # a second, shorter sheet leaning behind the article
@@ -862,10 +1050,11 @@ def blog_pedestal():
              o=10 + k * .1, sw=1.0)
     face(sc, rrect(118, 62, 30, 22, 2), hd + 3 * 5.4 + 4.7, "none", o=10.5,
          stroke=C["edge_soft"], sw=.8, op=.6)
-    # topic chips on the plinth apron
+    # topic chips on the plinth apron, sized around their words
+    cw0, ch0, cfs0 = chip_dims("ZTNA")
     for k, tag in enumerate(("ZTNA", "MFA", "SDP")):
-        panel(sc, 6 + k * 44, 124, hd + 17, 40, 17,
-              chip_svg(40, 17, tag, hot=(k == 0)), o=11.4)
+        panel(sc, -6 + k * (cw0 + 5), 124, hd + ch0, cw0, ch0,
+              chip_svg(cw0, ch0, tag, (k == 0), cfs0), o=11.4)
 
     cap_side(sc, "THE", "BLOG", o=20, green=True)
     return sc
@@ -932,28 +1121,35 @@ def demo_pedestal():
           nodes=[(-190, 220), (220, 150)])
 
     d2 = pad(sc, -136, 108, 92, 80, 0, o=4, c=9, h1=6, hb=2.4, h2=4)
-    laptop(sc, -126, 120, d2, o=5, w=72, d=36, screen_svg=(
-        mono(8, 18, "BOOK", 11, C["acc"], 700) + mono(8, 31, "A SLOT", 9, C["mid"], 700)))
+    laptop(sc, -130, 120, d2, o=5, w=80, d=36,
+           screen_svg=screen_caption(*screen_canvas(80), lines=["BOOK", "A SLOT"]))
 
     hd = pad(sc, -8, 0, 186, 128, 0, o=8, c=13, h1=10, hb=3.4, h2=7)
 
+    # FIX G. Three strings on this calendar were unreadable: the weekday
+    # header row (six single letters at 7.6 rendered px) and the 45 MIN
+    # footer (8.6 px) are deleted — a grid of dated cells reads as a
+    # calendar without being told which column is Tuesday, and the meeting
+    # length is not what a share card is for. SEPTEMBER is the one word
+    # that makes the object a calendar, so it was enlarged instead, and the
+    # masthead deepened around it.
     W, T, H = 128, 9, 116
-    inner = (bar(9, 8, W - 18, 13, C["screen_dark"], 2) +
-             '<g transform="translate(13,9.6)">%s</g>' % iz_mark(9.8, 9.8) +
-             mono(W / 2 + 7, 18, "SEPTEMBER", 8.0, C["screen"], 700, ".18em", "middle") +
-             "".join(mono(17 + i * 19, 33, t, 6.2, C["mid"], 700, ".06em", "middle")
-                     for i, t in enumerate(["M", "T", "W", "T", "F", "S"])))
+    MS = cardpx(15.0)
+    MBAR = math.ceil(MS * 1.55)
+    inner = (bar(9, 6, W - 18, MBAR, C["screen_dark"], 2) +
+             '<g transform="translate(13,%.1f)">%s</g>'
+             % (6 + (MBAR - 11) / 2.0, iz_mark(11, 11)) +
+             mono(W / 2 + 8, 6 + MBAR / 2.0 + MS * 0.36, "SEPTEMBER", MS,
+                  C["screen"], 700, ".14em", "middle"))
     for r_ in range(4):
         for c_ in range(6):
-            cx, cy = 17 + c_ * 19, 45 + r_ * 15
+            cx, cy = 17 + c_ * 19, MBAR + 22 + r_ * 17
             if (r_, c_) == (1, 3):
-                inner += '<circle cx="%.1f" cy="%.1f" r="7.6" fill="%s"/>' % (cx, cy, C["acc"])
+                inner += '<circle cx="%.1f" cy="%.1f" r="8.4" fill="%s"/>' % (cx, cy, C["acc"])
             else:
-                inner += ('<rect x="%.1f" y="%.1f" width="13" height="11" rx="2.6" fill="none" '
-                          'stroke="%s" stroke-width="1"/>' % (cx - 6.5, cy - 5.5, C["trace"]))
-    inner += bar(9, 107, W - 18, 1.4, C["trace"], .7)
-    inner += mono(11, 103, "45 MIN", 7.0, C["mid"], 700, ".08em")
-    inner += tick(W - 20, 100, 8.6)
+                inner += ('<rect x="%.1f" y="%.1f" width="14" height="12" rx="2.8" fill="none" '
+                          'stroke="%s" stroke-width="1"/>' % (cx - 7, cy - 6, C["trace"]))
+    inner += tick(W - 20, H - 16, 9.4)
     slab(sc, 8, 22, W, T, hd, H, inner, o=10, inset=5)
 
     body(sc, rrect(146, 62, 30, 30, 5), hd, 32, o=11, sw=1.0)
@@ -1088,13 +1284,36 @@ code{font-family:var(--mono);font-size:12px;background:#EFEBE3;padding:1px 5px;b
 """
 
 
+def solve_scene(fn):
+    """Draw the scene at the type size its own canvas calls for.
+
+    Type is quoted in finished-card pixels (see cardpx), which needs the
+    canvas width; the canvas is fitted around the artwork, which needs the
+    type. So: draw, measure the canvas, redraw. The loop is a contraction —
+    a wider canvas asks for larger type, larger type widens the canvas a
+    little further, but type is a small fraction of any scene's bounding
+    box, so the correction shrinks by an order of magnitude each pass and
+    three or four are enough. It is asserted rather than hoped for.
+    """
+    k = 1.0
+    for _ in range(24):
+        CARD_PX["k"] = k
+        sc = fn()
+        _vb, _asp, met = fit_vb(sc)
+        nk = CARD_SCENE_W / met["cw"]
+        if abs(nk - k) / k < 1e-4:
+            return sc
+        k = nk
+    raise AssertionError("%s: canvas/type fixed point did not settle" % fn.__name__)
+
+
 def build():
     # hand the kit the real Phosphor Fingerprint before anything renders
     set_fingerprint('<g transform="translate(9,24)">%s</g>'
                     % phosphor("Fingerprint", 26, 26, C["acc"]))
     built = []
     for pg in PAGES:
-        sc = pg["fn"]()
+        sc = solve_scene(pg["fn"])
         svg, aspect, met = wrap_fit(sc)
         built.append(dict(pg, svg=svg, aspect=aspect, met=met, scene=sc))
 
@@ -1289,22 +1508,6 @@ def _xform(tag):
     return dx, dy, k
 
 
-def mono_width(txt, size, ls):
-    """Estimated advance width of a monospace string, letter-spacing
-    included. The board renders in a real mono face; 0.60em per character is
-    the standard advance, and the estimate only has to be tight enough to
-    catch a string running off its plate."""
-    n = len(txt)
-    if n == 0:
-        return 0.0
-    em = 0.0
-    if ls:
-        m = re.match(r"\s*(-?[\d.]+)\s*em", ls)
-        if m:
-            em = float(m.group(1))
-    return n * size * MONO_ADV + max(0, n - 1) * size * em
-
-
 _PNUM = re.compile(r"[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?")
 
 
@@ -1391,7 +1594,8 @@ def plate_items(content):
         if clip:            # inside a clipPath group: cannot spill, by
             continue        # construction — the clip is the guarantee
         if m.group(1) is not None:                       # <text>
-            tag, txt = m.group(1), re.sub(r"<[^>]*>", "", m.group(2))
+            tag = m.group(1)
+            txt = xml_unesc(re.sub(r"<[^>]*>", "", m.group(2)))
             size = _f(tag, "font-size", 9.0) * ok
             wdt = mono_width(txt, size, _at(tag, "letter-spacing"))
             x = ox + _f(tag, "x") * ok
@@ -1518,6 +1722,90 @@ def audit_routes(sc):
     return bad, behind
 
 
+# ── AUDIT G — minimum rendered text size ---------------------------------
+_GTOK = re.compile(r'<g\b([^>]*?)(/?)>|</g>|<text\b([^>]*)>(.*?)</text>'
+                   r'|<svg\b([^>]*?)>|</svg>', re.S)
+
+
+def _mat(A, B):
+    """A then B, SVG's (a b c d e f) column-major 2x3."""
+    a1, b1, c1, d1, e1, f1 = A
+    a2, b2, c2, d2, e2, f2 = B
+    return (a1 * a2 + c1 * b2, b1 * a2 + d1 * b2,
+            a1 * c2 + c1 * d2, b1 * c2 + d1 * d2,
+            a1 * e2 + c1 * f2 + e1, b1 * e2 + d1 * f2 + f1)
+
+
+def _transform_matrix(t):
+    M = (1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+    for name, args in re.findall(r'(translate|scale|rotate|matrix)\s*\(([^)]*)\)', t or ""):
+        v = [float(x) for x in re.split(r"[ ,]+", args.strip()) if x]
+        if name == "translate":
+            T = (1.0, 0.0, 0.0, 1.0, v[0], v[1] if len(v) > 1 else 0.0)
+        elif name == "scale":
+            T = (v[0], 0.0, 0.0, v[1] if len(v) > 1 else v[0], 0.0, 0.0)
+        elif name == "rotate":
+            a = math.radians(v[0])
+            T = (math.cos(a), math.sin(a), -math.sin(a), math.cos(a), 0.0, 0.0)
+            if len(v) == 3:
+                T = _mat(_mat((1, 0, 0, 1, v[1], v[2]), T), (1, 0, 0, 1, -v[1], -v[2]))
+        else:
+            T = tuple(v[:6])
+        M = _mat(M, T)
+    return M
+
+
+def audit_size(svg):
+    """AUDIT G — can a human read this in a feed?
+
+    The finished card gives the artwork a 730 px slot, so a run authored at
+    N units on a canvas W units wide renders at N * 730 / W px. That is the
+    headline formula; this measures the real thing, by walking the shipped
+    markup and accumulating the actual CTM, because the isometric plane
+    matrices foreshorten type by another 7% on an upright panel and 17% on
+    a laptop lid. Trusting the authored number would have passed strings
+    that miss the floor by exactly the amount the projection takes.
+
+    Every failure is resolved one of two ways, never a third: enlarge it if
+    it carries meaning at a glance, delete it if it does not. Deleting is
+    the default. A social thumbnail says one thing once.
+
+    EXEMPT: anything inside a group carrying data-texture="1" — currently
+    only the endpoint-controls watermark tiles, which are a surface
+    pattern rather than a label. See watermark_svg for the argument.
+    Exempted loudly, and counted, so the exemption cannot grow quietly.
+    """
+    vb = [float(t) for t in re.search(r'viewBox="([^"]+)"', svg).group(1).split()]
+    k = CARD_SCENE_W / vb[2]
+    stack = [((1.0, 0.0, 0.0, 1.0, 0.0, 0.0), False)]
+    runs = []
+    for m in _GTOK.finditer(svg):
+        s = m.group(0)
+        if s.startswith("</"):
+            if len(stack) > 1:
+                stack.pop()
+            continue
+        if s.startswith("<svg"):
+            stack.append(stack[-1])
+            continue
+        if m.group(3) is not None:                            # <text>
+            tag = m.group(3)
+            txt = xml_unesc(re.sub(r"<[^>]*>", "", m.group(4)))
+            fs = _f(tag, "font-size", 9.0)
+            M, tex = stack[-1]
+            scale = math.sqrt(abs(M[0] * M[3] - M[1] * M[2]))
+            runs.append(dict(text=txt, px=fs * scale * k, texture=tex))
+            continue
+        tag, closed = m.group(1), m.group(2)                  # <g>
+        M, tex = stack[-1]
+        M = _mat(M, _transform_matrix(_at(tag, "transform")))
+        tex = tex or (_at(tag, "data-texture") == "1")
+        if not closed:
+            stack.append((M, tex))
+    bad = [r for r in runs if not r["texture"] and r["px"] < MIN_TEXT_PX - 0.05]
+    return bad, runs
+
+
 # ── AUDIT C — internal margins -------------------------------------------
 def audit_margins(sc, met):
     """The >=30 units of ground rule is measured against the CONTENT box, not
@@ -1550,6 +1838,19 @@ def audit_margins(sc, met):
             if dd < MIN_CLEAR_PX:
                 bad.append("%s%d~%s%d %.1fpx" % (items[i]["kind"], i,
                                                  items[j]["kind"], j, dd))
+
+    # CLIENT FIX 4 — a caption plate may not sit on the artwork. Panels that
+    # stand ON a plinth are meant to touch it; a free caption plate is not,
+    # and two of them shipped over a plinth's front-left face because
+    # nothing measured plate against plinth. Now something does.
+    for k, pn in enumerate(sc.panels):
+        if pn.get("tag") != "cap":
+            continue
+        for di, pd_ in enumerate(sc.pads):
+            dd = _poly_dist(pn["poly"], pad_silhouette(pd_))
+            if dd < MIN_CLEAR_PX:
+                bad.append("cap-plate%d ON plinth%d (%.1fpx)" % (k, di, dd))
+
     tight = min(met["pad_x"], met["pad_y"])
     if tight < 30.0:
         bad.append("content-box pad %.1f < 30" % tight)
@@ -1563,13 +1864,14 @@ PALETTE_OK = set(v.lower() for v in C.values()) | {
 
 
 def verify(built):
-    print("%-41s %-8s %5s %5s %5s %4s %5s  %-6s %-6s %-6s %-6s %-6s %s" %
+    print("%-41s %-8s %5s %5s %5s %4s %5s  %-6s %-6s %-6s %-6s %-6s %-6s %s" %
           ("scene", "comp", "fit", "fill", "elem", "grn", "lap",
-           "ROUTE", "MARGIN", "LAPTOP", "TEXT", "SCREEN", "notes"))
-    print("-" * 140)
+           "ROUTE", "MARGIN", "LAPTOP", "TEXT", "SCREEN", "SIZE", "notes"))
+    print("-" * 152)
     ok = True
     seen_cols = {}
     details = []
+    size_rows = []
     for b in built:
         svg, sc = b["svg"], b["scene"]
         green = sum(1 for _, it in sc.items if C["ok"] in it)
@@ -1583,6 +1885,9 @@ def verify(built):
         l_bad, worst = audit_laptop(sc)
         t_bad = audit_text(sc)
         s_bad, _sm = audit_screen(sc)
+        g_bad, g_runs = audit_size(svg)
+        live = [r for r in g_runs if not r["texture"]]
+        size_rows.append((b["slug"], live, [r for r in g_runs if r["texture"]]))
 
         flag = []
         if green != 1:
@@ -1594,9 +1899,9 @@ def verify(built):
             flag.append("ASPECT")
         if not (MIN_FILL <= met["fill"] <= MAX_FILL):
             flag.append("FILL")
-        if r_bad or m_bad or l_bad or t_bad or s_bad or flag:
+        if r_bad or m_bad or l_bad or t_bad or s_bad or g_bad or flag:
             ok = False
-        print("%-41s %-8s %5.3f %4.0f%% %5d %4d %5s  %-6s %-6s %-6s %-6s %-6s %s" %
+        print("%-41s %-8s %5.3f %4.0f%% %5d %4d %5s  %-6s %-6s %-6s %-6s %-6s %-6s %s" %
               (b["slug"], b["comp"], b["aspect"], met["fill"] * 100.0, elems, green,
                ("%.2f" % worst) if worst else "-",
                "PASS" if not r_bad else "FAIL%d" % len(r_bad),
@@ -1604,14 +1909,38 @@ def verify(built):
                "PASS" if not l_bad else "FAIL%d" % len(l_bad),
                "PASS" if not t_bad else "FAIL%d" % len(t_bad),
                "PASS" if not s_bad else "FAIL%d" % len(s_bad),
+               "PASS" if not g_bad else "FAIL%d" % len(g_bad),
                (("behind:%d " % behind) if behind else "") + " ".join(flag)))
         for tag, lst in (("route", r_bad), ("margin", m_bad), ("laptop", l_bad),
                          ("text", t_bad), ("screen", s_bad)):
             for m in lst:
                 details.append("   %-30s %-7s %s" % (b["slug"], tag, m))
+        for r in g_bad:
+            details.append("   %-30s %-7s %r renders at %.1fpx (< %.0f)"
+                           % (b["slug"], "size", r["text"][:20], r["px"], MIN_TEXT_PX))
     if details:
         print("\nfailures (%d):" % len(details))
         print("\n".join(details))
+
+    # ── AUDIT G — the readable-in-a-feed table ---------------------------
+    print("\nminimum rendered text size — floor %.0f px on the finished 1200x630 card"
+          % MIN_TEXT_PX)
+    print("   %-42s %5s %7s %7s  %s" % ("scene", "runs", "worst", "median", "smallest run"))
+    n_tex = 0
+    for slug, live, tex in size_rows:
+        n_tex += len(tex)
+        if not live:
+            print("   %-42s %5d %7s %7s  %s" % (slug, 0, "-", "-", "(no text)"))
+            continue
+        sz = sorted(r["px"] for r in live)
+        worst_run = min(live, key=lambda r: r["px"])
+        print("   %-42s %5d %6.1f%s %6.1f   %r"
+              % (slug, len(live), sz[0], " " if sz[0] >= MIN_TEXT_PX else "!",
+                 sz[len(sz) // 2], worst_run["text"][:26]))
+    allpx = [r["px"] for _s, live, _t in size_rows for r in live]
+    print("   %d live runs across 15 scenes, smallest %.1f px; "
+          "%d exempt texture runs (endpoint-controls watermark tiles)"
+          % (len(allpx), min(allpx), n_tex))
 
     # ── AUDIT F — one canvas, fifteen scenes -----------------------------
     # The client's complaint was heights, so heights are what gets proved.

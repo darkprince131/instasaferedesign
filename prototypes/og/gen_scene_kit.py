@@ -11,11 +11,49 @@ Primitives:  pad, body, standing panel (with a real 2D drawing plane),
              route, trace, ghost_stack, laptop, chip, glow_ring
 Scenes:      ztna_flow  (left-to-right)   mfa_hub (hub-and-spoke)
 """
-import math, base64
+import math, base64, re
 
 COS30 = math.cos(math.radians(30))
 SIN30 = 0.5
 SCREEN_INSET = 0.08   # inner margin on every laptop screen, as a fraction
+
+
+# ─────────────────────────────────────────── rendered size is the unit
+# These drawings are not diagrams, they are social thumbnails. The finished
+# 1200x630 card gives the artwork a 730 px slot (SCENE_W in
+# lib/scripts/gen-og-pages.mjs), so a glyph authored at N units on a canvas
+# W units wide lands at N * 730 / W card pixels — and every label in this
+# kit used to be sized in units, which is a number with no relationship to
+# whether a human can read it. Type is therefore quoted in FINISHED-CARD
+# PIXELS from here on and converted at draw time.
+#
+# CARD_PX["k"] is the 730/W factor for the scene currently being built.
+# gen_og_kit solves it per scene by fixed point, because the canvas is
+# derived from the artwork and the artwork's type is now derived from the
+# canvas. A scene drawn outside that solver just gets k = 1.
+CARD_SCENE_W = 730.0
+CARD_PX = {"k": 1.0}
+
+# The projection foreshortens type, and by different amounts per surface:
+#   panel  — iso() sends local (1,0) and (0,1) to (cos30, sin30) and (0,1).
+#            Both unit length, but they span |det| = cos30, so a glyph
+#            comes out at sqrt(cos30) = 0.9306 of nominal.
+#   screen — the lid also leans back (lean 8 over hgt 58) and laptop() then
+#            shrinks the content into the SCREEN_INSET box:
+#            0.983 * (1 - 2*0.08) = 0.826.
+#   flat   — scene_text sets type straight into the projected plane; no
+#            surface, no foreshortening.
+PANEL_PROJ = math.sqrt(COS30)
+SCREEN_PROJ = 0.826
+FLAT_PROJ = 1.0
+
+MIN_TEXT_PX = 14.0    # audit G floor — below this it is not a label, it is grain
+CAP_TEXT_PX = 20.0    # the two-line caption plates, the scenes' primary labels
+
+
+def cardpx(target, proj=PANEL_PROJ):
+    """Local font-size that renders at `target` px on the finished card."""
+    return target / (CARD_PX["k"] * proj)
 
 
 def iso(x, y, z=0.0):
@@ -167,12 +205,17 @@ def plane3(sc, O, U, V, content, o=0):
     sc.mark([(ox, oy)])
 
 
-def panel(sc, x, y, z_top, w, h, content, o=0, audit=True):
-    """Upright panel at constant y, spanning +x, facing lower-right."""
+def panel(sc, x, y, z_top, w, h, content, o=0, audit=True, tag=""):
+    """Upright panel at constant y, spanning +x, facing lower-right.
+
+    `tag` is for the audits, not the drawing: tag="cap" marks a free-
+    floating caption plate, which unlike a panel standing ON a plinth has
+    to be proved clear OF every plinth (audit C). That check exists
+    because two plates shipped sitting on a plinth's front-left face."""
     plane3(sc, (x, y, z_top), (1, 0, 0), (0, 0, -1), content, o)
     sc.mark([iso(x, y, z_top), iso(x + w, y, z_top - h)])
     if audit:
-        sc.panels.append(dict(anchor=(x, y), z=z_top, w=w, h=h, o=o, poly=[
+        sc.panels.append(dict(anchor=(x, y), z=z_top, w=w, h=h, o=o, tag=tag, poly=[
             iso(x, y, z_top), iso(x + w, y, z_top),
             iso(x + w, y, z_top - h), iso(x, y, z_top - h)]))
         sc.plates.append(dict(kind="panel", w=w, h=h, content=content))
@@ -358,12 +401,70 @@ def xml_esc(t):
     return (str(t).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
+def xml_unesc(t):
+    """The inverse, for the audits. "AWARDS &" is eight glyphs on the
+    plate but twelve characters in the markup, and an audit that reads the
+    markup and counts characters makes the plate 50 units too narrow —
+    which is exactly what it did the first time a caption carried an
+    ampersand at full size."""
+    return (str(t).replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&"))
+
+
 def mono(x, y, t, size=9, fill=None, weight=700, ls=".08em", anchor="start"):
     t = xml_esc(t)
     return ('<text x="%.1f" y="%.1f" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" '
             'font-size="%.1f" font-weight="%d" letter-spacing="%s" fill="%s" '
             'text-anchor="%s">%s</text>'
             % (x, y, size, weight, ls, fill or C["ink"], anchor, t))
+
+
+MONO_ADV = 0.60          # monospace advance as a fraction of font-size
+
+
+def mono_width(txt, size, ls=""):
+    """Estimated advance width of a monospace string, letter-spacing
+    included. Chrome renders these in a real mono face; 0.60em per
+    character is the standard advance. Lives beside mono() because every
+    plate that has to be BUILT AROUND its type needs it before the type
+    exists, and the text-fits audit needs the same number afterwards."""
+    n = len(txt)
+    if n == 0:
+        return 0.0
+    em = 0.0
+    if ls:
+        m = re.match(r"\s*(-?[\d.]+)\s*em", ls)
+        if m:
+            em = float(m.group(1))
+    return n * size * MONO_ADV + max(0, n - 1) * size * em
+
+
+def screen_canvas(w, lean=8.0, hgt=58.0):
+    """The local drawing canvas laptop() will hand its screen_svg — the
+       same expression laptop() uses, exposed so a caller can size type
+       against the lid BEFORE handing it over."""
+    return w - 14.0, math.hypot(lean, hgt) - 6.4
+
+
+def screen_caption(LW, LH, lines, px=15.0, fill=None, ls=".08em"):
+    """A one- or two-word caption filling a laptop lid.
+
+    Set as large as MIN_TEXT_PX asks for, then clamped to what the lid can
+    actually hold — and the lid is a real constraint, not a formality: a
+    58-unit-tall screen canvas holds two lines at 22 units at the tightest
+    honest leading, and the widest scene in the set wants 19.4 across only
+    78 units of width. Where the clamp bites hard the fix is a bigger
+    laptop, not smaller type; audit G fails the scene if the clamp drags a
+    line under the floor, so that decision cannot be made by accident.
+
+    The leading is deliberately tight (1.28em) and the first baseline sits
+    at 0.86em. Two lines then occupy 2.36em of the 3.0em a comfortable
+    setting would want, which is what buys the size."""
+    s = cardpx(px, SCREEN_PROJ)
+    top, lead = 0.86, 1.28
+    wide = max(mono_width(t, 1.0, ls) for t in lines)
+    s = min(s, (LW - 6.0) / wide, LH / (top + lead * (len(lines) - 1) + 0.24))
+    return "".join(mono(3.0, s * (top + lead * i), t, s, fill or C["acc"], 700, ls)
+                   for i, t in enumerate(lines))
 
 
 def tick(x, y, r=9):
@@ -394,9 +495,21 @@ def ztna_flow():
     top of the first route; the NETWORK NOT ACCESSIBLE caps ran into the
     ghost cluster. Now: footprints ≥24 apart, both routes travel the empty
     channel between stations and land on a pad's front-left base corner
-    (never across a panel face), the tunnel chip drops to the open apron
-    below the first leg, and the denial caps sit clear to the left of the
-    ghosts.
+    (never across a panel face).
+
+    FIX G — the legibility pass. This scene carried the most unreadable
+    type of the fifteen, on the widest canvas (798 units, so 0.92 card px
+    per unit). Gone entirely, on the client's instruction: the ZTNA / "No
+    network exposure." / "Least-privilege access." side plate (7.2 px
+    sentences — a spec sheet on a thumbnail) and the NETWORK NOT ACCESSIBLE
+    caps (11.4 px). The ghosted, crossed-out estate says "no network" by
+    itself; that is what rule 7 is for. Gone with them: the ENCRYPTED
+    TUNNEL chip, 6.8 px of caption on a 32-unit plate.
+
+    What is left is enlarged instead. The trust station's plate takes over
+    as the scene's primary label in the caption idiom — two short words,
+    second one orange, at CAP_TEXT_PX — and the laptop and the ERP console
+    each say one thing at a size a feed can resolve.
     """
     sc = Scene("ztna")
     trace(sc, [(-30, 60), (60, 60), (60, -40), (210, -40)], o=0,
@@ -405,52 +518,66 @@ def ztna_flow():
           nodes=[(-40, 320), (320, 250)])
 
     # ── denied estate: one cluster, high and to the right
+    # LIFT. Deleting the two captions took 100 units off this scene's
+    # height and none off its width, and a 1.90-aspect content box fills
+    # only 50% of the 1.250 canvas — it swims. The estate floats higher
+    # instead, which is the same drawing saying the same thing further out
+    # of reach; nothing about the flow below it moved.
+    LIFT = 76
     for gx, gy, gz in ((96, -206, 108), (196, -244, 124), (268, -152, 92)):
-        ghost_stack(sc, gx, gy, gz, o=1, w=34, d=28)
+        ghost_stack(sc, gx, gy, gz + LIFT, o=1, w=34, d=28)
     for a, b, z in (((130, -192), (196, -230), 108),
                     ((230, -230), (268, -138), 104),
                     ((284, -124), (300, -70), 92)):
-        trace(sc, [a, b], o=1.5, z=z)
+        trace(sc, [a, b], o=1.5, z=z + LIFT)
     for p in ((166, -212, 110), (252, -186, 104), (320, -96, 94)):
-        xmark(sc, p, o=1.6)
-    tx, ty = iso(-30, -150, 92)
-    sc.add(1.7, mono(tx, ty, "NETWORK", 12.5, C["mid"], 700, ".1em") +
-                mono(tx, ty + 17, "NOT ACCESSIBLE", 12.5, C["mid"], 700, ".1em"))
-    label_box(sc, tx, ty - 13, 14 * 12.5 * 0.62, 34, "NETWORK NOT ACCESSIBLE")
+        xmark(sc, (p[0], p[1], p[2] + LIFT), o=1.6)
 
-    # ── station 1 · the verified user
+    # ── station 1 · the verified user.  The shield-and-check glyph that
+    #    shared this lid is gone: at a size the two words can be read at,
+    #    92 units of screen holds words OR a glyph, and the words win.
+    #    The lid went from 92 to 100 units for the same reason: at 92 the
+    #    lid clamped the two words to 13.9 rendered px, just under the floor.
     d1 = pad(sc, -46, 156, 126, 112, 0, o=4)
-    laptop(sc, -30, 176, d1, o=5, w=92, d=46, screen_svg=(
-        shield(12, 7, .70, "none", C["ink"], 2.0) +
-        '<path d="M8 19 l3.9 4.5 l6.9 -9.0" stroke="' + C["acc"] + '" stroke-width="2.7" '
-        'fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
-        mono(31, 21, "USER", 10, C["acc"], 700) +
-        mono(31, 35, "DEVICE", 10, C["acc"], 700)))
+    laptop(sc, -30, 176, d1, o=5, w=100, d=46,
+           screen_svg=screen_caption(*screen_canvas(100), lines=["USER", "DEVICE"]))
 
-    # ── station 2 · the trust decision
+    # ── station 2 · the trust decision, and now the scene's primary label.
+    #    Caption idiom: two short words, second one orange, orange spine.
+    #    "ZERO TRUST / ACCESS" would need a 155-unit plate to reach
+    #    CAP_TEXT_PX over a 104-unit plinth; "ZERO / TRUST" says the same
+    #    thing in five characters and fits the station it stands on.
     d2 = pad(sc, 96, 10, 104, 104, 0, o=8)
     body(sc, rrect(116, 30, 64, 64, 6), d2, 5, o=9)
-    panel(sc, 110, 114, d2 + 5 + 126, 96, 126, panel_svg(96, 126,
-          mono(48, 27, "ZERO TRUST", 11, C["ink"], 700, ".12em", "middle") +
-          mono(48, 45, "ACCESS", 12.5, C["acc"], 700, ".12em", "middle") +
-          '<g transform="translate(29,60)">' + shield(0, 8, 1.15, "none", C["ink"], 2.2) +
+    TS = cardpx(CAP_TEXT_PX)
+    TW = math.ceil(max(mono_width("ZERO", TS, ".10em"),
+                       mono_width("TRUST", TS, ".10em")) + 30.0)
+    TH = math.ceil(TS * 2.6 + 74.0)
+    panel(sc, 110, 114, d2 + 5 + TH, TW, TH, panel_svg(TW, TH,
+          '<rect x="0" y="%.1f" width="3.2" height="%.1f" rx="1.6" fill="%s"/>'
+          % (TH * 0.10, TH * 0.34, C["acc"]) +
+          mono(16, TS * 1.30, "ZERO", TS, C["ink"], 700, ".10em") +
+          mono(16, TS * 2.75, "TRUST", TS, C["acc"], 700, ".10em") +
+          '<g transform="translate(%.1f,%.1f)">' % (TW / 2.0 - 19, TS * 3.4) +
+          shield(0, 8, 1.15, "none", C["ink"], 2.2) +
           '<path d="M8 26 l6.6 7.6 l12.4 -15" stroke="' + C["acc"] + '" stroke-width="3.5" '
           'fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'), o=10)
 
-    # ── station 3 · the application
+    # ── station 3 · the application.  The four 10-unit app-icon squares
+    #    went with the pass: they were never legible as icons and they were
+    #    the only thing stopping ERP and the verdict from being bigger.
     d3 = pad(sc, 232, -112, 128, 112, 0, o=12)
+    ES = cardpx(15.0)
+    EB = cardpx(21.0)
     panel(sc, 242, 0, d3 + 112, 116, 112, panel_svg(116, 112,
           '<rect x="0" y="0" width="116" height="16" rx="7" fill="' + C["screen_dark"] + '"/>'
           '<rect x="0" y="9" width="116" height="7" fill="' + C["screen_dark"] + '"/>' +
           "".join('<circle cx="%d" cy="8" r="2.2" fill="#8E8A84"/>' % (11 + i * 9) for i in range(3)) +
-          "".join('<rect x="%d" y="%d" width="10" height="10" rx="2.4" fill="none" stroke="%s" '
-                  'stroke-width="1.8"/>' % (12 + (i % 2) * 13, 27 + (i // 2) * 13, C["ink"])
-                  for i in range(4)) +
-          mono(44, 43, "ERP", 17, C["ink"], 700) +
-          '<rect x="10" y="60" width="96" height="38" rx="5" fill="#EBF7EF" stroke="'
+          mono(58, 16 + EB * 1.35, "ERP", EB, C["ink"], 700, ".04em", "middle") +
+          '<rect x="8" y="56" width="100" height="50" rx="5" fill="#EBF7EF" stroke="'
           + C["ok"] + '" stroke-width="1.2"/>' +
-          mono(19, 76, "ACCESS", 9.6, C["ok"], 700) +
-          mono(19, 89, "GRANTED", 9.6, C["ok"], 700) + tick(88, 79, 11)), o=13)
+          mono(15, 56 + ES * 1.25, "ACCESS", ES, C["ok"], 700) +
+          mono(15, 56 + ES * 2.55, "GRANTED", ES, C["ok"], 700) + tick(96, 70, 10)), o=13)
 
     # ── the two legs: channel-run, landing on front-left base corners.
     #    Drawn UNDER the station they arrive at (o below the panel's o) so
@@ -459,22 +586,6 @@ def ztna_flow():
                (96, 116, d2 + 2)], o=7.5, glow=.75)
     route(sc, [(198, 60, d2 + 2), (212, 36, 20), (228, 4, d3 + 2)],
           o=11.5, glow=.75)
-
-    panel(sc, 144, 236, 10, 88, 32, panel_svg(88, 32,
-          '<rect x="10" y="10" width="12" height="15" rx="2.6" fill="none" stroke="' + C["ink"] +
-          '" stroke-width="1.9"/><path d="M12.6 10 v-4 a3.4 3.4 0 0 1 6.8 0 V10" fill="none" '
-          'stroke="' + C["ink"] + '" stroke-width="1.9"/>' +
-          mono(30, 16, "ENCRYPTED", 8, C["ink"], 700) +
-          mono(30, 27, "TUNNEL", 8, C["ink"], 700), r=8), o=11.5)
-
-    panel(sc, 268, 150, 20, 152, 60, panel_svg(152, 60,
-          '<rect x="0" y="9" width="3.2" height="42" rx="1.6" fill="' + C["acc"] + '"/>'
-          '<circle cx="24" cy="21" r="9.2" fill="none" stroke="' + C["acc"] + '" stroke-width="2.1"/>'
-          '<path d="M19.8 21 l3.3 3.3 l6.2 -7.2" stroke="' + C["acc"] + '" stroke-width="2.1" '
-          'fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
-          mono(40, 27, "ZTNA", 15.5, C["acc"], 700) +
-          mono(16, 44, "No network exposure.", 8.4, C["mid"], 500, ".02em") +
-          mono(16, 55, "Least-privilege access.", 8.4, C["mid"], 500, ".02em")), o=20)
     return sc
 
 # =============================================================================
@@ -539,18 +650,29 @@ def mfa_hub():
                 '<path d="M0 0 l20 14 l20 -14" stroke="%s" stroke-width="1.8" fill="none"/>'
                 % C["ink"]), o=4 + i * .5 + .7)
         elif kind == "otp":
+            # FIX G. "1 2 3 4 5 6" at 8.6 units rendered at 10.6 px and its
+            # spaced-out advance already ran 2 units past the disc it sits
+            # on. An OTP is written "123456"; six unspaced characters fit
+            # the disc with room at a size that reads.
             body(sc, circ(cx, cy, 26, 40), d, 7, o=4 + i * .5 + .6, sw=1.0)
             glow_ring(sc, cx, cy, d + 7.2, 26,
                       o=4 + i * .5 + .80, o_back=4 + i * .5 + .55)
             ox_, oy_ = iso(cx, cy, d + 7.4)
-            sc.add(4 + i * .5 + .7, mono(ox_, oy_ + 2, "1 2 3 4 5 6", 8.6,
-                                         C["ink"], 700, ".10em", "middle"))
-            label_box(sc, ox_ - 30, oy_ - 6, 60, 12, "OTP DIGITS")
+            OS_ = cardpx(15.0, FLAT_PROJ)
+            OW = mono_width("123456", OS_, ".06em")
+            sc.add(4 + i * .5 + .7, mono(ox_, oy_ + OS_ * 0.36, "123456", OS_,
+                                         C["ink"], 700, ".06em", "middle"))
+            label_box(sc, ox_ - OW / 2, oy_ - OS_ * 0.5, OW, OS_ * 1.1, "OTP DIGITS")
         else:
             body(sc, rrect(cx - 17, cy - 15, 34, 30, 4), d, 30, o=4 + i * .5 + .6)
+            # FIX G. "SMS" set at 6.4 units on a 34-unit face rendered at
+            # 7.3 px — and it was the only one of six factors that carried a
+            # word at all. The handset now says SMS the way the key says
+            # key: with an orange message bar, no caption.
             gl = {"sms": '<rect x="8" y="3" width="18" height="24" rx="4" fill="none" '
                          'stroke="%s" stroke-width="1.8"/>' % C["ink"] +
-                         mono(17, 18, "SMS", 6.4, C["acc"], 700, ".04em", "middle"),
+                         '<rect x="11.5" y="9" width="11" height="7" rx="2" fill="%s"/>'
+                         % C["acc"],
                   "grid": "".join('<circle cx="%d" cy="%d" r="2.6" fill="%s"/>'
                                   % (9 + (k % 3) * 8, 12 + (k // 3) * 9, C["ink"])
                                   for k in range(6)),

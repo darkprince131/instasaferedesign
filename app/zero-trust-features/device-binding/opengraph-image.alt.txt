@@ -1,1 +1,1 @@
-Isometric illustration: a laptop reading THIS DEVICE with a key sliding into its certificate slot, beside a panel listing the MAC address, serial and UUID it is BOUND TO.
+Isometric illustration: a laptop reading THIS DEVICE with a key sliding into its certificate slot, beside a padlocked panel reading BOUND TO and one MAC address.
