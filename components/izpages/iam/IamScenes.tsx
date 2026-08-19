@@ -45,12 +45,12 @@ import { LogoMark } from "@/components/brand/Logo";
    exists the tile falls back to the initials block underneath — there
    is deliberately no user-glyph placeholder, because a line-art avatar
    in a product mock reads as a wireframe rather than as a person. */
-const PORTRAIT = "/people/identity-portrait.webp";
+const PORTRAIT = "/people/alen-joseph-640.webp";
 
 type Gate = { k: string; label: string; sub: string; verdict: string; Icon: Icon; tone: "ok" | "accent" };
 
 const GATES: Gate[] = [
-  { k: "user", label: "User", sub: "arun.k@instasafe.com", verdict: "Verified", Icon: IdentificationCard, tone: "ok" },
+  { k: "user", label: "User", sub: "alen.j@instasafe.com", verdict: "Verified", Icon: IdentificationCard, tone: "ok" },
   { k: "dir", label: "Directory", sub: "Active Directory", verdict: "Synced", Icon: Database, tone: "ok" },
   { k: "mfa", label: "MFA", sub: "Authenticator app", verdict: "Passed", Icon: Lock, tone: "ok" },
   { k: "device", label: "Device", sub: "macOS 14.4.1", verdict: "Trusted", Icon: Monitor, tone: "ok" },
@@ -137,7 +137,7 @@ export function IamHeroScene() {
             <div className="iam-who-rows">
               <span>
                 <EnvelopeSimple size={14} weight="regular" />
-                arun.k@instasafe.com
+                alen.j@instasafe.com
               </span>
               <span>
                 <Buildings size={14} weight="regular" />
@@ -230,7 +230,7 @@ const SCENARIOS: Scenario[] = [
     },
     result: "allow",
     resultLine: "Access approved — no step-up required",
-    log: "08:42:21  arun.k@instasafe.com  ALLOW  rule: engineering-access",
+    log: "08:42:21  alen.j@instasafe.com  ALLOW  rule: engineering-access",
   },
   {
     id: "country",
@@ -246,7 +246,7 @@ const SCENARIOS: Scenario[] = [
     },
     result: "stepup",
     resultLine: "Step-up challenge issued — reason recorded with the decision",
-    log: "05:10:44  arun.k@instasafe.com  STEP_UP  reason: new-geography",
+    log: "05:10:44  alen.j@instasafe.com  STEP_UP  reason: new-geography",
   },
   {
     id: "device",
@@ -262,7 +262,7 @@ const SCENARIOS: Scenario[] = [
     },
     result: "deny",
     resultLine: "Access denied — device not enrolled, enrolment request raised",
-    log: "21:35:02  arun.k@instasafe.com  DENY  reason: device-unenrolled",
+    log: "21:35:02  alen.j@instasafe.com  DENY  reason: device-unenrolled",
   },
   {
     id: "leaver",
@@ -278,7 +278,7 @@ const SCENARIOS: Scenario[] = [
     },
     result: "deny",
     resultLine: "Identity disabled in directory — portal, apps, tunnels and OS logins all closed",
-    log: "09:02:11  arun.k@instasafe.com  DENY  reason: identity-disabled",
+    log: "09:02:11  alen.j@instasafe.com  DENY  reason: identity-disabled",
   },
 ];
 

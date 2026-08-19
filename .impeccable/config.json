@@ -2,7 +2,8 @@
   "detector": {
     "ignoreRules": [],
     "ignoreFiles": [
-      "app/globals.css"
+      "app/globals.css",
+      "prototypes/endpoint-controls-hero-v2.html"
     ],
     "ignoreValues": [
       {
@@ -13,6 +14,28 @@
         ],
         "createdAt": "2026-07-30T20:18:12.634Z",
         "reason": "Pre-existing v3 .dot-grid utility used across ~10 legacy section components; retires when those pages port to .iz. Fires every turn regardless of edits, drowning real findings."
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(0.34, 1.32, 0.5, 1)",
+        "createdAt": "2026-08-18T12:45:22.937Z",
+        "reason": "User confirmed stamp-pop overshoot easing is intentional hero motion grammar"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(0.34, 1.24, 0.5, 1)",
+        "createdAt": "2026-08-18T12:45:23.126Z",
+        "reason": "User confirmed cursor/pill arrival overshoot easing is intentional"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "components/izpages/endpoint/endpoint.css",
+          "components/izpages/endpoint/endpointsim.css"
+        ],
+        "createdAt": "2026-08-18T13:17:31.728Z",
+        "reason": "False positive: --dot token dot-texture wallpaper (site backdrop idiom), not a hairline line grid"
       }
     ]
   }
