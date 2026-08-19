@@ -22,10 +22,19 @@
 .iam-hero .iz-wrap { max-width: 1340px; }
 .iam-hero-in {
   display: grid;
-  grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
   gap: 56px;
   align-items: center;
 }
+/* THE HEADLINE IS HAND-BROKEN, so it has to FIT — it is three nowrap
+   spans, and a nowrap line does not wrap when it runs out of column, it
+   overflows. At the token's 68px cap the middle line ("the right
+   resource,") measures 569px against a 500px column: it spent the whole
+   56px gutter and touched the login trace. The column is wider now and
+   the cap is the size at which the longest line still clears it with
+   room to spare. Both numbers move together — re-measure if the
+   headline is ever reworded. */
+.iam-hero .iz-h1 { font-size: clamp(42px, 4.6vw, 64px); }
 .iam-hero .iz-lead { max-width: 44ch; }
 .iam-hero-cta {
   display: flex;
@@ -50,6 +59,7 @@
   gap: var(--sp-4);
   align-items: start;
 }
+.iam-scene-main { display: grid; gap: var(--sp-4); align-content: start; }
 .iam-scene-side { display: grid; gap: var(--sp-4); }
 
 .iam-card {
@@ -227,9 +237,12 @@
   height: var(--sp-4);
   background: repeating-linear-gradient(var(--line-strong) 0 3px, transparent 3px 6px);
 }
+/* 2x2, not a row of four: these sit in the scene's left column under the
+   trace now, filling the space the decision row used to leave empty and
+   letting the whole hero finish inside a laptop viewport. */
 .iam-res {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--sp-3);
   width: 100%;
 }
@@ -262,7 +275,7 @@
    ~680px beside the copy and ~1100px underneath it. */
 @container (max-width: 620px) {
   .iam-scene-top { grid-template-columns: minmax(0, 1fr); }
-  .iam-res { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* the resources are already 2-up at every width — see .iam-res */
 }
 
 /* ============================================================

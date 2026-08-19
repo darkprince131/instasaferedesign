@@ -80,7 +80,7 @@ const RESOURCES: { name: string; kind: string; Icon: Icon }[] = [
 function Portrait() {
   return (
     <span className="iam-face" style={{ ["--iam-face-src" as string]: `url(${PORTRAIT})` }}>
-      <b aria-hidden="true">AK</b>
+      <b aria-hidden="true">AJ</b>
     </span>
   );
 }
@@ -89,6 +89,12 @@ export function IamHeroScene() {
   return (
     <div className="iam-scene" aria-hidden="true">
       <div className="iam-scene-top">
+        {/* LEFT COLUMN — the trace, and directly under it what the trace
+            opened. The resources used to be a full-width row beneath the
+            whole scene, which left the space under DECISION empty while
+            making the hero taller than a laptop viewport. Stacked here as
+            a 2x2 they fill that gap and the two columns finish level. */}
+        <div className="iam-scene-main">
         {/* ---------- the trace ---------- */}
         <div className="iam-card iam-trace">
           <div className="iam-card-h">
@@ -125,14 +131,37 @@ export function IamHeroScene() {
           </div>
         </div>
 
+        {/* ---------- and what it opened ---------- */}
+        <div className="iam-fan">
+          <span className="iam-node">
+            <LogoMark size={26} />
+          </span>
+          <div className="iam-res">
+            {RESOURCES.map((r) => (
+              <div className="iam-card iam-res-c" key={r.name}>
+                <span className="iam-res-h">
+                  <r.Icon size={18} weight="regular" />
+                  <b>{r.name}</b>
+                  <s />
+                </span>
+                <span className="iam-res-k">{r.kind}</span>
+                <span className="iam-res-v">Allowed</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        </div>
+
         {/* ---------- who it was, and what decided ---------- */}
         <div className="iam-scene-side">
           <div className="iam-card iam-who">
             <Portrait />
             <div className="iam-who-t">
-              <b>Arun K.</b>
-              <span>Product Manager</span>
-              <span>Engineering</span>
+              {/* the cast registry's Alen Joseph — same person the trace,
+                  the audit lines and the portrait already name */}
+              <b>Alen Joseph</b>
+              <span>Infrastructure Engineer</span>
+              <span>IT Operations</span>
             </div>
             <div className="iam-who-rows">
               <span>
@@ -166,26 +195,6 @@ export function IamHeroScene() {
               <b>Allow</b>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* ---------- and what it opened ---------- */}
-      <div className="iam-fan">
-        <span className="iam-node">
-          <LogoMark size={26} />
-        </span>
-        <div className="iam-res">
-          {RESOURCES.map((r) => (
-            <div className="iam-card iam-res-c" key={r.name}>
-              <span className="iam-res-h">
-                <r.Icon size={18} weight="regular" />
-                <b>{r.name}</b>
-                <s />
-              </span>
-              <span className="iam-res-k">{r.kind}</span>
-              <span className="iam-res-v">Allowed</span>
-            </div>
-          ))}
         </div>
       </div>
     </div>
